@@ -138,9 +138,6 @@
     <Compile Include="Configuration\MotionController\ConfigPhysicalAxis.cs" />
     <Compile Include="Configuration\MotionController\ConfigPhysicalMotionController.cs" />
     <Compile Include="Configuration\MotionController\ConfigurationVariables.cs" />
-    <Compile Include="StartupScreeeen.xaml.cs">
-      <DependentUpon>StartupScreeeen.xaml</DependentUpon>
-    </Compile>
     <Compile Include="ViewModel\ViewModelLocator.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -193,10 +190,6 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Controls\Axis.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="StartupScreeeen.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

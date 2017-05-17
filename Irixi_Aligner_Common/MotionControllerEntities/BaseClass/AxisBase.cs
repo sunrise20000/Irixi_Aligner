@@ -211,9 +211,8 @@ namespace Irixi_Aligner_Common.MotionControllerEntities
                 this.ParentController = Controller;
             }
         }
-
-
-        internal bool CheckSoftLimitation(int TargetPosition)
+        
+        public bool CheckSoftLimitation(int TargetPosition)
         {
             if (TargetPosition < this.CCWL || TargetPosition > this.CWL)
                 return false;
@@ -229,6 +228,16 @@ namespace Irixi_Aligner_Common.MotionControllerEntities
         public virtual Task<bool> Move(MoveMode Mode, int Speed, int Distance)
         {
             return this.ParentController.Move(this, Mode, Speed, Distance);
+        }
+
+        public virtual Task<bool> MoveWithTrigger(MoveMode Mode, int Speed, int Distance, int Interval, int Channel)
+        {
+            return this.ParentController.MoveWithTrigger(this, Mode, Speed, Distance, Interval, Channel);
+        }
+
+        public virtual Task<bool> MoveWithInnerADC(MoveMode Mode, int Speed, int Distance, int Interval, int Channel)
+        {
+            return this.ParentController.MoveWithInnerADC(this, Mode, Speed, Distance, Interval, Channel);
         }
 
         public virtual void Stop()
@@ -257,7 +266,6 @@ namespace Irixi_Aligner_Common.MotionControllerEntities
         #endregion
 
         #region RaisePropertyChangedEvent
-
         public event PropertyChangedEventHandler PropertyChanged;
 
         /// <summary>
@@ -284,8 +292,6 @@ namespace Irixi_Aligner_Common.MotionControllerEntities
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(PropertyName));
                 
         }
-
-        
         #endregion
     }
 }

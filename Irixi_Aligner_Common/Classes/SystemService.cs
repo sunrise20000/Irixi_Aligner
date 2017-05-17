@@ -38,8 +38,7 @@ namespace Irixi_Aligner_Common.Classes
         readonly object _sys_state_lock = new object();
 
         #endregion
-
-
+        
         #region Constructor
 
         public SystemService()
@@ -156,8 +155,7 @@ namespace Irixi_Aligner_Common.Classes
         #region Events
 
         #endregion
-
-
+        
         #region Methods
         /// <summary>
         /// Bind the physical axis to the logical aligner
@@ -289,42 +287,81 @@ namespace Irixi_Aligner_Common.Classes
         }
 
         /// <summary>
-        /// Move a set of axes with the specified args
+        /// Move a set of logical axes
         /// </summary>
-        /// <param name="Axis"></param>
         /// <param name="Args"></param>
-        public async void MoveAxesSimultaneously(Tuple<IAxis, MoveArgs>[] Args)
+        /// <remarks>
+        /// An args is consisted of 3 elements: move order, the logical axis object and movement arguments
+        /// </remarks>
+        public async void MoveAxesSimultaneously(Tuple<int, ConfigLogicalAxis, MoveArgs>[] Args)
         {
             if (GetSystemState() != SystemState.BUSY)
             {
                 SetSystemState(SystemState.BUSY);
 
+                // how many axes to move
+                int _total_to_move = Args.Length;
+
+                // how many axes have been moved
+                int _current_moved = 0;
+
+                int _current_order = 0;
+                
+
+                // generate a list which contains the movement tasks
+                // this is used by the Task.WhenAll() function
                 List<Task<bool>> _move_tasks = new List<Task<bool>>();
 
-                foreach (var item in Args)
+                this.LastMessage = new CMessageItem(MessageType.Normal, " move simultaneously...");
+
+                do
                 {
-                    var axis = item.Item1;
-                    var arg = item.Item2;
+                    // clear the previous tasks
+                    _move_tasks.Clear();
 
-                    var t = axis.Move(arg.Mode, arg.Speed, arg.Distance);
-                    t.Start();
-                    _move_tasks.Add(t);
-                }
-
-                this.LastMessage = new CMessageItem(MessageType.Normal, "Execute simultaneous movement ...");
-
-                bool[] ret = await Task.WhenAll(_move_tasks);
-
-                for (int i = 0; i < _move_tasks.Count; i++)
-                {
-                    if(ret[i] == false)
+                    // find the axes which belong to current order
+                    foreach (var item in Args)
                     {
-                        this.LastMessage = new CMessageItem(MessageType.Error, "{0} Move is failed, {1}", Args[i].Item1, Args[i].Item1.LastError);
-                        Messenger.Default.Send<NotificationMessage<string>>(new NotificationMessage<string>(this.LastMessage.Message, "Error"));
-                    }
-                }
+                        var order = item.Item1;
+                        var logical_axis = item.Item2;
+                        var arg = item.Item3;
 
-                this.LastMessage = new CMessageItem(MessageType.Good, "Simultanenous Movement is done");
+                        if (order == _current_order)
+                        {
+                            var t = logical_axis.PhysicalAxisInst.Move(arg.Mode, arg.Speed, arg.Distance);
+                            t.Start();
+                            _move_tasks.Add(t);
+                        }
+                    }
+
+                    // set the order of next loop
+                    _current_order++;
+
+                    // if no axes to be moved, move to the next loop
+                    if (_move_tasks.Count == 0)
+                        break;
+
+                    // wait until all the axes are moved
+                    bool[] ret = await Task.WhenAll(_move_tasks);
+
+                    // check the result of movement
+                    for (int i = 0; i < _move_tasks.Count; i++)
+                    {
+                        if (ret[i] == false)
+                        {
+                            this.LastMessage = new CMessageItem(MessageType.Error, "{0} Move is failed, {1}", Args[i].Item1, Args[i].Item2.PhysicalAxisInst.LastError);
+                            Messenger.Default.Send<NotificationMessage<string>>(new NotificationMessage<string>(this.LastMessage.Message, "Error"));
+                        }
+                    }
+
+                    // calculate the moved axes
+                    _current_moved += _move_tasks.Count;
+
+                } while (_current_moved < _total_to_move); // loop until all axes were moved
+
+                
+
+                this.LastMessage = new CMessageItem(MessageType.Good, "Simultanenous Movement is completed");
 
                 SetSystemState(SystemState.IDLE);
             }

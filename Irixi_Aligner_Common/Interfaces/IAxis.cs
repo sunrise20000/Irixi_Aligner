@@ -3,8 +3,6 @@ using System.Threading.Tasks;
 
 namespace Irixi_Aligner_Common.Interfaces
 {
-
-
     public interface IAxis
     {
         #region Properties
@@ -95,20 +93,71 @@ namespace Irixi_Aligner_Common.Interfaces
         IMotionController ParentController { get; }
         #endregion
 
-
         #region Methods
+        /// <summary>
+        /// Lock the axis before any operation
+        /// </summary>
+        /// <returns></returns>
         bool Lock();
 
+        /// <summary>
+        /// Unlock the axis after any operation
+        /// </summary>
         void Unlock();
 
+        /// <summary>
+        /// Set the parameters once the class is instantiated
+        /// </summary>
+        /// <param name="AxisIndex"></param>
+        /// <param name="Config"></param>
+        /// <param name="Controller"></param>
         void SetParameters(int AxisIndex, ConfigPhysicalAxis Config, IMotionController Controller);
 
+        /// <summary>
+        /// Start a task to home the axis
+        /// </summary>
+        /// <returns></returns>
         Task<bool> Home();
 
+        /// <summary>
+        /// Start a task to move the axis
+        /// </summary>
+        /// <param name="Mode">ABS/REL</param>
+        /// <param name="Speed">1 ~ 100</param>
+        /// <param name="Distance">The steps to move, in steps</param>
+        /// <returns></returns>
         Task<bool> Move(MoveMode Mode, int Speed, int Distance);
 
+        /// <summary>
+        /// Start a task to move the axis and output a series of trigger pulses on the specified channel(I/O)
+        /// </summary>
+        /// <param name="Mode">ABS/REL</param>
+        /// <param name="Speed">1 ~ 100</param>
+        /// <param name="Distance">The steps to move, in steps</param>
+        /// <param name="Interval">The steps between adjacent trigger pulse, in steps</param>
+        /// <param name="Channel">The trigger channel</param>
+        /// <returns></returns>
+        Task<bool> MoveWithTrigger(MoveMode Mode, int Speed, int Distance, int Interval, int Channel);
+
+        /// <summary>
+        /// Start a task to move the axis and activate a series of conversion with the specified adc
+        /// </summary>
+        /// <param name="Mode">ABS/REL</param>
+        /// <param name="Speed">1 ~ 100</param>
+        /// <param name="Distance">The steps to move, in steps</param>
+        /// <param name="Interval">The steps between adjacent ADC conversion, in steps</param>
+        /// <param name="AdcIndex">The channle of ADC</param>
+        /// <returns></returns>
+        Task<bool> MoveWithInnerADC(MoveMode Mode, int Speed, int Distance, int Interval, int Channel);
+
+        /// <summary>
+        /// Stop the current activity immediately 
+        /// </summary>
         void Stop();
 
+        /// <summary>
+        /// Toggle the move mode between ABS and REL
+        /// </summary>
         void ToggleMoveMode();
 
         #endregion

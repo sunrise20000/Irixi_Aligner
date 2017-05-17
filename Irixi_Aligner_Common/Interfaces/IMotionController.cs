@@ -11,6 +11,8 @@ namespace Irixi_Aligner_Common.Interfaces
         event EventHandler<string> OnErrorOccurred;
         event EventHandler<object> OnHomeCompleted;
 
+        #region Properties
+
         /// <summary>
         /// Get the device class which makes this controller exclusively in the system.
         /// the controller could be located by the device class.
@@ -59,6 +61,10 @@ namespace Irixi_Aligner_Common.Interfaces
         /// </summary>
         ObservableCollection<IAxis> AxisCollection { get; }
 
+        #endregion
+
+        #region Methods
+
         /// <summary>
         /// Initialize the controller
         /// </summary>
@@ -66,7 +72,7 @@ namespace Irixi_Aligner_Common.Interfaces
         Task<bool> Init();
 
         /// <summary>
-        /// Home the axis
+        /// <see cref="IAxis.Home"/> for more infomation
         /// </summary>
         /// <param name="Axis"></param>
         Task<bool> Home(IAxis Axis);
@@ -77,9 +83,9 @@ namespace Irixi_Aligner_Common.Interfaces
         Task<bool> HomeAll();
 
         /// <summary>
-        /// Move the specified axis
+        /// <see cref="IAxis.Move(MoveMode, int, int)"/> for more infomation
         /// </summary>
-        /// <param name="Axis"></param>
+        /// <param name="Axis">The instance of axis class inherited IAxis</param>
         /// <param name="Mode"></param>
         /// <param name="Speed"></param>
         /// <param name="distance"></param>
@@ -87,7 +93,31 @@ namespace Irixi_Aligner_Common.Interfaces
         Task<bool> Move(IAxis Axis, MoveMode Mode, int Speed, int Distance);
 
         /// <summary>
-        /// Stop all axis
+        /// <see cref="IAxis.MoveWithTrigger(MoveMode, int, int, int, int)"/> for more infomation
+        /// </summary>
+        /// <param name="Axis">The instance of axis class inherited IAxis</param>
+        /// <param name="Mode"></param>
+        /// <param name="Speed"></param>
+        /// <param name="Distance"></param>
+        /// <param name="Interval"></param>
+        /// <param name="Channel"></param>
+        /// <returns></returns>
+        Task<bool> MoveWithTrigger(IAxis Axis, MoveMode Mode, int Speed, int Distance, int Interval, int Channel);
+
+        /// <summary>
+        /// <see cref="IAxis.MoveWithInnerADC(MoveMode, int, int, int, int)"/> for more infomation
+        /// </summary>
+        /// <param name="Axis">The instance of axis class inherited IAxis</param>
+        /// <param name="Mode"></param>
+        /// <param name="Speed"></param>
+        /// <param name="Distance"></param>
+        /// <param name="Interval"></param>
+        /// <param name="AdcIndex"></param>
+        /// <returns></returns>
+        Task<bool> MoveWithInnerADC(IAxis Axis, MoveMode Mode, int Speed, int Distance, int Interval, int Channel);
+
+        /// <summary>
+        /// <see cref="IAxis.Stop"/> for more infomation
         /// </summary>
         void Stop();
 
@@ -108,5 +138,6 @@ namespace Irixi_Aligner_Common.Interfaces
         /// <returns></returns>
         IAxis FindAxisByName(string Name);
 
+        #endregion
     }
 }

@@ -157,6 +157,16 @@ namespace Irixi_Aligner_Common.MotionControllerEntities
             });
         }
 
+        public virtual Task<bool> MoveWithTrigger(IAxis Axis, MoveMode Mode, int Speed, int Distance, int Interval, int Channel)
+        {
+            throw new NotImplementedException();
+        }
+
+        public virtual Task<bool> MoveWithInnerADC(IAxis Axis, MoveMode Mode, int Speed, int Distance, int Interval, int Channel)
+        {
+            throw new NotImplementedException();
+        }
+
         public virtual void Stop()
         {
             throw new NotImplementedException();
@@ -191,7 +201,7 @@ namespace Irixi_Aligner_Common.MotionControllerEntities
         /// </summary>
         /// <param name="Name">Axis Name</param>
         /// <returns></returns>
-        public Interfaces.IAxis FindAxisByName(string Name)
+        public IAxis FindAxisByName(string Name)
         {
             // Get the axis with the unit property equels the specified value
             var axis = from c in this.AxisCollection where (c.AxisName.ToLower() == Name.ToLower()) select c;
@@ -217,7 +227,7 @@ namespace Irixi_Aligner_Common.MotionControllerEntities
         {
             OnHomeCompleted?.Invoke(this, new EventArgs());
         }
-        
+      
         #endregion
     }
 }
