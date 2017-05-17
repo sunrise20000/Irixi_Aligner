@@ -12,7 +12,7 @@ namespace Irixi_Aligner_Common.Message
         Warning
     }
 
-    public class CMessageHelper : ObservableCollection<CMessageItem>
+    public class MessageHelper : ObservableCollection<MessageItem>
     {
         protected override void OnCollectionChanged(NotifyCollectionChangedEventArgs e)
         {
@@ -20,37 +20,37 @@ namespace Irixi_Aligner_Common.Message
             base.OnCollectionChanged(e);
             if(e.Action == NotifyCollectionChangedAction.Add)
             {
-                var msg = e.NewItems[0] as CMessageItem;
+                var msg = e.NewItems[0] as MessageItem;
                 LogHelper.WriteLine(msg.Message, msg.Type == MessageType.Error ? LogHelper.LogType.ERROR : LogHelper.LogType.NORMAL);
             }
         }
     }
 
-    public class CMessageItem
+    public class MessageItem
     {
         #region Constructors
 
-        public CMessageItem(MessageType Type, string Message)
+        public MessageItem(MessageType Type, string Message)
         {
             Ctor(Type, Message);
         }
 
-        public CMessageItem(MessageType Type, string Message, object Arg0)
+        public MessageItem(MessageType Type, string Message, object Arg0)
         {
             Ctor(Type, string.Format(Message, Arg0));
         }
 
-        public CMessageItem(MessageType Type, string Message, object Arg0, object Arg1)
+        public MessageItem(MessageType Type, string Message, object Arg0, object Arg1)
         {
             Ctor(Type, string.Format(Message, Arg0, Arg1));
         }
 
-        public CMessageItem(MessageType Type, string Message, object Arg0, object Arg1, object Arg2)
+        public MessageItem(MessageType Type, string Message, object Arg0, object Arg1, object Arg2)
         {
             Ctor(Type, string.Format(Message, Arg0, Arg1, Arg2));
         }
 
-        public CMessageItem(MessageType Type, string Message, object[] Args)
+        public MessageItem(MessageType Type, string Message, object[] Args)
         {
             Ctor(Type, string.Format(Message, Args));
         }

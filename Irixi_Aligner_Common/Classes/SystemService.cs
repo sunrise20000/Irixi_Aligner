@@ -13,7 +13,6 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Threading;
 
 namespace Irixi_Aligner_Common.Classes
 {
@@ -23,8 +22,8 @@ namespace Irixi_Aligner_Common.Classes
         
         SystemState _state = SystemState.IDLE;
 
-        CMessageItem _lastmsg = null;
-        CMessageHelper _msg_helper = new CMessageHelper();
+        MessageItem _lastmsg = null;
+        MessageHelper _msg_helper = new MessageHelper();
         
         /// <summary>
         /// lock while increase/decrease the home counter
@@ -66,7 +65,7 @@ namespace Irixi_Aligner_Common.Classes
             sb.Append("> =================================================================\r\n");
             LogHelper.WriteLine(sb.ToString());
 
-            this.LastMessage = new CMessageItem(MessageType.Normal, "System startup ...");
+            this.LastMessage = new MessageItem(MessageType.Normal, "System startup ...");
 
             // enumerate all physical motion controllers defined in the config file
             foreach (var cfg in configmgr.MotionController.PhysicalMotionControllers)
@@ -90,13 +89,13 @@ namespace Irixi_Aligner_Common.Classes
 
                             Application.Current.Dispatcher.Invoke(() =>
                             {
-                                this.LastMessage = new CMessageItem(MessageType.Normal, string.Format("{0} {1}", sender, message));
+                                this.LastMessage = new MessageItem(MessageType.Normal, string.Format("{0} {1}", sender, message));
                             });
                         });
                         break;
 
                     default:
-                        this.LastMessage = new CMessageItem(MessageType.Error, "Unrecognized controller model {0}.", cfg.Model);
+                        this.LastMessage = new MessageItem(MessageType.Error, "Unrecognized controller model {0}.", cfg.Model);
                         break;
                 }
 
@@ -179,7 +178,7 @@ namespace Irixi_Aligner_Common.Classes
                     // Create a fake physical axis instance to tell UI this axis is disabled
                     LogicalAxis.PhysicalAxisInst = new AxisBase(-1, null, null);
                     
-                    this.LastMessage = new CMessageItem(MessageType.Error, "Bind physical axis error, unable to find the axis {0}", LogicalAxis);
+                    this.LastMessage = new MessageItem(MessageType.Error, "{0} Bind physical axis error, unable to find the axis", LogicalAxis);
 
                     ret = false;
                 }
@@ -194,7 +193,7 @@ namespace Irixi_Aligner_Common.Classes
                 // Create a fake physical axis instance to tell UI this axis is disabled
                 LogicalAxis.PhysicalAxisInst = new AxisBase(-1, null, null);
 
-                this.LastMessage = new CMessageItem(MessageType.Error, "Bind physical axis error, unable to find the controller with DevClass of *{0}*", LogicalAxis.DeviceClass);
+                this.LastMessage = new MessageItem(MessageType.Error, "{0} Bind physical axis error, unable to find the controller with DevClass of *{1}*", LogicalAxis, LogicalAxis.DeviceClass);
                 ret = false;
             }
 
@@ -230,10 +229,10 @@ namespace Irixi_Aligner_Common.Classes
                 task.Start();
                 _tasks.Add(task);
                 _controllers.Add(item);
-                this.LastMessage = new CMessageItem(MessageType.Normal, "{0} Initializing ...", item);
+                this.LastMessage = new MessageItem(MessageType.Normal, "{0} Initializing ...", item);
             }
 
-            this.LastMessage = new CMessageItem(MessageType.Normal, "Waiting ...");
+            this.LastMessage = new MessageItem(MessageType.Normal, "Waiting ...");
 
             // Wait until all init tasks were done
             bool[] ret = await Task.WhenAll(_tasks);
@@ -242,9 +241,9 @@ namespace Irixi_Aligner_Common.Classes
             for (int i = 0; i < ret.Length; i++)
             {
                 if(ret[i])
-                    this.LastMessage = new CMessageItem(MessageType.Good, "{0} Initialization is completed.", _controllers[i]);
+                    this.LastMessage = new MessageItem(MessageType.Good, "{0} Initialization is completed.", _controllers[i]);
                 else
-                    this.LastMessage = new CMessageItem(MessageType.Error, "{0} Initialization is failed, {1}", _controllers[i], _controllers[i].LastError);
+                    this.LastMessage = new MessageItem(MessageType.Error, "{0} Initialization is failed, {1}", _controllers[i], _controllers[i].LastError);
             }
 
             SetSystemState(SystemState.IDLE);
@@ -262,27 +261,27 @@ namespace Irixi_Aligner_Common.Classes
             {
                 SetSystemState(SystemState.BUSY);
 
-                this.LastMessage = new CMessageItem(MessageType.Normal, "{0} Move with argument {1} ...", Axis, Args);
+                this.LastMessage = new MessageItem(MessageType.Normal, "{0} Move with argument {1} ...", Axis, Args);
 
                 var t = Axis.PhysicalAxisInst.Move(Args.Mode, Args.Speed, Args.Distance);
                 t.Start();
                 bool ret = await t;
                 if (ret == false)
                 {
-                    this.LastMessage = new CMessageItem(MessageType.Error, "{0} Unable to move, {1}", Axis, Axis.PhysicalAxisInst.LastError);
+                    this.LastMessage = new MessageItem(MessageType.Error, "{0} Unable to move, {1}", Axis, Axis.PhysicalAxisInst.LastError);
 
                     Messenger.Default.Send<NotificationMessage<string>>(new NotificationMessage<string>(this.LastMessage.Message, "Error"));
                 }
                 else
                 {
-                    this.LastMessage = new CMessageItem(MessageType.Normal, "{0} Move is completed, the final position is {1}", Axis, Axis.PhysicalAxisInst.AbsPosition);
+                    this.LastMessage = new MessageItem(MessageType.Normal, "{0} Move is completed, the final position is {1}", Axis, Axis.PhysicalAxisInst.AbsPosition);
                 }
 
                 SetSystemState(SystemState.IDLE);
             }
             else
             {
-                this.LastMessage = new CMessageItem(MessageType.Error, "System is busy");
+                this.LastMessage = new MessageItem(MessageType.Error, "System is busy");
             }
         }
 
@@ -312,7 +311,7 @@ namespace Irixi_Aligner_Common.Classes
                 // this is used by the Task.WhenAll() function
                 List<Task<bool>> _move_tasks = new List<Task<bool>>();
 
-                this.LastMessage = new CMessageItem(MessageType.Normal, " move simultaneously...");
+                this.LastMessage = new MessageItem(MessageType.Normal, " move simultaneously...");
 
                 do
                 {
@@ -349,7 +348,7 @@ namespace Irixi_Aligner_Common.Classes
                     {
                         if (ret[i] == false)
                         {
-                            this.LastMessage = new CMessageItem(MessageType.Error, "{0} Move is failed, {1}", Args[i].Item1, Args[i].Item2.PhysicalAxisInst.LastError);
+                            this.LastMessage = new MessageItem(MessageType.Error, "{0} Move is failed, {1}", Args[i].Item1, Args[i].Item2.PhysicalAxisInst.LastError);
                             Messenger.Default.Send<NotificationMessage<string>>(new NotificationMessage<string>(this.LastMessage.Message, "Error"));
                         }
                     }
@@ -361,7 +360,7 @@ namespace Irixi_Aligner_Common.Classes
 
                 
 
-                this.LastMessage = new CMessageItem(MessageType.Good, "Simultanenous Movement is completed");
+                this.LastMessage = new MessageItem(MessageType.Good, "Simultanenous Movement is completed");
 
                 SetSystemState(SystemState.IDLE);
             }
@@ -399,7 +398,7 @@ namespace Irixi_Aligner_Common.Classes
                 // Loop Home() function of each axis
                 do
                 {
-                    this.LastMessage = new CMessageItem(MessageType.Normal, "The present homing order is {0}", _present_order);
+                    this.LastMessage = new MessageItem(MessageType.Normal, "The present homing order is {0}", _present_order);
 
                     _tmp_axis_homing.Clear();
                     _tasks.Clear();
@@ -408,7 +407,7 @@ namespace Irixi_Aligner_Common.Classes
                     {
                         if (axis.HomeOrder == _present_order)
                         {
-                            this.LastMessage = new CMessageItem(MessageType.Normal, "{0} Start to home ...", axis);
+                            this.LastMessage = new MessageItem(MessageType.Normal, "{0} Start to home ...", axis);
 
                             var t = axis.PhysicalAxisInst.Home();
                             t.Start();
@@ -420,11 +419,11 @@ namespace Irixi_Aligner_Common.Classes
 
                     if (_tasks.Count <= 0)
                     {
-                        this.LastMessage = new CMessageItem(MessageType.Warning, "There are not axes to be homed in this order");
+                        this.LastMessage = new MessageItem(MessageType.Warning, "There are not axes to be homed in this order");
                     }
                     else
                     {
-                        this.LastMessage = new CMessageItem(MessageType.Normal, "Waiting ...");
+                        this.LastMessage = new MessageItem(MessageType.Normal, "Waiting ...");
 
                         // Wait asynchronoursly until all home tasks are done
                         bool[] ret = await Task.WhenAll(_tasks);
@@ -433,9 +432,9 @@ namespace Irixi_Aligner_Common.Classes
                         for (int i = 0; i < ret.Length; i++)
                         {
                             if (ret[i])
-                                this.LastMessage = new CMessageItem(MessageType.Good, "{0} Home is completed.", _tmp_axis_homing[i]);
+                                this.LastMessage = new MessageItem(MessageType.Good, "{0} Home is completed.", _tmp_axis_homing[i]);
                             else
-                                this.LastMessage = new CMessageItem(MessageType.Error, "{0} Home is failed, {1}", _tmp_axis_homing[i], _tmp_axis_homing[i].PhysicalAxisInst.LastError);
+                                this.LastMessage = new MessageItem(MessageType.Error, "{0} Home is failed, {1}", _tmp_axis_homing[i], _tmp_axis_homing[i].PhysicalAxisInst.LastError);
                         }
 
                         // save the sum of homed axes in order to check if all axes have been homed
@@ -448,14 +447,14 @@ namespace Irixi_Aligner_Common.Classes
 
                 } while (_axis_homed < _total_axis);
 
-                this.LastMessage = new CMessageItem(MessageType.Good, "Batch Home is completed");
+                this.LastMessage = new MessageItem(MessageType.Good, "Batch Home is completed");
 
                 SetSystemState(SystemState.IDLE);
 
             }
             else
             {
-                this.LastMessage = new CMessageItem(MessageType.Error, "System is busy");
+                this.LastMessage = new MessageItem(MessageType.Error, "System is busy");
             }
         }
 
@@ -560,11 +559,11 @@ namespace Irixi_Aligner_Common.Classes
         /// Set or get the last message.
         /// this message will be added into this.MessageCollection
         /// </summary>
-        public CMessageItem LastMessage
+        public MessageItem LastMessage
         {
             private set
             {
-                UpdateProperty<CMessageItem>(ref _lastmsg, value);
+                UpdateProperty<MessageItem>(ref _lastmsg, value);
                 MessageCollection.Add(_lastmsg);
             }
             get
@@ -576,7 +575,7 @@ namespace Irixi_Aligner_Common.Classes
         /// <summary>
         /// Get the collection of messages.
         /// </summary>
-        public CMessageHelper MessageCollection
+        public MessageHelper MessageCollection
         {
             get
             {

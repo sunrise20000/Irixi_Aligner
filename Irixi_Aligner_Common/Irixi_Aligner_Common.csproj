@@ -129,7 +129,7 @@
     <Compile Include="MotionControllerEntities\LuminosP6A\LuminosAxis.cs" />
     <Compile Include="MotionControllerEntities\LuminosP6A\LuminosP6A.cs" />
     <Compile Include="Classes\SystemService.cs" />
-    <Compile Include="Classes\MessageSystem\CMessageHelper.cs" />
+    <Compile Include="Classes\MessageSystem\MessageHelper.cs" />
     <Compile Include="Configuration\ConfigManager.cs" />
     <Compile Include="Configuration\MotionController\ConfigurationMotionController.cs" />
     <Compile Include="Configuration\MotionController\ConfigLogicalAxis.cs" />

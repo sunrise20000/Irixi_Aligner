@@ -14,7 +14,7 @@
             <Converters:JogPositionModeToText x:Key="JogPositionModeToText" />
             <Converters:MessageTypeToImage x:Key="MessageTypeToImage" />
             <Converters:MessageTypeToColor x:Key="MessageTypeToColor" />
-            <DataTemplate x:Key="MessageItemTemplate" DataType="{x:Type msg:CMessageItem}" xmlns:msg="clr-namespace:Irixi_Aligner_Common.Message">
+            <DataTemplate x:Key="MessageItemTemplate" DataType="{x:Type msg:MessageItem}" xmlns:msg="clr-namespace:Irixi_Aligner_Common.Message">
                 <Border Padding="3">
                     <Grid>
                         <Grid.ColumnDefinitions>
