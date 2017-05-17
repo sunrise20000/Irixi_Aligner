@@ -1,0 +1,525 @@
+{
+  "LogEnabled": true,
+  "PhysicalMotionControllers": [
+    {
+      "Class": "5013d013-f167-4dcb-86d9-599a325744b8",
+      "Name": "Luminos P6A",
+      "Port": "COM5",
+      "Enabled": true,
+      "Comment": "For VGroove Aligner",
+      "AxisCollection": [
+        {
+          "Name": "at_X_5x_B",
+          "Enabled": true,
+          "PosHomed": 0,
+          "PosMax": 128000,
+          "PosCWL": 128000,
+          "PosCCWL": 0,
+          "Dps": 100
+        },
+        {
+          "Name": "at_Y_5x_B",
+          "Enabled": true,
+          "PosHomed": 0,
+          "PosMax": 128000,
+          "PosCWL": 128000,
+          "PosCCWL": 0,
+          "Dps": 100
+        },
+        {
+          "Name": "at_Z_B",
+          "Enabled": true,
+          "PosHomed": 0,
+          "PosMax": 128000,
+          "PosCWL": 128000,
+          "PosCCWL": 0,
+          "Dps": 100
+        },
+        {
+          "Name": "at_Roll_B",
+          "Enabled": true,
+          "PosHomed": 0,
+          "PosMax": 128000,
+          "PosCWL": 128000,
+          "PosCCWL": 0,
+          "Dps": 100
+        },
+        {
+          "Name": "at_Yaw_B",
+          "Enabled": true,
+          "PosHomed": 0,
+          "PosMax": 128000,
+          "PosCWL": 128000,
+          "PosCCWL": 0,
+          "Dps": 100
+        },
+        {
+          "Name": "at_Pitch_B",
+          "Enabled": true,
+          "PosHomed": 0,
+          "PosMax": 128000,
+          "PosCWL": 128000,
+          "PosCCWL": 0,
+          "Dps": 100
+        }
+      ]
+    },
+    {
+      "Class": "412e55e4-ceae-4eb4-8798-e8de7b5b5669",
+      "Name": "Luminos P6A",
+      "Port": "COM2",
+      "Enabled": true,
+      "Comment": "Lens Aligner",
+      "AxisCollection": [
+        {
+          "Name": "at_X_5x_B",
+          "Enabled": true,
+          "PosHomed": 0,
+          "PosMax": 128000,
+          "PosCWL": 128000,
+          "PosCCWL": 0,
+          "Dps": 100
+        },
+        {
+          "Name": "at_Y_5x_B",
+          "Enabled": true,
+          "PosHomed": 0,
+          "PosMax": 128000,
+          "PosCWL": 128000,
+          "PosCCWL": 0,
+          "Dps": 100
+        },
+        {
+          "Name": "at_Z_B",
+          "Enabled": true,
+          "PosHomed": 0,
+          "PosMax": 128000,
+          "PosCWL": 128000,
+          "PosCCWL": 0,
+          "Dps": 100
+        },
+        {
+          "Name": "at_Roll_B",
+          "Enabled": true,
+          "PosHomed": 0,
+          "PosMax": 128000,
+          "PosCWL": 128000,
+          "PosCCWL": 0,
+          "Dps": 100
+        },
+        {
+          "Name": "at_Yaw_B",
+          "Enabled": true,
+          "PosHomed": 0,
+          "PosMax": 128000,
+          "PosCWL": 128000,
+          "PosCCWL": 0,
+          "Dps": 100
+        },
+        {
+          "Name": "at_Pitch_B",
+          "Enabled": true,
+          "PosHomed": 0,
+          "PosMax": 128000,
+          "PosCWL": 128000,
+          "PosCCWL": 0,
+          "Dps": 100
+        }
+      ]
+    },
+    {
+      "Class": "2b39c9d5-66e9-4896-8dd1-94d8df0485e1",
+      "Name": "Luminos P6A",
+      "Port": "COM3",
+      "Enabled": true,
+      "Comment": "COS Aligner",
+      "AxisCollection": [
+        {
+          "Name": "at_X_5x_B",
+          "Enabled": true,
+          "PosHomed": 0,
+          "PosMax": 128000,
+          "PosCWL": 128000,
+          "PosCCWL": 0,
+          "Dps": 100,
+          "Comment_Dps": "Distance per step, unit is nm"
+        },
+        {
+          "Name": "at_Y_5x_B",
+          "Enabled": true,
+          "PosHomed": 0,
+          "PosMax": 128000,
+          "PosCWL": 128000,
+          "PosCCWL": 0,
+          "Dps": 100
+        },
+        {
+          "Name": "at_Z_B",
+          "Enabled": true,
+          "PosHomed": 0,
+          "PosMax": 128000,
+          "PosCWL": 128000,
+          "PosCCWL": 0,
+          "Dps": 100
+        },
+        {
+          "Name": "at_Roll_B",
+          "Enabled": true,
+          "PosHomed": 0,
+          "PosMax": 128000,
+          "PosCWL": 128000,
+          "PosCCWL": 0,
+          "Dps": 100
+        },
+        {
+          "Name": "at_Yaw_B",
+          "Enabled": true,
+          "PosHomed": 0,
+          "PosMax": 128000,
+          "PosCWL": 128000,
+          "PosCCWL": 0,
+          "Dps": 100
+        },
+        {
+          "Name": "at_Pitch_B",
+          "Enabled": true,
+          "PosHomed": 0,
+          "PosMax": 128000,
+          "PosCWL": 128000,
+          "PosCCWL": 0,
+          "Dps": 100
+        }
+      ]
+    },
+    {
+      "Class": "d11d1864-6315-4c01-b07f-3e268834cd10",
+      "Name": "Irixi EE0017",
+      "Port": "C000000001",
+      "Enabled": true,
+      "Comment": "Irixi MotionController",
+      "AxisCollection": [
+        {
+          "Name": 0,
+          "Enabled": true,
+          "PosHomed": 0,
+          "PosMax": 128000,
+          "PosCWL": 128000,
+          "PosCCWL": 0,
+          "Dps": 100,
+          "Comment_Dps": "Distance per step, unit is nm"
+        },
+        {
+          "Name": 1,
+          "Enabled": true,
+          "PosHomed": 0,
+          "PosMax": 128000,
+          "PosCWL": 128000,
+          "PosCCWL": 0,
+          "Dps": 100
+        },
+        {
+          "Name": 2,
+          "Enabled": true,
+          "PosHomed": 0,
+          "PosMax": 128000,
+          "PosCWL": 128000,
+          "PosCCWL": 0,
+          "Dps": 100
+        }
+      ]
+    },
+    {
+      "Class": "c6af0f93-7e49-4b1a-b08d-0c84f8d812c0",
+      "Name": "Irixi EE0017",
+      "Port": "C000000002",
+      "Enabled": true,
+      "Comment": "Irixi MotionController",
+      "AxisCollection": [
+        {
+          "Name": 0,
+          "Enabled": true,
+          "PosHomed": 0,
+          "PosMax": 128000,
+          "PosCWL": 128000,
+          "PosCCWL": 0,
+          "Dps": 100,
+          "Comment_Dps": "Distance per step, unit is nm"
+        },
+        {
+          "Name": 1,
+          "Enabled": true,
+          "PosHomed": 0,
+          "PosMax": 128000,
+          "PosCWL": 128000,
+          "PosCCWL": 0,
+          "Dps": 100
+        },
+        {
+          "Name": 2,
+          "Enabled": true,
+          "PosHomed": 0,
+          "PosMax": 128000,
+          "PosCWL": 128000,
+          "PosCCWL": 0,
+          "Dps": 100
+        }
+      ]
+    },
+    {
+      "Class": "86e3e6c8-0fce-455b-8545-9011cd3fe6a7",
+      "Name": "Irixi EE0017",
+      "Port": "C000000003",
+      "Enabled": true,
+      "Comment": "Irixi MotionController",
+      "AxisCollection": [
+        {
+          "Name": 0,
+          "Enabled": true,
+          "PosHomed": 0,
+          "PosMax": 128000,
+          "PosCWL": 128000,
+          "PosCCWL": 0,
+          "Dps": 100,
+          "Comment_Dps": "Distance per step, unit is nm"
+        },
+        {
+          "Name": 1,
+          "Enabled": true,
+          "PosHomed": 0,
+          "PosMax": 128000,
+          "PosCWL": 128000,
+          "PosCCWL": 0,
+          "Dps": 100
+        },
+        {
+          "Name": 2,
+          "Enabled": true,
+          "PosHomed": 0,
+          "PosMax": 128000,
+          "PosCWL": 128000,
+          "PosCCWL": 0,
+          "Dps": 100
+        }
+      ]
+    },
+    {
+      "Class": "df4d5339-f472-4bee-97f0-a10f8aecbc1a",
+      "Name": "Irixi EE0017",
+      "Port": "C000000004",
+      "Enabled": true,
+      "Comment": "Irixi MotionController",
+      "AxisCollection": [
+        {
+          "Name": 0,
+          "Enabled": true,
+          "PosHomed": 0,
+          "PosMax": 128000,
+          "PosCWL": 128000,
+          "PosCCWL": 0,
+          "Dps": 100,
+          "Comment_Dps": "Distance per step, unit is nm"
+        },
+        {
+          "Name": 1,
+          "Enabled": true,
+          "PosHomed": 0,
+          "PosMax": 128000,
+          "PosCWL": 128000,
+          "PosCCWL": 0,
+          "Dps": 100
+        },
+        {
+          "Name": 2,
+          "Enabled": true,
+          "PosHomed": 0,
+          "PosMax": 128000,
+          "PosCWL": 128000,
+          "PosCCWL": 0,
+          "Dps": 100
+        }
+      ]
+    }
+  ],
+  "LogicalLayout": {
+    "VGrooveAligner": {
+      "DisplayName": "VGroove Aligner",
+      "AxisX": {
+        "DeviceClass": "5013d013-f167-4dcb-86d9-599a325744b8",
+        "AxisName": "at_X_5x_B",
+        "DisplayName": "X",
+        "HomeOrder": 10
+      },
+      "AxisY": {
+        "DeviceClass": "5013d013-f167-4dcb-86d9-599a325744b8",
+        "AxisName": "at_Y_5x_B",
+        "DisplayName": "Y",
+        "HomeOrder": 11
+      },
+      "AxisZ": {
+        "DeviceClass": "5013d013-f167-4dcb-86d9-599a325744b8",
+        "AxisName": "at_Z_B",
+        "DisplayName": "Z",
+        "HomeOrder": 12
+      },
+      "AxisRoll": {
+        "DeviceClass": "5013d013-f167-4dcb-86d9-599a325744b8",
+        "AxisName": "at_Roll_B",
+        "DisplayName": "Roll",
+        "HomeOrder": 13
+      },
+      "AxisYaw": {
+        "DeviceClass": "5013d013-f167-4dcb-86d9-599a325744b8",
+        "AxisName": "at_Yaw_B",
+        "DisplayName": "Yaw",
+        "HomeOrder": 14
+      },
+      "AxisPitch": {
+        "DeviceClass": "5013d013-f167-4dcb-86d9-599a325744b8",
+        "AxisName": "at_Pitch_B",
+        "DisplayName": "Pitch",
+        "HomeOrder": 15
+      }
+    },
+    "LensAligner": {
+      "DisplayName": "Lens Aligner",
+      "AxisX": {
+        "DeviceClass": "412e55e4-ceae-4eb4-8798-e8de7b5b5669",
+        "AxisName": "at_X_5x_B",
+        "DisplayName": "X",
+        "HomeOrder": 2
+      },
+      "AxisY": {
+        "DeviceClass": "412e55e4-ceae-4eb4-8798-e8de7b5b5669",
+        "AxisName": "at_Y_5x_B",
+        "DisplayName": "Y",
+        "HomeOrder": 2
+      },
+      "AxisZ": {
+        "DeviceClass": "412e55e4-ceae-4eb4-8798-e8de7b5b5669",
+        "AxisName": "at_Z_B",
+        "DisplayName": "Z",
+        "HomeOrder": 2
+      },
+      "AxisRoll": {
+        "DeviceClass": "412e55e4-ceae-4eb4-8798-e8de7b5b5669",
+        "AxisName": "at_Roll_B",
+        "DisplayName": "Roll",
+        "HomeOrder": 2
+      },
+      "AxisYaw": {
+        "DeviceClass": "412e55e4-ceae-4eb4-8798-e8de7b5b5669",
+        "AxisName": "at_Yaw_B",
+        "DisplayName": "Yaw",
+        "HomeOrder": 2
+      },
+      "AxisPitch": {
+        "DeviceClass": "412e55e4-ceae-4eb4-8798-e8de7b5b5669",
+        "AxisName": "at_Pitch_B",
+        "DisplayName": "Pitch",
+        "HomeOrder": 2
+      }
+    },
+    "COSAligner": {
+      "DisplayName": "COS Aligner",
+      "AxisX": {
+        "DeviceClass": "2b39c9d5-66e9-4896-8dd1-94d8df0485e1",
+        "AxisName": "at_X_5x_B",
+        "DisplayName": "X",
+        "HomeOrder": 3
+      },
+      "AxisY": {
+        "DeviceClass": "2b39c9d5-66e9-4896-8dd1-94d8df0485e1",
+        "AxisName": "at_Y_5x_B",
+        "DisplayName": "Y",
+        "HomeOrder": 3
+      },
+      "AxisZ": {
+        "DeviceClass": "2b39c9d5-66e9-4896-8dd1-94d8df0485e1",
+        "AxisName": "at_Z_B",
+        "DisplayName": "Z",
+        "HomeOrder": 3
+      },
+      "AxisRoll": {
+        "DeviceClass": "2b39c9d5-66e9-4896-8dd1-94d8df0485e1",
+        "AxisName": "at_Roll_B",
+        "DisplayName": "Roll",
+        "HomeOrder": 3
+      },
+      "AxisYaw": {
+        "DeviceClass": "2b39c9d5-66e9-4896-8dd1-94d8df0485e1",
+        "AxisName": "at_Yaw_B",
+        "DisplayName": "Yaw",
+        "HomeOrder": 3
+      },
+      "AxisPitch": {
+        "DeviceClass": "2b39c9d5-66e9-4896-8dd1-94d8df0485e1",
+        "AxisName": "at_Pitch_B",
+        "DisplayName": "Pitch",
+        "HomeOrder": 3
+      }
+    },
+    "AngleCamera": {
+      "DisplayName": "Angle Camera",
+      "AxisX": {
+        "DeviceClass": "00000000-0000-0000-0000-000000000000",
+        "AxisName": "0",
+        "DisplayName": "X",
+        "HomeOrder": 1
+      },
+      "AxisY": {
+        "DeviceClass": "00000000-0000-0000-0000-000000000000",
+        "AxisName": "Y",
+        "DisplayName": "Y",
+        "HomeOrder": 1
+      },
+      "AxisZ": {
+        "DeviceClass": "00000000-0000-0000-0000-000000000000",
+        "AxisName": "Z",
+        "DisplayName": "Z",
+        "HomeOrder": 1
+      }
+    },
+    "TopCamera": {
+      "DisplayName": "Top Camera",
+      "AxisX": {
+        "DeviceClass": "d11d1864-6315-4c01-b07f-3e268834cd10",
+        "AxisName": "0",
+        "DisplayName": "X",
+        "HomeOrder": 1
+      },
+      "AxisY": {
+        "DeviceClass": "d11d1864-6315-4c01-b07f-3e268834cd10",
+        "AxisName": "1",
+        "DisplayName": "Y",
+        "HomeOrder": 1
+      },
+      "AxisZ": {
+        "DeviceClass": "d11d1864-6315-4c01-b07f-3e268834cd10",
+        "AxisName": "2",
+        "DisplayName": "Z",
+        "HomeOrder": 1
+      }
+    },
+    "FrontCamera": {
+      "DisplayName": "Front Camera",
+      "AxisX": {
+        "DeviceClass": "00000000-0000-0000-0000-000000000000",
+        "AxisName": "X",
+        "DisplayName": "X",
+        "HomeOrder": 1
+      },
+      "AxisY": {
+        "DeviceClass": "00000000-0000-0000-0000-000000000000",
+        "AxisName": "Y",
+        "DisplayName": "Y",
+        "HomeOrder": 1
+      },
+      "AxisZ": {
+        "DeviceClass": "00000000-0000-0000-0000-000000000000",
+        "AxisName": "Z",
+        "DisplayName": "Z",
+        "HomeOrder": 1
+      }
+    }
+  }
+}

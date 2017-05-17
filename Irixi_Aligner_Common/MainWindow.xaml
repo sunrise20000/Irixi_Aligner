@@ -1,0 +1,263 @@
+﻿<dxr:DXRibbonWindow
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:dxb="http://schemas.devexpress.com/winfx/2008/xaml/bars"
+    xmlns:dxbh="http://schemas.devexpress.com/winfx/2008/xaml/bars/internal"
+    xmlns:dx="http://schemas.devexpress.com/winfx/2008/xaml/core"
+    xmlns:dxd="http://schemas.devexpress.com/winfx/2008/xaml/docking"
+    xmlns:dxe="http://schemas.devexpress.com/winfx/2008/xaml/editors"
+    xmlns:dxr="http://schemas.devexpress.com/winfx/2008/xaml/ribbon"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:local="clr-namespace:Irixi_Aligner_Common"
+    xmlns:Controls="clr-namespace:Irixi_Aligner_Common.Controls"
+    xmlns:Converters="clr-namespace:Irixi_Aligner_Common.Classes.Converters"
+    xmlns:Configuration="clr-namespace:Irixi_Aligner_Common.Configuration"
+    mc:Ignorable="d"
+    x:Class="Irixi_Aligner_Common.MainWindow"
+    Title="Irixi Alignment System for 2x25G/10x10G" 
+    d:DesignHeight="1200" 
+    d:DesignWidth="1929"
+    dx:ThemeManager.ThemeName="Office2013"
+    SnapsToDevicePixels="True" 
+    UseLayoutRounding="True" 
+    Loaded="DXRibbonWindow_Loaded" 
+    WindowState="Maximized" Closing="DXRibbonWindow_Closing"
+    >
+    <dxr:DXRibbonWindow.Resources>
+        <Configuration:ConvertStringToPoint x:Key="ConvertStringToPoint"/>
+        <Converters:SystemStatusToStartButtonEnable x:Key="SystemStatusToStartButtonEnable"/>
+        <Style x:Key="AxisControlStyle1" TargetType="{x:Type Controls:Axis}">
+            <Setter Property="Height" Value="35"/>
+        </Style>
+        <Style x:Key="AxisItemTitleStyle1" TargetType="{x:Type Grid}">
+            <Setter Property="Height" Value="30"/>
+        </Style>
+    </dxr:DXRibbonWindow.Resources>
+    <DockPanel DataContext="{Binding Source={StaticResource Locator}}">
+        <dxr:RibbonControl x:Name="ribbonControl1" RibbonStyle="Office2010" DockPanel.Dock="Top" AllowCustomization="False" ToolbarShowMode="Hide" ToolbarShowCustomizationButton="False">
+            <dxr:RibbonControl.ApplicationMenu>
+                <dxr:ApplicationMenu RightPaneWidth="280" ShowRightPane="True">
+                    <dxr:ApplicationMenu.RightPane>
+                        <Button Content="Right Pane" />
+                    </dxr:ApplicationMenu.RightPane>
+                    <dxr:ApplicationMenu.BottomPane>
+                        <StackPanel Orientation="Horizontal">
+                            <Button Content="OK button" />
+                        </StackPanel>
+                    </dxr:ApplicationMenu.BottomPane>
+                </dxr:ApplicationMenu>
+            </dxr:RibbonControl.ApplicationMenu>
+            <dxr:RibbonDefaultPageCategory>
+                <dxr:RibbonPage x:Name="Home" Caption="Home">
+                    <dxr:RibbonPageGroup Caption="Actions">
+                        <dxb:BarButtonItem Content="Home" Glyph="{dx:DXImageOffice2013 Image=Solution_16x16.png}" LargeGlyph="{dx:DXImageOffice2013 Image=Solution_32x32.png}" Command="{Binding Service.CommandHomeAllAxes}" />
+                        <dxb:BarButtonItem Content="Start" RibbonStyle="SmallWithText" Glyph="{dx:DXImageOffice2013 Image=Solution_16x16.png}" LargeGlyph="{dx:DXImageOffice2013 Image=Solution_32x32.png}" IsEnabled="{Binding Service.State, Converter={StaticResource SystemStatusToStartButtonEnable}}" />
+                        <dxb:BarButtonItem Content="Stop" Glyph="{dx:DXImageOffice2013 Image=Solution_16x16.png}" LargeGlyph="{dx:DXImageOffice2013 Image=Solution_32x32.png}" IsEnabled="{Binding Service.State, Converter={StaticResource SystemStatusToStopButtonEnable}}" RibbonStyle="SmallWithText"/>
+                    </dxr:RibbonPageGroup>
+                    <dxr:RibbonPageGroup Caption="Actuators Control Panel">
+                        <dxb:BarCheckItem Content="V-Groove" Glyph="{dx:DXImageOffice2013 Image=Solution_16x16.png}" LargeGlyph="{dx:DXImageOffice2013 Image=Solution_32x32.png}" IsChecked="{Binding Closed, ElementName=PanelVGrooveAligner}" RibbonStyle="Default" />
+                        <dxb:BarCheckItem Content="Lens" Glyph="{dx:DXImageOffice2013 Image=Solution_16x16.png}" LargeGlyph="{dx:DXImageOffice2013 Image=Solution_32x32.png}" RibbonStyle="Default" IsChecked="{Binding Closed, ElementName=PanelLensAligner}" />
+                        <dxb:BarCheckItem Content="COS" Glyph="{dx:DXImageOffice2013 Image=Solution_16x16.png}" LargeGlyph="{dx:DXImageOffice2013 Image=Solution_32x32.png}" RibbonStyle="Default" IsChecked="{Binding Closed, ElementName=PanelCOSAligner}" />
+                        <dxb:BarCheckItem Content="Top Camera" Glyph="{dx:DXImageOffice2013 Image=Solution_16x16.png}" LargeGlyph="{dx:DXImageOffice2013 Image=Solution_32x32.png}" RibbonStyle="Default" IsChecked="{Binding Closed, ElementName=TopCameraBracket}" />
+                        <dxb:BarCheckItem Content="Front Camera" Glyph="{dx:DXImageOffice2013 Image=Solution_16x16.png}" LargeGlyph="{dx:DXImageOffice2013 Image=Solution_32x32.png}" RibbonStyle="Default" IsChecked="{Binding Closed, ElementName=FrontCameraBracket}" />
+                        <dxb:BarCheckItem Content="Angular Camera" Glyph="{dx:DXImageOffice2013 Image=Solution_16x16.png}" LargeGlyph="{dx:DXImageOffice2013 Image=Solution_32x32.png}" RibbonStyle="Default" IsChecked="{Binding Closed, ElementName=AngularCameraBracket}" />
+                    </dxr:RibbonPageGroup>
+                </dxr:RibbonPage>
+            </dxr:RibbonDefaultPageCategory>
+        </dxr:RibbonControl>
+        <dxr:RibbonStatusBarControl dxbh:BlendHelperForBarsAndRibbon.IsDesignControl="true" DockPanel.Dock="Bottom"/>
+
+        <dxd:DockLayoutManager x:Name="dockLayoutManager" FloatingMode="Desktop">
+            <dxd:LayoutGroup>
+                <dxd:LayoutGroup Orientation="Vertical">
+                    <dxd:LayoutGroup  Orientation="Horizontal" ItemHeight="3*">
+                        <dxd:DocumentGroup x:Name="mdiContainer" MDIStyle="MDI">
+
+                            <!-- The control panel of Top VGroove Aligner -->
+                            <dxd:DocumentPanel x:Name="PanelVGrooveAligner" MDILocation="{Binding Configuration.Snapshot.PanelLocation.VGrooveAligner.MDILocation, Converter={StaticResource ConvertStringToPoint}, Mode=TwoWay}" MDISize="500,280" ShowMinimizeButton="False" ShowMaximizeButton="False" AllowSizing="False" AllowRename="False" AllowDock="False" AllowMaximize="False" Caption="{Binding Service.LogicalAlignerlayout.VGrooveAligner.DisplayName}" Visibility="{Binding Configuration.Snapshot.PanelLocation.VGrooveAligner.Visibility, Mode=TwoWay}">
+                                <StackPanel Orientation="Vertical">
+                                    <Grid Style="{StaticResource AxisItemTitleStyle1}">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="40"/>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="70"/>
+                                            <ColumnDefinition Width="40"/>
+                                            <ColumnDefinition Width="70"/>
+                                            <ColumnDefinition Width="90"/>
+                                            <ColumnDefinition Width="80"/>
+                                        </Grid.ColumnDefinitions>
+                                        <TextBlock Text="Axis" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                                        <TextBlock Text="Position" VerticalAlignment="Center" Grid.Column="1" HorizontalAlignment="Center"/>
+                                        <TextBlock Text="Lock" VerticalAlignment="Center" Grid.Column="2" HorizontalAlignment="Center"/>
+                                        <TextBlock Text="Speed" VerticalAlignment="Center" Grid.Column="3" HorizontalAlignment="Center"/>
+                                        <TextBlock Text="Mode" VerticalAlignment="Center" Grid.Column="4" HorizontalAlignment="Center"/>
+                                        <TextBlock Text="Distance" VerticalAlignment="Center" Grid.Column="5" HorizontalAlignment="Center"/>
+                                        <TextBlock Text="Move" VerticalAlignment="Center" Grid.Column="8" HorizontalAlignment="Center"/>
+                                    </Grid>
+                                    <Controls:Axis SystemService="{Binding Service}" LogicalAxis="{Binding SystemService.LogicalAlignerlayout.VGrooveAligner.AxisX, RelativeSource={RelativeSource Self}}" Style="{DynamicResource AxisControlStyle1}"/>
+                                    <Controls:Axis SystemService="{Binding Service}" LogicalAxis="{Binding SystemService.LogicalAlignerlayout.VGrooveAligner.AxisY, RelativeSource={RelativeSource Self}}" Style="{DynamicResource AxisControlStyle1}"/>
+                                    <Controls:Axis SystemService="{Binding Service}" LogicalAxis="{Binding SystemService.LogicalAlignerlayout.VGrooveAligner.AxisZ, RelativeSource={RelativeSource Self}}" Style="{DynamicResource AxisControlStyle1}"/>
+                                    <Controls:Axis SystemService="{Binding Service}" LogicalAxis="{Binding SystemService.LogicalAlignerlayout.VGrooveAligner.AxisRoll, RelativeSource={RelativeSource Self}}" Style="{DynamicResource AxisControlStyle1}"/>
+                                    <Controls:Axis SystemService="{Binding Service}" LogicalAxis="{Binding SystemService.LogicalAlignerlayout.VGrooveAligner.AxisYaw, RelativeSource={RelativeSource Self}}" Style="{DynamicResource AxisControlStyle1}"/>
+                                    <Controls:Axis SystemService="{Binding Service}" LogicalAxis="{Binding SystemService.LogicalAlignerlayout.VGrooveAligner.AxisPitch, RelativeSource={RelativeSource Self}}" Style="{DynamicResource AxisControlStyle1}"/>
+                                </StackPanel>
+                            </dxd:DocumentPanel>
+
+                            <!-- The control panel of Top Lens Aligner -->
+                            <dxd:DocumentPanel x:Name="PanelLensAligner" MDILocation="{Binding Configuration.Snapshot.PanelLocation.LensAligner.MDILocation, Converter={StaticResource ConvertStringToPoint}, Mode=TwoWay}" MDISize="500,280" ShowMinimizeButton="False" ShowMaximizeButton="False" AllowSizing="False" AllowRename="False" AllowDock="False" AllowMaximize="False" Caption="{Binding Service.LogicalAlignerlayout.LensAligner.DisplayName}" Visibility="{Binding Configuration.Snapshot.PanelLocation.LensAligner.Visibility, Mode=TwoWay}">
+                                <StackPanel Orientation="Vertical">
+                                    <Grid Style="{StaticResource AxisItemTitleStyle1}">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="40"/>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="70"/>
+                                            <ColumnDefinition Width="40"/>
+                                            <ColumnDefinition Width="70"/>
+                                            <ColumnDefinition Width="90"/>
+                                            <ColumnDefinition Width="80"/>
+                                        </Grid.ColumnDefinitions>
+                                        <TextBlock Text="Axis" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                                        <TextBlock Text="Position" VerticalAlignment="Center" Grid.Column="1" HorizontalAlignment="Center"/>
+                                        <TextBlock Text="Lock" VerticalAlignment="Center" Grid.Column="2" HorizontalAlignment="Center"/>
+                                        <TextBlock Text="Speed" VerticalAlignment="Center" Grid.Column="3" HorizontalAlignment="Center"/>
+                                        <TextBlock Text="Mode" VerticalAlignment="Center" Grid.Column="4" HorizontalAlignment="Center"/>
+                                        <TextBlock Text="Distance" VerticalAlignment="Center" Grid.Column="5" HorizontalAlignment="Center"/>
+                                        <TextBlock Text="Move" VerticalAlignment="Center" Grid.Column="8" HorizontalAlignment="Center"/>
+                                    </Grid>
+                                    <Controls:Axis SystemService="{Binding Service}" LogicalAxis="{Binding SystemService.LogicalAlignerlayout.LensAligner.AxisX, RelativeSource={RelativeSource Self}}" Style="{DynamicResource AxisControlStyle1}"/>
+                                    <Controls:Axis SystemService="{Binding Service}" LogicalAxis="{Binding SystemService.LogicalAlignerlayout.LensAligner.AxisY, RelativeSource={RelativeSource Self}}" Style="{DynamicResource AxisControlStyle1}"/>
+                                    <Controls:Axis SystemService="{Binding Service}" LogicalAxis="{Binding SystemService.LogicalAlignerlayout.LensAligner.AxisZ, RelativeSource={RelativeSource Self}}" Style="{DynamicResource AxisControlStyle1}"/>
+                                    <Controls:Axis SystemService="{Binding Service}" LogicalAxis="{Binding SystemService.LogicalAlignerlayout.LensAligner.AxisRoll, RelativeSource={RelativeSource Self}}" Style="{DynamicResource AxisControlStyle1}"/>
+                                    <Controls:Axis SystemService="{Binding Service}" LogicalAxis="{Binding SystemService.LogicalAlignerlayout.LensAligner.AxisYaw, RelativeSource={RelativeSource Self}}" Style="{DynamicResource AxisControlStyle1}"/>
+                                    <Controls:Axis SystemService="{Binding Service}" LogicalAxis="{Binding SystemService.LogicalAlignerlayout.LensAligner.AxisPitch, RelativeSource={RelativeSource Self}}" Style="{DynamicResource AxisControlStyle1}"/>
+                                </StackPanel>
+                            </dxd:DocumentPanel>
+
+                            <!-- The control panel of Top COS alginer -->
+                            <dxd:DocumentPanel x:Name="PanelCOSAligner" Caption="{Binding Service.LogicalAlignerlayout.COSAligner.DisplayName}" MDILocation="{Binding Configuration.Snapshot.PanelLocation.COSAligner.MDILocation, Converter={StaticResource ConvertStringToPoint}, Mode=TwoWay}" MDISize="500,280" ShowMinimizeButton="False" ShowMaximizeButton="False" AllowSizing="False" AllowRename="False" AllowDock="False" AllowMaximize="False" Visibility="{Binding Configuration.Snapshot.PanelLocation.COSAligner.Visibility, Mode=TwoWay}">
+                                <StackPanel Orientation="Vertical">
+                                    <Grid Style="{StaticResource AxisItemTitleStyle1}">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="40"/>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="70"/>
+                                            <ColumnDefinition Width="40"/>
+                                            <ColumnDefinition Width="70"/>
+                                            <ColumnDefinition Width="90"/>
+                                            <ColumnDefinition Width="80"/>
+                                        </Grid.ColumnDefinitions>
+                                        <TextBlock Text="Axis" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                                        <TextBlock Text="Position" VerticalAlignment="Center" Grid.Column="1" HorizontalAlignment="Center"/>
+                                        <TextBlock Text="Lock" VerticalAlignment="Center" Grid.Column="2" HorizontalAlignment="Center"/>
+                                        <TextBlock Text="Speed" VerticalAlignment="Center" Grid.Column="3" HorizontalAlignment="Center"/>
+                                        <TextBlock Text="Mode" VerticalAlignment="Center" Grid.Column="4" HorizontalAlignment="Center"/>
+                                        <TextBlock Text="Distance" VerticalAlignment="Center" Grid.Column="5" HorizontalAlignment="Center"/>
+                                        <TextBlock Text="Move" VerticalAlignment="Center" Grid.Column="8" HorizontalAlignment="Center"/>
+                                    </Grid>
+                                    <Controls:Axis SystemService="{Binding Service}" LogicalAxis="{Binding SystemService.LogicalAlignerlayout.COSAligner.AxisX, RelativeSource={RelativeSource Self}}" Style="{DynamicResource AxisControlStyle1}"/>
+                                    <Controls:Axis SystemService="{Binding Service}" LogicalAxis="{Binding SystemService.LogicalAlignerlayout.COSAligner.AxisY, RelativeSource={RelativeSource Self}}" Style="{DynamicResource AxisControlStyle1}"/>
+                                    <Controls:Axis SystemService="{Binding Service}" LogicalAxis="{Binding SystemService.LogicalAlignerlayout.COSAligner.AxisZ, RelativeSource={RelativeSource Self}}" Style="{DynamicResource AxisControlStyle1}"/>
+                                    <Controls:Axis SystemService="{Binding Service}" LogicalAxis="{Binding SystemService.LogicalAlignerlayout.COSAligner.AxisRoll, RelativeSource={RelativeSource Self}}" Style="{DynamicResource AxisControlStyle1}"/>
+                                    <Controls:Axis SystemService="{Binding Service}" LogicalAxis="{Binding SystemService.LogicalAlignerlayout.COSAligner.AxisYaw, RelativeSource={RelativeSource Self}}" Style="{DynamicResource AxisControlStyle1}"/>
+                                    <Controls:Axis SystemService="{Binding Service}" LogicalAxis="{Binding SystemService.LogicalAlignerlayout.COSAligner.AxisPitch, RelativeSource={RelativeSource Self}}" Style="{DynamicResource AxisControlStyle1}"/>
+                                </StackPanel>
+                            </dxd:DocumentPanel>
+
+                            <!-- The control panel of Top Camera Bracket -->
+                            <dxd:DocumentPanel x:Name="TopCameraBracket" Caption="{Binding Service.LogicalAlignerlayout.TopCamera.DisplayName}" MDILocation="{Binding Configuration.Snapshot.PanelLocation.TopCameraBracket.MDILocation, Converter={StaticResource ConvertStringToPoint}, Mode=TwoWay}" MDISize="500,175" ShowMinimizeButton="False" ShowMaximizeButton="False" AllowSizing="False" AllowRename="False" AllowDock="False" AllowMaximize="False" Visibility="{Binding Configuration.Snapshot.PanelLocation.TopCameraBracket.Visibility, Mode=TwoWay}">
+                                <StackPanel Orientation="Vertical">
+                                    <Grid Style="{StaticResource AxisItemTitleStyle1}">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="40"/>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="70"/>
+                                            <ColumnDefinition Width="40"/>
+                                            <ColumnDefinition Width="70"/>
+                                            <ColumnDefinition Width="90"/>
+                                            <ColumnDefinition Width="80"/>
+                                        </Grid.ColumnDefinitions>
+                                        <TextBlock Text="Axis" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                                        <TextBlock Text="Position" VerticalAlignment="Center" Grid.Column="1" HorizontalAlignment="Center"/>
+                                        <TextBlock Text="Lock" VerticalAlignment="Center" Grid.Column="2" HorizontalAlignment="Center"/>
+                                        <TextBlock Text="Speed" VerticalAlignment="Center" Grid.Column="3" HorizontalAlignment="Center"/>
+                                        <TextBlock Text="Mode" VerticalAlignment="Center" Grid.Column="4" HorizontalAlignment="Center"/>
+                                        <TextBlock Text="Distance" VerticalAlignment="Center" Grid.Column="5" HorizontalAlignment="Center"/>
+                                        <TextBlock Text="Move" VerticalAlignment="Center" Grid.Column="8" HorizontalAlignment="Center"/>
+                                    </Grid>
+                                    <Controls:Axis SystemService="{Binding Service}" LogicalAxis="{Binding SystemService.LogicalAlignerlayout.TopCamera.AxisX, RelativeSource={RelativeSource Self}}" Style="{DynamicResource AxisControlStyle1}"/>
+                                    <Controls:Axis SystemService="{Binding Service}" LogicalAxis="{Binding SystemService.LogicalAlignerlayout.TopCamera.AxisY, RelativeSource={RelativeSource Self}}" Style="{DynamicResource AxisControlStyle1}"/>
+                                    <Controls:Axis SystemService="{Binding Service}" LogicalAxis="{Binding SystemService.LogicalAlignerlayout.TopCamera.AxisZ, RelativeSource={RelativeSource Self}}" Style="{DynamicResource AxisControlStyle1}"/>
+                                </StackPanel>
+                            </dxd:DocumentPanel>
+
+                            <!-- The control panel of Front Camera Bracket -->
+                            <dxd:DocumentPanel x:Name="FrontCameraBracket" Caption="{Binding Service.LogicalAlignerlayout.FrontCamera.DisplayName}" MDILocation="{Binding Configuration.Snapshot.PanelLocation.FrontCameraBracket.MDILocation, Converter={StaticResource ConvertStringToPoint}, Mode=TwoWay}" MDISize="500,175" ShowMinimizeButton="False" ShowMaximizeButton="False" AllowSizing="False" AllowRename="False" AllowDock="False" AllowMaximize="False" Visibility="{Binding Configuration.Snapshot.PanelLocation.FrontCameraBracket.Visibility, Mode=TwoWay}" >
+                                <StackPanel Orientation="Vertical">
+                                    <Grid Style="{StaticResource AxisItemTitleStyle1}">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="40"/>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="70"/>
+                                            <ColumnDefinition Width="40"/>
+                                            <ColumnDefinition Width="70"/>
+                                            <ColumnDefinition Width="90"/>
+                                            <ColumnDefinition Width="80"/>
+                                        </Grid.ColumnDefinitions>
+                                        <TextBlock Text="Axis" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                                        <TextBlock Text="Position" VerticalAlignment="Center" Grid.Column="1" HorizontalAlignment="Center"/>
+                                        <TextBlock Text="Lock" VerticalAlignment="Center" Grid.Column="2" HorizontalAlignment="Center"/>
+                                        <TextBlock Text="Speed" VerticalAlignment="Center" Grid.Column="3" HorizontalAlignment="Center"/>
+                                        <TextBlock Text="Mode" VerticalAlignment="Center" Grid.Column="4" HorizontalAlignment="Center"/>
+                                        <TextBlock Text="Distance" VerticalAlignment="Center" Grid.Column="5" HorizontalAlignment="Center"/>
+                                        <TextBlock Text="Move" VerticalAlignment="Center" Grid.Column="8" HorizontalAlignment="Center"/>
+                                    </Grid>
+                                    <Controls:Axis SystemService="{Binding Service}" LogicalAxis="{Binding SystemService.LogicalAlignerlayout.FrontCamera.AxisX, RelativeSource={RelativeSource Self}}" Style="{DynamicResource AxisControlStyle1}"/>
+                                    <Controls:Axis SystemService="{Binding Service}" LogicalAxis="{Binding SystemService.LogicalAlignerlayout.FrontCamera.AxisY, RelativeSource={RelativeSource Self}}" Style="{DynamicResource AxisControlStyle1}"/>
+                                    <Controls:Axis SystemService="{Binding Service}" LogicalAxis="{Binding SystemService.LogicalAlignerlayout.FrontCamera.AxisZ, RelativeSource={RelativeSource Self}}" Style="{DynamicResource AxisControlStyle1}"/>
+                                </StackPanel>
+                            </dxd:DocumentPanel>
+
+                            <!-- The control panel of Top Angle Bracket -->
+                            <dxd:DocumentPanel x:Name="AngularCameraBracket" Caption="{Binding Service.LogicalAlignerlayout.AngleCamera.DisplayName}" MDILocation="{Binding Configuration.Snapshot.PanelLocation.AngularCameraBracket.MDILocation, Converter={StaticResource ConvertStringToPoint}, Mode=TwoWay}" MDISize="500,175" ShowMinimizeButton="False" ShowMaximizeButton="False" AllowSizing="False" AllowRename="False" AllowDock="False" AllowMaximize="False" Visibility="{Binding Configuration.Snapshot.PanelLocation.AngularCameraBracket.Visibility, Mode=TwoWay}" >
+                                <StackPanel Orientation="Vertical">
+                                    <Grid Style="{StaticResource AxisItemTitleStyle1}">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="40"/>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="70"/>
+                                            <ColumnDefinition Width="40"/>
+                                            <ColumnDefinition Width="70"/>
+                                            <ColumnDefinition Width="90"/>
+                                            <ColumnDefinition Width="80"/>
+                                        </Grid.ColumnDefinitions>
+                                        <TextBlock Text="Axis" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                                        <TextBlock Text="Position" VerticalAlignment="Center" Grid.Column="1" HorizontalAlignment="Center"/>
+                                        <TextBlock Text="Lock" VerticalAlignment="Center" Grid.Column="2" HorizontalAlignment="Center"/>
+                                        <TextBlock Text="Speed" VerticalAlignment="Center" Grid.Column="3" HorizontalAlignment="Center"/>
+                                        <TextBlock Text="Mode" VerticalAlignment="Center" Grid.Column="4" HorizontalAlignment="Center"/>
+                                        <TextBlock Text="Distance" VerticalAlignment="Center" Grid.Column="5" HorizontalAlignment="Center"/>
+                                        <TextBlock Text="Move" VerticalAlignment="Center" Grid.Column="8" HorizontalAlignment="Center"/>
+                                    </Grid>
+                                    <Controls:Axis SystemService="{Binding Service}" LogicalAxis="{Binding SystemService.LogicalAlignerlayout.AngleCamera.AxisX, RelativeSource={RelativeSource Self}}" Style="{DynamicResource AxisControlStyle1}"/>
+                                    <Controls:Axis SystemService="{Binding Service}" LogicalAxis="{Binding SystemService.LogicalAlignerlayout.AngleCamera.AxisY, RelativeSource={RelativeSource Self}}" Style="{DynamicResource AxisControlStyle1}"/>
+                                    <Controls:Axis SystemService="{Binding Service}" LogicalAxis="{Binding SystemService.LogicalAlignerlayout.AngleCamera.AxisZ, RelativeSource={RelativeSource Self}}" Style="{DynamicResource AxisControlStyle1}"/>
+                                </StackPanel>
+                            </dxd:DocumentPanel>
+
+                        </dxd:DocumentGroup>
+                    </dxd:LayoutGroup>
+                    
+                    <dxd:TabbedGroup>
+                        <dxd:LayoutPanel ItemWidth="300" Caption="Log">
+                            <Grid>
+                                <dxe:ListBoxEdit local:ListBoxBehavior.ScrollOnNewItem="True"  IsSynchronizedWithCurrentItem="True" ItemTemplate="{Binding Source={StaticResource MessageItemTemplate}}" ShowBorder="False" ItemsSource="{Binding Service.MessageCollection}"/>
+                            </Grid>
+                        </dxd:LayoutPanel>
+                    </dxd:TabbedGroup>
+                </dxd:LayoutGroup>
+            </dxd:LayoutGroup>
+        </dxd:DockLayoutManager>
+    </DockPanel>
+
+</dxr:DXRibbonWindow>

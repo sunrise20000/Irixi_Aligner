@@ -1,0 +1,35 @@
+﻿{
+  "PanelLocation": 
+  {
+    "VGrooveAligner": 
+    {
+      "MDILocation": "120,120",
+      "Visibility": true
+    },
+    "LensAligner": 
+    {
+      "MDILocation": "0,0",
+      "Visibility": true
+    },
+    "COSAligner": 
+    {
+      "MDILocation": "0,0",
+      "Visibility": true
+    },
+    "TopCameraBracket": 
+    {
+      "MDILocation": "0,0",
+      "Visibility": true
+    },
+    "AngularCameraBracket": 
+    {
+      "MDILocation": "0,0",
+      "Visibility": true
+    },
+    "FrontCameraBracket": 
+    {
+      "MDILocation": "0,0",
+      "Visibility": true
+    }
+  }
+}
