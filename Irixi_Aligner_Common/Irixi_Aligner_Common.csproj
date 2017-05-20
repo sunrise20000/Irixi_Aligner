@@ -84,17 +84,6 @@
     <Reference Include="System.Xaml">
       <RequiredTargetFramework>4.0</RequiredTargetFramework>
     </Reference>
-    <Reference Include="Thorlabs.MotionControl.DeviceManagerCLI">
-      <HintPath>C:\Program Files (x86)\Thorlabs\Kinesis\Thorlabs.MotionControl.DeviceManagerCLI.dll</HintPath>
-    </Reference>
-    <Reference Include="Thorlabs.MotionControl.GenericMotorCLI, Version=1.9.2.31291, Culture=neutral, PublicKeyToken=c7ec6d6d6e2435e7, processorArchitecture=x86">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>C:\Program Files (x86)\Thorlabs\Kinesis\Thorlabs.MotionControl.GenericMotorCLI.dll</HintPath>
-    </Reference>
-    <Reference Include="Thorlabs.MotionControl.TCube.DCServoCLI, Version=1.9.2.31315, Culture=neutral, PublicKeyToken=c7ec6d6d6e2435e7, processorArchitecture=x86">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>C:\Program Files (x86)\Thorlabs\Kinesis\Thorlabs.MotionControl.TCube.DCServoCLI.dll</HintPath>
-    </Reference>
     <Reference Include="WindowsBase" />
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
@@ -201,9 +190,9 @@
     <Resource Include="Images\Icons\Item.png" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="right.png" />
-    <Resource Include="warning_32x32.png" />
-    <Resource Include="wrong.png" />
+    <Resource Include="Images\Icons\right.png" />
+    <Resource Include="Images\Icons\warning_32x32.png" />
+    <Resource Include="Images\Icons\wrong.png" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="MotionControllerEntities\Thorlabs\" />

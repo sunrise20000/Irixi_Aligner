@@ -1,5 +1,6 @@
 ﻿using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.IO;
 using System.Runtime.CompilerServices;
 
 namespace IrixiStepperControllerHelper
@@ -214,17 +215,24 @@ namespace IrixiStepperControllerHelper
 
     public class DeviceStateReport : INotifyPropertyChanged
     {
+        #region Variables
         uint _counter;
         int _total_axes;
         int _is_busy;
         int _sys_error;
         bool _triggerinput0, _triggerinput1;
+        int _core_vref, _core_temp;
+        #endregion
 
+        #region Constructors
         public DeviceStateReport()
         {
             this.AxisStateCollection = new ObservableCollection<AxisState>();
         }
 
+        #endregion
+
+        #region Properties
         /// <summary>
         /// Get the number of the counter of the report pack
         /// </summary>
@@ -321,7 +329,106 @@ namespace IrixiStepperControllerHelper
             }
         }
 
+        /// <summary>
+        /// Get the value of the voltage reference regulator inside the core
+        /// </summary>
+        public int CoreVref
+        {
+            internal set
+            {
+                UpdateProperty<int>(ref _core_vref, value);
+            }
+            get
+            {
+                return _core_vref;
+            }
+        }
+
+        /// <summary>
+        /// Get the value of core temperature
+        /// </summary>
+        public int CoreTemp
+        {
+            internal set
+            {
+                UpdateProperty<int>(ref _core_temp, value);
+            }
+            get
+            {
+                return _core_temp;
+            }
+        }
+
         public ObservableCollection<AxisState> AxisStateCollection { internal set; get; }
+        #endregion
+
+        #region Methods
+        public void ParseRawData(byte[] Data)
+        {
+            byte temp = 0x0;
+
+            // check the lenght of the data arry
+            if (Data.Length < 64)
+                return;
+
+            using (MemoryStream stream = new MemoryStream(Data))
+            {
+                using (BinaryReader reader = new BinaryReader(stream))
+                {
+                    reader.ReadByte(); // Ignore the first dummy byte
+
+                    this.Counter = reader.ReadUInt32();
+                    this.TotalAxes = reader.ReadByte();
+                    this.IsBusy = reader.ReadByte();
+                    this.SystemError = reader.ReadByte();
+
+                    // Read the Trigger Input State
+                    temp = reader.ReadByte();
+                    this.TriggerInput0 = ((temp >> 0) & 0x1) > 0 ? true : false;
+                    this.TriggerInput1 = ((temp >> 1) & 0x1) > 0 ? true : false;
+
+                    // Read the parameters of the core
+                    this.CoreVref = reader.ReadInt32();
+                    this.CoreTemp = reader.ReadInt32();
+
+                    if (this.AxisStateCollection == null || this.AxisStateCollection.Count == 0)
+                        return;
+
+                    for (int i = 0; i < this.AxisStateCollection.Count; i++)
+                    {
+                        ///
+                        /// The following parsing process are base on the type of AxisState_TypeDef which is defined in the controller firmware
+                        ///
+
+                        this.AxisStateCollection[i].AbsPosition = reader.ReadInt32();
+
+                        // parse Usability
+                        temp = reader.ReadByte();
+                        this.AxisStateCollection[i].IsHomed = ((temp >> 0) & 0x1) > 0 ? true : false;
+                        this.AxisStateCollection[i].IsRunning = ((temp >> 1) & 0x1) > 0 ? true : false;
+
+                        // parse input signal
+                        temp = reader.ReadByte();
+                        this.AxisStateCollection[i].CWLS = ((temp >> 0) & 0x1) > 0 ? true : false;
+                        this.AxisStateCollection[i].CCWLS = ((temp >> 1) & 0x1) > 0 ? true : false;
+                        this.AxisStateCollection[i].ORG = ((temp >> 2) & 0x1) > 0 ? true : false;
+                        this.AxisStateCollection[i].ZeroOut = ((temp >> 3) & 0x1) > 0 ? true : false;
+                        this.AxisStateCollection[i].IN_A = ((temp >> 4) & 0x1) > 0 ? true : false;
+                        this.AxisStateCollection[i].IN_B = ((temp >> 5) & 0x1) > 0 ? true : false;
+
+                        // 
+                        this.AxisStateCollection[i].Error = reader.ReadByte();
+
+                        reader.ReadByte();  // read dummy byte, this is used to align struct on 4-byte
+                    }
+
+                    reader.Close();
+                }
+
+                stream.Close();
+            }
+        }
+        #endregion
 
         #region RaisePropertyChangedEvent
 

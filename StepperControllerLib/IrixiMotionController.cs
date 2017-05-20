@@ -573,58 +573,7 @@ namespace IrixiStepperControllerHelper
         /// <param name="e"></param>
         private void OnReportReceived(object sender, byte[] e)
         {
-            byte temp = 0x0;
-
-            MemoryStream stream = new MemoryStream(e);
-            BinaryReader reader = new BinaryReader(stream);
-
-            reader.ReadByte(); // Ignore the first dummy byte
-
-            this.Report.Counter = reader.ReadUInt32();
-            this.Report.TotalAxes = reader.ReadByte();
-            this.Report.IsBusy = reader.ReadByte();
-            this.Report.SystemError = reader.ReadByte();
-
-            // Read the Trigger Input State
-            temp = reader.ReadByte();
-            this.Report.TriggerInput0 = ((temp >> 0) & 0x1) > 0 ? true : false;
-            this.Report.TriggerInput1 = ((temp >> 1) & 0x1) > 0 ? true : false;
-
-
-
-            if (this.Report.AxisStateCollection == null || this.Report.AxisStateCollection.Count == 0)
-                return;
-
-            for (int i = 0; i < this.Report.AxisStateCollection.Count; i++)
-            {
-                ///
-                /// The following parsing process are base on the type of AxisState_TypeDef which is defined in the controller firmware
-                ///
-
-                this.Report.AxisStateCollection[i].AbsPosition = reader.ReadInt32();
-
-                // parse Usability
-                temp = reader.ReadByte();
-                this.Report.AxisStateCollection[i].IsHomed = ((temp >> 0) & 0x1) > 0 ? true : false;
-                this.Report.AxisStateCollection[i].IsRunning = ((temp >> 1) & 0x1) > 0 ? true : false;
-
-                // parse input signal
-                temp = reader.ReadByte();
-                this.Report.AxisStateCollection[i].CWLS = ((temp >> 0) & 0x1) > 0 ? true : false;
-                this.Report.AxisStateCollection[i].CCWLS = ((temp >> 1) & 0x1) > 0 ? true : false;
-                this.Report.AxisStateCollection[i].ORG = ((temp >> 2) & 0x1) > 0 ? true : false;
-                this.Report.AxisStateCollection[i].ZeroOut = ((temp >> 3) & 0x1) > 0 ? true : false;
-                this.Report.AxisStateCollection[i].IN_A = ((temp >> 4) & 0x1) > 0 ? true : false;
-                this.Report.AxisStateCollection[i].IN_B = ((temp >> 5) & 0x1) > 0 ? true : false;
-
-                // 
-                this.Report.AxisStateCollection[i].Error = reader.ReadByte();
-
-                reader.ReadByte();  // read dummy byte, this is used to align struct on 4-byte
-            }
-
-            reader.Close();
-            stream.Close();
+            this.Report.ParseRawData(e);
 
             OnReportUpdated?.Invoke(this, this.Report);
         }
@@ -657,8 +606,5 @@ namespace IrixiStepperControllerHelper
 
         }
         #endregion
-
-
-
     }
 }
