@@ -247,7 +247,6 @@ namespace IrixiStepperControllerHelper
     {
         #region Variables
         static object _lock = new object();
-
         uint _counter;
         int _total_axes;
         int _is_busy;
@@ -450,6 +449,7 @@ namespace IrixiStepperControllerHelper
                         this.AxisStateCollection[i].IN_B = ((temp >> 5) & 0x1) > 0 ? true : false;
                         this.AxisStateCollection[i].OUT_A = ((temp >> 6) & 0x1) > 0 ? true : false;
                         this.AxisStateCollection[i].OUT_B = ((temp >> 7) & 0x1) > 0 ? true : false;
+
                         // 
                         this.AxisStateCollection[i].Error = reader.ReadByte();
 
