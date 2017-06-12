@@ -84,7 +84,7 @@ namespace Irixi_Aligner_Common.Classes
 
                     case MotionControllerModel.IRIXI_EE0017:
                         ctrler = new IrixiEE0017(cfg);
-                        ((IrixiEE0017)ctrler).OnPushMessage += ((sender, message) =>
+                        ((IrixiEE0017)ctrler).OnNewMessage += ((sender, message) =>
                         {
 
                             Application.Current.Dispatcher.Invoke(() =>

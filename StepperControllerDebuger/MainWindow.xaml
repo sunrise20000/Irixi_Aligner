@@ -8,7 +8,7 @@
         xmlns:Converter="clr-namespace:StepperControllerDebuger.Converter" x:Class="StepperControllerDebuger.MainWindow"
     xmlns:System="clr-namespace:System;assembly=mscorlib"
     mc:Ignorable="d"
-        Title="Stepper Controller Debuger" Height="512.542" Width="803.098" WindowStartupLocation="CenterScreen" Icon="StepperMotor.ico" ResizeMode="CanMinimize" WindowStyle="SingleBorderWindow" Background="#FF1B1B1B">
+        Title="Stepper Controller Debuger" Height="520" Width="900" WindowStartupLocation="CenterScreen" Icon="StepperMotor.ico" ResizeMode="CanMinimize" WindowStyle="SingleBorderWindow" Background="#FF1B1B1B">
     <Window.Resources>
         <Converter:CvtControllerErrorToColor x:Key="CvtControllerErrorToColor"/>
         <Converter:CvtBooleanToColor x:Key="CvtBooleanToColor"/>
@@ -25,7 +25,7 @@
             <ItemsControl ItemsSource="{Binding Main.StepperController.Report.AxisStateCollection}">
                 <ItemsControl.ItemTemplate>
                     <DataTemplate>
-                        <local:AxisControl AxisState="{Binding}" HorizontalAlignment="Stretch" Margin="2" Height="100" MoveToCCW="{Binding Main.CommandMove, Mode=OneWay, Source={StaticResource Locator}}" MoveToCW="{Binding Main.CommandMove, Mode=OneWay, Source={StaticResource Locator}}">
+                        <local:AxisControl AxisState="{Binding}" HorizontalAlignment="Stretch" Margin="2" Height="100" MoveToCCW="{Binding Main.CommandMove, Mode=OneWay, Source={StaticResource Locator}}" MoveToCW="{Binding Main.CommandMove, Mode=OneWay, Source={StaticResource Locator}}" SetOutPort="{Binding Main.CommandSetGeneralOutput, Mode=OneWay, Source={StaticResource Locator}}">
                             <local:AxisControl.MoveToCCWParameters>
                                 <MultiBinding Converter="{StaticResource StepperCommandGenerator}">
                                     <Binding Source="{x:Static stepper:EnumCommand.MOVE}"/>
@@ -64,6 +64,8 @@
                 <ColumnDefinition/>
                 <ColumnDefinition/>
                 <ColumnDefinition/>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
             </Grid.ColumnDefinitions>
             <TextBlock Text="Report Counter" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center"/>
             <TextBlock Text="Total Axes" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center" Grid.Column="1"/>
@@ -71,12 +73,16 @@
             <TextBlock Text="System Error" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center" Grid.Column="3"/>
             <TextBlock Text="Trigger IN 0" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center" Grid.Column="4"/>
             <TextBlock Text="Trigger IN 1" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center" Grid.Column="5"/>
+            <TextBlock Text="Core Vref" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center" Grid.Column="6"/>
+            <TextBlock Text="Core Temp" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center" Grid.Column="7"/>
             <TextBlock Text="{Binding Main.StepperController.Report.Counter, Mode=OneWay}" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center" Grid.Row="1"/>
             <TextBlock Text="{Binding Main.StepperController.Report.TotalAxes, Mode=OneWay}" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center" Grid.Row="1" Grid.Column="1"/>
             <TextBlock Text="{Binding Main.StepperController.Report.IsBusy, Mode=OneWay}" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center" Grid.Row="1" Grid.Column="2"/>
             <TextBlock Text="{Binding Main.StepperController.Report.SystemError, Mode=OneWay}" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center" Grid.Row="1" Grid.Column="3"/>
             <TextBlock Text="{Binding Main.StepperController.Report.TriggerInput0, Mode=OneWay}" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center" Grid.Row="1" Grid.Column="4"/>
             <TextBlock Text="{Binding Main.StepperController.Report.TriggerInput1, Mode=OneWay}" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center" Grid.Row="1" Grid.Column="5"/>
+            <TextBlock Text="{Binding Main.StepperController.Report.CoreVref, Mode=OneWay}" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center" Grid.Row="1" Grid.Column="6"/>
+            <TextBlock Text="{Binding Main.StepperController.Report.CoreTemp, Mode=OneWay}" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center" Grid.Row="1" Grid.Column="7"/>
             
         </Grid>
         <Grid Grid.Row="2">

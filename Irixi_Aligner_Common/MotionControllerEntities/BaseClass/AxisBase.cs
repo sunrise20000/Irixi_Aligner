@@ -249,7 +249,7 @@ namespace Irixi_Aligner_Common.MotionControllerEntities
         {
             if(this.IsAbsMode)  // changed move mode from ABS to REL
             {
-                this.RelPosition = 0;
+                ClearRelPosition();
                 this.IsAbsMode = false;
             }
             else  // change move mode from REL to ABS
@@ -257,6 +257,11 @@ namespace Irixi_Aligner_Common.MotionControllerEntities
                 this.RelPosition = this.AbsPosition;
                 this.IsAbsMode = true;
             }
+        }
+
+        public void ClearRelPosition()
+        {
+            this.RelPosition = 0;
         }
 
         public override string ToString()

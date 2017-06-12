@@ -1,4 +1,5 @@
 ﻿using IrixiStepperControllerHelper;
+using System;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -14,9 +15,7 @@ namespace StepperControllerDebuger
         {
             InitializeComponent();
         }
-
-
-
+        
         public AxisState AxisState
         {
             get { return (AxisState)GetValue(AxisStateProperty); }
@@ -27,9 +26,7 @@ namespace StepperControllerDebuger
         public static readonly DependencyProperty AxisStateProperty =
             DependencyProperty.Register("AxisState", typeof(AxisState), typeof(AxisControl), new PropertyMetadata(null));
 
-
-
-
+        
         public bool IsAbsMode
         {
             get { return (bool)GetValue(IsAbsModeProperty); }
@@ -114,6 +111,22 @@ namespace StepperControllerDebuger
         public static readonly DependencyProperty MoveToCCWParametersProperty =
             DependencyProperty.Register("MoveToCCWParameters", typeof(object), typeof(AxisControl), new PropertyMetadata(null));
 
+
+
+
+        public ICommand SetOutPort
+        {
+            get { return (ICommand)GetValue(SetOutAProperty); }
+            set { SetValue(SetOutAProperty, value); }
+        }
+
+        // Using a DependencyProperty as the backing store for SetOutA.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty SetOutAProperty =
+            DependencyProperty.Register("SetOutPort", typeof(ICommand), typeof(AxisControl), new PropertyMetadata(null));
+
+
+
+
         private void btnMoveCCW_Click(object sender, RoutedEventArgs e)
         {
             this.MoveToCCW.Execute(this.MoveToCCWParameters);
@@ -122,6 +135,34 @@ namespace StepperControllerDebuger
         private void btnMoveCW_Click(object sender, RoutedEventArgs e)
         {
             this.MoveToCW.Execute(this.MoveToCWParameters);
+        }
+
+        private void ckb_SetOutPortA_Checked(object sender, RoutedEventArgs e)
+        {
+            this.SetOutPort.Execute(new Tuple<int, EnumGeneralOutputState>
+                (this.AxisState.AxisIndex * 2,   // Convert Port A to channel 0, 2, 4
+                EnumGeneralOutputState.ON));    // Set ON
+        }
+
+        private void ckb_SetOutPortA_Unchecked(object sender, RoutedEventArgs e)
+        {
+            this.SetOutPort.Execute(new Tuple<int, EnumGeneralOutputState>
+                (this.AxisState.AxisIndex * 2,   // Convert Port A to channel 0, 2, 4
+                EnumGeneralOutputState.OFF));    // Set OFF
+        }
+
+        private void ckb_SetOutPortB_Checked(object sender, RoutedEventArgs e)
+        {
+            this.SetOutPort.Execute(new Tuple<int, EnumGeneralOutputState>
+                (this.AxisState.AxisIndex * 2 + 1,   // Convert Port B to channel 1, 3, 5
+                EnumGeneralOutputState.ON));    // Set ON
+        }
+
+        private void ckb_SetOutPortB_Unchecked(object sender, RoutedEventArgs e)
+        {
+            this.SetOutPort.Execute(new Tuple<int, EnumGeneralOutputState>
+                (this.AxisState.AxisIndex * 2 + 1,   // Convert Port B to channel 1, 3, 5
+                EnumGeneralOutputState.OFF));    // Set OFF
         }
     }
 }

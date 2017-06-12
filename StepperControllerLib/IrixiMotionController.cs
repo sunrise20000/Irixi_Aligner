@@ -5,6 +5,8 @@ using System.IO;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Windows;
+using System.Windows.Data;
 using USBHIDDRIVER;
 
 namespace IrixiStepperControllerHelper
@@ -12,6 +14,8 @@ namespace IrixiStepperControllerHelper
     public class IrixiMotionController : INotifyPropertyChanged
     {
         #region Variables
+
+        private static object _lock = new object();
 
         public event PropertyChangedEventHandler PropertyChanged;
         public event EventHandler<DeviceStateReport> OnReportUpdated;
@@ -29,12 +33,12 @@ namespace IrixiStepperControllerHelper
         /// The maximum drive veloctiy
         /// The real velocity is Velocity_Set * MAX_VELOCITY
         /// </summary>
-        const int MAX_VELOCITY = 2000;
+        const int MAX_VELOCITY = 10000;
 
         USBInterface _hid_device;
 
         bool _is_connected = false; // whether the contoller is connected
-        string _last_err = string.Empty;
+        string _last_err = string.Empty, _serial_number = "";
 
         #endregion
 
@@ -56,6 +60,7 @@ namespace IrixiStepperControllerHelper
             this.TotalAxes = -1;
             this.SerialNumber = DeviceSN;
             this.AxisCollection = new ObservableCollection<Axis>();
+            BindingOperations.EnableCollectionSynchronization(this.AxisCollection, _lock);
 
             _hid_device = new USBInterface(VID, PID, DeviceSN);
             _hid_device.EnableUsbBufferEvent(OnReportReceived);
@@ -94,8 +99,14 @@ namespace IrixiStepperControllerHelper
         /// </summary>
         public string SerialNumber
         {
-            private set;
-            get;
+            private set
+            {
+                UpdateProperty<string>(ref _serial_number, value);
+            }
+            get
+            {
+                return _serial_number;
+            }
         }
 
         /// <summary>
@@ -144,6 +155,9 @@ namespace IrixiStepperControllerHelper
             return hid.GetDeviceList();
         }
 
+        /// <summary>
+        /// Open the controller
+        /// </summary>
         public void OpenDevice()
         {
             int _reconn_counter = 0;
@@ -160,15 +174,48 @@ namespace IrixiStepperControllerHelper
                         // Start the received task on the UI thread
                         OnConnectionStatusChanged?.Invoke(this, new ConnectionEventArgs(ConnectionEventArgs.EventType.ConnectionSuccess, null));
 
+                        // start to read hid report from usb device in the background thread
+                        ////_hid_device.StartRead();
+
                         // Wait the first report from HID device in order to get the 'TotalAxes'
                         do
                         {
-                            this.TotalAxes = this.Report.TotalAxes;
+                            // read hid report
+                            byte[] report = _hid_device.Read();
+                            if (report != null)
+                            {
+                                this.Report.ParseRawData(report);
+
+                                this.TotalAxes = this.Report.TotalAxes;
+                            }
 
                             // Don't check it so fast, the interval of two adjacent report is normally 20ms but not certain
                             Thread.Sleep(200);
 
                         } while (this.TotalAxes <= 0);
+
+
+                        // the total number of axes returned, generate the instance of each axis
+                        this.Report.AxisStateCollection.Clear();
+
+                        for (int i = 0; i < this.TotalAxes; i++)
+                        {
+                            // generate axis state object to the controller report class
+                            this.Report.AxisStateCollection.Add(new AxisState()
+                            {
+                                AxisIndex = i
+                            });
+
+                            // generate axis control on the user window
+                            this.AxisCollection.Add(new Axis()
+                            {
+                                MaxDistance = 15000,
+                                SoftCCWLS = 0,
+                                SoftCWLS = 15000
+                            });
+                        }
+
+                        _hid_device.StartRead();
 
                         this.IsConnected = true;
 
@@ -191,115 +238,111 @@ namespace IrixiStepperControllerHelper
                 catch (Exception ex)
                 {
                     this.LastError = ex.Message;
+                    break;
                 }
             }
         }
 
         /// <summary>
-        /// Start to connect to the HID Controller
+        /// Open the controller asynchronously
         /// </summary>
         /// <returns></returns>
         public Task<bool> OpenDeviceAsync()
         {
-            // the progress of connection task
-            var progressHandler = new Progress<ConnectionEventArgs>(arg =>
-            {
-                // the total axes was returned, generate the AxisState collection of this.Report
-                if (arg.Event == ConnectionEventArgs.EventType.TotalAxesReturned)
-                {
-                    this.Report.AxisStateCollection.Clear();
+            //// the progress of connection task
+            //var progressHandler = new Progress<ConnectionEventArgs>(arg =>
+            //{
+            //    // the total axes was returned, generate the AxisState collection of this.Report
+            //    if (arg.Event == ConnectionEventArgs.EventType.TotalAxesReturned)
+            //    {
+            //        this.Report.AxisStateCollection.Clear();
 
-                    for (int i = 0; i < this.TotalAxes; i++)
-                    {
-                        this.Report.AxisStateCollection.Add(new AxisState() { AxisIndex = i });
-                        this.AxisCollection.Add(new Axis()
-                        {
-                            MaxDistance = 15000,
-                            SoftCCWLS = 0,
-                            SoftCWLS = 15000
-                        });
-                    }
-                }
-                // HID device opened, start the DataRead task
-                else if (arg.Event == ConnectionEventArgs.EventType.ConnectionSuccess)
-                {
-                    _hid_device.StartRead();
-                }
+            //        for (int i = 0; i < this.TotalAxes; i++)
+            //        {
+            //            this.Report.AxisStateCollection.Add(new AxisState() { AxisIndex = i });
+            //            this.AxisCollection.Add(new Axis()
+            //            {
+            //                MaxDistance = 15000,
+            //                SoftCCWLS = 0,
+            //                SoftCWLS = 15000
+            //            });
+            //        }
+            //    }
+            //    // HID device opened, start the DataRead task
+            //    else if (arg.Event == ConnectionEventArgs.EventType.ConnectionSuccess)
+            //    {
+            //        _hid_device.StartRead();
+            //    }
 
-                OnConnectionStatusChanged?.Invoke(this, arg);
-            });
+            //    OnConnectionStatusChanged?.Invoke(this, arg);
+            //});
 
-            var progress = progressHandler as IProgress<ConnectionEventArgs>;
+            //var progress = progressHandler as IProgress<ConnectionEventArgs>;
 
             return Task.Run<bool>(() =>
             {
-                int _reconn_counter = 0;
-                this.IsConnected = false;
-
-                while (true)
-                {
-                    try
-                    {
-                        _reconn_counter++;
-
-                        if (_hid_device.Connect())
-                        {
-                            // Start the received task on the UI thread
-                            progress.Report(new ConnectionEventArgs(ConnectionEventArgs.EventType.ConnectionSuccess, null));
-
-                            // Wait the first report from HID device in order to get the 'TotalAxes'
-                            do
-                            {
-                                this.TotalAxes = this.Report.TotalAxes;
-
-                                // Don't check it so fast, the interval of two adjacent report is normally 20ms but not certain
-                                Thread.Sleep(200);
-
-                            } while (this.TotalAxes <= 0);
-
-                            this.IsConnected = true;
-
-                            // initialize this.Report property on UI thread
-                            progress.Report(new ConnectionEventArgs(ConnectionEventArgs.EventType.TotalAxesReturned, this.TotalAxes));
-
-
-                            Thread.Sleep(200);
-
-                            break;
-
-                        }
-                        else
-                        {
-                            // pass the try-times to UI thread
-                            progress.Report(new ConnectionEventArgs(ConnectionEventArgs.EventType.ConnectionRetried, _reconn_counter));
-                            Thread.Sleep(500);
-                        }
-                    }
-                    catch (Exception ex)
-                    {
-                        this.LastError = ex.Message;
-                    }
-                }
+                OpenDevice();
 
                 return this.IsConnected;
+
+                //int _reconn_counter = 0;
+                //this.IsConnected = false;
+
+                //while (true)
+                //{
+                //    try
+                //    {
+                //        _reconn_counter++;
+
+                //        if (_hid_device.Connect())
+                //        {
+                //            // Start the received task on the UI thread
+                //            progress.Report(new ConnectionEventArgs(ConnectionEventArgs.EventType.ConnectionSuccess, null));
+
+                //            // Wait the first report from HID device in order to get the 'TotalAxes'
+                //            do
+                //            {
+                //                this.TotalAxes = this.Report.TotalAxes;
+
+                //                // Don't check it so fast, the interval of two adjacent report is normally 20ms but not certain
+                //                Thread.Sleep(200);
+
+                //            } while (this.TotalAxes <= 0);
+
+                //            this.IsConnected = true;
+
+                //            // initialize this.Report property on UI thread
+                //            progress.Report(new ConnectionEventArgs(ConnectionEventArgs.EventType.TotalAxesReturned, this.TotalAxes));
+
+
+                //            Thread.Sleep(200);
+
+                //            break;
+
+                //        }
+                //        else
+                //        {
+                //            // pass the try-times to UI thread
+                //            progress.Report(new ConnectionEventArgs(ConnectionEventArgs.EventType.ConnectionRetried, _reconn_counter));
+                //            Thread.Sleep(500);
+                //        }
+                //    }
+                //    catch (Exception ex)
+                //    {
+                //        this.LastError = ex.Message;
+                //    }
+                //}
+
+                //return this.IsConnected;
             });
         }
         
         /// <summary>
-        /// Close the HID Controller
+        /// Close the controller
         /// </summary>
         public void CloseDevice()
         {
             _hid_device.Disconnect();
-        }
-
-        /// <summary>
-        /// Start to read report from HID Controller.
-        /// Once the report is received, the OnReportReceived event should be fired.
-        /// </summary>
-        public void StartReadReport()
-        {
-            _hid_device.StartRead();
         }
 
         /// <summary>
@@ -328,6 +371,8 @@ namespace IrixiStepperControllerHelper
 
                 try
                 {
+                    
+
                     CommandStruct cmd = new CommandStruct()
                     {
                         Command = EnumCommand.HOME,
@@ -335,9 +380,9 @@ namespace IrixiStepperControllerHelper
                     };
                     _hid_device.Write(cmd.ToBytes());
 
-                    Thread.Sleep(500);
-                    
-                    while(true)
+                    Thread.Sleep(200);
+
+                    while (true)
                     {
                         if (this.Report.AxisStateCollection[AxisIndex].IsHomed && this.Report.AxisStateCollection[AxisIndex].IsRunning == false && this.Report.AxisStateCollection[AxisIndex].AbsPosition == 0)
                             break;
@@ -492,14 +537,14 @@ namespace IrixiStepperControllerHelper
 
                     do
                     {
-                        Thread.Sleep(20);
+                        Thread.Sleep(10);
                     } while (this.Report.Counter <= _report_counter);
 
 
 
                     while (this.Report.AxisStateCollection[AxisIndex].IsRunning)
                     {
-                        Thread.Sleep(20);
+                        Thread.Sleep(10);
                     }
 
                     if(Report.AxisStateCollection[AxisIndex].Error != 0)
@@ -527,7 +572,7 @@ namespace IrixiStepperControllerHelper
             // if the controller is not connected, return
             if (!this.IsConnected)
             {
-                this.LastError = string.Format("The controller is not connected.", AxisIndex);
+                this.LastError = string.Format("The controller is not connected.");
                 return false;
             }
 
@@ -540,6 +585,36 @@ namespace IrixiStepperControllerHelper
                 };
                 _hid_device.Write(cmd.ToBytes());
                
+                return true;
+            }
+            catch (Exception ex)
+            {
+                this.LastError = ex.Message;
+                return false;
+            }
+        }
+
+        public bool SetGeneralOutput(int Channel, EnumGeneralOutputState State)
+        {
+            // if the controller is not connected, return
+            if (!this.IsConnected)
+            {
+                this.LastError = string.Format("The controller is not connected.");
+                return false;
+            }
+
+            try
+            {
+                CommandStruct cmd = new CommandStruct()
+                {
+                    Command = EnumCommand.GENOUT,
+                    AxisIndex = Channel / 2,        // calculate axis index by channel
+                    GenOutPort = Channel % 2,    // calculate port by channel
+                    GenOutState = State
+
+                };
+                _hid_device.Write(cmd.ToBytes());
+
                 return true;
             }
             catch (Exception ex)
@@ -573,58 +648,7 @@ namespace IrixiStepperControllerHelper
         /// <param name="e"></param>
         private void OnReportReceived(object sender, byte[] e)
         {
-            byte temp = 0x0;
-
-            MemoryStream stream = new MemoryStream(e);
-            BinaryReader reader = new BinaryReader(stream);
-
-            reader.ReadByte(); // Ignore the first dummy byte
-
-            this.Report.Counter = reader.ReadUInt32();
-            this.Report.TotalAxes = reader.ReadByte();
-            this.Report.IsBusy = reader.ReadByte();
-            this.Report.SystemError = reader.ReadByte();
-
-            // Read the Trigger Input State
-            temp = reader.ReadByte();
-            this.Report.TriggerInput0 = ((temp >> 0) & 0x1) > 0 ? true : false;
-            this.Report.TriggerInput1 = ((temp >> 1) & 0x1) > 0 ? true : false;
-
-
-
-            if (this.Report.AxisStateCollection == null || this.Report.AxisStateCollection.Count == 0)
-                return;
-
-            for (int i = 0; i < this.Report.AxisStateCollection.Count; i++)
-            {
-                ///
-                /// The following parsing process are base on the type of AxisState_TypeDef which is defined in the controller firmware
-                ///
-
-                this.Report.AxisStateCollection[i].AbsPosition = reader.ReadInt32();
-
-                // parse Usability
-                temp = reader.ReadByte();
-                this.Report.AxisStateCollection[i].IsHomed = ((temp >> 0) & 0x1) > 0 ? true : false;
-                this.Report.AxisStateCollection[i].IsRunning = ((temp >> 1) & 0x1) > 0 ? true : false;
-
-                // parse input signal
-                temp = reader.ReadByte();
-                this.Report.AxisStateCollection[i].CWLS = ((temp >> 0) & 0x1) > 0 ? true : false;
-                this.Report.AxisStateCollection[i].CCWLS = ((temp >> 1) & 0x1) > 0 ? true : false;
-                this.Report.AxisStateCollection[i].ORG = ((temp >> 2) & 0x1) > 0 ? true : false;
-                this.Report.AxisStateCollection[i].ZeroOut = ((temp >> 3) & 0x1) > 0 ? true : false;
-                this.Report.AxisStateCollection[i].IN_A = ((temp >> 4) & 0x1) > 0 ? true : false;
-                this.Report.AxisStateCollection[i].IN_B = ((temp >> 5) & 0x1) > 0 ? true : false;
-
-                // 
-                this.Report.AxisStateCollection[i].Error = reader.ReadByte();
-
-                reader.ReadByte();  // read dummy byte, this is used to align struct on 4-byte
-            }
-
-            reader.Close();
-            stream.Close();
+            this.Report.ParseRawData(e);
 
             OnReportUpdated?.Invoke(this, this.Report);
         }
@@ -657,8 +681,5 @@ namespace IrixiStepperControllerHelper
 
         }
         #endregion
-
-
-
     }
 }

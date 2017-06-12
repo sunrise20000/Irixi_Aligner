@@ -10,6 +10,7 @@ namespace USBHIDDRIVER
     /// </summary>
     public class USBInterface
     {
+        #region Variables
         private string usbVID;
         private string usbPID;
         private string deviceSN;
@@ -22,19 +23,37 @@ namespace USBHIDDRIVER
         /// </summary>
         public BindingList<byte[]> usbBuffer;
 
+        #endregion
+
+        #region Constructors
+
         /// <summary>
         /// Initializes a new instance of the <see cref="USBInterface"/> class.
         /// </summary>
         /// <param name="VID">The vendor id of the USB device (e.g. vid_06ba)</param>
         /// <param name="PID">The product id of the USB device (e.g. pid_ffff)</param>
-       public  USBInterface(string VID, string PID = "", string SerialNumber = "")
+        public  USBInterface(string VID, string PID = "", string SerialNumber = "")
         {
-            this.usbVID = VID;
-            this.usbPID = PID;
-            this.deviceSN = SerialNumber;
-           
+            _constructor(VID, PID, SerialNumber);
+        }
+
+        public USBInterface(int VID, int PID = 0, string SerialNumber = "")
+        {
+
+            string vid = string.Format("vid_{0:x4}", VID);
+            string pid = PID == 0 ? "" : string.Format("pid_{0:x4}", PID);
+            _constructor(vid, pid, SerialNumber);
+        }
+
+        private void _constructor(string vid, string pid, string serialnumber)
+        {
+            this.usbVID = vid;
+            this.usbPID = pid;
+            this.deviceSN = serialnumber;
+
             this.usbdevice = new USB.HIDUSBDevice(this.usbVID, this.usbPID, this.deviceSN);
         }
+        #endregion
 
         /// <summary>
         /// Establishes a connection to the USB device. 
@@ -115,6 +134,15 @@ namespace USBHIDDRIVER
                     Thread.Sleep(5);
                 }
                 return success;
+        }
+        
+        /// <summary>
+        /// Read hid report
+        /// </summary>
+        /// <returns></returns>
+        public byte[] Read()
+        {
+            return this.usbdevice.ReadData();
         }
 
         /// <summary>

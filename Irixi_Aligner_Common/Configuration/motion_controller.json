@@ -194,7 +194,7 @@
     {
       "Class": "d11d1864-6315-4c01-b07f-3e268834cd10",
       "Name": "Irixi EE0017",
-      "Port": "C000000001",
+      "Port": "300038001251363031393231",
       "Enabled": true,
       "Comment": "Irixi MotionController",
       "AxisCollection": [

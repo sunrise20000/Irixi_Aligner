@@ -40,11 +40,10 @@ namespace StepperControllerDebuger.ViewModel
             }
             else
             {
-                //Code runs "for real"
-                _controller = new IrixiStepperControllerHelper.IrixiMotionController(""); // For debug, the default SN of the controller is used.
+                _controller = new IrixiStepperControllerHelper.IrixiMotionController("300038001251363031393231"); // For debug, the default SN of the controller is used.
 
                 //
-                // While searching the controller, show the message that tells user the application is running.
+                // While scanning the controller, report the state to user window
                 //
                 _controller.OnConnectionStatusChanged += new EventHandler<IrixiStepperControllerHelper.ConnectionEventArgs>((sender, args) =>
                 {
@@ -114,7 +113,6 @@ namespace StepperControllerDebuger.ViewModel
 
         #endregion
 
-
         #region Commands
 
         #region Explain of null Command argument
@@ -143,8 +141,11 @@ namespace StepperControllerDebuger.ViewModel
                         StartHomeAsync(axisid);
                 });
             }
-
         }
+
+        /// <summary>
+        /// Home all axes
+        /// </summary>
         async void StartHomeAsync()
         {
             Task<bool>[] tasks = new Task<bool>[_controller.TotalAxes];
@@ -153,13 +154,17 @@ namespace StepperControllerDebuger.ViewModel
             for (int i = 0; i < _controller.TotalAxes; i ++)
             {
                 tasks[i] = _controller.HomeAsync(i);
-                await Task.Delay(100);
+                await Task.Delay(10);
             }
 
             retvals = await Task.WhenAll<bool>(tasks);
 
         }
 
+        /// <summary>
+        /// Home the specified axis
+        /// </summary>
+        /// <param name="AxisIndex"></param>
         async void StartHomeAsync(int AxisIndex)
         {
             bool success = await _controller.HomeAsync(AxisIndex);
@@ -190,7 +195,7 @@ namespace StepperControllerDebuger.ViewModel
         /// <summary>
         /// Move the specified axis
         /// </summary>
-        public RelayCommand<IrixiStepperControllerHelper.CommandStruct> CommandMove
+        public RelayCommand<CommandStruct> CommandMove
         {
             get
             {
@@ -218,7 +223,7 @@ namespace StepperControllerDebuger.ViewModel
             }
         }
 
-        async void StartMoveAsync(IrixiStepperControllerHelper.CommandStruct args)
+        async void StartMoveAsync(CommandStruct args)
         {
             bool success = await _controller.MoveAsync(args.AxisIndex, args.DriveVelocity, args.TotalSteps, args.Mode);
             if(!success)
@@ -249,6 +254,17 @@ namespace StepperControllerDebuger.ViewModel
                                 "Error"));
                     }
 
+                });
+            }
+        }
+
+        public RelayCommand<Tuple<int, EnumGeneralOutputState>> CommandSetGeneralOutput
+        {
+            get
+            {
+                return new RelayCommand<Tuple<int, EnumGeneralOutputState>>(arg =>
+                {
+                    _controller.SetGeneralOutput(arg.Item1, arg.Item2);
                 });
             }
         }

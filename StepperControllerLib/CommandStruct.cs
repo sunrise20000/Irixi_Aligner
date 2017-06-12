@@ -14,6 +14,9 @@ namespace IrixiStepperControllerHelper
         public int TotalSteps { set; get; }
         public EnumMoveMode Mode { set; get; }
 
+        public int GenOutPort { set; get; }
+        public EnumGeneralOutputState GenOutState { set; get; }
+
         /// <summary>
         /// Convert the command struct to the byte array
         /// </summary>
@@ -28,10 +31,22 @@ namespace IrixiStepperControllerHelper
             writer.Write(_cmd_counter++);
             writer.Write((int)this.Command);
             writer.Write(this.AxisIndex);
-            writer.Write(this.AccSteps);
-            writer.Write(this.DriveVelocity);
-            writer.Write(this.TotalSteps);
 
+            switch(this.Command)
+            {
+                case EnumCommand.GENOUT:
+                    writer.Write(this.GenOutPort);
+                    writer.Write((int)this.GenOutState);
+                    break;
+
+                default:
+                    writer.Write(this.AccSteps);
+                    writer.Write(this.DriveVelocity);
+                    writer.Write(this.TotalSteps);
+                    break;
+
+            }
+            
             writer.Close();
             stream.Close();
 

@@ -84,20 +84,13 @@
     <Reference Include="System.Xaml">
       <RequiredTargetFramework>4.0</RequiredTargetFramework>
     </Reference>
-    <Reference Include="Thorlabs.MotionControl.DeviceManagerCLI">
-      <HintPath>C:\Program Files (x86)\Thorlabs\Kinesis\Thorlabs.MotionControl.DeviceManagerCLI.dll</HintPath>
-    </Reference>
-    <Reference Include="Thorlabs.MotionControl.GenericMotorCLI, Version=1.9.2.31291, Culture=neutral, PublicKeyToken=c7ec6d6d6e2435e7, processorArchitecture=x86">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>C:\Program Files (x86)\Thorlabs\Kinesis\Thorlabs.MotionControl.GenericMotorCLI.dll</HintPath>
-    </Reference>
-    <Reference Include="Thorlabs.MotionControl.TCube.DCServoCLI, Version=1.9.2.31315, Culture=neutral, PublicKeyToken=c7ec6d6d6e2435e7, processorArchitecture=x86">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>C:\Program Files (x86)\Thorlabs\Kinesis\Thorlabs.MotionControl.TCube.DCServoCLI.dll</HintPath>
-    </Reference>
     <Reference Include="WindowsBase" />
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
+    <Reference Include="Zaber, Version=2.1.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>ExtDlls\Zaber.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <ApplicationDefinition Include="App.xaml">
@@ -169,7 +162,6 @@
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
     <None Include="App.config" />
-    <None Include="ClassDiagram1.cd" />
     <None Include="Configuration\gui_snapshot.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
@@ -201,9 +193,9 @@
     <Resource Include="Images\Icons\Item.png" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="right.png" />
-    <Resource Include="warning_32x32.png" />
-    <Resource Include="wrong.png" />
+    <Resource Include="Images\Icons\right.png" />
+    <Resource Include="Images\Icons\warning_32x32.png" />
+    <Resource Include="Images\Icons\wrong.png" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="MotionControllerEntities\Thorlabs\" />
@@ -224,6 +216,19 @@
       <Project>{7d9a7b1a-e2e1-4d53-8986-3a4de679551c}</Project>
       <Name>IrixiStepperControllerHelper</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="ExtDlls\IronPython.dll" />
+    <Content Include="ExtDlls\IronPython.Modules.dll" />
+    <Content Include="ExtDlls\IronPython.SQLite.dll" />
+    <Content Include="ExtDlls\IronPython.Wpf.dll" />
+    <Content Include="ExtDlls\log4net.dll" />
+    <Content Include="ExtDlls\Microsoft.Dynamic.dll" />
+    <Content Include="ExtDlls\Microsoft.Scripting.AspNet.dll" />
+    <Content Include="ExtDlls\Microsoft.Scripting.dll" />
+    <Content Include="ExtDlls\Microsoft.Scripting.Metadata.dll" />
+    <Content Include="ExtDlls\Zaber.dll" />
+    <Content Include="ExtDlls\Zaber.Units.dll" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <ProjectExtensions />

@@ -112,7 +112,7 @@ namespace USBHIDDRIVER.USB
                 //is this the device i want?
                 string deviceID = this.VID + "&" + this.PID;
 
-                if (myUSB.DevicePathName.ToLower().IndexOf(deviceID.ToLower()) > 0)
+                if (this.DevicePath.ToLower().IndexOf(deviceID.ToLower()) > 0)
                 {
                     ////yes it is
 
@@ -142,6 +142,7 @@ namespace USBHIDDRIVER.USB
                     {
                         //we have found our device so stop searching
                         this.IsConnected = true;
+                        this.SerialNumber = device_sn;
 
                         break;
                     }
@@ -150,8 +151,6 @@ namespace USBHIDDRIVER.USB
                         myUSB.CT_CloseFile();
                     }
                 }
-
-
 
                 device_count++;
             }
@@ -260,7 +259,31 @@ namespace USBHIDDRIVER.USB
             }
             return success;
         }
+
+        /// <summary>
+        /// Read HID report from hid device
+        /// </summary>
+        /// <returns></returns>
+        public byte[] ReadData()
+        {
+            var myPtrToPreparsedData = default(IntPtr);
+            if (myUSB.CT_HidD_GetPreparsedData(myUSB.hHidFile, ref myPtrToPreparsedData))
+            {
+
+                bool code = myUSB.CT_HidP_GetCaps(myPtrToPreparsedData);
+                int reportLength = myUSB.myHIDP_CAPS.InputReportByteLength;
+
+                byte[] retval = myUSB.CT_ReadFile(myUSB.myHIDP_CAPS.InputReportByteLength);
+
+                return retval;
+            }
+            else
+            {
+                return null;
+            }
+        }
        
+
         /// <summary>
         ///  ThreadMethod for reading Data
         /// </summary>
@@ -269,6 +292,8 @@ namespace USBHIDDRIVER.USB
             return Task.Run(() =>
             {
                 int receivedNull = 0;
+                //byte[] recv_buf = null;
+
                 while (true)
                 {
                     var myPtrToPreparsedData = default(IntPtr);
@@ -278,7 +303,28 @@ namespace USBHIDDRIVER.USB
                         int reportLength = myUSB.myHIDP_CAPS.InputReportByteLength;
 
                         while (true)
-                        {//read until thread is stopped
+                        {
+                            //read until thread is stopped
+                            /*
+                             * <ref>https://docs.microsoft.com/zh-cn/windows-hardware/drivers/hid/obtaining-hid-reports-by-user-mode-applications#using_readfile</ref>
+                            if(myUSB.CT_HidD_GetInputReport(out recv_buf))
+                            {
+                                byteCount += recv_buf.Length;
+                                OnDataReceived?.Invoke(this, recv_buf);
+
+                                ct.ThrowIfCancellationRequested();
+                            }
+                            else
+                            {
+                                if (receivedNull > 100)
+                                {
+                                    throw new Exception("Unable to read data from the HID device, it could be disconnected.");
+                                }
+                                receivedNull++;
+                            }
+                            */
+
+
                             byte[] myRead = myUSB.CT_ReadFile(myUSB.myHIDP_CAPS.InputReportByteLength);
                             if (myRead != null)
                             {
@@ -291,14 +337,9 @@ namespace USBHIDDRIVER.USB
                             }
                             else
                             {
-                                //Recieved a lot of null bytes!
-                                //mybe device disconnected?
-                                if (receivedNull > 100)
-                                {
-                                    throw new Exception("Unable to read data from the HID device, it could be disconnected.");
-                                }
-                                receivedNull++;
+                                throw new Exception("Unable to read data from the HID device, it could be disconnected.");
                             }
+                            
                         }
                     }
                 }
@@ -364,15 +405,15 @@ namespace USBHIDDRIVER.USB
             myUSB.CT_HidGuid();
             myUSB.CT_SetupDiGetClassDevs();
 
-            bool result = false;
+            bool? result = null;
             bool resultb = false;
             int device_count = 0;
             int size = 0;
             int requiredSize = 0;
             int numberOfDevices = 0;
             //search the device until you have found it or no more devices in list
-            
-            while (result)
+
+            while (result.HasValue == false || result.Value == true)
             {
                 //open the device
                 result = myUSB.CT_SetupDiEnumDeviceInterfaces(device_count);
@@ -386,11 +427,27 @@ namespace USBHIDDRIVER.USB
                 string deviceID = this.VID;
                 if (myUSB.DevicePathName.IndexOf(deviceID) > 0)
                 {
-                    devices.Add(myUSB.DevicePathName);
+
+                    //create HID Device Handel
+                    resultb = myUSB.CT_CreateFile(myUSB.DevicePathName);
+
+                    // Check the serial Number
+                    myUSB.CT_HidD_GetHIDSerialNumber(out string device_sn);
+
+                    myUSB.CT_CloseFile();
+
+                    if(device_sn != "")
+                        devices.Add(device_sn);
+
                     numberOfDevices++;
                 }
+
                 device_count++;
-            }
+
+            } 
+
+            myUSB.CT_SetupDiDestroyDeviceInfoList();
+
             return devices;
         }
 

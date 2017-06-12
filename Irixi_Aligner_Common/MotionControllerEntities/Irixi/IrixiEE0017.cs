@@ -1,19 +1,22 @@
-﻿using System.Threading.Tasks;
-using Irixi_Aligner_Common.Configuration;
+﻿using Irixi_Aligner_Common.Configuration;
+using Irixi_Aligner_Common.Interfaces;
 using IrixiStepperControllerHelper;
 using System;
-using Irixi_Aligner_Common.Interfaces;
-using System.Windows;
+using System.Threading.Tasks;
 
 namespace Irixi_Aligner_Common.MotionControllerEntities
 {
     public class IrixiEE0017 : MotionControllerBase<IrixiAxis>
     {
-
-
         #region Variables
-        public EventHandler<string> OnPushMessage;
+        /// <summary>
+        /// Raise when some messages are generated and pass the messages to the subscriber
+        /// </summary>
+        public EventHandler<string> OnNewMessage;
 
+        /// <summary>
+        /// The instance of the IrixiMotionController class
+        /// </summary>
         IrixiMotionController _controller;
 
         #endregion
@@ -28,13 +31,11 @@ namespace Irixi_Aligner_Common.MotionControllerEntities
             _controller.OnReportUpdated += _controller_OnReportUpdated;
         }
 
-        
-
         #endregion
 
         #region Private Methods
         /// <summary>
-        /// If the device was lost, reconnect it
+        /// The event will be raised after the status of the controller is changed
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
@@ -43,28 +44,30 @@ namespace Irixi_Aligner_Common.MotionControllerEntities
             switch (e.Event)
             {
                 case ConnectionEventArgs.EventType.ConnectionSuccess:
-                    OnPushMessage?.Invoke(this, "connected to the device");
+                    OnNewMessage?.Invoke(this, "Connected!");
                     break;
 
                 case ConnectionEventArgs.EventType.TotalAxesReturned:
-                    OnPushMessage?.Invoke(this, string.Format("the total of axes is {0}", e.Content));
+                    OnNewMessage?.Invoke(this, string.Format("The total of axes is {0}", e.Content));
                     this.IsInitialized = true;
                     break;
 
                 case ConnectionEventArgs.EventType.ConnectionLost:
-                    OnPushMessage?.Invoke(this, "connection was lost, reconnecting ...");
+                    OnNewMessage?.Invoke(this, "Connection was lost, retry ...");
                     this.IsInitialized = false;
-                    Init();
+
+                    // Start to reconnect the controller
+                    Init().Start();
                     break;
 
             }
         }
 
         /// <summary>
-        /// Update the Axis state if a HID report was received
+        /// The event will be raised after a HID report is received
         /// </summary>
         /// <param name="sender"></param>
-        /// <param name="e"></param>
+        /// <param name="e">The HID Report</param>
         private void _controller_OnReportUpdated(object sender, DeviceStateReport e)
         {
             foreach (var state in e.AxisStateCollection)
@@ -77,6 +80,10 @@ namespace Irixi_Aligner_Common.MotionControllerEntities
         #endregion
 
         #region Methods
+        /// <summary>
+        /// Initialize the motion controller
+        /// </summary>
+        /// <returns></returns>
         public override Task<bool> Init()
         {
             // implement the common process
@@ -102,6 +109,11 @@ namespace Irixi_Aligner_Common.MotionControllerEntities
             
         }
 
+        /// <summary>
+        /// Home the specified axis
+        /// </summary>
+        /// <param name="Axis">The instance of the IrixiAxis class</param>
+        /// <returns></returns>
         public override Task<bool> Home(IAxis Axis)
         {
             return new Task<bool>(() =>
@@ -126,10 +138,14 @@ namespace Irixi_Aligner_Common.MotionControllerEntities
 
                     try
                     {
+                        // start homing
                         ret = _controller.HomeAsync(_axis.AxisIndex).Result;
 
                         if (ret)
                         {
+                            // set the rel position to 0 after homing
+                            _axis.ClearRelPosition();
+
                             ret = true;
                         }
                         else
@@ -162,7 +178,14 @@ namespace Irixi_Aligner_Common.MotionControllerEntities
             });
         }
 
- 
+        /// <summary>
+        /// Move the specified axis with specified parameters
+        /// </summary>
+        /// <param name="Axis">The instance of the IrixiAxis class</param>
+        /// <param name="Mode">Abs or Rel</param>
+        /// <param name="Speed">The velocity to move</param>
+        /// <param name="Distance">The distance to move</param>
+        /// <returns></returns>
         public override Task<bool> Move(IAxis Axis, MoveMode Mode, int Speed, int Distance)
         {
             return new Task<bool>(() =>

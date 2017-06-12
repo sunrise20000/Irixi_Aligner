@@ -160,6 +160,11 @@ namespace Irixi_Aligner_Common.Interfaces
         /// </summary>
         void ToggleMoveMode();
 
+        /// <summary>
+        /// Set the relative position to 0
+        /// </summary>
+        void ClearRelPosition();
+
         #endregion
 
     }

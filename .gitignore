@@ -8,3 +8,6 @@ StepperControllerDebuger/obj/
 StepperControllerLib/obj/
 USBHIDDRIVER/bin/
 USBHIDDRIVER/obj/
+StepperControllerLib/bin/
+packages/
+Irixi_Aligner_Common/ExtDlls/
