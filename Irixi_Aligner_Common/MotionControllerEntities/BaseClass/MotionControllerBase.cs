@@ -1,13 +1,14 @@
 ﻿using Irixi_Aligner_Common.Configuration;
 using Irixi_Aligner_Common.Interfaces;
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
 
 namespace Irixi_Aligner_Common.MotionControllerEntities
 {
-    public class MotionControllerBase<T> : IMotionController
+    public class MotionControllerBase<T> : IMotionController, IDisposable
         where T : IAxis, new()
     {
         #region Variables
@@ -21,6 +22,7 @@ namespace Irixi_Aligner_Common.MotionControllerEntities
         /// lock while operating the property of RunningAxesSum
         /// </summary>
         object _lock_runingaxessum = new object();
+
         #endregion
 
         #region Constructor
@@ -33,7 +35,7 @@ namespace Irixi_Aligner_Common.MotionControllerEntities
             this.Port = _config.Port;
             this.IsEnabled = Config.Enabled;
             this.IsInitialized = false;
-            this.AxisCollection = new ObservableCollection<IAxis>();
+            this.AxisCollection = new Dictionary<string, IAxis>();
             this.RunningAxesSum = 0;
 
             //
@@ -45,7 +47,7 @@ namespace Irixi_Aligner_Common.MotionControllerEntities
                 T _axis = new T();
                 _axis.SetParameters(i, _axis_cfg, this);
 
-                this.AxisCollection.Add(_axis);
+                this.AxisCollection.Add(_axis_cfg.Name, _axis);
                 i++;
             }
         } 
@@ -76,7 +78,7 @@ namespace Irixi_Aligner_Common.MotionControllerEntities
             }
         }
 
-        public ObservableCollection<IAxis> AxisCollection { private set; get; }
+        public Dictionary<string, IAxis>AxisCollection { private set; get; }
 
         public int RunningAxesSum { private set; get; }
 
@@ -92,7 +94,7 @@ namespace Irixi_Aligner_Common.MotionControllerEntities
                     return true;
                 else
                 {
-                    this.LastError = "the controller is configured to be disabled";
+                    this.LastError = "the controller is disabled";
                     return false;
                 }
             });
@@ -106,7 +108,7 @@ namespace Irixi_Aligner_Common.MotionControllerEntities
 
                 if (!this.IsEnabled) // the controller is configured to be disabled in the config file
                 {
-                    Axis.LastError = "the controller is configured to be disabled";
+                    Axis.LastError = "the controller is disabled";
                 }
                 else if (!this.IsInitialized)   // the controller is not initialized
                     {
@@ -114,7 +116,7 @@ namespace Irixi_Aligner_Common.MotionControllerEntities
                 }
                 else if (!Axis.IsEnabled)   // the axis moved is disabled in the config file
                 {
-                    Axis.LastError = "the axis is configured to be disabled";
+                    Axis.LastError = "the axis is disabled";
                 }
                 else
                     ret = true;
@@ -203,13 +205,21 @@ namespace Irixi_Aligner_Common.MotionControllerEntities
         /// <returns></returns>
         public IAxis FindAxisByName(string Name)
         {
-            // Get the axis with the unit property equels the specified value
-            var axis = from c in this.AxisCollection where (c.AxisName.ToLower() == Name.ToLower()) select c;
+            //// Get the axis with the unit property equels the specified value
+            //var axis = from c in this.AxisCollection where (c.AxisName.ToLower() == Name.ToLower()) select c;
 
-            if (axis.Any()) // If the axis which was specified by name was found
-                return axis.ToList()[0];
-            else
-                return null;
+            //if (axis.Any()) // If the axis which was specified by name was found
+            //    return axis.ToList()[0];
+            //else
+            //    return null;
+            try
+            {
+                return (T)this.AxisCollection[Name];
+            }
+            catch
+            {
+                return default(T);
+            }
         }
 
         /// <summary>
@@ -227,7 +237,12 @@ namespace Irixi_Aligner_Common.MotionControllerEntities
         {
             OnHomeCompleted?.Invoke(this, new EventArgs());
         }
-      
+
+        public virtual void Dispose()
+        {
+            throw new NotImplementedException();
+        }
+
         #endregion
     }
 }

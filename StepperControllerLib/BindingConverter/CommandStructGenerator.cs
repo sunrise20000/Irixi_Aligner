@@ -18,10 +18,10 @@ namespace IrixiStepperControllerHelper.BindingConverter
                     AxisIndex = System.Convert.ToInt32(values[1]),
                     DriveVelocity = System.Convert.ToInt32(values[2]),
                     TotalSteps = System.Convert.ToInt32(values[3]),
-                    Mode = (bool)(values[4]) ? EnumMoveMode.ABS : EnumMoveMode.REL,
+                    Mode = (bool)(values[4]) ? MoveMode.ABS : MoveMode.REL,
                 };
 
-                if (cmd.Mode == EnumMoveMode.REL && values[5].ToString() == "-")
+                if (cmd.Mode == MoveMode.REL && values[5].ToString() == "-")
                     cmd.TotalSteps *= -1;
 
                 return cmd;

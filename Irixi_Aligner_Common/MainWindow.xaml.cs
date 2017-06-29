@@ -53,7 +53,8 @@ namespace Irixi_Aligner_Common
             var config = locator.Configuration;
             config.WriteSnapshotGUI();
 
-                
+            locator.Service.Dispose();
         }
     }
+
 }

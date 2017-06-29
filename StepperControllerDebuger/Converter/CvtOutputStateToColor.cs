@@ -1,17 +1,18 @@
-﻿using System;
+﻿using IrixiStepperControllerHelper;
+using System;
 using System.Globalization;
 using System.Windows.Data;
 using System.Windows.Media;
 
 namespace StepperControllerDebuger.Converter
 {
-    public class CvtBooleanToColorReserve : IValueConverter
+    public class CvtOutputStateToColor : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            if (bool.TryParse(value.ToString(), out bool ret))
+            if ((OutputState)value == OutputState.Enabled)
             {
-                return ret ? new SolidColorBrush(Colors.Red) : new SolidColorBrush(Colors.Lime);
+                return new SolidColorBrush(Colors.Lime);
             }
             else
                 return new SolidColorBrush(Colors.DimGray);

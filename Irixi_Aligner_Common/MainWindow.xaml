@@ -13,25 +13,27 @@
     xmlns:Controls="clr-namespace:Irixi_Aligner_Common.Controls"
     xmlns:Converters="clr-namespace:Irixi_Aligner_Common.Classes.Converters"
     xmlns:Configuration="clr-namespace:Irixi_Aligner_Common.Configuration"
+    xmlns:BindingConverter="clr-namespace:IrixiStepperControllerHelper.BindingConverter;assembly=IrixiStepperControllerHelper"
     mc:Ignorable="d"
     x:Class="Irixi_Aligner_Common.MainWindow"
-    Title="Irixi Alignment System for 2x25G/10x10G" 
+    Title="Irixi Alignment System for 2x25G/10x10G Tx/Rx" 
     d:DesignHeight="1200" 
     d:DesignWidth="1929"
-    dx:ThemeManager.ThemeName="Office2013"
+    dx:ThemeManager.ThemeName="MetropolisLight"
     SnapsToDevicePixels="True" 
     UseLayoutRounding="True" 
     Loaded="DXRibbonWindow_Loaded" 
     WindowState="Maximized" Closing="DXRibbonWindow_Closing"
     >
     <dxr:DXRibbonWindow.Resources>
+        <BindingConverter:CvtOutputStateToBool x:Key="CvtOutputStateToBool"/>
         <Configuration:ConvertStringToPoint x:Key="ConvertStringToPoint"/>
         <Converters:SystemStatusToStartButtonEnable x:Key="SystemStatusToStartButtonEnable"/>
         <Style x:Key="AxisControlStyle1" TargetType="{x:Type Controls:Axis}">
             <Setter Property="Height" Value="35"/>
         </Style>
         <Style x:Key="AxisItemTitleStyle1" TargetType="{x:Type Grid}">
-            <Setter Property="Height" Value="30"/>
+            <Setter Property="Height" Value="20"/>
         </Style>
     </dxr:DXRibbonWindow.Resources>
     <DockPanel DataContext="{Binding Source={StaticResource Locator}}">
@@ -49,19 +51,37 @@
                 </dxr:ApplicationMenu>
             </dxr:RibbonControl.ApplicationMenu>
             <dxr:RibbonDefaultPageCategory>
-                <dxr:RibbonPage x:Name="Home" Caption="Home">
+                <dxr:RibbonPage x:Name="rpHome" Caption="Home">
                     <dxr:RibbonPageGroup Caption="Actions">
                         <dxb:BarButtonItem Content="Home" Glyph="{dx:DXImageOffice2013 Image=Solution_16x16.png}" LargeGlyph="{dx:DXImageOffice2013 Image=Solution_32x32.png}" Command="{Binding Service.CommandHomeAllAxes}" />
                         <dxb:BarButtonItem Content="Start" RibbonStyle="SmallWithText" Glyph="{dx:DXImageOffice2013 Image=Solution_16x16.png}" LargeGlyph="{dx:DXImageOffice2013 Image=Solution_32x32.png}" IsEnabled="{Binding Service.State, Converter={StaticResource SystemStatusToStartButtonEnable}}" />
                         <dxb:BarButtonItem Content="Stop" Glyph="{dx:DXImageOffice2013 Image=Solution_16x16.png}" LargeGlyph="{dx:DXImageOffice2013 Image=Solution_32x32.png}" IsEnabled="{Binding Service.State, Converter={StaticResource SystemStatusToStopButtonEnable}}" RibbonStyle="SmallWithText"/>
                     </dxr:RibbonPageGroup>
+                    <dxr:RibbonPageGroup Caption="Preset Position">
+                        <dxb:BarButtonItem Content="VGroove" Glyph="{dx:DXImageOffice2013 Image=Solution_16x16.png}" LargeGlyph="{dx:DXImageOffice2013 Image=Solution_32x32.png}" />
+                        <dxb:BarButtonItem Content="Lens" Glyph="{dx:DXImageOffice2013 Image=Solution_16x16.png}" LargeGlyph="{dx:DXImageOffice2013 Image=Solution_32x32.png}" />
+                        <dxb:BarButtonItem Content="POD" Glyph="{dx:DXImageOffice2013 Image=Solution_16x16.png}" LargeGlyph="{dx:DXImageOffice2013 Image=Solution_32x32.png}" />
+                        <dxb:BarButtonItem Content="Top Cam" Glyph="{dx:DXImageOffice2013 Image=Solution_16x16.png}" LargeGlyph="{dx:DXImageOffice2013 Image=Solution_32x32.png}" />
+                        <dxb:BarButtonItem Content="Angle Cam" Glyph="{dx:DXImageOffice2013 Image=Solution_16x16.png}" LargeGlyph="{dx:DXImageOffice2013 Image=Solution_32x32.png}" />
+                        <dxb:BarButtonItem Content="Front Cam" Glyph="{dx:DXImageOffice2013 Image=Solution_16x16.png}" LargeGlyph="{dx:DXImageOffice2013 Image=Solution_32x32.png}" />
+                    </dxr:RibbonPageGroup>
+                    <dxr:RibbonPageGroup Caption="Alignment">
+                        <dxb:BarButtonItem Content="Blind Search" Glyph="{dx:DXImageOffice2013 Image=Solution_16x16.png}" LargeGlyph="{dx:DXImageOffice2013 Image=Solution_32x32.png}" />
+                        <dxb:BarButtonItem Content="Fast Alignment" Glyph="{dx:DXImageOffice2013 Image=Solution_16x16.png}" LargeGlyph="{dx:DXImageOffice2013 Image=Solution_32x32.png}" />
+                        <dxb:BarButtonItem Content="Alignment 2D" Glyph="{dx:DXImageOffice2013 Image=Solution_16x16.png}" LargeGlyph="{dx:DXImageOffice2013 Image=Solution_32x32.png}" />
+                    </dxr:RibbonPageGroup>
+                </dxr:RibbonPage>
+                <dxr:RibbonPage x:Name="rpView" Caption="View">
                     <dxr:RibbonPageGroup Caption="Actuators Control Panel">
-                        <dxb:BarCheckItem Content="V-Groove" Glyph="{dx:DXImageOffice2013 Image=Solution_16x16.png}" LargeGlyph="{dx:DXImageOffice2013 Image=Solution_32x32.png}" IsChecked="{Binding Closed, ElementName=PanelVGrooveAligner}" RibbonStyle="Default" />
+                        <dxb:BarCheckItem Content="VGroove" Glyph="{dx:DXImageOffice2013 Image=Solution_16x16.png}" LargeGlyph="{dx:DXImageOffice2013 Image=Solution_32x32.png}" IsChecked="{Binding Closed, ElementName=PanelVGrooveAligner}" RibbonStyle="Default" />
                         <dxb:BarCheckItem Content="Lens" Glyph="{dx:DXImageOffice2013 Image=Solution_16x16.png}" LargeGlyph="{dx:DXImageOffice2013 Image=Solution_32x32.png}" RibbonStyle="Default" IsChecked="{Binding Closed, ElementName=PanelLensAligner}" />
-                        <dxb:BarCheckItem Content="COS" Glyph="{dx:DXImageOffice2013 Image=Solution_16x16.png}" LargeGlyph="{dx:DXImageOffice2013 Image=Solution_32x32.png}" RibbonStyle="Default" IsChecked="{Binding Closed, ElementName=PanelCOSAligner}" />
-                        <dxb:BarCheckItem Content="Top Camera" Glyph="{dx:DXImageOffice2013 Image=Solution_16x16.png}" LargeGlyph="{dx:DXImageOffice2013 Image=Solution_32x32.png}" RibbonStyle="Default" IsChecked="{Binding Closed, ElementName=TopCameraBracket}" />
-                        <dxb:BarCheckItem Content="Front Camera" Glyph="{dx:DXImageOffice2013 Image=Solution_16x16.png}" LargeGlyph="{dx:DXImageOffice2013 Image=Solution_32x32.png}" RibbonStyle="Default" IsChecked="{Binding Closed, ElementName=FrontCameraBracket}" />
-                        <dxb:BarCheckItem Content="Angular Camera" Glyph="{dx:DXImageOffice2013 Image=Solution_16x16.png}" LargeGlyph="{dx:DXImageOffice2013 Image=Solution_32x32.png}" RibbonStyle="Default" IsChecked="{Binding Closed, ElementName=AngularCameraBracket}" />
+                        <dxb:BarCheckItem Content="POD" Glyph="{dx:DXImageOffice2013 Image=Solution_16x16.png}" LargeGlyph="{dx:DXImageOffice2013 Image=Solution_32x32.png}" RibbonStyle="Default" IsChecked="{Binding Closed, ElementName=PanelCOSAligner}" />
+                        <dxb:BarCheckItem Content="Top Cam" Glyph="{dx:DXImageOffice2013 Image=Solution_16x16.png}" LargeGlyph="{dx:DXImageOffice2013 Image=Solution_32x32.png}" RibbonStyle="Default" IsChecked="{Binding Closed, ElementName=TopCameraBracket}" />
+                        <dxb:BarCheckItem Content="Front Cam" Glyph="{dx:DXImageOffice2013 Image=Solution_16x16.png}" LargeGlyph="{dx:DXImageOffice2013 Image=Solution_32x32.png}" RibbonStyle="Default" IsChecked="{Binding Closed, ElementName=FrontCameraBracket}" />
+                        <dxb:BarCheckItem Content="Angle Cam" Glyph="{dx:DXImageOffice2013 Image=Solution_16x16.png}" LargeGlyph="{dx:DXImageOffice2013 Image=Solution_32x32.png}" RibbonStyle="Default" IsChecked="{Binding Closed, ElementName=AngularCameraBracket}" />
+                    </dxr:RibbonPageGroup>
+                    <dxr:RibbonPageGroup Caption="Equipments">
+                        <dxb:BarCheckItem Content="Cylinders" Glyph="{dx:DXImageOffice2013 Image=Solution_16x16.png}" LargeGlyph="{dx:DXImageOffice2013 Image=Solution_32x32.png}" RibbonStyle="Default" IsChecked="{Binding Closed, ElementName=CylinderControlPanel}" />
                     </dxr:RibbonPageGroup>
                 </dxr:RibbonPage>
             </dxr:RibbonDefaultPageCategory>
@@ -134,8 +154,8 @@
                                 </StackPanel>
                             </dxd:DocumentPanel>
 
-                            <!-- The control panel of Top COS alginer -->
-                            <dxd:DocumentPanel x:Name="PanelCOSAligner" Caption="{Binding Service.LogicalAlignerlayout.COSAligner.DisplayName}" MDILocation="{Binding Configuration.Snapshot.PanelLocation.COSAligner.MDILocation, Converter={StaticResource ConvertStringToPoint}, Mode=TwoWay}" MDISize="500,280" ShowMinimizeButton="False" ShowMaximizeButton="False" AllowSizing="False" AllowRename="False" AllowDock="False" AllowMaximize="False" Visibility="{Binding Configuration.Snapshot.PanelLocation.COSAligner.Visibility, Mode=TwoWay}">
+                            <!-- The control panel of Top POD alginer -->
+                            <dxd:DocumentPanel x:Name="PanelPODAligner" Caption="{Binding Service.LogicalAlignerlayout.PODAligner.DisplayName}" MDILocation="{Binding Configuration.Snapshot.PanelLocation.PODAligner.MDILocation, Converter={StaticResource ConvertStringToPoint}, Mode=TwoWay}" MDISize="500,380" ShowMinimizeButton="False" ShowMaximizeButton="False" AllowSizing="False" AllowRename="False" AllowDock="False" AllowMaximize="False" Visibility="{Binding Configuration.Snapshot.PanelLocation.PODAligner.Visibility, Mode=TwoWay}">
                                 <StackPanel Orientation="Vertical">
                                     <Grid Style="{StaticResource AxisItemTitleStyle1}">
                                         <Grid.ColumnDefinitions>
@@ -155,17 +175,20 @@
                                         <TextBlock Text="Distance" VerticalAlignment="Center" Grid.Column="5" HorizontalAlignment="Center"/>
                                         <TextBlock Text="Move" VerticalAlignment="Center" Grid.Column="8" HorizontalAlignment="Center"/>
                                     </Grid>
-                                    <Controls:Axis SystemService="{Binding Service}" LogicalAxis="{Binding SystemService.LogicalAlignerlayout.COSAligner.AxisX, RelativeSource={RelativeSource Self}}" Style="{DynamicResource AxisControlStyle1}"/>
-                                    <Controls:Axis SystemService="{Binding Service}" LogicalAxis="{Binding SystemService.LogicalAlignerlayout.COSAligner.AxisY, RelativeSource={RelativeSource Self}}" Style="{DynamicResource AxisControlStyle1}"/>
-                                    <Controls:Axis SystemService="{Binding Service}" LogicalAxis="{Binding SystemService.LogicalAlignerlayout.COSAligner.AxisZ, RelativeSource={RelativeSource Self}}" Style="{DynamicResource AxisControlStyle1}"/>
-                                    <Controls:Axis SystemService="{Binding Service}" LogicalAxis="{Binding SystemService.LogicalAlignerlayout.COSAligner.AxisRoll, RelativeSource={RelativeSource Self}}" Style="{DynamicResource AxisControlStyle1}"/>
-                                    <Controls:Axis SystemService="{Binding Service}" LogicalAxis="{Binding SystemService.LogicalAlignerlayout.COSAligner.AxisYaw, RelativeSource={RelativeSource Self}}" Style="{DynamicResource AxisControlStyle1}"/>
-                                    <Controls:Axis SystemService="{Binding Service}" LogicalAxis="{Binding SystemService.LogicalAlignerlayout.COSAligner.AxisPitch, RelativeSource={RelativeSource Self}}" Style="{DynamicResource AxisControlStyle1}"/>
+                                    <Controls:Axis SystemService="{Binding Service}" LogicalAxis="{Binding SystemService.LogicalAlignerlayout.PODAligner.AxisX, RelativeSource={RelativeSource Self}}" Style="{DynamicResource AxisControlStyle1}"/>
+                                    <Controls:Axis SystemService="{Binding Service}" LogicalAxis="{Binding SystemService.LogicalAlignerlayout.PODAligner.AxisY, RelativeSource={RelativeSource Self}}" Style="{DynamicResource AxisControlStyle1}"/>
+                                    <Controls:Axis SystemService="{Binding Service}" LogicalAxis="{Binding SystemService.LogicalAlignerlayout.PODAligner.AxisZ, RelativeSource={RelativeSource Self}}" Style="{DynamicResource AxisControlStyle1}"/>
+                                    <Controls:Axis SystemService="{Binding Service}" LogicalAxis="{Binding SystemService.LogicalAlignerlayout.PODAligner.AxisRoll, RelativeSource={RelativeSource Self}}" Style="{DynamicResource AxisControlStyle1}"/>
+                                    <Controls:Axis SystemService="{Binding Service}" LogicalAxis="{Binding SystemService.LogicalAlignerlayout.PODAligner.AxisYaw, RelativeSource={RelativeSource Self}}" Style="{DynamicResource AxisControlStyle1}"/>
+                                    <Controls:Axis SystemService="{Binding Service}" LogicalAxis="{Binding SystemService.LogicalAlignerlayout.PODAligner.AxisPitch, RelativeSource={RelativeSource Self}}" Style="{DynamicResource AxisControlStyle1}"/>
+                                    <Controls:Axis SystemService="{Binding Service}" LogicalAxis="{Binding SystemService.LogicalAlignerlayout.PODAligner.AxisBigX, RelativeSource={RelativeSource Self}}" Style="{DynamicResource AxisControlStyle1}"/>
+                                    <Controls:Axis SystemService="{Binding Service}" LogicalAxis="{Binding SystemService.LogicalAlignerlayout.PODAligner.AxisBigY, RelativeSource={RelativeSource Self}}" Style="{DynamicResource AxisControlStyle1}"/>
+                                    <Controls:Axis SystemService="{Binding Service}" LogicalAxis="{Binding SystemService.LogicalAlignerlayout.PODAligner.AxisProbeZ, RelativeSource={RelativeSource Self}}" Style="{DynamicResource AxisControlStyle1}"/>
                                 </StackPanel>
                             </dxd:DocumentPanel>
 
                             <!-- The control panel of Top Camera Bracket -->
-                            <dxd:DocumentPanel x:Name="TopCameraBracket" Caption="{Binding Service.LogicalAlignerlayout.TopCamera.DisplayName}" MDILocation="{Binding Configuration.Snapshot.PanelLocation.TopCameraBracket.MDILocation, Converter={StaticResource ConvertStringToPoint}, Mode=TwoWay}" MDISize="500,175" ShowMinimizeButton="False" ShowMaximizeButton="False" AllowSizing="False" AllowRename="False" AllowDock="False" AllowMaximize="False" Visibility="{Binding Configuration.Snapshot.PanelLocation.TopCameraBracket.Visibility, Mode=TwoWay}">
+                            <dxd:DocumentPanel x:Name="TopCameraBracket" Caption="{Binding Service.LogicalAlignerlayout.TopCamera.DisplayName}" MDILocation="{Binding Configuration.Snapshot.PanelLocation.TopCameraBracket.MDILocation, Converter={StaticResource ConvertStringToPoint}, Mode=TwoWay}" MDISize="500,180" ShowMinimizeButton="False" ShowMaximizeButton="False" AllowSizing="False" AllowRename="False" AllowDock="False" AllowMaximize="False" Visibility="{Binding Configuration.Snapshot.PanelLocation.TopCameraBracket.Visibility, Mode=TwoWay}">
                                 <StackPanel Orientation="Vertical">
                                     <Grid Style="{StaticResource AxisItemTitleStyle1}">
                                         <Grid.ColumnDefinitions>
@@ -192,7 +215,7 @@
                             </dxd:DocumentPanel>
 
                             <!-- The control panel of Front Camera Bracket -->
-                            <dxd:DocumentPanel x:Name="FrontCameraBracket" Caption="{Binding Service.LogicalAlignerlayout.FrontCamera.DisplayName}" MDILocation="{Binding Configuration.Snapshot.PanelLocation.FrontCameraBracket.MDILocation, Converter={StaticResource ConvertStringToPoint}, Mode=TwoWay}" MDISize="500,175" ShowMinimizeButton="False" ShowMaximizeButton="False" AllowSizing="False" AllowRename="False" AllowDock="False" AllowMaximize="False" Visibility="{Binding Configuration.Snapshot.PanelLocation.FrontCameraBracket.Visibility, Mode=TwoWay}" >
+                            <dxd:DocumentPanel x:Name="FrontCameraBracket" Caption="{Binding Service.LogicalAlignerlayout.FrontCamera.DisplayName}" MDILocation="{Binding Configuration.Snapshot.PanelLocation.FrontCameraBracket.MDILocation, Converter={StaticResource ConvertStringToPoint}, Mode=TwoWay}" MDISize="500,170" ShowMinimizeButton="False" ShowMaximizeButton="False" AllowSizing="False" AllowRename="False" AllowDock="False" AllowMaximize="False" Visibility="{Binding Configuration.Snapshot.PanelLocation.FrontCameraBracket.Visibility, Mode=TwoWay}" >
                                 <StackPanel Orientation="Vertical">
                                     <Grid Style="{StaticResource AxisItemTitleStyle1}">
                                         <Grid.ColumnDefinitions>
@@ -219,7 +242,7 @@
                             </dxd:DocumentPanel>
 
                             <!-- The control panel of Top Angle Bracket -->
-                            <dxd:DocumentPanel x:Name="AngularCameraBracket" Caption="{Binding Service.LogicalAlignerlayout.AngleCamera.DisplayName}" MDILocation="{Binding Configuration.Snapshot.PanelLocation.AngularCameraBracket.MDILocation, Converter={StaticResource ConvertStringToPoint}, Mode=TwoWay}" MDISize="500,175" ShowMinimizeButton="False" ShowMaximizeButton="False" AllowSizing="False" AllowRename="False" AllowDock="False" AllowMaximize="False" Visibility="{Binding Configuration.Snapshot.PanelLocation.AngularCameraBracket.Visibility, Mode=TwoWay}" >
+                            <dxd:DocumentPanel x:Name="AngularCameraBracket" Caption="{Binding Service.LogicalAlignerlayout.AngleCamera.DisplayName}" MDILocation="{Binding Configuration.Snapshot.PanelLocation.AngularCameraBracket.MDILocation, Converter={StaticResource ConvertStringToPoint}, Mode=TwoWay}" MDISize="500,170" ShowMinimizeButton="False" ShowMaximizeButton="False" AllowSizing="False" AllowRename="False" AllowDock="False" AllowMaximize="False" Visibility="{Binding Configuration.Snapshot.PanelLocation.AngularCameraBracket.Visibility, Mode=TwoWay}" >
                                 <StackPanel Orientation="Vertical">
                                     <Grid Style="{StaticResource AxisItemTitleStyle1}">
                                         <Grid.ColumnDefinitions>
@@ -244,10 +267,19 @@
                                     <Controls:Axis SystemService="{Binding Service}" LogicalAxis="{Binding SystemService.LogicalAlignerlayout.AngleCamera.AxisZ, RelativeSource={RelativeSource Self}}" Style="{DynamicResource AxisControlStyle1}"/>
                                 </StackPanel>
                             </dxd:DocumentPanel>
+                            <!-- The control panel of Cylinder -->
+                            <dxd:DocumentPanel x:Name="CylinderControlPanel" Caption="Cylinders"  MDISize="200,180" ShowMinimizeButton="False" ShowMaximizeButton="False" AllowSizing="False" AllowRename="False" AllowDock="False" AllowMaximize="False" Visibility="{Binding Configuration.Snapshot.PanelLocation.AngularCameraBracket.Visibility, Mode=TwoWay}" MDILocation="{Binding Configuration.Snapshot.PanelLocation.CylinderControlPanel.MDILocation, Converter={StaticResource ConvertStringToPoint}, Mode=TwoWay}">
+                                <StackPanel Orientation="Vertical" IsEnabled="{Binding Service.CylinderController.IsInitialized}">
+                                    <ToggleButton Height="30" Margin="0,2" Content="Fiber Clamp" Command="{Binding Service.CommandToggleFiberClampState, Mode=OneWay}" IsChecked="{Binding Service.CylinderController.FiberClampState, Converter={StaticResource CvtOutputStateToBool}, Mode=OneWay}"/>
+                                    <ToggleButton Height="30" Margin="0,2" Content="Lens Vacuum" Command="{Binding Service.CommandToggleLensVacuumState, Mode=OneWay}" IsChecked="{Binding Service.CylinderController.LensVacuumState, Converter={StaticResource CvtOutputStateToBool}, Mode=OneWay}"/>
+                                    <ToggleButton Height="30" Margin="0,2" Content="PLC Vacuum" Command="{Binding Service.CommandTogglePlcVacuumState, Mode=OneWay}" IsChecked="{Binding Service.CylinderController.PlcVacuumState, Converter={StaticResource CvtOutputStateToBool}, Mode=OneWay}"/>
+                                    <ToggleButton Height="30" Margin="0,2" Content="POD Vacuum" Command="{Binding Service.CommandTogglePodVacuumState, Mode=OneWay}" IsChecked="{Binding Service.CylinderController.PodVacuumState, Converter={StaticResource CvtOutputStateToBool}, Mode=OneWay}"/>
+                                </StackPanel>
+                            </dxd:DocumentPanel>
 
                         </dxd:DocumentGroup>
                     </dxd:LayoutGroup>
-                    
+
                     <dxd:TabbedGroup>
                         <dxd:LayoutPanel ItemWidth="300" Caption="Log">
                             <Grid>

@@ -1,12 +1,13 @@
 ﻿using Irixi_Aligner_Common.Configuration;
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Threading.Tasks;
 
 namespace Irixi_Aligner_Common.Interfaces
 {
 
-    public interface IMotionController
+    public interface IMotionController : IBaseEquipment
     {
         event EventHandler<string> OnErrorOccurred;
         event EventHandler<object> OnHomeCompleted;
@@ -40,37 +41,16 @@ namespace Irixi_Aligner_Common.Interfaces
         /// 0 indicates the motion controller is idle
         /// </summary>
         int RunningAxesSum { get; }
-       
-        /// <summary>
-        /// Get whehter the controller is available or not
-        /// </summary>
-        bool IsEnabled { get; }
-
-        /// <summary>
-        /// Get whether the controller has been initialized
-        /// </summary>
-        bool IsInitialized { get; }
-
-        /// <summary>
-        /// Get the last error message
-        /// </summary>
-        string LastError { get; }
 
         /// <summary>
         /// Get or set the collection of axes
         /// </summary>
-        ObservableCollection<IAxis> AxisCollection { get; }
+        Dictionary<string, IAxis> AxisCollection { get; }
 
         #endregion
 
         #region Methods
-
-        /// <summary>
-        /// Initialize the controller
-        /// </summary>
-        /// <returns></returns>
-        Task<bool> Init();
-
+        
         /// <summary>
         /// <see cref="IAxis.Home"/> for more infomation
         /// </summary>

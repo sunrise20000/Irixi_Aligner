@@ -40,24 +40,40 @@
         GENOUT = 10
     }
 
-    public enum EnumGeneralOutputState
-    {
-        OFF = 0,
-        ON
-    }
-
-    public enum EnumMoveMode
+    public enum MoveMode
     {
         REL = 0,
         ABS
     }
 
-    public enum EnumDirection
+    public enum Direction
     {
         CW = 0,
         CCW
     }
-    
+
+
+    /// <summary>
+    /// Input State
+    /// </summary>
+    public enum InputState
+    {
+        Triggered,
+        Untriggered
+    }
+
+    /// <summary>
+    /// Output State
+    /// </summary>
+    public enum OutputState
+    {
+        // The order can not be changed!
+        // According the hid protocol, write 0 to controller, the output port will be switched OFF, for 1 it's ON.
+        Disabled = 0,
+        Enabled = 1
+        
+    }
+
     public static class PublicDefinitions
     {
         /// <summary>

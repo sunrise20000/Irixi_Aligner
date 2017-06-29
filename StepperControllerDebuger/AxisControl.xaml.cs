@@ -139,30 +139,30 @@ namespace StepperControllerDebuger
 
         private void ckb_SetOutPortA_Checked(object sender, RoutedEventArgs e)
         {
-            this.SetOutPort.Execute(new Tuple<int, EnumGeneralOutputState>
+            this.SetOutPort.Execute(new Tuple<int, OutputState>
                 (this.AxisState.AxisIndex * 2,   // Convert Port A to channel 0, 2, 4
-                EnumGeneralOutputState.ON));    // Set ON
+                OutputState.Enabled));    // Set ON
         }
 
         private void ckb_SetOutPortA_Unchecked(object sender, RoutedEventArgs e)
         {
-            this.SetOutPort.Execute(new Tuple<int, EnumGeneralOutputState>
+            this.SetOutPort.Execute(new Tuple<int, OutputState>
                 (this.AxisState.AxisIndex * 2,   // Convert Port A to channel 0, 2, 4
-                EnumGeneralOutputState.OFF));    // Set OFF
+                OutputState.Disabled));    // Set OFF
         }
 
         private void ckb_SetOutPortB_Checked(object sender, RoutedEventArgs e)
         {
-            this.SetOutPort.Execute(new Tuple<int, EnumGeneralOutputState>
+            this.SetOutPort.Execute(new Tuple<int, OutputState>
                 (this.AxisState.AxisIndex * 2 + 1,   // Convert Port B to channel 1, 3, 5
-                EnumGeneralOutputState.ON));    // Set ON
+                OutputState.Enabled));    // Set ON
         }
 
         private void ckb_SetOutPortB_Unchecked(object sender, RoutedEventArgs e)
         {
-            this.SetOutPort.Execute(new Tuple<int, EnumGeneralOutputState>
+            this.SetOutPort.Execute(new Tuple<int, OutputState>
                 (this.AxisState.AxisIndex * 2 + 1,   // Convert Port B to channel 1, 3, 5
-                EnumGeneralOutputState.OFF));    // Set OFF
+                OutputState.Disabled));    // Set OFF
         }
     }
 }

@@ -1,6 +1,7 @@
 ﻿using Irixi_Aligner_Common.Configuration;
 using Irixi_Aligner_Common.Interfaces;
 using System.Threading.Tasks;
+using Zaber;
 
 namespace Irixi_Aligner_Common.MotionControllerEntities
 {
@@ -14,7 +15,9 @@ namespace Irixi_Aligner_Common.MotionControllerEntities
         /// <summary>
         /// Get the instance of axis from luminos sdk
         /// </summary>
-        public PositionerLib.Axis LuminosAxisInstance { private set; get; }
+        ////public PositionerLib.Axis LuminosAxisInstance { private set; get; }
+
+        public Conversation ZaberConversation { private set; get; }
 
         #endregion
 
@@ -24,13 +27,21 @@ namespace Irixi_Aligner_Common.MotionControllerEntities
         /// Set instance of luminos axis of stage
         /// </summary>
         /// <param name="AxisInstance"></param>
-        public void RegisterLuminosSDKAxis(PositionerLib.Axis AxisInstance)
-        {
-            this.LuminosAxisInstance = AxisInstance;
-            this.LuminosAxisInstance.OnChanged += LuminosAxisInstance_OnChanged;
-            this.LuminosAxisInstance.OnPositionUpdate += LuminosAxisInstance_OnPositionUpdate;
-        }
+        ////public void RegisterLuminosSDKAxis(PositionerLib.Axis AxisInstance)
+        ////{
+        ////    this.LuminosAxisInstance = AxisInstance;
+        ////    this.LuminosAxisInstance.OnChanged += LuminosAxisInstance_OnChanged;
+        ////    this.LuminosAxisInstance.OnPositionUpdate += LuminosAxisInstance_OnPositionUpdate;
+        ////}
 
+        /// <summary>
+        /// Set the zaber conversation
+        /// </summary>
+        /// <param name="cs"></param>
+        public void RegisterZaberConversation(Conversation cs)
+        {
+            this.ZaberConversation = cs;
+        }
         #endregion
 
         #region Events raised by luminos sdk
@@ -48,25 +59,25 @@ namespace Irixi_Aligner_Common.MotionControllerEntities
         /// The state of the axis has changed, update the corresponding properties
         /// </summary>
         /// <param name="PropID"></param>
-        private void LuminosAxisInstance_OnChanged(PositionerLib.AxisPropertyID PropID)
-        {
-            switch (PropID)
-            {
-                // Set the manual control of the actuator
-                case PositionerLib.AxisPropertyID.AxisManualEnabledID:
-                    this.IsManualEnabled = this.LuminosAxisInstance.ManualEnabled;
-                    break;
+        ////private void LuminosAxisInstance_OnChanged(PositionerLib.AxisPropertyID PropID)
+        ////{
+        ////    switch (PropID)
+        ////    {
+        ////        // Set the manual control of the actuator
+        ////        case PositionerLib.AxisPropertyID.AxisManualEnabledID:
+        ////            this.IsManualEnabled = this.LuminosAxisInstance.ManualEnabled;
+        ////            break;
 
-                case PositionerLib.AxisPropertyID.AxisRequiresHomingID:
-                    this.IsHomed = !this.LuminosAxisInstance.RequiresHoming;
-                    break;
+        ////        case PositionerLib.AxisPropertyID.AxisRequiresHomingID:
+        ////            this.IsHomed = !this.LuminosAxisInstance.RequiresHoming;
+        ////            break;
 
-                case PositionerLib.AxisPropertyID.AxisLastPositionID:
-                    this.AbsPosition = this.LuminosAxisInstance.LastPosition;
-                    break;
+        ////        case PositionerLib.AxisPropertyID.AxisLastPositionID:
+        ////            this.AbsPosition = this.LuminosAxisInstance.LastPosition;
+        ////            break;
 
-            }
-        }
+        ////    }
+        ////}
 
         #endregion
     }

@@ -12,10 +12,10 @@ namespace IrixiStepperControllerHelper
         public int AccSteps { set; get; }
         public int DriveVelocity { set; get; }
         public int TotalSteps { set; get; }
-        public EnumMoveMode Mode { set; get; }
+        public MoveMode Mode { set; get; }
 
         public int GenOutPort { set; get; }
-        public EnumGeneralOutputState GenOutState { set; get; }
+        public OutputState GenOutState { set; get; }
 
         /// <summary>
         /// Convert the command struct to the byte array

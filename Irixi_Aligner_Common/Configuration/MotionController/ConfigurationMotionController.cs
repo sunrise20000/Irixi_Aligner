@@ -14,6 +14,9 @@ namespace Irixi_Aligner_Common.Configuration
         /// </summary>
         public bool LogEnabled { get; set; }
 
+
+        public ConfigurationCylinder Cylinder { get; set; }
+
         /// <summary>
         /// Layout of physical motion controllers
         /// </summary>

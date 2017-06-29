@@ -18,10 +18,10 @@ namespace Irixi_Aligner_Common.Configuration
 
             // Convert the string 
             MotionController = JsonConvert.DeserializeObject<ConfigurationMotionController>(json_string);
-        
+
             #endregion
 
-            #region Read the configration of motion controller
+            #region GUI snapshot
             // Read the JSON string from the config file
             reader = File.OpenText(@"Configuration\gui_snapshot.json");
             json_string = reader.ReadToEnd();

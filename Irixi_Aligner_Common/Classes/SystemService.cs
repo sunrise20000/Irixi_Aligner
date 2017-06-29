@@ -3,10 +3,12 @@ using GalaSoft.MvvmLight.Command;
 using GalaSoft.MvvmLight.Messaging;
 using Irixi_Aligner_Common.Classes.BaseClass;
 using Irixi_Aligner_Common.Configuration;
+using Irixi_Aligner_Common.Equipments;
 using Irixi_Aligner_Common.Interfaces;
 using Irixi_Aligner_Common.Message;
 using Irixi_Aligner_Common.MotionControllerEntities;
 using Irixi_Aligner_Common.ViewModel;
+using IrixiStepperControllerHelper;
 using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
@@ -16,7 +18,7 @@ using System.Windows;
 
 namespace Irixi_Aligner_Common.Classes
 {
-    public class SystemService : ViewModelBase
+    public class SystemService : ViewModelBase, IDisposable
     {
         #region Variables
         
@@ -70,12 +72,12 @@ namespace Irixi_Aligner_Common.Classes
             // enumerate all physical motion controllers defined in the config file
             foreach (var cfg in configmgr.MotionController.PhysicalMotionControllers)
             {
-                IMotionController ctrler = null;
+                IMotionController _mc = null;
 
                 switch (cfg.Model)
                 {
                     case MotionControllerModel.LUMINOS_P6A:
-                        ctrler = new LuminosP6A(cfg);
+                        _mc = new LuminosP6A(cfg);
                         break;
 
                     case MotionControllerModel.THORLABS_TDC001:
@@ -83,8 +85,8 @@ namespace Irixi_Aligner_Common.Classes
                         break;
 
                     case MotionControllerModel.IRIXI_EE0017:
-                        ctrler = new IrixiEE0017(cfg);
-                        ((IrixiEE0017)ctrler).OnNewMessage += ((sender, message) =>
+                        _mc = new IrixiEE0017(cfg);
+                        ((IrixiEE0017)_mc).OnMessageReported += ((sender, message) =>
                         {
 
                             Application.Current.Dispatcher.Invoke(() =>
@@ -100,9 +102,9 @@ namespace Irixi_Aligner_Common.Classes
                 }
 
                 // Add the controller to the dictionary<Guid, Controller>
-                if (ctrler != null)
+                if (_mc != null)
                 {
-                    this.PhysicalMotionControllerCollection.Add(ctrler.DevClass, ctrler);
+                    this.PhysicalMotionControllerCollection.Add(_mc.DevClass, _mc);
                 }
             }
 
@@ -125,13 +127,16 @@ namespace Irixi_Aligner_Common.Classes
             BindPhysicalAxis(ref aligner, aligner.AxisYaw);
             BindPhysicalAxis(ref aligner, aligner.AxisPitch);
 
-            aligner = this.LogicalAlignerlayout.COSAligner;
+            aligner = this.LogicalAlignerlayout.PODAligner;
             BindPhysicalAxis(ref aligner, aligner.AxisX);
             BindPhysicalAxis(ref aligner, aligner.AxisY);
             BindPhysicalAxis(ref aligner, aligner.AxisZ);
             BindPhysicalAxis(ref aligner, aligner.AxisRoll);
             BindPhysicalAxis(ref aligner, aligner.AxisYaw);
             BindPhysicalAxis(ref aligner, aligner.AxisPitch);
+            BindPhysicalAxis(ref aligner, aligner.AxisBigX);
+            BindPhysicalAxis(ref aligner, aligner.AxisBigY);
+            BindPhysicalAxis(ref aligner, aligner.AxisProbeZ);
 
             aligner = this.LogicalAlignerlayout.TopCamera;
             BindPhysicalAxis(ref aligner, aligner.AxisX);
@@ -147,6 +152,28 @@ namespace Irixi_Aligner_Common.Classes
             BindPhysicalAxis(ref aligner, aligner.AxisX);
             BindPhysicalAxis(ref aligner, aligner.AxisY);
             BindPhysicalAxis(ref aligner, aligner.AxisZ);
+
+            // Initialize the cylinder controller
+            // Currently, the Irixi Motion Controller is used to controller the cylinder
+            try
+            {
+
+                IrixiEE0017 ctrl = PhysicalMotionControllerCollection[configmgr.MotionController.Cylinder.HardwareClass] as IrixiEE0017;
+                CylinderController = new CylinderController(
+                ctrl,
+                configmgr.MotionController.Cylinder.PedalInput,
+                configmgr.MotionController.Cylinder.FiberClampOutput,
+                configmgr.MotionController.Cylinder.LensVacuumOutput,
+                configmgr.MotionController.Cylinder.PLCVacuumOutput,
+                configmgr.MotionController.Cylinder.PODVacuumOutput
+                );
+                CylinderController.IsEnabled = configmgr.MotionController.Cylinder.Enabled;
+            }
+            catch (Exception e)
+            {
+                this.LastMessage = new MessageItem(MessageType.Error, "Unable to construct the cylinder controller class, {0}", e.Message);
+            }
+
         }
 
         #endregion
@@ -166,9 +193,10 @@ namespace Irixi_Aligner_Common.Classes
         {
             bool ret = false;
 
-            LogicalAxis.Parent = ParentAligner; // store the parent aligner to the logical axis
+            // set the parent aligner to the logical axis
+            LogicalAxis.Parent = ParentAligner; 
 
-            if (this.PhysicalMotionControllerCollection.ContainsKey(LogicalAxis.DeviceClass)) // check if the motion controller with the specified devclass exists?
+            if (this.PhysicalMotionControllerCollection.ContainsKey(LogicalAxis.DeviceClass)) // does the motion controller with the devclass exist?
             {
                 // find the axis in the specified controller by the axis name
                 LogicalAxis.PhysicalAxisInst = this.PhysicalMotionControllerCollection[LogicalAxis.DeviceClass].FindAxisByName(LogicalAxis.AxisName);
@@ -178,22 +206,22 @@ namespace Irixi_Aligner_Common.Classes
                     // Create a fake physical axis instance to tell UI this axis is disabled
                     LogicalAxis.PhysicalAxisInst = new AxisBase(-1, null, null);
                     
-                    this.LastMessage = new MessageItem(MessageType.Error, "{0} Bind physical axis error, unable to find the axis", LogicalAxis);
+                    this.LastMessage = new MessageItem(MessageType.Error, "{0} bind physical axis error, unable to find the axis", LogicalAxis);
 
                     ret = false;
                 }
-                else
+                else 
                 {
                     this.LogicalAxisCollection.Add(LogicalAxis);
                     ret = true;
                 }
             }
-            else
+            else // the controller with the specified DevClass does not exist
             {
                 // Create a fake physical axis instance to tell UI this axis is disabled
                 LogicalAxis.PhysicalAxisInst = new AxisBase(-1, null, null);
 
-                this.LastMessage = new MessageItem(MessageType.Error, "{0} Bind physical axis error, unable to find the controller with DevClass of *{1}*", LogicalAxis, LogicalAxis.DeviceClass);
+                this.LastMessage = new MessageItem(MessageType.Error, "{0} bind physical axis error, unable to find the controller DevClass *{1}*", LogicalAxis, LogicalAxis.DeviceClass);
                 ret = false;
             }
 
@@ -216,35 +244,85 @@ namespace Irixi_Aligner_Common.Classes
             }
         }
 
+        /// <summary>
+        /// Initialize all devices in the system
+        /// </summary>
         public async void Init()
         {
-            
-            List<Task<bool>> _tasks = new List<Task<bool>>();
-            List<IMotionController> _controllers = new List<IMotionController>();
 
-            // start all controller's init() functions simultaneously
-            foreach (var item in this.PhysicalMotionControllerCollection.Values)
+            bool[] ret;
+            List<Task<bool>> _tasks = new List<Task<bool>>();
+            List<IBaseEquipment> _equipments = new List<IBaseEquipment>();
+
+            SetSystemState(SystemState.BUSY);
+
+            #region Initialize motion controllers
+
+            // initialize all motion controllers simultaneously
+            foreach (var _mc in this.PhysicalMotionControllerCollection.Values)
             {
-                var task = item.Init();
-                task.Start();
-                _tasks.Add(task);
-                _controllers.Add(item);
-                this.LastMessage = new MessageItem(MessageType.Normal, "{0} Initializing ...", item);
+                if (_mc.IsEnabled)
+                {
+                    var task = _mc.Init();
+                    task.Start();
+                    _tasks.Add(task);
+                    _equipments.Add(_mc);
+                    this.LastMessage = new MessageItem(MessageType.Normal, "{0} Initializing ...", _mc);
+                }
             }
 
-            this.LastMessage = new MessageItem(MessageType.Normal, "Waiting ...");
-
             // Wait until all init tasks were done
-            bool[] ret = await Task.WhenAll(_tasks);
+            ret = await Task.WhenAll(_tasks);
 
             // Output information according the init result
             for (int i = 0; i < ret.Length; i++)
             {
                 if(ret[i])
-                    this.LastMessage = new MessageItem(MessageType.Good, "{0} Initialization is completed.", _controllers[i]);
+                    this.LastMessage = new MessageItem(MessageType.Good, "{0} Initialization is completed.", _equipments[i]);
                 else
-                    this.LastMessage = new MessageItem(MessageType.Error, "{0} Initialization is failed, {1}", _controllers[i], _controllers[i].LastError);
+                    this.LastMessage = new MessageItem(MessageType.Error, "{0} Initialization is failed, {1}", _equipments[i], _equipments[i].LastError);
             }
+
+            #endregion
+
+            #region Clear the conllections in order to restart the initilization process
+
+            _tasks.Clear();
+            _equipments.Clear();
+
+            #endregion
+
+            /*
+             * The following process is initializing the equipments that are based on 
+             * the motion controller.
+             * 
+             * For example, in practice, the cylinder controller is attached to the Irixi motion controllers,
+             * if the corresponding motion controller is not available, the cylinder controller is not available. 
+             */
+
+            #region Initialize the other equipments
+            
+            // initialize the cylinder controller
+            var _t = this.CylinderController.Init();
+            _t.Start();
+            _tasks.Add(_t);
+            _equipments.Add(this.CylinderController);
+
+
+            this.LastMessage = new MessageItem(MessageType.Normal, "{0} Initializing ...", this.CylinderController);
+
+            ret = await Task.WhenAll(_tasks);
+
+            // Output information according the init result
+            for (int i = 0; i < ret.Length; i++)
+            {
+                if (ret[i])
+                    this.LastMessage = new MessageItem(MessageType.Good, "{0} Initialization is completed.", _equipments[i]);
+                else
+                    this.LastMessage = new MessageItem(MessageType.Error, "{0} Initialization is failed, {1}", _equipments[i], _equipments[i].LastError);
+            }
+
+            #endregion
 
             SetSystemState(SystemState.IDLE);
             
@@ -286,20 +364,20 @@ namespace Irixi_Aligner_Common.Classes
         }
 
         /// <summary>
-        /// Move a set of logical axes
+        /// Move a set of logical axes with the specified order
         /// </summary>
-        /// <param name="Args"></param>
+        /// <param name="AxesGroup"></param>
         /// <remarks>
-        /// An args is consisted of 3 elements: move order, the logical axis object and movement arguments
+        /// An args is consisted of 3 elements: Move Order, Logical Axis, How to Move
         /// </remarks>
-        public async void MoveAxesSimultaneously(Tuple<int, ConfigLogicalAxis, MoveArgs>[] Args)
+        public async void MassMoveLogicalAxis(Tuple<int, ConfigLogicalAxis, MoveArgs>[] AxesGroup)
         {
             if (GetSystemState() != SystemState.BUSY)
             {
                 SetSystemState(SystemState.BUSY);
 
-                // how many axes to move
-                int _total_to_move = Args.Length;
+                // how many axes to be moved
+                int _total_to_move = AxesGroup.Length;
 
                 // how many axes have been moved
                 int _current_moved = 0;
@@ -319,7 +397,7 @@ namespace Irixi_Aligner_Common.Classes
                     _move_tasks.Clear();
 
                     // find the axes which belong to current order
-                    foreach (var item in Args)
+                    foreach (var item in AxesGroup)
                     {
                         var order = item.Item1;
                         var logical_axis = item.Item2;
@@ -348,7 +426,7 @@ namespace Irixi_Aligner_Common.Classes
                     {
                         if (ret[i] == false)
                         {
-                            this.LastMessage = new MessageItem(MessageType.Error, "{0} Move is failed, {1}", Args[i].Item1, Args[i].Item2.PhysicalAxisInst.LastError);
+                            this.LastMessage = new MessageItem(MessageType.Error, "{0} Move is failed, {1}", AxesGroup[i].Item1, AxesGroup[i].Item2.PhysicalAxisInst.LastError);
                             Messenger.Default.Send<NotificationMessage<string>>(new NotificationMessage<string>(this.LastMessage.Message, "Error"));
                         }
                     }
@@ -419,7 +497,7 @@ namespace Irixi_Aligner_Common.Classes
 
                     if (_tasks.Count <= 0)
                     {
-                        this.LastMessage = new MessageItem(MessageType.Warning, "There are not axes to be homed in this order");
+                        //this.LastMessage = new MessageItem(MessageType.Warning, "There are not axes to be homed in this order");
                     }
                     else
                     {
@@ -458,6 +536,184 @@ namespace Irixi_Aligner_Common.Classes
             }
         }
 
+        #region Cylinder Control
+        #region Fiber Clamp Control
+        public void FiberClampON()
+        {
+            if (GetSystemState() == SystemState.IDLE)
+            {
+                SetSystemState(SystemState.BUSY);
+                this.CylinderController.SetFiberClampState(OutputState.Enabled);
+                LogHelper.WriteLine("Fiber Clamp is opened", LogHelper.LogType.NORMAL);
+                SetSystemState(SystemState.IDLE);
+            }
+        }
+
+        public void FiberClampOFF()
+        {
+            if (GetSystemState() == SystemState.IDLE)
+            {
+                SetSystemState(SystemState.BUSY);
+                this.CylinderController.SetFiberClampState(OutputState.Disabled);
+
+                LogHelper.WriteLine("Fiber Clamp is closed", LogHelper.LogType.NORMAL);
+                SetSystemState(SystemState.IDLE);
+            }
+        }
+
+        public void ToggleFiberClampState()
+        {
+            if (GetSystemState() == SystemState.IDLE)
+            {
+                SetSystemState(SystemState.BUSY);
+                if (this.CylinderController.FiberClampState == OutputState.Disabled)
+                {
+                    this.CylinderController.SetFiberClampState(OutputState.Enabled);
+                    LogHelper.WriteLine("Fiber Clamp is opened", LogHelper.LogType.NORMAL);
+                }
+                else
+                {
+                    this.CylinderController.SetFiberClampState(OutputState.Disabled);
+                    LogHelper.WriteLine("Fiber Clamp is closed", LogHelper.LogType.NORMAL);
+                }
+                SetSystemState(SystemState.IDLE);
+            }
+        }
+        #endregion
+
+        #region Lens Vacuum Control
+        public void LensVacuumON()
+        {
+            if (GetSystemState() == SystemState.IDLE)
+            {
+                SetSystemState(SystemState.BUSY);
+                this.CylinderController.SetLensVacuumState(OutputState.Enabled);
+                LogHelper.WriteLine("Lens Vacuum is opened", LogHelper.LogType.NORMAL);
+                SetSystemState(SystemState.IDLE);
+            }
+        }
+
+        public void LensVacuumOFF()
+        {
+            if (GetSystemState() == SystemState.IDLE)
+            {
+                SetSystemState(SystemState.BUSY);
+                this.CylinderController.SetLensVacuumState(OutputState.Disabled);
+                LogHelper.WriteLine("Lens Vacuum is closed", LogHelper.LogType.NORMAL);
+                SetSystemState(SystemState.IDLE);
+            }
+        }
+
+        public void ToggleLensVacuumState()
+        {
+            if (GetSystemState() == SystemState.IDLE)
+            {
+                SetSystemState(SystemState.BUSY);
+                if (this.CylinderController.LensVacuumState == OutputState.Disabled)
+                {
+                    this.CylinderController.SetLensVacuumState(OutputState.Enabled);
+                    LogHelper.WriteLine("Lens Vacuum is opened", LogHelper.LogType.NORMAL);
+                }
+                else
+                {
+                    this.CylinderController.SetLensVacuumState(OutputState.Disabled);
+                    LogHelper.WriteLine("Lens Vacuum is closed", LogHelper.LogType.NORMAL);
+                }
+                SetSystemState(SystemState.IDLE);
+            }
+        }
+        #endregion
+
+        #region PLC Vacuum Control
+        public void PlcVacuumON()
+        {
+            if (GetSystemState() == SystemState.IDLE)
+            {
+                SetSystemState(SystemState.BUSY);
+                this.CylinderController.SetPlcVacuumState(OutputState.Enabled);
+                LogHelper.WriteLine("PLC Vacuum is opened", LogHelper.LogType.NORMAL);
+                SetSystemState(SystemState.IDLE);
+            }
+        }
+
+        public void PlcVacuumOFF()
+        {
+            if (GetSystemState() == SystemState.IDLE)
+            {
+                SetSystemState(SystemState.BUSY);
+                this.CylinderController.SetPlcVacuumState(OutputState.Disabled);
+                LogHelper.WriteLine("PLC Vacuum is closed", LogHelper.LogType.NORMAL);
+                SetSystemState(SystemState.IDLE);
+            }
+        }
+
+        public void TogglePlcVacuumState()
+        {
+            if (GetSystemState() == SystemState.IDLE)
+            {
+                SetSystemState(SystemState.BUSY);
+                if (this.CylinderController.PlcVacuumState == OutputState.Disabled)
+                {
+                    this.CylinderController.SetPlcVacuumState(OutputState.Enabled);
+                    LogHelper.WriteLine("PLC Vacuum is opened", LogHelper.LogType.NORMAL);
+                }
+                else
+                {
+                    this.CylinderController.SetPlcVacuumState(OutputState.Disabled);
+                    LogHelper.WriteLine("PLC Vacuum is closed", LogHelper.LogType.NORMAL);
+                }
+                SetSystemState(SystemState.IDLE);
+            }
+        }
+        #endregion
+
+        #region POD Vacuum Control
+        public void PodVacuumON()
+        {
+            if (GetSystemState() == SystemState.IDLE)
+            {
+                SetSystemState(SystemState.BUSY);
+                this.CylinderController.SetPodVacuumState(OutputState.Enabled);
+                LogHelper.WriteLine("POD Vacuum is opened", LogHelper.LogType.NORMAL);
+                SetSystemState(SystemState.IDLE);
+            }
+        }
+
+        public void PodVacuumOFF()
+        {
+            if (GetSystemState() == SystemState.IDLE)
+            {
+                SetSystemState(SystemState.BUSY);
+                this.CylinderController.SetPodVacuumState(OutputState.Disabled);
+                LogHelper.WriteLine("POD Vacuum is opened", LogHelper.LogType.NORMAL);
+                SetSystemState(SystemState.IDLE);
+            }
+        }
+
+        public void TogglePodVacuumState()
+        {
+            if (GetSystemState() == SystemState.IDLE)
+            {
+                SetSystemState(SystemState.BUSY);
+                if (this.CylinderController.PodVacuumState == OutputState.Disabled)
+                {
+                    this.CylinderController.SetPodVacuumState(OutputState.Enabled);
+                    LogHelper.WriteLine("POD Vacuum is opened", LogHelper.LogType.NORMAL);
+                }
+                else
+                {
+                    this.CylinderController.SetPodVacuumState(OutputState.Disabled);
+                    LogHelper.WriteLine("POD Vacuum is opened", LogHelper.LogType.NORMAL);
+                }
+                SetSystemState(SystemState.IDLE);
+            }
+        }
+        #endregion
+        #endregion
+
+        /// <summary>
+        /// Start running user program
+        /// </summary>
         private void Start()
         {
             //TODO here we should judge whether the auto-program is paused or not
@@ -465,6 +721,9 @@ namespace Irixi_Aligner_Common.Classes
             // otherwise, continue to run the last paused auto-program
         }
 
+        /// <summary>
+        /// Stop the moving axes or stop running the user program
+        /// </summary>
         private void Stop()
         {
             //TODO here we should judge whether the auto-program is running or not 
@@ -488,6 +747,14 @@ namespace Irixi_Aligner_Common.Classes
                 SetSystemState(SystemState.BUSY);
                 Axis.ToggleMoveMode();
                 SetSystemState(SystemState.IDLE);
+            }
+        }
+
+        public void Dispose()
+        {
+            foreach (var ctrl in this.PhysicalMotionControllerCollection)
+            {
+                ctrl.Value.Dispose();
             }
         }
         #endregion
@@ -525,9 +792,18 @@ namespace Irixi_Aligner_Common.Classes
                 return _state;
             }
         }
+
+        /// <summary>
+        /// Get the instance of the Cylinder Controller Class
+        /// </summary>
+        public CylinderController CylinderController
+        {
+            private set;
+            get;
+        }
         
         /// <summary>
-        /// Get the physical motion controller collection
+        /// Get the instance collection of the Motion Controller Class
         /// </summary>
         public Dictionary<Guid, IMotionController> PhysicalMotionControllerCollection
         {
@@ -536,7 +812,7 @@ namespace Irixi_Aligner_Common.Classes
         }
 
         /// <summary>
-        /// Create a collection that contains all axes defined in the config file.
+        /// Create a collection that contains all logical axes defined in the config file.
         /// this list enable users to operate each axis independently without knowing which physical motion controller it belongs to
         /// </summary>
         public ObservableCollectionEx<ConfigLogicalAxis> LogicalAxisCollection
@@ -609,6 +885,50 @@ namespace Irixi_Aligner_Common.Classes
             }
         }
 
+        public RelayCommand CommandToggleFiberClampState
+        {
+            get
+            {
+                return new RelayCommand(() =>
+              {
+                  ToggleFiberClampState();
+              });
+            }
+        }
+
+        public RelayCommand CommandToggleLensVacuumState
+        {
+            get
+            {
+                return new RelayCommand(() =>
+                {
+                    ToggleLensVacuumState();
+                });
+            }
+        }
+
+        public RelayCommand CommandTogglePlcVacuumState
+        {
+            get
+            {
+                return new RelayCommand(() =>
+                {
+                    TogglePlcVacuumState();
+                });
+            }
+        }
+
+        public RelayCommand CommandTogglePodVacuumState
+        {
+            get
+            {
+                return new RelayCommand(() =>
+                {
+                    TogglePodVacuumState();
+                });
+            }
+        }
+
         public RelayCommand CommandStart
         {
             get
@@ -658,6 +978,7 @@ namespace Irixi_Aligner_Common.Classes
             RaisePropertyChanged(PropertyName);
 
         }
+
         #endregion
 
     }

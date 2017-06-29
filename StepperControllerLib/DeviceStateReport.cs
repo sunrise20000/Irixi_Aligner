@@ -1,17 +1,21 @@
-﻿using System.Collections.ObjectModel;
+﻿using System;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.IO;
 using System.Runtime.CompilerServices;
+using System.Runtime.Serialization.Formatters.Binary;
 using System.Windows.Data;
 
 namespace IrixiStepperControllerHelper
 {
-
-    public class AxisState : INotifyPropertyChanged
+    
+    public class AxisState : INotifyPropertyChanged, ICloneable
     {
         int _abs_position = 0;
         int _axis_index = 0;
-        bool _is_homed = false, _is_busy = false, _cwls = false, _ccwls = false, _org = false, _zero_out = false, _in_a = false, _in_b = false, _out_a = false, _out_b = false;
+        bool _is_homed = false, _is_busy = false;
+        InputState _cwls = InputState.Untriggered, _ccwls = InputState.Untriggered, _org = InputState.Untriggered, _zero_out = InputState.Untriggered, _in_a = InputState.Untriggered, _in_b = InputState.Untriggered;
+        OutputState _out_a = OutputState.Disabled, _out_b = OutputState.Disabled;
         int _error = 0;
 
         /// <summary>
@@ -41,6 +45,23 @@ namespace IrixiStepperControllerHelper
             get
             {
                 return _axis_index;
+            }
+
+        }
+
+        bool _is_homing = false;
+        /// <summary>
+        /// Get whether the axis is in homing process or not
+        /// </summary>
+        public bool IsHoming
+        {
+            internal set
+            {
+                UpdateProperty<bool>(ref _is_homing, value);
+            }
+            get
+            {
+                return _is_homing;
             }
 
         }
@@ -94,11 +115,11 @@ namespace IrixiStepperControllerHelper
         /// <summary>
         /// Get whether the CW limitation sensor has been touched
         /// </summary>
-        public bool CWLS
+        public InputState CWLS
         {
             internal set
             {
-                UpdateProperty<bool>(ref _cwls, value);
+                UpdateProperty<InputState>(ref _cwls, value);
             }
             get
             {
@@ -109,11 +130,11 @@ namespace IrixiStepperControllerHelper
         /// <summary>
         /// Get whether the CCW limitation sensor has been touched
         /// </summary>
-        public bool CCWLS
+        public InputState CCWLS
         {
             internal set
             {
-                UpdateProperty<bool>(ref _ccwls, value);
+                UpdateProperty<InputState>(ref _ccwls, value);
             }
             get
             {
@@ -124,11 +145,11 @@ namespace IrixiStepperControllerHelper
         /// <summary>
         /// Get whether the Orginal Limitation Sensor has been touched
         /// </summary>
-        public bool ORG
+        public InputState ORG
         {
             internal set
             {
-                UpdateProperty<bool>(ref _org, value);
+                UpdateProperty<InputState>(ref _org, value);
             }
             get
             {
@@ -139,11 +160,11 @@ namespace IrixiStepperControllerHelper
         /// <summary>
         /// Get whether the ZeroOut Pusle (TIMING Signal) has been detected
         /// </summary>
-        public bool ZeroOut
+        public InputState ZeroOut
         {
             internal set
             {
-                UpdateProperty<bool>(ref _zero_out, value);
+                UpdateProperty<InputState>(ref _zero_out, value);
             }
             get
             {
@@ -153,12 +174,13 @@ namespace IrixiStepperControllerHelper
 
         /// <summary>
         /// Get the status of the input A
+        /// true: not triggered; false: triggered
         /// </summary>
-        public bool IN_A
+        public InputState IN_A
         {
             internal set
             {
-                UpdateProperty<bool>(ref _in_a, value);
+                UpdateProperty<InputState>(ref _in_a, value);
             }
             get
             {
@@ -168,12 +190,13 @@ namespace IrixiStepperControllerHelper
 
         /// <summary>
         /// Get the status of the input A
+        /// true: not triggered; false: triggered
         /// </summary>
-        public bool IN_B
+        public InputState IN_B
         {
             internal set
             {
-                UpdateProperty<bool>(ref _in_b, value);
+                UpdateProperty<InputState>(ref _in_b, value);
             }
             get
             {
@@ -184,11 +207,11 @@ namespace IrixiStepperControllerHelper
         /// <summary>
         /// Get the status of the out port A
         /// </summary>
-        public bool OUT_A
+        public OutputState OUT_A
         {
             internal set
             {
-                UpdateProperty<bool>(ref _out_a, value);
+                UpdateProperty<OutputState>(ref _out_a, value);
             }
             get
             {
@@ -199,17 +222,39 @@ namespace IrixiStepperControllerHelper
         /// <summary>
         /// Get the status of the out port B
         /// </summary>
-        public bool OUT_B
+        public OutputState OUT_B
         {
             internal set
             {
-                UpdateProperty<bool>(ref _out_b, value);
+                UpdateProperty<OutputState>(ref _out_b, value);
             }
             get
             {
                 return _out_b;
             }
         }
+
+        public object Clone()
+        {
+            AxisState state = new AxisState();
+            state.AbsPosition = this.AbsPosition;
+            state.AxisIndex = this.AxisIndex;
+            state.IsHoming = this.IsHoming;
+            state.IsHomed = this.IsHomed;
+            state.IsRunning = this.IsRunning;
+            state.Error = this.Error;
+            state.CWLS = this.CWLS;
+            state.CCWLS = this.CCWLS;
+            state.ORG = this.ORG;
+            state.ZeroOut = this.ZeroOut;
+            state.IN_A = this.IN_A;
+            state.IN_B = this.IN_B;
+            state.OUT_A = this.OUT_A;
+            state.OUT_B = this.OUT_B;
+
+            return state;
+        }
+
 
         #region RaisePropertyChangedEvent
 
@@ -243,7 +288,7 @@ namespace IrixiStepperControllerHelper
         #endregion
     }
 
-    public class DeviceStateReport : INotifyPropertyChanged
+    public class DeviceStateReport : INotifyPropertyChanged, ICloneable
     {
         #region Variables
         static object _lock = new object();
@@ -251,7 +296,7 @@ namespace IrixiStepperControllerHelper
         int _total_axes;
         int _is_busy;
         int _sys_error;
-        bool _triggerinput0, _triggerinput1;
+        InputState _triggerinput0 = InputState.Untriggered, _triggerinput1 = InputState.Untriggered;
         int _core_vref, _core_temp;
         #endregion
 
@@ -332,11 +377,11 @@ namespace IrixiStepperControllerHelper
         /// true: triggered
         /// false: not triggered
         /// </summary>
-        public bool TriggerInput0
+        public InputState TriggerInput0
         {
             internal set
             {
-                UpdateProperty<bool>(ref _triggerinput0, value);
+                UpdateProperty<InputState>(ref _triggerinput0, value);
             }
             get
             {
@@ -349,11 +394,11 @@ namespace IrixiStepperControllerHelper
         /// true: triggered
         /// false: not triggered
         /// </summary>
-        public bool TriggerInput1
+        public InputState TriggerInput1
         {
             internal set
             {
-                UpdateProperty<bool>(ref _triggerinput1, value);
+                UpdateProperty<InputState>(ref _triggerinput1, value);
             }
             get
             {
@@ -395,6 +440,10 @@ namespace IrixiStepperControllerHelper
         #endregion
 
         #region Methods
+        /// <summary>
+        /// Parse the raw data of hid report
+        /// </summary>
+        /// <param name="Data"></param>
         public void ParseRawData(byte[] Data)
         {
             byte temp = 0x0;
@@ -407,6 +456,7 @@ namespace IrixiStepperControllerHelper
             {
                 using (BinaryReader reader = new BinaryReader(stream))
                 {
+
                     reader.ReadByte(); // Ignore the first dummy byte
 
                     this.Counter = reader.ReadUInt32();
@@ -416,8 +466,8 @@ namespace IrixiStepperControllerHelper
 
                     // Read the Trigger Input State
                     temp = reader.ReadByte();
-                    this.TriggerInput0 = ((temp >> 0) & 0x1) > 0 ? true : false;
-                    this.TriggerInput1 = ((temp >> 1) & 0x1) > 0 ? true : false;
+                    this.TriggerInput0 = ((temp >> 0) & 0x1) > 0 ? InputState.Untriggered : InputState.Triggered;
+                    this.TriggerInput1 = ((temp >> 1) & 0x1) > 0 ? InputState.Untriggered : InputState.Triggered;
 
                     // Read the parameters of the core
                     this.CoreVref = reader.ReadInt32();
@@ -426,6 +476,7 @@ namespace IrixiStepperControllerHelper
                     if (this.AxisStateCollection == null || this.AxisStateCollection.Count == 0)
                         return;
 
+                    // flush the state of each axis
                     for (int i = 0; i < this.AxisStateCollection.Count; i++)
                     {
                         ///
@@ -436,24 +487,25 @@ namespace IrixiStepperControllerHelper
 
                         // parse Usability
                         temp = reader.ReadByte();
-                        this.AxisStateCollection[i].IsHomed = ((temp >> 0) & 0x1) > 0 ? true : false;
-                        this.AxisStateCollection[i].IsRunning = ((temp >> 1) & 0x1) > 0 ? true : false;
+                        this.AxisStateCollection[i].IsHoming = ((temp >> 1) & 0x1) > 0 ? true : false;
+                        this.AxisStateCollection[i].IsHomed = ((temp >> 1) & 0x1) > 0 ? true : false;
+                        this.AxisStateCollection[i].IsRunning = ((temp >> 2) & 0x1) > 0 ? true : false;
 
                         // parse input signal
                         temp = reader.ReadByte();
-                        this.AxisStateCollection[i].CWLS = ((temp >> 0) & 0x1) > 0 ? true : false;
-                        this.AxisStateCollection[i].CCWLS = ((temp >> 1) & 0x1) > 0 ? true : false;
-                        this.AxisStateCollection[i].ORG = ((temp >> 2) & 0x1) > 0 ? true : false;
-                        this.AxisStateCollection[i].ZeroOut = ((temp >> 3) & 0x1) > 0 ? true : false;
-                        this.AxisStateCollection[i].IN_A = ((temp >> 4) & 0x1) > 0 ? true : false;
-                        this.AxisStateCollection[i].IN_B = ((temp >> 5) & 0x1) > 0 ? true : false;
-                        this.AxisStateCollection[i].OUT_A = ((temp >> 6) & 0x1) > 0 ? true : false;
-                        this.AxisStateCollection[i].OUT_B = ((temp >> 7) & 0x1) > 0 ? true : false;
+                        this.AxisStateCollection[i].CWLS = ((temp >> 0) & 0x1) > 0 ? InputState.Untriggered : InputState.Triggered;
+                        this.AxisStateCollection[i].CCWLS = ((temp >> 1) & 0x1) > 0 ? InputState.Untriggered : InputState.Triggered;
+                        this.AxisStateCollection[i].ORG = ((temp >> 2) & 0x1) > 0 ? InputState.Untriggered : InputState.Triggered;
+                        this.AxisStateCollection[i].ZeroOut = ((temp >> 3) & 0x1) > 0 ? InputState.Untriggered : InputState.Triggered;
+                        this.AxisStateCollection[i].IN_A = ((temp >> 4) & 0x1) > 0 ? InputState.Untriggered : InputState.Triggered;
+                        this.AxisStateCollection[i].IN_B = ((temp >> 5) & 0x1) > 0 ? InputState.Untriggered : InputState.Triggered;
+                        this.AxisStateCollection[i].OUT_A = ((temp >> 6) & 0x1) > 0 ? OutputState.Enabled : OutputState.Disabled;
+                        this.AxisStateCollection[i].OUT_B = ((temp >> 7) & 0x1) > 0 ? OutputState.Enabled : OutputState.Disabled;
 
-                        // 
                         this.AxisStateCollection[i].Error = reader.ReadByte();
 
-                        reader.ReadByte();  // read dummy byte, this is used to align struct on 4-byte
+                        // read dummy byte, this is used to align struct on 4-byte
+                        reader.ReadByte();
                     }
 
                     reader.Close();
@@ -462,6 +514,47 @@ namespace IrixiStepperControllerHelper
                 stream.Close();
             }
         }
+
+        /// <summary>
+        /// Get the output state by channel
+        /// </summary>
+        /// <param name="Channel">for 3-Axis controller it should be 0 ~ 5</param>
+        /// <returns></returns>
+        public OutputState GetOutputState(int Channel)
+        {
+            OutputState st;
+            int _axis = Channel / 2;
+            int _port = Channel % 2;
+
+            if (_port == 0)
+                st = this.AxisStateCollection[_axis].OUT_A;
+            else
+                st = this.AxisStateCollection[_axis].OUT_B;
+
+            return st;
+        }
+
+        public object Clone()
+        {
+            DeviceStateReport state = new DeviceStateReport();
+            state.Counter = this.Counter;
+            state.TotalAxes = this.TotalAxes;
+            state.IsBusy = this.IsBusy;
+            state.SystemError = this.SystemError;
+            state.TriggerInput0 = this.TriggerInput0;
+            state.TriggerInput1 = this.TriggerInput1;
+            state.CoreVref = this.CoreVref;
+            state.CoreTemp = this.CoreTemp;
+
+            state.AxisStateCollection = new ObservableCollection<AxisState>();
+            for (int i = 0; i < this.AxisStateCollection.Count; i++)
+            {
+                state.AxisStateCollection.Add(this.AxisStateCollection[i].Clone() as AxisState);
+            }
+
+            return state;
+        }
+
         #endregion
 
         #region RaisePropertyChangedEvent
@@ -486,7 +579,7 @@ namespace IrixiStepperControllerHelper
 
         protected void OnPropertyChanged([CallerMemberName]string PropertyName = "")
         {
-            
+
             // Implement MVVMLight framework
             // RaisePropertyChanged(PropertyName);
 
@@ -494,7 +587,8 @@ namespace IrixiStepperControllerHelper
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(PropertyName));
 
         }
-
         #endregion
+
+
     }
 }

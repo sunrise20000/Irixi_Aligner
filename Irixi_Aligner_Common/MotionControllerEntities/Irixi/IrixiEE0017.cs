@@ -12,7 +12,18 @@ namespace Irixi_Aligner_Common.MotionControllerEntities
         /// <summary>
         /// Raise when some messages are generated and pass the messages to the subscriber
         /// </summary>
-        public EventHandler<string> OnNewMessage;
+        public event EventHandler<string> OnMessageReported;
+
+        /// <summary>
+        /// Raise the event while the input state has changed
+        /// </summary>
+        public event EventHandler<InputEventArgs> OnInputStateChanged;
+
+
+        /// <summary>
+        /// Raise the event while the hid report has been received
+        /// </summary>
+        public event EventHandler<DeviceStateReport> OnHIDReportReceived;
 
         /// <summary>
         /// The instance of the IrixiMotionController class
@@ -29,13 +40,17 @@ namespace Irixi_Aligner_Common.MotionControllerEntities
             _controller = new IrixiMotionController(Config.Port);
             _controller.OnConnectionStatusChanged += _controller_OnConnectionProgressChanged;
             _controller.OnReportUpdated += _controller_OnReportUpdated;
+            _controller.OnInputChanged += ((s, e) =>
+            {
+                OnInputStateChanged?.Invoke(this, e);
+            });
         }
 
         #endregion
 
         #region Private Methods
         /// <summary>
-        /// The event will be raised after the status of the controller is changed
+        /// Raise the event while the connection state is changed
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
@@ -44,19 +59,19 @@ namespace Irixi_Aligner_Common.MotionControllerEntities
             switch (e.Event)
             {
                 case ConnectionEventArgs.EventType.ConnectionSuccess:
-                    OnNewMessage?.Invoke(this, "Connected!");
+                    OnMessageReported?.Invoke(this, "Connected!");
                     break;
 
                 case ConnectionEventArgs.EventType.TotalAxesReturned:
-                    OnNewMessage?.Invoke(this, string.Format("The total of axes is {0}", e.Content));
+                    OnMessageReported?.Invoke(this, string.Format("The total of axes is {0}", e.Content));
                     this.IsInitialized = true;
                     break;
 
                 case ConnectionEventArgs.EventType.ConnectionLost:
-                    OnNewMessage?.Invoke(this, "Connection was lost, retry ...");
+                    OnMessageReported?.Invoke(this, "Connection was lost, retry ...");
                     this.IsInitialized = false;
 
-                    // Start to reconnect the controller
+                    // Start to connect the controller repeatly
                     Init().Start();
                     break;
 
@@ -64,7 +79,7 @@ namespace Irixi_Aligner_Common.MotionControllerEntities
         }
 
         /// <summary>
-        /// The event will be raised after a HID report is received
+        /// Raise the event while the hid report is received
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e">The HID Report</param>
@@ -76,6 +91,8 @@ namespace Irixi_Aligner_Common.MotionControllerEntities
                 _axis.AbsPosition = state.AbsPosition;
                 _axis.IsHomed = state.IsHomed;
             }
+
+            OnHIDReportReceived?.Invoke(this, e);
         }
         #endregion
 
@@ -101,10 +118,17 @@ namespace Irixi_Aligner_Common.MotionControllerEntities
             // The OpenDeviceAsync process will be always running until the device was found
             return new Task<bool>(() =>
             {
-                _controller.OpenDeviceAsync();
-                this.LastError = "NOT a real error! The initialization is running in the background thread ...";
-                // return immediately
-                return false;
+                _controller.OpenDevice();
+                if (_controller.IsConnected)
+                {
+                    return true;
+                }
+                else
+                {
+                    this.LastError = _controller.LastError;
+                    return false;
+                }
+ 
             });
             
         }
@@ -139,7 +163,7 @@ namespace Irixi_Aligner_Common.MotionControllerEntities
                     try
                     {
                         // start homing
-                        ret = _controller.HomeAsync(_axis.AxisIndex).Result;
+                        ret = _controller.Home(_axis.AxisIndex);
 
                         if (ret)
                         {
@@ -150,8 +174,7 @@ namespace Irixi_Aligner_Common.MotionControllerEntities
                         }
                         else
                         {
-                            _axis.LastError = string.Format("sdk reported error {0}", _controller.LastError);
-
+                            _axis.LastError = string.Format("sdk reported error, {0}", _controller.LastError);
                             ret = false;
                         }
                     }
@@ -231,7 +254,7 @@ namespace Irixi_Aligner_Common.MotionControllerEntities
                         // Move the the target position
                         if (_axis.CheckSoftLimitation(target_pos))
                         {
-                            ret = _controller.MoveAsync(_axis.AxisIndex, Speed, target_pos, EnumMoveMode.ABS).Result;
+                            ret = _controller.Move(_axis.AxisIndex, Speed, target_pos, IrixiStepperControllerHelper.MoveMode.ABS);
 
                             if(!ret)
                             {
@@ -266,6 +289,30 @@ namespace Irixi_Aligner_Common.MotionControllerEntities
                 return ret;
 
             });
+        }
+
+        /// <summary>
+        /// Toggle the specified output
+        /// </summary>
+        /// <param name="Channel"></param>
+        public void ToggleOutput(int Channel)
+        {
+            _controller.ToggleGeneralOutput(Channel);
+        }
+
+        /// <summary>
+        /// Set the state of the specified output
+        /// </summary>
+        /// <param name="Channel"></param>
+        /// <param name="State"></param>
+        public void SetOutput(int Channel, OutputState State)
+        {
+            _controller.SetGeneralOutput(Channel, State);
+        }
+
+        public override void Dispose()
+        {
+            _controller = null;
         }
         #endregion
     }

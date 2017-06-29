@@ -323,7 +323,7 @@ namespace USBHIDDRIVER.USB
                                 receivedNull++;
                             }
                             */
-
+                            ct.ThrowIfCancellationRequested();
 
                             byte[] myRead = myUSB.CT_ReadFile(myUSB.myHIDP_CAPS.InputReportByteLength);
                             if (myRead != null)
@@ -333,7 +333,7 @@ namespace USBHIDDRIVER.USB
 
                                 OnDataReceived?.Invoke(this, myRead);
 
-                                ct.ThrowIfCancellationRequested();
+                                
                             }
                             else
                             {
@@ -530,7 +530,10 @@ namespace USBHIDDRIVER.USB
                     var overlapped = new NativeOverlapped();
 
                     Success = USBSharp.WriteFile(hidHandle, ref outputReportBuffer[0], outputReportBuffer.Length, ref NumberOfBytesWritten, ref overlapped);
-
+                    if (Success == false)
+                    {
+                        int err = USBSharp.GetLastError();
+                    }
 
                 }
                 catch (Exception ex)

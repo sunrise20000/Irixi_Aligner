@@ -11,7 +11,7 @@
         Title="Stepper Controller Debuger" Height="520" Width="900" WindowStartupLocation="CenterScreen" Icon="StepperMotor.ico" ResizeMode="CanMinimize" WindowStyle="SingleBorderWindow" Background="#FF1B1B1B">
     <Window.Resources>
         <Converter:CvtControllerErrorToColor x:Key="CvtControllerErrorToColor"/>
-        <Converter:CvtBooleanToColor x:Key="CvtBooleanToColor"/>
+        <Converter:CvtInputStateToColor x:Key="CvtInputStateToColor"/>
         <System:String x:Key="strCCW">-</System:String>
         <System:String x:Key="strCW">+</System:String>
     </Window.Resources>

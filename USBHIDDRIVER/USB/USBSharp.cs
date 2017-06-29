@@ -615,7 +615,8 @@ namespace USBHIDDRIVER.USB
                 FILE_SHARE_READ | FILE_SHARE_WRITE,
                 ref security,
                 OPEN_EXISTING,
-                (int)FILE_FLAG_OVERLAPPED,
+                0,
+                //(int)FILE_FLAG_OVERLAPPED,
                 0);
 
             if (hHidFile == IntPtr.Zero)

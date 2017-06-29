@@ -1,5 +1,15 @@
 {
+
   "LogEnabled": true,
+  "Cylinder": {
+    "Enabled": true,
+    "HardwareClass": "df4d5339-f472-4bee-97f0-a10f8aecbc1a",
+    "PedalInput": 1,
+    "FiberClampOutput": 0,
+    "LensVacuumOutput": 1,
+    "PLCVacuumOutput": 2,
+    "PODVacuumOutput": 3
+  },
   "PhysicalMotionControllers": [
     {
       "Class": "5013d013-f167-4dcb-86d9-599a325744b8",
@@ -9,7 +19,7 @@
       "Comment": "For VGroove Aligner",
       "AxisCollection": [
         {
-          "Name": "at_X_5x_B",
+          "Name": 1,
           "Enabled": true,
           "PosHomed": 0,
           "PosMax": 128000,
@@ -18,7 +28,7 @@
           "Dps": 100
         },
         {
-          "Name": "at_Y_5x_B",
+          "Name": 2,
           "Enabled": true,
           "PosHomed": 0,
           "PosMax": 128000,
@@ -27,7 +37,7 @@
           "Dps": 100
         },
         {
-          "Name": "at_Z_B",
+          "Name": 3,
           "Enabled": true,
           "PosHomed": 0,
           "PosMax": 128000,
@@ -36,7 +46,7 @@
           "Dps": 100
         },
         {
-          "Name": "at_Roll_B",
+          "Name": 4,
           "Enabled": true,
           "PosHomed": 0,
           "PosMax": 128000,
@@ -45,7 +55,7 @@
           "Dps": 100
         },
         {
-          "Name": "at_Yaw_B",
+          "Name": 5,
           "Enabled": true,
           "PosHomed": 0,
           "PosMax": 128000,
@@ -54,7 +64,7 @@
           "Dps": 100
         },
         {
-          "Name": "at_Pitch_B",
+          "Name": 6,
           "Enabled": true,
           "PosHomed": 0,
           "PosMax": 128000,
@@ -68,11 +78,11 @@
       "Class": "412e55e4-ceae-4eb4-8798-e8de7b5b5669",
       "Name": "Luminos P6A",
       "Port": "COM2",
-      "Enabled": true,
+      "Enabled": false,
       "Comment": "Lens Aligner",
       "AxisCollection": [
         {
-          "Name": "at_X_5x_B",
+          "Name": 1,
           "Enabled": true,
           "PosHomed": 0,
           "PosMax": 128000,
@@ -81,7 +91,7 @@
           "Dps": 100
         },
         {
-          "Name": "at_Y_5x_B",
+          "Name": 2,
           "Enabled": true,
           "PosHomed": 0,
           "PosMax": 128000,
@@ -90,7 +100,7 @@
           "Dps": 100
         },
         {
-          "Name": "at_Z_B",
+          "Name": 3,
           "Enabled": true,
           "PosHomed": 0,
           "PosMax": 128000,
@@ -99,7 +109,7 @@
           "Dps": 100
         },
         {
-          "Name": "at_Roll_B",
+          "Name": 4,
           "Enabled": true,
           "PosHomed": 0,
           "PosMax": 128000,
@@ -108,7 +118,7 @@
           "Dps": 100
         },
         {
-          "Name": "at_Yaw_B",
+          "Name": 5,
           "Enabled": true,
           "PosHomed": 0,
           "PosMax": 128000,
@@ -117,7 +127,7 @@
           "Dps": 100
         },
         {
-          "Name": "at_Pitch_B",
+          "Name": 6,
           "Enabled": true,
           "PosHomed": 0,
           "PosMax": 128000,
@@ -130,12 +140,12 @@
     {
       "Class": "2b39c9d5-66e9-4896-8dd1-94d8df0485e1",
       "Name": "Luminos P6A",
-      "Port": "COM3",
+      "Port": "COM10",
       "Enabled": true,
-      "Comment": "COS Aligner",
+      "Comment": "POD Aligner",
       "AxisCollection": [
         {
-          "Name": "at_X_5x_B",
+          "Name": 1,
           "Enabled": true,
           "PosHomed": 0,
           "PosMax": 128000,
@@ -145,7 +155,7 @@
           "Comment_Dps": "Distance per step, unit is nm"
         },
         {
-          "Name": "at_Y_5x_B",
+          "Name": 2,
           "Enabled": true,
           "PosHomed": 0,
           "PosMax": 128000,
@@ -154,7 +164,7 @@
           "Dps": 100
         },
         {
-          "Name": "at_Z_B",
+          "Name": 3,
           "Enabled": true,
           "PosHomed": 0,
           "PosMax": 128000,
@@ -163,7 +173,7 @@
           "Dps": 100
         },
         {
-          "Name": "at_Roll_B",
+          "Name": 4,
           "Enabled": true,
           "PosHomed": 0,
           "PosMax": 128000,
@@ -172,7 +182,7 @@
           "Dps": 100
         },
         {
-          "Name": "at_Yaw_B",
+          "Name": 5,
           "Enabled": true,
           "PosHomed": 0,
           "PosMax": 128000,
@@ -181,7 +191,7 @@
           "Dps": 100
         },
         {
-          "Name": "at_Pitch_B",
+          "Name": 6,
           "Enabled": true,
           "PosHomed": 0,
           "PosMax": 128000,
@@ -194,9 +204,9 @@
     {
       "Class": "d11d1864-6315-4c01-b07f-3e268834cd10",
       "Name": "Irixi EE0017",
-      "Port": "300038001251363031393231",
+      "Port": "313932311251363035003800",
       "Enabled": true,
-      "Comment": "Irixi MotionController",
+      "Comment": "TOP CAM, Irixi 3-Axis Motion Controller, PCB Board 3",
       "AxisCollection": [
         {
           "Name": 0,
@@ -231,9 +241,9 @@
     {
       "Class": "c6af0f93-7e49-4b1a-b08d-0c84f8d812c0",
       "Name": "Irixi EE0017",
-      "Port": "C000000002",
+      "Port": "313932311251363030003800",
       "Enabled": true,
-      "Comment": "Irixi MotionController",
+      "Comment": "45 CAM, Irixi 3-Axis Motion Controller, PCB Board 1",
       "AxisCollection": [
         {
           "Name": 0,
@@ -268,9 +278,9 @@
     {
       "Class": "86e3e6c8-0fce-455b-8545-9011cd3fe6a7",
       "Name": "Irixi EE0017",
-      "Port": "C000000003",
+      "Port": "313932311251363033005500",
       "Enabled": true,
-      "Comment": "Irixi MotionController",
+      "Comment": "Front CAM, Irixi 3-Axis Motion Controller, PCB Board 4",
       "AxisCollection": [
         {
           "Name": 0,
@@ -305,9 +315,9 @@
     {
       "Class": "df4d5339-f472-4bee-97f0-a10f8aecbc1a",
       "Name": "Irixi EE0017",
-      "Port": "C000000004",
+      "Port": "31393231125136302E005500",
       "Enabled": true,
-      "Comment": "Irixi MotionController",
+      "Comment": "POD Aligner, Irixi 3-Axis Motion Controller, PCB Board 5",
       "AxisCollection": [
         {
           "Name": 0,
@@ -345,138 +355,156 @@
       "DisplayName": "VGroove Aligner",
       "AxisX": {
         "DeviceClass": "5013d013-f167-4dcb-86d9-599a325744b8",
-        "AxisName": "at_X_5x_B",
+        "AxisName": 2,
         "DisplayName": "X",
-        "HomeOrder": 10
+        "HomeOrder": 0
       },
       "AxisY": {
         "DeviceClass": "5013d013-f167-4dcb-86d9-599a325744b8",
-        "AxisName": "at_Y_5x_B",
+        "AxisName": 3,
         "DisplayName": "Y",
-        "HomeOrder": 11
+        "HomeOrder": 0
       },
       "AxisZ": {
         "DeviceClass": "5013d013-f167-4dcb-86d9-599a325744b8",
-        "AxisName": "at_Z_B",
+        "AxisName": 1,
         "DisplayName": "Z",
-        "HomeOrder": 12
+        "HomeOrder": 0
       },
       "AxisRoll": {
         "DeviceClass": "5013d013-f167-4dcb-86d9-599a325744b8",
-        "AxisName": "at_Roll_B",
+        "AxisName": 4,
         "DisplayName": "Roll",
-        "HomeOrder": 13
+        "HomeOrder": 0
       },
       "AxisYaw": {
         "DeviceClass": "5013d013-f167-4dcb-86d9-599a325744b8",
-        "AxisName": "at_Yaw_B",
+        "AxisName": 5,
         "DisplayName": "Yaw",
-        "HomeOrder": 14
+        "HomeOrder": 0
       },
       "AxisPitch": {
         "DeviceClass": "5013d013-f167-4dcb-86d9-599a325744b8",
-        "AxisName": "at_Pitch_B",
+        "AxisName": 6,
         "DisplayName": "Pitch",
-        "HomeOrder": 15
+        "HomeOrder": 0
       }
     },
     "LensAligner": {
       "DisplayName": "Lens Aligner",
       "AxisX": {
         "DeviceClass": "412e55e4-ceae-4eb4-8798-e8de7b5b5669",
-        "AxisName": "at_X_5x_B",
+        "AxisName": 2,
         "DisplayName": "X",
-        "HomeOrder": 2
+        "HomeOrder": 0
       },
       "AxisY": {
         "DeviceClass": "412e55e4-ceae-4eb4-8798-e8de7b5b5669",
-        "AxisName": "at_Y_5x_B",
+        "AxisName": 3,
         "DisplayName": "Y",
-        "HomeOrder": 2
+        "HomeOrder": 0
       },
       "AxisZ": {
         "DeviceClass": "412e55e4-ceae-4eb4-8798-e8de7b5b5669",
-        "AxisName": "at_Z_B",
+        "AxisName": 1,
         "DisplayName": "Z",
-        "HomeOrder": 2
+        "HomeOrder": 0
       },
       "AxisRoll": {
         "DeviceClass": "412e55e4-ceae-4eb4-8798-e8de7b5b5669",
-        "AxisName": "at_Roll_B",
+        "AxisName": 4,
         "DisplayName": "Roll",
-        "HomeOrder": 2
+        "HomeOrder": 0
       },
       "AxisYaw": {
         "DeviceClass": "412e55e4-ceae-4eb4-8798-e8de7b5b5669",
-        "AxisName": "at_Yaw_B",
+        "AxisName": 5,
         "DisplayName": "Yaw",
-        "HomeOrder": 2
+        "HomeOrder": 0
       },
       "AxisPitch": {
         "DeviceClass": "412e55e4-ceae-4eb4-8798-e8de7b5b5669",
-        "AxisName": "at_Pitch_B",
+        "AxisName": 6,
         "DisplayName": "Pitch",
-        "HomeOrder": 2
+        "HomeOrder": 0
       }
     },
-    "COSAligner": {
-      "DisplayName": "COS Aligner",
+    "PODAligner": {
+      "DisplayName": "POD Aligner",
       "AxisX": {
         "DeviceClass": "2b39c9d5-66e9-4896-8dd1-94d8df0485e1",
-        "AxisName": "at_X_5x_B",
+        "AxisName": 2,
         "DisplayName": "X",
-        "HomeOrder": 3
+        "HomeOrder": 0
       },
       "AxisY": {
         "DeviceClass": "2b39c9d5-66e9-4896-8dd1-94d8df0485e1",
-        "AxisName": "at_Y_5x_B",
+        "AxisName": 3,
         "DisplayName": "Y",
-        "HomeOrder": 3
+        "HomeOrder": 0
       },
       "AxisZ": {
         "DeviceClass": "2b39c9d5-66e9-4896-8dd1-94d8df0485e1",
-        "AxisName": "at_Z_B",
+        "AxisName": 1,
         "DisplayName": "Z",
-        "HomeOrder": 3
+        "HomeOrder": 0
       },
       "AxisRoll": {
         "DeviceClass": "2b39c9d5-66e9-4896-8dd1-94d8df0485e1",
-        "AxisName": "at_Roll_B",
+        "AxisName": 4,
         "DisplayName": "Roll",
-        "HomeOrder": 3
+        "HomeOrder": 0
       },
       "AxisYaw": {
         "DeviceClass": "2b39c9d5-66e9-4896-8dd1-94d8df0485e1",
-        "AxisName": "at_Yaw_B",
+        "AxisName": 5,
         "DisplayName": "Yaw",
-        "HomeOrder": 3
+        "HomeOrder": 0
       },
       "AxisPitch": {
         "DeviceClass": "2b39c9d5-66e9-4896-8dd1-94d8df0485e1",
-        "AxisName": "at_Pitch_B",
+        "AxisName": 6,
         "DisplayName": "Pitch",
-        "HomeOrder": 3
+        "HomeOrder": 0
+      },
+      "AxisBigX": {
+        "DeviceClass": "df4d5339-f472-4bee-97f0-a10f8aecbc1a",
+        "AxisName": 0,
+        "DisplayName": "BigX",
+        "HomeOrder": 0
+      },
+      "AxisBigY": {
+        "DeviceClass": "df4d5339-f472-4bee-97f0-a10f8aecbc1a",
+        "AxisName": 1,
+        "DisplayName": "BigY",
+        "HomeOrder": 0
+      },
+      "AxisProbeZ": {
+        "DeviceClass": "df4d5339-f472-4bee-97f0-a10f8aecbc1a",
+        "AxisName": 2,
+        "DisplayName": "ProbeZ",
+        "HomeOrder": 0
       }
     },
     "AngleCamera": {
       "DisplayName": "Angle Camera",
       "AxisX": {
-        "DeviceClass": "00000000-0000-0000-0000-000000000000",
+        "DeviceClass": "c6af0f93-7e49-4b1a-b08d-0c84f8d812c0",
         "AxisName": "0",
         "DisplayName": "X",
-        "HomeOrder": 1
+        "HomeOrder": 0
       },
       "AxisY": {
-        "DeviceClass": "00000000-0000-0000-0000-000000000000",
-        "AxisName": "Y",
+        "DeviceClass": "c6af0f93-7e49-4b1a-b08d-0c84f8d812c0",
+        "AxisName": "1",
         "DisplayName": "Y",
-        "HomeOrder": 1
+        "HomeOrder": 0
       },
       "AxisZ": {
-        "DeviceClass": "00000000-0000-0000-0000-000000000000",
-        "AxisName": "Z",
+        "DeviceClass": "c6af0f93-7e49-4b1a-b08d-0c84f8d812c0",
+        "AxisName": "2",
         "DisplayName": "Z",
-        "HomeOrder": 1
+        "HomeOrder": 0
       }
     },
     "TopCamera": {
@@ -485,40 +513,40 @@
         "DeviceClass": "d11d1864-6315-4c01-b07f-3e268834cd10",
         "AxisName": "0",
         "DisplayName": "X",
-        "HomeOrder": 1
+        "HomeOrder": 10
       },
       "AxisY": {
         "DeviceClass": "d11d1864-6315-4c01-b07f-3e268834cd10",
         "AxisName": "1",
         "DisplayName": "Y",
-        "HomeOrder": 1
+        "HomeOrder": 10
       },
       "AxisZ": {
         "DeviceClass": "d11d1864-6315-4c01-b07f-3e268834cd10",
         "AxisName": "2",
         "DisplayName": "Z",
-        "HomeOrder": 1
+        "HomeOrder": 10
       }
     },
     "FrontCamera": {
       "DisplayName": "Front Camera",
       "AxisX": {
-        "DeviceClass": "00000000-0000-0000-0000-000000000000",
-        "AxisName": "X",
+        "DeviceClass": "86e3e6c8-0fce-455b-8545-9011cd3fe6a7",
+        "AxisName": "0",
         "DisplayName": "X",
-        "HomeOrder": 1
+        "HomeOrder": 0
       },
       "AxisY": {
-        "DeviceClass": "00000000-0000-0000-0000-000000000000",
-        "AxisName": "Y",
+        "DeviceClass": "86e3e6c8-0fce-455b-8545-9011cd3fe6a7",
+        "AxisName": "1",
         "DisplayName": "Y",
-        "HomeOrder": 1
+        "HomeOrder": 0
       },
       "AxisZ": {
-        "DeviceClass": "00000000-0000-0000-0000-000000000000",
-        "AxisName": "Z",
+        "DeviceClass": "86e3e6c8-0fce-455b-8545-9011cd3fe6a7",
+        "AxisName": "2",
         "DisplayName": "Z",
-        "HomeOrder": 1
+        "HomeOrder": 0
       }
     }
   }

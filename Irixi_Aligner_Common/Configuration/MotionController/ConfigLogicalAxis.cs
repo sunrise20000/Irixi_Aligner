@@ -31,7 +31,7 @@ namespace Irixi_Aligner_Common.Configuration
 
         /// <summary>
         /// Get the logical aligner the logical axis belongs to.
-        /// this is mainly used to display the logical aligner's name on the UI to iidentify which axis are being operated.
+        /// this is used to get the aligner name of current axis belongs to
         /// </summary>
         public ConfigLogicalAligner Parent { get; set; }
 

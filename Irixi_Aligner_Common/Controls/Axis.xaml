@@ -180,7 +180,7 @@
         </Style>
 
     </UserControl.Resources>
-    <Grid>
+    <Grid IsEnabled="{Binding LogicalAxis.PhysicalAxisInst.IsHomed, ElementName=Myself, Mode=OneWay}">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="40"/>
             <ColumnDefinition Width="*"/>

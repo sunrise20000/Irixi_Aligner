@@ -43,8 +43,10 @@
   <ItemGroup>
     <Compile Include="Axis.cs" />
     <Compile Include="BindingConverter\CommandStructGenerator.cs" />
+    <Compile Include="BindingConverter\CvtOutputStateToBool.cs" />
     <Compile Include="CommandStruct.cs" />
     <Compile Include="ConnectionEventArgs.cs" />
+    <Compile Include="InputEventArgs.cs" />
     <Compile Include="IrixiMotionController.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="PublicDefinitions.cs" />

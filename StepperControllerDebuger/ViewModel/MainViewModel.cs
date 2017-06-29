@@ -21,8 +21,9 @@ namespace StepperControllerDebuger.ViewModel
     /// See http://www.galasoft.ch/mvvm
     /// </para>
     /// </summary>
-    public class MainViewModel : ViewModelBase
+    public class MainViewModel : ViewModelBase, IDisposable
     {
+
         IrixiStepperControllerHelper.IrixiMotionController _controller;
 
         string _conn_prog_msg = "";
@@ -40,7 +41,8 @@ namespace StepperControllerDebuger.ViewModel
             }
             else
             {
-                _controller = new IrixiStepperControllerHelper.IrixiMotionController("300038001251363031393231"); // For debug, the default SN of the controller is used.
+                
+                _controller = new IrixiStepperControllerHelper.IrixiMotionController(GlobalVariables.HidSN); // For debug, the default SN of the controller is used.
 
                 //
                 // While scanning the controller, report the state to user window
@@ -58,6 +60,14 @@ namespace StepperControllerDebuger.ViewModel
                             break;
                     }
                     
+                });
+
+                _controller.OnInputChanged += new EventHandler<InputEventArgs>((s, e) =>
+                {
+                    if(e.Channel == 0 && e.State == InputState.Triggered)
+                    {
+                        _controller.SetGeneralOutput(0, OutputState.Enabled);
+                    }
                 });
                 
 
@@ -154,7 +164,7 @@ namespace StepperControllerDebuger.ViewModel
             for (int i = 0; i < _controller.TotalAxes; i ++)
             {
                 tasks[i] = _controller.HomeAsync(i);
-                await Task.Delay(10);
+                //await Task.Delay(10);
             }
 
             retvals = await Task.WhenAll<bool>(tasks);
@@ -174,7 +184,7 @@ namespace StepperControllerDebuger.ViewModel
                     AxisIndex,
                     100,
                     _controller.AxisCollection[AxisIndex].PosAfterHome,
-                    IrixiStepperControllerHelper.EnumMoveMode.ABS);
+                    IrixiStepperControllerHelper.MoveMode.ABS);
 
                 if (!success)
                 {
@@ -228,10 +238,13 @@ namespace StepperControllerDebuger.ViewModel
             bool success = await _controller.MoveAsync(args.AxisIndex, args.DriveVelocity, args.TotalSteps, args.Mode);
             if(!success)
             {
+                /*
                 Messenger.Default.Send<NotificationMessage<string>>(
                                                 new NotificationMessage<string>(
                                                     string.Format("Unable to move, {0}", _controller.LastError),
                                                     "Error"));
+
+    */
             }
         }
 
@@ -258,11 +271,11 @@ namespace StepperControllerDebuger.ViewModel
             }
         }
 
-        public RelayCommand<Tuple<int, EnumGeneralOutputState>> CommandSetGeneralOutput
+        public RelayCommand<Tuple<int, OutputState>> CommandSetGeneralOutput
         {
             get
             {
-                return new RelayCommand<Tuple<int, EnumGeneralOutputState>>(arg =>
+                return new RelayCommand<Tuple<int, OutputState>>(arg =>
                 {
                     _controller.SetGeneralOutput(arg.Item1, arg.Item2);
                 });
@@ -270,5 +283,11 @@ namespace StepperControllerDebuger.ViewModel
         }
 
         #endregion
+
+
+        public void Dispose()
+        {
+            _controller.Dispose();
+        }
     }
 }

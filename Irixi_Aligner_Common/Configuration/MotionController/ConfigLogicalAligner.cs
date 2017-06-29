@@ -28,7 +28,9 @@ namespace Irixi_Aligner_Common.Configuration
         public ConfigLogicalAxis AxisRoll { get; set; }
         public ConfigLogicalAxis AxisYaw { get; set; }
         public ConfigLogicalAxis AxisPitch { get; set; }
-
+        public ConfigLogicalAxis AxisBigX { get; set; }
+        public ConfigLogicalAxis AxisBigY { get; set; }
+        public ConfigLogicalAxis AxisProbeZ { get; set; }
 
         #region RaisePropertyChangedEvent
         public event PropertyChangedEventHandler PropertyChanged;

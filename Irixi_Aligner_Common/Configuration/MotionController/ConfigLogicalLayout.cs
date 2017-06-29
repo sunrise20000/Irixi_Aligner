@@ -4,7 +4,7 @@
     {
         public ConfigLogicalAligner VGrooveAligner { get; set; }
         public ConfigLogicalAligner LensAligner { get; set; }
-        public ConfigLogicalAligner COSAligner { get; set; }
+        public ConfigLogicalAligner PODAligner { get; set; }
         public ConfigLogicalAligner AngleCamera { get; set; }
         public ConfigLogicalAligner TopCamera{ get; set; }
         public ConfigLogicalAligner FrontCamera { get; set; }
