@@ -121,6 +121,13 @@ namespace Irixi_Aligner_Common.MotionControllerEntities
                 _controller.OpenDevice();
                 if (_controller.IsConnected)
                 {
+                    for (int i = 0; i < this.AxisCollection.Count; i++)
+                    {
+                        _controller.AxisCollection[i].SoftCCWLS = this.AxisCollection[i.ToString()].CCWL;
+                        _controller.AxisCollection[i].SoftCWLS = this.AxisCollection[i.ToString()].CWL;
+                        _controller.AxisCollection[i].MaxDistance = this.AxisCollection[i.ToString()].MaxStroke;
+                    }
+
                     return true;
                 }
                 else
