@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using static Irixi_Aligner_Common.Classes.BaseClass.RealworldDistanceUnitHelper;
 
 namespace Irixi_Aligner_Common.Configuration
 {
@@ -44,6 +45,16 @@ namespace Irixi_Aligner_Common.Configuration
         /// Get the distance per step.
         /// the unit should be nm
         /// </summary>
-        public int Dps { get; set; }
+        public double Dps { get; set; }
+
+        /// <summary>
+        /// Get the decimal digits of the real world distance displayed on the window
+        /// </summary>
+        public int Digits { get; set; }
+
+        /// <summary>
+        /// Get the unit of the real world distance
+        /// </summary>
+        public UnitType Unit { get; set; }
     }
 }

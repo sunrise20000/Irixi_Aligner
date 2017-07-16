@@ -46,6 +46,7 @@
     <Compile Include="BindingConverter\CvtOutputStateToBool.cs" />
     <Compile Include="CommandStruct.cs" />
     <Compile Include="ConnectionEventArgs.cs" />
+    <Compile Include="FimwareInfo.cs" />
     <Compile Include="InputEventArgs.cs" />
     <Compile Include="IrixiMotionController.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

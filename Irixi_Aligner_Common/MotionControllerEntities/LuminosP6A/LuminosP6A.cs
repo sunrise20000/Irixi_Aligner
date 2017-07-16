@@ -82,37 +82,6 @@ namespace Irixi_Aligner_Common.MotionControllerEntities
 
         #endregion
 
-        #region Events of luminos sdk
-
-        /// <summary>
-        /// Fires each time an Axis object is added to the Axes collection, usually fired during the execution of the Connect method. 
-        /// </summary>
-        /// <param name="Unit">The index value of the new Axis that has been created and added to the Axes collection. The first Axis created will have a unit/index value of 1. </param>
-        private void Pos_OnAxisCreated(byte Unit)
-        {
-            //PositionerLib.Axis _luminos_axis = pos.Axes[Unit];
-            //LuminosAxis _axis = null;
-
-            //_axis = FindAxisByName(_luminos_axis.AxisType.ToString()) as LuminosAxis;
-
-            //if (_axis != null)
-            //{
-            //    _axis.RegisterLuminosSDKAxis(_luminos_axis);
-            //    LogHelper.WriteLine(string.Format("A luminos axis was find, the type is {0}.", _luminos_axis.AxisType));
-            //}
-            //else
-            //    LogHelper.WriteLine(string.Format("There is no definition of the luminos type {0}, please check the config file.", _luminos_axis.AxisType));
-
-            //_axes_registered++;
-            //// if all axes have been registered, complete the inititalization task
-            //if (_axes_registered >= pos.Axes.Count)
-            //{
-            //    _wait_axis_register.Release();
-            //}
-        }
-        
-        #endregion
-
         #region Methods
         public override Task<bool> Init()
         {
@@ -154,11 +123,11 @@ namespace Irixi_Aligner_Common.MotionControllerEntities
                                 {
 
                                     _axis.RegisterZaberConversation(conversation);
-                                    LogHelper.WriteLine(string.Format("One luminos axis was find, the id is {0}.", conversation.Device.DeviceNumber));
+                                    LogHelper.WriteLine("One luminos axis was find, the id is {0}.", conversation.Device.DeviceNumber);
                                 }
                                 else
                                 {
-                                    LogHelper.WriteLine(string.Format("**ERROR** The device number {0} reported by luminos sdk is not defined in the config file.", conversation.Device.DeviceNumber));
+                                    LogHelper.WriteLine("**ERROR** The device number {0} reported by luminos sdk is not defined in the config file.", conversation.Device.DeviceNumber);
                                     _init_ret = false;
                                 }
                             }
@@ -166,7 +135,8 @@ namespace Irixi_Aligner_Common.MotionControllerEntities
                     }
                     else // no axis was found by the sdk
                     {
-                        LogHelper.WriteLine(string.Format("**ERROR** No axis was found by the zaber sdk."));
+                        _zaber_port_facade.Close();
+                        LogHelper.WriteLine("**ERROR** No axis was found by the zaber sdk.");
                         _init_ret = false;
                     }
 

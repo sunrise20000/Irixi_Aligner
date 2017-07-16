@@ -13,6 +13,7 @@ using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 
@@ -44,18 +45,20 @@ namespace Irixi_Aligner_Common.Classes
 
         public SystemService()
         {
+            ThreadPool.SetMinThreads(50, 50);
+
             // read the configuration from the file named SystemCfg.json
             // the file is located in \Configuration
             var locator = Application.Current.Resources["Locator"] as ViewModelLocator;
             ConfigManager configmgr = locator.Configuration;
 
             // whether output the log
-            LogHelper.LogEnabled= configmgr.MotionController.LogEnabled;
+            LogHelper.LogEnabled= configmgr.MotionControllerConfig.LogEnabled;
 
             // initialize the properties
             this.PhysicalMotionControllerCollection = new Dictionary<Guid, IMotionController>();
             this.LogicalAxisCollection = new ObservableCollectionEx<ConfigLogicalAxis>();
-            this.LogicalAlignerlayout = configmgr.MotionController.LogicalLayout;
+            this.LogicalAlignerlayout = configmgr.MotionControllerConfig.LogicalLayout;
             this.State = SystemState.BUSY;
 
 
@@ -70,7 +73,7 @@ namespace Irixi_Aligner_Common.Classes
             this.LastMessage = new MessageItem(MessageType.Normal, "System startup ...");
 
             // enumerate all physical motion controllers defined in the config file
-            foreach (var cfg in configmgr.MotionController.PhysicalMotionControllers)
+            foreach (var cfg in configmgr.MotionControllerConfig.PhysicalMotionControllers)
             {
                 IMotionController _mc = null;
 
@@ -158,16 +161,16 @@ namespace Irixi_Aligner_Common.Classes
             try
             {
 
-                IrixiEE0017 ctrl = PhysicalMotionControllerCollection[configmgr.MotionController.Cylinder.HardwareClass] as IrixiEE0017;
+                IrixiEE0017 ctrl = PhysicalMotionControllerCollection[configmgr.MotionControllerConfig.Cylinder.HardwareClass] as IrixiEE0017;
                 CylinderController = new CylinderController(
                 ctrl,
-                configmgr.MotionController.Cylinder.PedalInput,
-                configmgr.MotionController.Cylinder.FiberClampOutput,
-                configmgr.MotionController.Cylinder.LensVacuumOutput,
-                configmgr.MotionController.Cylinder.PLCVacuumOutput,
-                configmgr.MotionController.Cylinder.PODVacuumOutput
+                configmgr.MotionControllerConfig.Cylinder.PedalInput,
+                configmgr.MotionControllerConfig.Cylinder.FiberClampOutput,
+                configmgr.MotionControllerConfig.Cylinder.LensVacuumOutput,
+                configmgr.MotionControllerConfig.Cylinder.PLCVacuumOutput,
+                configmgr.MotionControllerConfig.Cylinder.PODVacuumOutput
                 );
-                CylinderController.IsEnabled = configmgr.MotionController.Cylinder.Enabled;
+                CylinderController.IsEnabled = configmgr.MotionControllerConfig.Cylinder.Enabled;
             }
             catch (Exception e)
             {
@@ -271,7 +274,24 @@ namespace Irixi_Aligner_Common.Classes
                 }
             }
 
-            // Wait until all init tasks were done
+            while(_tasks.Count > 0)
+            {
+                // Wait until all init tasks were done
+                Task<bool> t = await Task.WhenAny(_tasks);
+
+                int id = _tasks.IndexOf(t);
+
+
+                if (t.Result)
+                    this.LastMessage = new MessageItem(MessageType.Good, "{0} Initialization is completed.", _equipments[id]);
+                else
+                    this.LastMessage = new MessageItem(MessageType.Error, "{0} Initialization is failed, {1}", _equipments[id], _equipments[id].LastError);
+
+                _tasks.RemoveAt(id);
+                _equipments.RemoveAt(id);
+            }
+
+            /*
             ret = await Task.WhenAll(_tasks);
 
             // Output information according the init result
@@ -282,6 +302,7 @@ namespace Irixi_Aligner_Common.Classes
                 else
                     this.LastMessage = new MessageItem(MessageType.Error, "{0} Initialization is failed, {1}", _equipments[i], _equipments[i].LastError);
             }
+            */
 
             #endregion
 
@@ -359,7 +380,7 @@ namespace Irixi_Aligner_Common.Classes
             }
             else
             {
-                this.LastMessage = new MessageItem(MessageType.Error, "System is busy");
+                this.LastMessage = new MessageItem(MessageType.Warning, "System is busy");
             }
         }
 
@@ -461,7 +482,7 @@ namespace Irixi_Aligner_Common.Classes
         /// <summary>
         /// home all axes in system
         /// </summary>
-        public async void HomeAllAxes()
+        public async void MassHome()
         {
             if (GetSystemState() == SystemState.IDLE)
             {
@@ -469,16 +490,19 @@ namespace Irixi_Aligner_Common.Classes
                 int _axis_homed = 0;
                 int _total_axis = this.LogicalAxisCollection.Count;
                 List<Task<bool>> _tasks = new List<Task<bool>>();
-                List<ConfigLogicalAxis> _tmp_axis_homing = new List<ConfigLogicalAxis>();
+                List<ConfigLogicalAxis> _axis_homing = new List<ConfigLogicalAxis>();
 
                 SetSystemState(SystemState.BUSY);
+
+                // update the UI immediately
+                await Task.Delay(50);
 
                 // Loop Home() function of each axis
                 do
                 {
-                    this.LastMessage = new MessageItem(MessageType.Normal, "The present homing order is {0}", _present_order);
+                    //this.LastMessage = new MessageItem(MessageType.Normal, "The present homing order is {0}", _present_order);
 
-                    _tmp_axis_homing.Clear();
+                    _axis_homing.Clear();
                     _tasks.Clear();
                     // find the axes which are to be homed in current stage
                     foreach (var axis in this.LogicalAxisCollection)
@@ -490,7 +514,7 @@ namespace Irixi_Aligner_Common.Classes
                             var t = axis.PhysicalAxisInst.Home();
                             t.Start();
                             _tasks.Add(t);
-                            _tmp_axis_homing.Add(axis);
+                            _axis_homing.Add(axis);
 
                         }
                     }
@@ -501,22 +525,22 @@ namespace Irixi_Aligner_Common.Classes
                     }
                     else
                     {
-                        this.LastMessage = new MessageItem(MessageType.Normal, "Waiting ...");
-
-                        // Wait asynchronoursly until all home tasks are done
-                        bool[] ret = await Task.WhenAll(_tasks);
-
-                        // Output the messages to indicate whether the specified axis were completely homed or not
-                        for (int i = 0; i < ret.Length; i++)
+                        while (_tasks.Count > 0)
                         {
-                            if (ret[i])
-                                this.LastMessage = new MessageItem(MessageType.Good, "{0} Home is completed.", _tmp_axis_homing[i]);
-                            else
-                                this.LastMessage = new MessageItem(MessageType.Error, "{0} Home is failed, {1}", _tmp_axis_homing[i], _tmp_axis_homing[i].PhysicalAxisInst.LastError);
-                        }
+                            Task<bool> t = await Task.WhenAny(_tasks);
+                            int id = _tasks.IndexOf(t);
 
-                        // save the sum of homed axes in order to check if all axes have been homed
-                        _axis_homed += _tasks.Count;
+                            if (t.Result)
+                                this.LastMessage = new MessageItem(MessageType.Good, "{0} Home is completed.", _axis_homing[id]);
+                            else
+                                this.LastMessage = new MessageItem(MessageType.Error, "{0} Home is failed, {1}", _axis_homing[id], _axis_homing[id].PhysicalAxisInst.LastError);
+
+                            _tasks.RemoveAt(id);
+                            _axis_homing.RemoveAt(id);
+
+                            // save the sum of homed axes in order to check if all axes have been homed
+                            _axis_homed ++;
+                        }
                         
                     }
 
@@ -525,14 +549,14 @@ namespace Irixi_Aligner_Common.Classes
 
                 } while (_axis_homed < _total_axis);
 
-                this.LastMessage = new MessageItem(MessageType.Good, "Batch Home is completed");
+                this.LastMessage = new MessageItem(MessageType.Good, "Mass Home is completed");
 
                 SetSystemState(SystemState.IDLE);
 
             }
             else
             {
-                this.LastMessage = new MessageItem(MessageType.Error, "System is busy");
+                this.LastMessage = new MessageItem(MessageType.Warning, "System is busy");
             }
         }
 
@@ -880,7 +904,7 @@ namespace Irixi_Aligner_Common.Classes
             {
                 return new RelayCommand(() =>
                 {
-                    HomeAllAxes();
+                    MassHome();
                 });
             }
         }

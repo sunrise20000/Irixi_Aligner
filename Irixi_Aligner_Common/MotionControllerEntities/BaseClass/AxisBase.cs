@@ -5,6 +5,7 @@ using Irixi_Aligner_Common.Interfaces;
 using System.Threading;
 using System.ComponentModel;
 using Irixi_Aligner_Common.Configuration;
+using Irixi_Aligner_Common.Classes.BaseClass;
 
 namespace Irixi_Aligner_Common.MotionControllerEntities
 {
@@ -164,7 +165,7 @@ namespace Irixi_Aligner_Common.MotionControllerEntities
             }
         }
 
-        public int Dps { private set; get; }
+        public RealworldDistanceUnitHelper UnitHelper { private set; get; }
 
         public string LastError { set; get; }
 
@@ -207,7 +208,7 @@ namespace Irixi_Aligner_Common.MotionControllerEntities
                 this.CWL = Config.PosCWL;
                 this.CCWL = Config.PosCCWL;
                 this.MaxStroke = Config.PosMax;
-                this.Dps = Config.Dps;
+                this.UnitHelper = new RealworldDistanceUnitHelper(Config.Dps, Config.Unit, Config.Digits);
                 this.ParentController = Controller;
             }
         }

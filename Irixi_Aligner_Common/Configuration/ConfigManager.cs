@@ -17,7 +17,7 @@ namespace Irixi_Aligner_Common.Configuration
             reader.Close();
 
             // Convert the string 
-            MotionController = JsonConvert.DeserializeObject<ConfigurationMotionController>(json_string);
+            MotionControllerConfig = JsonConvert.DeserializeObject<ConfigurationMotionController>(json_string);
 
             #endregion
 
@@ -31,7 +31,7 @@ namespace Irixi_Aligner_Common.Configuration
             #endregion
         }
 
-        public ConfigurationMotionController MotionController { get; set; }
+        public ConfigurationMotionController MotionControllerConfig { get; set; }
 
         public SnapshotGUI Snapshot { get; set; }
 

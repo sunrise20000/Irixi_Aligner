@@ -11,6 +11,7 @@
         <Converter:CvtOutputStateToColor x:Key="CvtOutputStateToColor"/>
         <Converter:CvtInputStateToColor x:Key="CvtInputStateToColor"/>
         <Converter:CvtBoolToColor x:Key="CvtBoolToColor"/>
+        <Converter:CvtErrorCodeToString x:Key="CvtErrorToString"/>
     </UserControl.Resources>
     <Border BorderBrush="#979797" BorderThickness="1">
         <Grid>
@@ -80,7 +81,7 @@
                 <TextBlock Text="OUT B" VerticalAlignment="Center" Foreground="White" HorizontalAlignment="Center" Grid.Column="10"/>
                 <TextBlock Text="{Binding AxisState.IsHomed, ElementName=userControl, Mode=OneWay}" VerticalAlignment="Center" Foreground="{Binding AxisState.IsHomed, Converter={StaticResource CvtBoolToColor}, ElementName=userControl, Mode=OneWay}" HorizontalAlignment="Center" Grid.Column="0" Grid.Row="1"/>
                 <TextBlock Text="{Binding AxisState.IsRunning, ElementName=userControl, Mode=OneWay}" VerticalAlignment="Center" Foreground="{Binding AxisState.IsRunning, Converter={StaticResource CvtBoolToColor}, ElementName=userControl, Mode=OneWay}" HorizontalAlignment="Center" Grid.Column="1" Grid.Row="1"/>
-                <TextBlock Text="{Binding AxisState.Error, ElementName=userControl, Mode=OneWay}" VerticalAlignment="Center" Foreground="White" HorizontalAlignment="Center" Grid.Column="2" Grid.Row="1"/>
+                <TextBlock Text="{Binding AxisState.Error, ElementName=userControl, Mode=OneWay}" VerticalAlignment="Center" Foreground="White" HorizontalAlignment="Center" Grid.Column="2" Grid.Row="1" ToolTip="{Binding AxisState.Error, Converter={StaticResource CvtErrorToString}, ElementName=userControl, Mode=OneWay}"/>
                 <TextBlock Text="{Binding AxisState.CWLS, ElementName=userControl, Mode=OneWay}" VerticalAlignment="Center" Foreground="{Binding AxisState.CWLS, Converter={StaticResource CvtInputStateToColor}, ElementName=userControl, Mode=OneWay}" HorizontalAlignment="Center" Grid.Column="3" Grid.Row="1"/>
                 <TextBlock Text="{Binding AxisState.CCWLS, ElementName=userControl, Mode=OneWay}" VerticalAlignment="Center" Foreground="{Binding AxisState.CCWLS, Converter={StaticResource CvtInputStateToColor}, ElementName=userControl, Mode=OneWay}" HorizontalAlignment="Center" Grid.Column="4" Grid.Row="1"/>
                 <TextBlock Text="{Binding AxisState.ORG, ElementName=userControl, Mode=OneWay}" VerticalAlignment="Center" Foreground="{Binding AxisState.ORG, Converter={StaticResource CvtInputStateToColor}, ElementName=userControl, Mode=OneWay}" HorizontalAlignment="Center" Grid.Column="5" Grid.Row="1"/>

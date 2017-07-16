@@ -37,7 +37,12 @@
         /// <summary>
         /// Set the state of the general output port
         /// </summary>
-        GENOUT = 10
+        GENOUT = 10,
+
+        /// <summary>
+        /// Get the information of firmware
+        /// </summary>
+        FWINFO = 21
     }
 
     public enum MoveMode

@@ -1,4 +1,5 @@
-﻿using Irixi_Aligner_Common.Configuration;
+﻿using Irixi_Aligner_Common.Classes.BaseClass;
+using Irixi_Aligner_Common.Configuration;
 using System.Threading.Tasks;
 
 namespace Irixi_Aligner_Common.Interfaces
@@ -77,10 +78,7 @@ namespace Irixi_Aligner_Common.Interfaces
         /// </summary>
         object Tag { set; get; }
 
-        /// <summary>
-        /// Get distance per step, unit in nm
-        /// </summary>
-        int Dps { get; }
+        RealworldDistanceUnitHelper UnitHelper { get; }
 
         /// <summary>
         /// Get the last error

@@ -1,11 +1,14 @@
-﻿using System;
+﻿using Irixi_Aligner_Common.Classes;
+using Irixi_Aligner_Common.Classes.BaseClass;
+using Irixi_Aligner_Common.Configuration;
+using System;
 using System.Globalization;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Media;
 
-namespace Irixi_Aligner_Common.Controls
+namespace Irixi_Aligner_Common.UserControls
 {
     /// <summary>
     /// Axis.xaml 的交互逻辑
@@ -20,7 +23,7 @@ namespace Irixi_Aligner_Common.Controls
         #region DP Logical Axis
 
 
-        public Configuration.ConfigLogicalAxis LogicalAxis
+        public ConfigLogicalAxis LogicalAxis
         {
             get { return (Configuration.ConfigLogicalAxis)GetValue(LogicalAxisProperty); }
             set { SetValue(LogicalAxisProperty, value); }
@@ -28,8 +31,7 @@ namespace Irixi_Aligner_Common.Controls
 
         // Using a DependencyProperty as the backing store for LogicalAxis.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty LogicalAxisProperty =
-            DependencyProperty.Register("LogicalAxis", typeof(Configuration.ConfigLogicalAxis), typeof(Axis), new PropertyMetadata(null));
-
+            DependencyProperty.Register("LogicalAxis", typeof(ConfigLogicalAxis), typeof(Axis), new PropertyMetadata());
 
         #endregion
 
@@ -44,12 +46,11 @@ namespace Irixi_Aligner_Common.Controls
 
         // Using a DependencyProperty as the backing store for SystemService.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty SystemServiceProperty =
-            DependencyProperty.Register("SystemService", typeof(Irixi_Aligner_Common.Classes.SystemService), typeof(Axis), new PropertyMetadata(null));
-
-
+            DependencyProperty.Register("SystemService", typeof(SystemService), typeof(Axis), new PropertyMetadata());
 
         #endregion
 
+        #region Events
         private void btnMove_Click(object sender, RoutedEventArgs e)
         {
             Button btn = sender as Button;
@@ -61,16 +62,19 @@ namespace Irixi_Aligner_Common.Controls
             {
                 MessageBox.Show("The speed is not numerical.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
-            else if (int.TryParse(txtDistance.Text, out int _distance) == false)
+            else if (double.TryParse(txtDistance.Text, out double _distance) == false)
             {
                 MessageBox.Show("The distance is not numerical.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
             else
             {
+                // convert distance to stpes
+                int steps = this.LogicalAxis.PhysicalAxisInst.UnitHelper.ConvertToSteps(_distance);
+
                 // if move backword, the distance should be minus
                 if (_direction == "CCW")
                 {
-                    _distance *= -1;
+                    steps *= -1;
                 }
 
                 // call the move function of the systemservice
@@ -80,7 +84,7 @@ namespace Irixi_Aligner_Common.Controls
                     {
                         Mode = _mode,
                         Speed = _speed,
-                        Distance = _distance
+                        Distance = steps
                     });
             }
         }
@@ -89,6 +93,14 @@ namespace Irixi_Aligner_Common.Controls
         {
             this.SystemService.ToggleAxisMoveMode(this.LogicalAxis.PhysicalAxisInst);
         }
+
+        #endregion
+    }
+
+    class AxisUserControlViewModel
+    {
+        public SystemService Service { get; set; }
+        public ConfigLogicalAxis LogicalAxis { get; set; }
     }
 
     /// <summary>
@@ -164,4 +176,35 @@ namespace Irixi_Aligner_Common.Controls
         }
     }
 
+    /// <summary>
+    /// Convert steps to real world distance
+    /// </summary>
+    class ConvertStepsToRealWorldDistance : IMultiValueConverter
+    {
+
+        public object Convert(object []value, Type targetType, object parameter, CultureInfo culture)
+        {
+            // position in steps
+            if (int.TryParse(value[0].ToString(), out int pos))
+            {
+                if (value[1] is RealworldDistanceUnitHelper helper)
+                {
+                    return helper.ConvertToRealworldDistance(pos).ToString();
+                }
+                else
+                {
+                    return "Error";
+                }
+            }
+            else
+            {
+                return "Design Mode";
+            }
+        }
+
+        public object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture)
+        {
+            throw new NotImplementedException();
+        }
+    }
 }

@@ -22,6 +22,10 @@ namespace StepperControllerDebuger
                     case "Error":
                         MessageBox.Show(msg.Content, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                         break;
+
+                    case "MSG":
+                        MessageBox.Show(msg.Content, "Message", MessageBoxButton.OK, MessageBoxImage.Information);
+                        break;
                 }
             }));
         }

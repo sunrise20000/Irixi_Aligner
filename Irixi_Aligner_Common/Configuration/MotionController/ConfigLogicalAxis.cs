@@ -20,7 +20,7 @@ namespace Irixi_Aligner_Common.Configuration
         public string AxisName { get; set; }
 
         /// <summary>
-        /// Get the name displayed on the UI
+        /// Get the name displayed on the window
         /// </summary>
         public string DisplayName { get; set; }
 

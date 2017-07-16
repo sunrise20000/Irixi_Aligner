@@ -48,24 +48,7 @@ namespace IrixiStepperControllerHelper
             }
 
         }
-
-        bool _is_homing = false;
-        /// <summary>
-        /// Get whether the axis is in homing process or not
-        /// </summary>
-        public bool IsHoming
-        {
-            internal set
-            {
-                UpdateProperty<bool>(ref _is_homing, value);
-            }
-            get
-            {
-                return _is_homing;
-            }
-
-        }
-
+        
         /// <summary>
         /// Get whether the axis has been home
         /// </summary>
@@ -239,7 +222,6 @@ namespace IrixiStepperControllerHelper
             AxisState state = new AxisState();
             state.AbsPosition = this.AbsPosition;
             state.AxisIndex = this.AxisIndex;
-            state.IsHoming = this.IsHoming;
             state.IsHomed = this.IsHomed;
             state.IsRunning = this.IsRunning;
             state.Error = this.Error;
@@ -290,6 +272,21 @@ namespace IrixiStepperControllerHelper
 
     public class DeviceStateReport : INotifyPropertyChanged, ICloneable
     {
+        #region Constants
+        const int ERR_NONE = 0;     
+        const int ERR_AXISID = 1;   
+        const int ERR_PARA = 2;     
+        const int ERR_NOTHM = 5;    
+        const int ERR_BUSY = 7;     
+        const int ERR_CWLS = 10;    
+        const int ERR_CCWLS = 20;   
+        const int ERR_EMEGENCY = 30;
+        const int ERR_USRSTOP = 31; 
+        const int ERR_NOSTAGE = 253;
+        const int ERR_IICBUS = 254; 
+        const int ERR_FATAL = 255; 
+        #endregion
+
         #region Variables
         static object _lock = new object();
         uint _counter;
@@ -448,16 +445,15 @@ namespace IrixiStepperControllerHelper
         {
             byte temp = 0x0;
 
-            // check the lenght of the data arry
-            if (Data.Length < 64)
-                return;
+            //// check the lenght of the data arry
+            //if (Data.Length < 64)
+            //    return;
 
             using (MemoryStream stream = new MemoryStream(Data))
             {
                 using (BinaryReader reader = new BinaryReader(stream))
                 {
-
-                    reader.ReadByte(); // Ignore the first dummy byte
+                    reader.ReadByte(); // ignore report id
 
                     this.Counter = reader.ReadUInt32();
                     this.TotalAxes = reader.ReadByte();
@@ -487,9 +483,8 @@ namespace IrixiStepperControllerHelper
 
                         // parse Usability
                         temp = reader.ReadByte();
-                        this.AxisStateCollection[i].IsHoming = ((temp >> 1) & 0x1) > 0 ? true : false;
-                        this.AxisStateCollection[i].IsHomed = ((temp >> 1) & 0x1) > 0 ? true : false;
-                        this.AxisStateCollection[i].IsRunning = ((temp >> 2) & 0x1) > 0 ? true : false;
+                        this.AxisStateCollection[i].IsHomed = ((temp >> 0) & 0x1) > 0 ? true : false;
+                        this.AxisStateCollection[i].IsRunning = ((temp >> 1) & 0x1) > 0 ? true : false;
 
                         // parse input signal
                         temp = reader.ReadByte();
@@ -532,6 +527,63 @@ namespace IrixiStepperControllerHelper
                 st = this.AxisStateCollection[_axis].OUT_B;
 
             return st;
+        }
+
+        public static string ErrorCodeToString(int error)
+        {
+            string _err_str = "";
+            switch (error)
+            {
+                case ERR_NONE:
+                    _err_str = "no error";
+                    break;
+
+                case ERR_AXISID:
+                    _err_str = "unknown axis index";
+                    break;
+
+                case ERR_PARA:
+                    _err_str = "parameters error";
+                    break;
+
+                case ERR_NOTHM:
+                    _err_str = "axis not homed";
+                    break;
+
+                case ERR_BUSY:
+                    _err_str = "busy";
+                    break;
+
+                case ERR_CWLS:
+                    _err_str = "CWLS detected";
+                    break;
+
+                case ERR_CCWLS:
+                    _err_str = "CCWLS detected";
+                    break;
+
+                case ERR_EMEGENCY:
+                    _err_str = "emegency button pressed";
+                    break;
+
+                case ERR_USRSTOP:
+                    _err_str = "stopped by user";
+                    break;
+
+                case ERR_NOSTAGE:
+                    _err_str = "stage not exists";
+                    break;
+
+                case ERR_IICBUS:
+                    _err_str = "IIC bus error";
+                    break;
+
+                case ERR_FATAL:
+                    _err_str = "fatal error";
+                    break;
+            }
+
+            return _err_str;
         }
 
         public object Clone()
@@ -588,7 +640,5 @@ namespace IrixiStepperControllerHelper
 
         }
         #endregion
-
-
     }
 }

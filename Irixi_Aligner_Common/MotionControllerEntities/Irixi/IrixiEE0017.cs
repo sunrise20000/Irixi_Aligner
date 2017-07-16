@@ -1,5 +1,6 @@
 ﻿using Irixi_Aligner_Common.Configuration;
 using Irixi_Aligner_Common.Interfaces;
+using Irixi_Aligner_Common.Message;
 using IrixiStepperControllerHelper;
 using System;
 using System.Threading.Tasks;
@@ -40,7 +41,7 @@ namespace Irixi_Aligner_Common.MotionControllerEntities
             _controller = new IrixiMotionController(Config.Port);
             _controller.OnConnectionStatusChanged += _controller_OnConnectionProgressChanged;
             _controller.OnReportUpdated += _controller_OnReportUpdated;
-            _controller.OnInputChanged += ((s, e) =>
+            _controller.OnInputIOStatusChanged += ((s, e) =>
             {
                 OnInputStateChanged?.Invoke(this, e);
             });
@@ -109,10 +110,12 @@ namespace Irixi_Aligner_Common.MotionControllerEntities
                 t.Start();
                 t.Wait();
                 if (t.Result == false)
+                {
                     return new Task<bool>(() =>
                     {
                         return false;
                     });
+                }
             }
 
             // The OpenDeviceAsync process will be always running until the device was found
@@ -121,6 +124,9 @@ namespace Irixi_Aligner_Common.MotionControllerEntities
                 _controller.OpenDevice();
                 if (_controller.IsConnected)
                 {
+                    _controller.ReadFWInfo();
+                    LogHelper.WriteLine("{0}, firmware version {1}", this, _controller.FirmwareInfo);
+
                     for (int i = 0; i < this.AxisCollection.Count; i++)
                     {
                         _controller.AxisCollection[i].SoftCCWLS = this.AxisCollection[i.ToString()].CCWL;

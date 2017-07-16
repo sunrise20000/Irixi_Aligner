@@ -5,8 +5,8 @@
     "Enabled": true,
     "HardwareClass": "df4d5339-f472-4bee-97f0-a10f8aecbc1a",
     "PedalInput": 1,
-    "FiberClampOutput": 0,
-    "LensVacuumOutput": 1,
+    "FiberClampOutput": 1,
+    "LensVacuumOutput": 0,
     "PLCVacuumOutput": 2,
     "PODVacuumOutput": 3
   },
@@ -14,8 +14,8 @@
     {
       "Class": "5013d013-f167-4dcb-86d9-599a325744b8",
       "Name": "Luminos P6A",
-      "Port": "COM5",
-      "Enabled": true,
+      "Port": "COM4",
+      "Enabled": false,
       "Comment": "For VGroove Aligner",
       "AxisCollection": [
         {
@@ -25,7 +25,9 @@
           "PosMax": 128000,
           "PosCWL": 128000,
           "PosCCWL": 0,
-          "Dps": 100
+          "Dps": 0.002,
+		      "Unit":"mm",
+		      "Digits":2
         },
         {
           "Name": 2,
@@ -34,7 +36,9 @@
           "PosMax": 128000,
           "PosCWL": 128000,
           "PosCCWL": 0,
-          "Dps": 100
+          "Dps": 100,
+		      "Unit":"mm",
+		      "Digits":2
         },
         {
           "Name": 3,
@@ -43,7 +47,9 @@
           "PosMax": 128000,
           "PosCWL": 128000,
           "PosCCWL": 0,
-          "Dps": 100
+          "Dps": 100,
+		      "Unit":"mm",
+		      "Digits":2
         },
         {
           "Name": 4,
@@ -52,7 +58,9 @@
           "PosMax": 128000,
           "PosCWL": 128000,
           "PosCCWL": 0,
-          "Dps": 100
+          "Dps": 100,
+		      "Unit":"mm",
+		      "Digits":2
         },
         {
           "Name": 5,
@@ -61,7 +69,9 @@
           "PosMax": 128000,
           "PosCWL": 128000,
           "PosCCWL": 0,
-          "Dps": 100
+          "Dps": 100,
+		      "Unit":"mm",
+		      "Digits":2
         },
         {
           "Name": 6,
@@ -70,7 +80,9 @@
           "PosMax": 128000,
           "PosCWL": 128000,
           "PosCCWL": 0,
-          "Dps": 100
+          "Dps": 100,
+		      "Unit":"mm",
+		      "Digits":2
         }
       ]
     },
@@ -88,7 +100,9 @@
           "PosMax": 128000,
           "PosCWL": 128000,
           "PosCCWL": 0,
-          "Dps": 100
+          "Dps": 100,
+		      "Unit":"mm",
+		      "Digits":2
         },
         {
           "Name": 2,
@@ -97,7 +111,9 @@
           "PosMax": 128000,
           "PosCWL": 128000,
           "PosCCWL": 0,
-          "Dps": 100
+          "Dps": 100,
+		      "Unit":"mm",
+		      "Digits":2
         },
         {
           "Name": 3,
@@ -106,7 +122,9 @@
           "PosMax": 128000,
           "PosCWL": 128000,
           "PosCCWL": 0,
-          "Dps": 100
+          "Dps": 100,
+		      "Unit":"mm",
+		      "Digits":2
         },
         {
           "Name": 4,
@@ -115,7 +133,9 @@
           "PosMax": 128000,
           "PosCWL": 128000,
           "PosCCWL": 0,
-          "Dps": 100
+          "Dps": 100,
+		      "Unit":"mm",
+		      "Digits":2
         },
         {
           "Name": 5,
@@ -124,7 +144,9 @@
           "PosMax": 128000,
           "PosCWL": 128000,
           "PosCCWL": 0,
-          "Dps": 100
+          "Dps": 100,
+		      "Unit":"mm",
+		      "Digits":2
         },
         {
           "Name": 6,
@@ -133,15 +155,17 @@
           "PosMax": 128000,
           "PosCWL": 128000,
           "PosCCWL": 0,
-          "Dps": 100
+          "Dps": 100,
+		      "Unit":"mm",
+		      "Digits":2
         }
       ]
     },
     {
       "Class": "2b39c9d5-66e9-4896-8dd1-94d8df0485e1",
       "Name": "Luminos P6A",
-      "Port": "COM10",
-      "Enabled": true,
+      "Port": "COM2",
+      "Enabled": false,
       "Comment": "POD Aligner",
       "AxisCollection": [
         {
@@ -152,7 +176,8 @@
           "PosCWL": 128000,
           "PosCCWL": 0,
           "Dps": 100,
-          "Comment_Dps": "Distance per step, unit is nm"
+		      "Unit":"mm",
+		      "Digits":2
         },
         {
           "Name": 2,
@@ -161,7 +186,9 @@
           "PosMax": 128000,
           "PosCWL": 128000,
           "PosCCWL": 0,
-          "Dps": 100
+          "Dps": 100,
+		      "Unit":"mm",
+		      "Digits":2
         },
         {
           "Name": 3,
@@ -170,7 +197,9 @@
           "PosMax": 128000,
           "PosCWL": 128000,
           "PosCCWL": 0,
-          "Dps": 100
+          "Dps": 100,
+		      "Unit":"mm",
+		      "Digits":2
         },
         {
           "Name": 4,
@@ -179,7 +208,9 @@
           "PosMax": 128000,
           "PosCWL": 128000,
           "PosCCWL": 0,
-          "Dps": 100
+          "Dps": 100,
+		      "Unit":"mm",
+		      "Digits":2
         },
         {
           "Name": 5,
@@ -188,7 +219,9 @@
           "PosMax": 128000,
           "PosCWL": 128000,
           "PosCCWL": 0,
-          "Dps": 100
+          "Dps": 100,
+		          "Unit":"mm",
+		          "Digits":2
         },
         {
           "Name": 6,
@@ -197,7 +230,9 @@
           "PosMax": 128000,
           "PosCWL": 128000,
           "PosCCWL": 0,
-          "Dps": 100
+          "Dps": 100,
+		      "Unit":"mm",
+		      "Digits":2
         }
       ]
     },
@@ -212,29 +247,34 @@
           "Name": 0,
           "Enabled": true,
           "PosHomed": 0,
-          "PosMax": 128000,
-          "PosCWL": 128000,
+          "PosMax": 50000,
+          "PosCWL": 50000,
           "PosCCWL": 0,
-          "Dps": 100,
-          "Comment_Dps": "Distance per step, unit is nm"
+          "Dps": 0.001,
+		      "Unit":"mm",
+		      "Digits":4
         },
         {
           "Name": 1,
           "Enabled": true,
           "PosHomed": 0,
-          "PosMax": 128000,
-          "PosCWL": 128000,
+          "PosMax": 15000,
+          "PosCWL": 15000,
           "PosCCWL": 0,
-          "Dps": 100
+          "Dps": 0.002,
+		      "Unit":"mm",
+		      "Digits":4
         },
         {
           "Name": 2,
           "Enabled": true,
           "PosHomed": 0,
-          "PosMax": 128000,
-          "PosCWL": 128000,
+          "PosMax": 50000,
+          "PosCWL": 50000,
           "PosCCWL": 0,
-          "Dps": 100
+          "Dps": 0.001,
+		      "Unit":"mm",
+		      "Digits":4
         }
       ]
     },
@@ -249,29 +289,34 @@
           "Name": 0,
           "Enabled": true,
           "PosHomed": 0,
-          "PosMax": 128000,
-          "PosCWL": 128000,
+          "PosMax": 50000,
+          "PosCWL": 50000,
           "PosCCWL": 0,
-          "Dps": 100,
-          "Comment_Dps": "Distance per step, unit is nm"
+          "Dps": 0.001,
+		      "Unit":"mm",
+		      "Digits":2
         },
         {
           "Name": 1,
           "Enabled": true,
           "PosHomed": 0,
-          "PosMax": 128000,
-          "PosCWL": 128000,
+          "PosMax": 15000,
+          "PosCWL": 15000,
           "PosCCWL": 0,
-          "Dps": 100
+          "Dps": 0.002,
+		      "Unit":"mm",
+		      "Digits":2
         },
         {
           "Name": 2,
           "Enabled": true,
           "PosHomed": 0,
-          "PosMax": 128000,
-          "PosCWL": 128000,
+          "PosMax": 50000,
+          "PosCWL": 50000,
           "PosCCWL": 0,
-          "Dps": 100
+          "Dps": 0.001,
+		      "Unit":"mm",
+		      "Digits":2
         }
       ]
     },
@@ -286,29 +331,34 @@
           "Name": 0,
           "Enabled": true,
           "PosHomed": 0,
-          "PosMax": 128000,
-          "PosCWL": 128000,
+          "PosMax": 50000,
+          "PosCWL": 50000,
           "PosCCWL": 0,
-          "Dps": 100,
-          "Comment_Dps": "Distance per step, unit is nm"
+          "Dps": 0.002,
+		      "Unit":"mm",
+		      "Digits":2
         },
         {
           "Name": 1,
           "Enabled": true,
           "PosHomed": 0,
-          "PosMax": 128000,
-          "PosCWL": 128000,
+          "PosMax": 15000,
+          "PosCWL": 15000,
           "PosCCWL": 0,
-          "Dps": 100
+          "Dps": 0.002,
+		      "Unit":"mm",
+		      "Digits":2
         },
         {
           "Name": 2,
           "Enabled": true,
           "PosHomed": 0,
-          "PosMax": 128000,
-          "PosCWL": 128000,
+          "PosMax": 15000,
+          "PosCWL": 15000,
           "PosCCWL": 0,
-          "Dps": 100
+          "Dps": 0.002,
+		      "Unit":"mm",
+		      "Digits":2
         }
       ]
     },
@@ -323,29 +373,34 @@
           "Name": 0,
           "Enabled": true,
           "PosHomed": 0,
-          "PosMax": 128000,
-          "PosCWL": 128000,
+          "PosMax": 50000,
+          "PosCWL": 50000,
           "PosCCWL": 0,
-          "Dps": 100,
-          "Comment_Dps": "Distance per step, unit is nm"
+          "Dps": 0.001,
+          "Unit": "mm",
+          "Digits": 2
         },
         {
           "Name": 1,
           "Enabled": true,
           "PosHomed": 0,
-          "PosMax": 128000,
-          "PosCWL": 128000,
+          "PosMax": 50000,
+          "PosCWL": 50000,
           "PosCCWL": 0,
-          "Dps": 100
+          "Dps": 0.001,
+          "Unit": "mm",
+          "Digits": 2
         },
         {
           "Name": 2,
           "Enabled": true,
           "PosHomed": 0,
-          "PosMax": 128000,
-          "PosCWL": 128000,
+          "PosMax": 7500,
+          "PosCWL": 7500,
           "PosCCWL": 0,
-          "Dps": 100
+          "Dps": 0.002,
+          "Unit": "mm",
+          "Digits": 2
         }
       ]
     }

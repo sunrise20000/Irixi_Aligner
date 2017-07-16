@@ -33,15 +33,16 @@ namespace StepperControllerDebuger.ViewModel
         /// </summary>
         public MainViewModel()
         {
-
-
             if (IsInDesignMode)
             {
                 //Code runs in Blend-- > create design time data.
             }
             else
             {
-                
+                ThreadPool.SetMinThreads(50, 50);
+
+                this.DeviceSN = GlobalVariables.HidSN;
+
                 _controller = new IrixiStepperControllerHelper.IrixiMotionController(GlobalVariables.HidSN); // For debug, the default SN of the controller is used.
 
                 //
@@ -51,18 +52,23 @@ namespace StepperControllerDebuger.ViewModel
                 {
                     switch(args.Event)
                     {
+                        case ConnectionEventArgs.EventType.TotalAxesReturned:
+                            this.ConnectionStateChangedMessage = "Connected";
+                            break;
+
                         case ConnectionEventArgs.EventType.ConnectionRetried: // how many times tried to connect to the device is reported
-                            this.ConnectionProgressMessage = string.Format("Searching device...tried {0} times", (int)args.Content);
+                            this.ConnectionStateChangedMessage = string.Format("Scanning controller, retried {0} times ...", (int)args.Content);
                             break;
 
                         case ConnectionEventArgs.EventType.ConnectionLost:
+                            this.ConnectionStateChangedMessage = "Reconnecting ...";
                             StartOpenDevice();
                             break;
                     }
                     
                 });
 
-                _controller.OnInputChanged += new EventHandler<InputEventArgs>((s, e) =>
+                _controller.OnInputIOStatusChanged += new EventHandler<InputEventArgs>((s, e) =>
                 {
                     if(e.Channel == 0 && e.State == InputState.Triggered)
                     {
@@ -89,20 +95,38 @@ namespace StepperControllerDebuger.ViewModel
 
         async void StartOpenDevice()
         {
-            bool success = await _controller.OpenDeviceAsync();
-            this.ConnectionProgressMessage = "Connected";
+            bool success = false;
+            do
+            {
+                success = await _controller.OpenDeviceAsync();
+            }
+            while (success == false);
         }
 
         #region Properties
+        string _device_sn = "";
+        public string DeviceSN
+        {
+            private set
+            {
+                _device_sn = value;
+                RaisePropertyChanged();
+            }
+            get
+            {
+                return _device_sn;
+            }
+        }
+
         /// <summary>
         /// Get the message about the connection progress
         /// </summary>
-        public string ConnectionProgressMessage
+        public string ConnectionStateChangedMessage
         {
             private set
             {
                 _conn_prog_msg = value;
-                RaisePropertyChanged("ConnectionProgressMessage");
+                RaisePropertyChanged();
             }
             get
             {
@@ -164,11 +188,10 @@ namespace StepperControllerDebuger.ViewModel
             for (int i = 0; i < _controller.TotalAxes; i ++)
             {
                 tasks[i] = _controller.HomeAsync(i);
-                //await Task.Delay(10);
+              
             }
 
             retvals = await Task.WhenAll<bool>(tasks);
-
         }
 
         /// <summary>
@@ -184,7 +207,7 @@ namespace StepperControllerDebuger.ViewModel
                     AxisIndex,
                     100,
                     _controller.AxisCollection[AxisIndex].PosAfterHome,
-                    IrixiStepperControllerHelper.MoveMode.ABS);
+                    MoveMode.ABS);
 
                 if (!success)
                 {
@@ -222,7 +245,6 @@ namespace StepperControllerDebuger.ViewModel
                     else if (args.Command == IrixiStepperControllerHelper.EnumCommand.MOVE)
                     {
                         StartMoveAsync(args);
-
                     }
                     else
                     {
@@ -236,15 +258,13 @@ namespace StepperControllerDebuger.ViewModel
         async void StartMoveAsync(CommandStruct args)
         {
             bool success = await _controller.MoveAsync(args.AxisIndex, args.DriveVelocity, args.TotalSteps, args.Mode);
-            if(!success)
+            if (!success)
             {
-                /*
                 Messenger.Default.Send<NotificationMessage<string>>(
-                                                new NotificationMessage<string>(
-                                                    string.Format("Unable to move, {0}", _controller.LastError),
-                                                    "Error"));
+                    new NotificationMessage<string>(
+                        string.Format("Unable to move, {0}", _controller.LastError),
+                        "Error"));
 
-    */
             }
         }
 
@@ -282,9 +302,49 @@ namespace StepperControllerDebuger.ViewModel
             }
         }
 
+        public RelayCommand CommandReadFWInfo
+        {
+            get
+            {
+                return new RelayCommand(() =>
+                {
+                    ReadFWInfo();
+                });
+            }
+        }
+
+        async void ReadFWInfo()
+        {
+            bool success = await _controller.ReadFWInfoAsync();
+            if(success)
+            {
+                Messenger.Default.Send<NotificationMessage<string>>(
+                    new NotificationMessage<string>(
+                        string.Format("The firmware is validated, Ver {0}", _controller.FirmwareInfo.ToString()),
+                        "MSG"));
+            }
+            else
+            {
+                Messenger.Default.Send<NotificationMessage<string>>(
+                    new NotificationMessage<string>(
+                        string.Format("The format of firmware info is error, {0}", _controller.FirmwareInfo.ToString()),
+                        "Error"));
+            }
+        }
+
+        public RelayCommand CommandCopySN
+        {
+            get
+            {
+                return new RelayCommand(() =>
+                {
+                    System.Windows.Clipboard.SetDataObject(_controller.SerialNumber);
+                });
+            }
+        }
+
         #endregion
-
-
+        
         public void Dispose()
         {
             _controller.Dispose();

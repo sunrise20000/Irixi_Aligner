@@ -77,6 +77,7 @@
       <DependentUpon>AxisControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="Converter\CvtBoolToColor.cs" />
+    <Compile Include="Converter\CvtErrorCodeToString.cs" />
     <Compile Include="Converter\CvtOutputStateToColor.cs" />
     <Compile Include="Converter\CvtInputStateToColor.cs" />
     <Compile Include="Converter\CvtControllerErrorToColor.cs" />

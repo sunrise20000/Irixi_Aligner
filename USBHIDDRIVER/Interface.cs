@@ -101,19 +101,21 @@ namespace USBHIDDRIVER
         /// <returns>Returns true if all bytes have been written successfully</returns>
         public bool Write(Byte[] bytes)
         {
-                int byteCount = bytes.Length;
-                int bytePos = 0;
-               
-                bool success = true;
+            int byteCount = bytes.Length;
+            int bytePos = 0;
 
+            bool success = true;
+
+            if (bytes.Length >= 64)
+            {
                 //build hid reports with 64 bytes
-                while (bytePos <= byteCount-1)
+                while (bytePos <= byteCount - 1)
                 {
                     if (bytePos > 0)
                     {
                         Thread.Sleep(5);
                     }
-                    Byte[] transfByte = new byte[64];
+                    byte[] transfByte = new byte[64];
                     for (int u = 0; u < 64; u++)
                     {
                         if (bytePos < byteCount)
@@ -121,7 +123,7 @@ namespace USBHIDDRIVER
                             transfByte[u] = bytes[bytePos];
                             bytePos++;
                         }
-                        else 
+                        else
                         {
                             transfByte[u] = 0;
                         }
@@ -133,7 +135,16 @@ namespace USBHIDDRIVER
                     }
                     Thread.Sleep(5);
                 }
-                return success;
+            }
+            else
+            {
+                byte[] transfByte = new byte[bytes.Length];
+                Array.Copy(bytes, transfByte, bytes.Length);
+                success = this.usbdevice.WriteData(transfByte);
+            }
+
+
+            return success;
         }
         
         /// <summary>

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
@@ -98,6 +99,7 @@ namespace USBHIDDRIVER.USB
                 resultb = myUSB.CT_SetupDiGetDeviceInterfaceBuffer(ref requiredSize, 0);
 
                 size = requiredSize;
+                
                 //get device path
                 resultb = myUSB.CT_SetupDiGetDeviceInterfaceDetail(ref requiredSize, size);
 
@@ -105,8 +107,7 @@ namespace USBHIDDRIVER.USB
                 {
                     int err = Marshal.GetLastWin32Error();
                 }
-
-
+                
                 this.DevicePath = myUSB.DevicePathName;
 
                 //is this the device i want?
@@ -217,18 +218,19 @@ namespace USBHIDDRIVER.USB
                    // myUSB.CT_HidD_GetPreparsedData(myUSB.HidHandle, ref myPtrToPreparsedData);
                    // int code = myUSB.CT_HidP_GetCaps(myPtrToPreparsedData);
 
-                    int outputReportByteLength = 65;
+                    int outputReportByteLength = myUSB.myHIDP_CAPS.OutputReportByteLength;
 
-                    int bytesSend = 0;
+                    int bytesSend = 1;
                     //if bWriteData is bigger then one report diveide into sevral reports
                     while (bytesSend < bDataToWrite.Length)
                     {
 
                         // Set the size of the Output report buffer.
                        // byte[] OutputReportBuffer = new byte[myUSB.myHIDP_CAPS.OutputReportByteLength - 1 + 1];
-                        byte[] OutputReportBuffer = new byte[outputReportByteLength - 1 + 1];
-                        // Store the report ID in the first byte of the buffer:
-                        OutputReportBuffer[0] = 0;
+                        byte[] OutputReportBuffer = new byte[outputReportByteLength];
+
+                        // set the report id
+                        OutputReportBuffer[0] = bDataToWrite[0];
 
                         // Store the report data following the report ID.
                         for (int i = 1; i < OutputReportBuffer.Length; i++)
@@ -332,14 +334,11 @@ namespace USBHIDDRIVER.USB
                                 byteCount += myRead.Length;
 
                                 OnDataReceived?.Invoke(this, myRead);
-
-                                
                             }
                             else
                             {
                                 throw new Exception("Unable to read data from the HID device, it could be disconnected.");
                             }
-                            
                         }
                     }
                 }

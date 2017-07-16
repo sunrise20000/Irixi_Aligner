@@ -89,17 +89,21 @@
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="70"/>
                 <ColumnDefinition Width="100"/>
+                <ColumnDefinition Width="100"/>
+                <ColumnDefinition Width="100"/>
                 <ColumnDefinition/>
             </Grid.ColumnDefinitions>
             <Button x:Name="btn_Home" Content="Home" Margin="3" Tag="-1" Command="{Binding Main.CommandHome, Mode=OneWay}" FontSize="16" CommandParameter="{Binding Tag, Converter={StaticResource CvtObjectToInt}, RelativeSource={RelativeSource Self}}"/>
             <Button x:Name="btn_Stop" Content="Stop" Grid.Column="1" Margin="3" Background="Red" Foreground="White" FontWeight="Bold" Tag="0" Command="{Binding Main.CommandStop, Mode=OneWay}" FontSize="16"/>
-            <Grid Grid.Column="2">
+            <Button x:Name="btnGetFwInfo" Content="FW Info" Grid.Column="2" Margin="3" Command="{Binding Main.CommandReadFWInfo, Mode=OneWay}"/>
+            <Button Content="Copy SN" Margin="3" Grid.Column="3" Command="{Binding Main.CommandCopySN, Mode=OneWay}"/>
+            <Grid Grid.Column="4">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="20"/>
                     <RowDefinition Height="1*"/>
                 </Grid.RowDefinitions>
-                <TextBlock Text="Serial Number:A00000000001" VerticalAlignment="Bottom" FontSize="26.667" FontWeight="Bold" Foreground="#FF997359" Grid.RowSpan="2" HorizontalAlignment="Right"/>
-                <TextBlock x:Name="textBlock" Text="{Binding Main.ConnectionProgressMessage, Mode=OneWay}" VerticalAlignment="Top" TextAlignment="Right" FontSize="18.667" FontStyle="Italic" Foreground="#FFEEA917" HorizontalAlignment="Right" Grid.RowSpan="2"/>
+                <TextBlock Text="{Binding Main.DeviceSN, Mode=OneWay}" VerticalAlignment="Bottom" FontSize="26.667" FontWeight="Bold" Foreground="#FF997359" Grid.RowSpan="2" HorizontalAlignment="Right"/>
+                <TextBlock x:Name="textBlock" Text="{Binding Main.ConnectionStateChangedMessage, Mode=OneWay}" VerticalAlignment="Top" TextAlignment="Right" FontSize="18.667" FontStyle="Italic" Foreground="#FFEEA917" HorizontalAlignment="Right" Grid.RowSpan="2"/>
             </Grid>
         </Grid>
     </Grid>
