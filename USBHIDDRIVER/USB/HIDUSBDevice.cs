@@ -115,24 +115,6 @@ namespace USBHIDDRIVER.USB
 
                 if (this.DevicePath.ToLower().IndexOf(deviceID.ToLower()) > 0)
                 {
-                    ////yes it is
-
-                    ////store device information
-                    //this.deviceCount = device_count;
-                    //this.DevicePath = myUSB.DevicePathName;
-                    
-                    ////init device
-                    //myUSB.CT_SetupDiEnumDeviceInterfaces(this.deviceCount);
-
-                    //size = 0;
-                    //requiredSize = 0;
-
-                    //resultb = myUSB.CT_SetupDiGetDeviceInterfaceBuffer(ref requiredSize, size);
-                    //resultb = false;
-                    //resultb = myUSB.CT_SetupDiGetDeviceInterfaceDetail(ref requiredSize, size);
-                    //resultb = false;
-
-
                     //create HID Device Handel
                     resultb = myUSB.CT_CreateFile(this.DevicePath);
 
@@ -141,9 +123,18 @@ namespace USBHIDDRIVER.USB
 
                     if (this.SerialNumber == null || this.SerialNumber == string.Empty || device_sn == this.SerialNumber)
                     {
-                        //we have found our device so stop searching
-                        this.IsConnected = true;
-                        this.SerialNumber = device_sn;
+                        IntPtr myPtrToPreparsedData = default(IntPtr);
+
+                        if (myUSB.CT_HidD_GetPreparsedData(myUSB.hHidFile, ref myPtrToPreparsedData))
+                        {
+
+                            bool code = myUSB.CT_HidP_GetCaps(myPtrToPreparsedData);
+                            int reportLength = myUSB.myHIDP_CAPS.InputReportByteLength;
+
+                            //we have found our device so stop searching
+                            this.IsConnected = true;
+                            this.SerialNumber = device_sn;
+                        }
 
                         break;
                     }
@@ -268,21 +259,9 @@ namespace USBHIDDRIVER.USB
         /// <returns></returns>
         public byte[] ReadData()
         {
-            var myPtrToPreparsedData = default(IntPtr);
-            if (myUSB.CT_HidD_GetPreparsedData(myUSB.hHidFile, ref myPtrToPreparsedData))
-            {
+            byte[] retval = myUSB.CT_ReadFile(myUSB.myHIDP_CAPS.InputReportByteLength);
 
-                bool code = myUSB.CT_HidP_GetCaps(myPtrToPreparsedData);
-                int reportLength = myUSB.myHIDP_CAPS.InputReportByteLength;
-
-                byte[] retval = myUSB.CT_ReadFile(myUSB.myHIDP_CAPS.InputReportByteLength);
-
-                return retval;
-            }
-            else
-            {
-                return null;
-            }
+            return retval;
         }
        
 

@@ -131,7 +131,7 @@ namespace Irixi_Aligner_Common.MotionControllerEntities
                     {
                         _controller.AxisCollection[i].SoftCCWLS = this.AxisCollection[i.ToString()].CCWL;
                         _controller.AxisCollection[i].SoftCWLS = this.AxisCollection[i.ToString()].CWL;
-                        _controller.AxisCollection[i].MaxDistance = this.AxisCollection[i.ToString()].MaxStroke;
+                        _controller.AxisCollection[i].MaxDistance = this.AxisCollection[i.ToString()].CWL;
                     }
 
                     return true;

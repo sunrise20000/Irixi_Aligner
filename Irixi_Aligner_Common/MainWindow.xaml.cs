@@ -51,7 +51,7 @@ namespace Irixi_Aligner_Common
         {
             var locator = Application.Current.Resources["Locator"] as ViewModelLocator;
             var config = locator.Configuration;
-            config.WriteSnapshotGUI();
+            config.WriteWsLayout();
 
             locator.Service.Dispose();
         }

@@ -14,20 +14,23 @@ namespace Irixi_Aligner_Common.Classes.BaseClass
         {
             mm,
             um,
-            nm
+            nm,
+            deg,
+            min,
+            sec
         }
 
         /// <summary>
         /// Convert the steps to real world distance, vice versa
         /// </summary>
         /// <param name="Dps">distance per step</param>
-        /// <param name="DpsUnit">the unit of dps</param>
+        /// <param name="Unit">the unit display on the window</param>
         /// <param name="Digits">decimal digits of distance shown on window</param>
-        public RealworldDistanceUnitHelper( double Dps, UnitType DpsUnit, int Digits)
+        public RealworldDistanceUnitHelper(int MaxSteps, double MaxStroke, UnitType Unit, int Digits)
         {
             this.Digits = Digits;
-            this.DpsUnit = DpsUnit;
-            this.Dps = Dps;
+            this.Unit = Unit;
+            this.Dps = MaxStroke / MaxSteps;
         }
 
         public int Digits
@@ -36,13 +39,16 @@ namespace Irixi_Aligner_Common.Classes.BaseClass
             get;
         }
 
+        /// <summary>
+        /// Set or get the real world distance per step
+        /// </summary>
         public double Dps
         {
-            private set;
+            set;
             get;
         }
 
-        public UnitType DpsUnit
+        public UnitType Unit
         {
             private set;
             get;

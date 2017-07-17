@@ -21,68 +21,62 @@
         {
           "Name": 1,
           "Enabled": true,
-          "PosHomed": 0,
-          "PosMax": 128000,
-          "PosCWL": 128000,
-          "PosCCWL": 0,
-          "Dps": 0.002,
-		      "Unit":"mm",
-		      "Digits":2
+          "OffsetAfterHome": 0,
+          "MaxStroke": 12700,
+          "CWL": 128000,
+          "CCWL": 0,
+		  "Unit":"um",
+		  "Digits":4
         },
         {
           "Name": 2,
           "Enabled": true,
-          "PosHomed": 0,
-          "PosMax": 128000,
-          "PosCWL": 128000,
-          "PosCCWL": 0,
-          "Dps": 100,
-		      "Unit":"mm",
-		      "Digits":2
+          "OffsetAfterHome": 0,
+          "MaxStroke": 2500,
+          "CWL": 128000,
+          "CCWL": 0,
+		  "Unit":"um",
+		  "Digits":4
         },
         {
           "Name": 3,
           "Enabled": true,
-          "PosHomed": 0,
-          "PosMax": 128000,
-          "PosCWL": 128000,
-          "PosCCWL": 0,
-          "Dps": 100,
-		      "Unit":"mm",
-		      "Digits":2
+          "OffsetAfterHome": 0,
+          "MaxStroke": 2500,
+          "CWL": 128000,
+          "CCWL": 0,
+		  "Unit":"um",
+		  "Digits":4
         },
         {
           "Name": 4,
           "Enabled": true,
-          "PosHomed": 0,
-          "PosMax": 128000,
-          "PosCWL": 128000,
-          "PosCCWL": 0,
-          "Dps": 100,
-		      "Unit":"mm",
-		      "Digits":2
+          "OffsetAfterHome": 0,
+          "MaxStroke": 3,
+          "CWL": 128000,
+          "CCWL": 0,
+          "Unit": "deg",
+          "Digits": 6
         },
         {
           "Name": 5,
           "Enabled": true,
-          "PosHomed": 0,
-          "PosMax": 128000,
-          "PosCWL": 128000,
-          "PosCCWL": 0,
-          "Dps": 100,
-		      "Unit":"mm",
-		      "Digits":2
+          "OffsetAfterHome": 0,
+          "MaxStroke": 3,
+          "CWL": 128000,
+          "CCWL": 0,
+          "Unit": "deg",
+          "Digits": 6
         },
         {
           "Name": 6,
           "Enabled": true,
-          "PosHomed": 0,
-          "PosMax": 128000,
-          "PosCWL": 128000,
-          "PosCCWL": 0,
-          "Dps": 100,
-		      "Unit":"mm",
-		      "Digits":2
+          "OffsetAfterHome": 0,
+          "MaxStroke": 3,
+          "CWL": 128000,
+          "CCWL": 0,
+          "Unit": "deg",
+          "Digits": 6
         }
       ]
     },
@@ -96,143 +90,131 @@
         {
           "Name": 1,
           "Enabled": true,
-          "PosHomed": 0,
-          "PosMax": 128000,
-          "PosCWL": 128000,
-          "PosCCWL": 0,
-          "Dps": 100,
-		      "Unit":"mm",
-		      "Digits":2
+          "OffsetAfterHome": 0,
+          "MaxStroke": 12700,
+          "CWL": 128000,
+          "CCWL": 0,
+		  "Unit":"um",
+		  "Digits":4
         },
         {
           "Name": 2,
           "Enabled": true,
-          "PosHomed": 0,
-          "PosMax": 128000,
-          "PosCWL": 128000,
-          "PosCCWL": 0,
-          "Dps": 100,
-		      "Unit":"mm",
-		      "Digits":2
+          "OffsetAfterHome": 0,
+          "MaxStroke": 2500,
+          "CWL": 128000,
+          "CCWL": 0,
+		  "Unit":"um",
+		  "Digits":4
         },
         {
           "Name": 3,
           "Enabled": true,
-          "PosHomed": 0,
-          "PosMax": 128000,
-          "PosCWL": 128000,
-          "PosCCWL": 0,
-          "Dps": 100,
-		      "Unit":"mm",
-		      "Digits":2
+          "OffsetAfterHome": 0,
+          "MaxStroke": 2500,
+          "CWL": 128000,
+          "CCWL": 0,
+		  "Unit":"um",
+		  "Digits":4
         },
         {
           "Name": 4,
           "Enabled": true,
-          "PosHomed": 0,
-          "PosMax": 128000,
-          "PosCWL": 128000,
-          "PosCCWL": 0,
-          "Dps": 100,
-		      "Unit":"mm",
-		      "Digits":2
+          "OffsetAfterHome": 0,
+          "MaxStroke": 3,
+          "CWL": 128000,
+          "CCWL": 0,
+          "Unit": "deg",
+          "Digits": 6
         },
         {
           "Name": 5,
           "Enabled": true,
-          "PosHomed": 0,
-          "PosMax": 128000,
-          "PosCWL": 128000,
-          "PosCCWL": 0,
-          "Dps": 100,
-		      "Unit":"mm",
-		      "Digits":2
+          "OffsetAfterHome": 0,
+          "MaxStroke": 3,
+          "CWL": 128000,
+          "CCWL": 0,
+          "Unit": "deg",
+          "Digits": 6
         },
         {
           "Name": 6,
           "Enabled": true,
-          "PosHomed": 0,
-          "PosMax": 128000,
-          "PosCWL": 128000,
-          "PosCCWL": 0,
-          "Dps": 100,
-		      "Unit":"mm",
-		      "Digits":2
+          "OffsetAfterHome": 0,
+          "MaxStroke": 3,
+          "CWL": 128000,
+          "CCWL": 0,
+          "Unit": "deg",
+          "Digits": 6
         }
       ]
     },
     {
       "Class": "2b39c9d5-66e9-4896-8dd1-94d8df0485e1",
       "Name": "Luminos P6A",
-      "Port": "COM2",
-      "Enabled": false,
+      "Port": "COM5",
+      "Enabled": true,
       "Comment": "POD Aligner",
       "AxisCollection": [
         {
           "Name": 1,
           "Enabled": true,
-          "PosHomed": 0,
-          "PosMax": 128000,
-          "PosCWL": 128000,
-          "PosCCWL": 0,
-          "Dps": 100,
-		      "Unit":"mm",
-		      "Digits":2
+          "OffsetAfterHome": 0,
+          "MaxStroke": 12700,
+          "CWL": 128000,
+          "CCWL": 0,
+		  "Unit":"um",
+		  "Digits":4
         },
         {
           "Name": 2,
           "Enabled": true,
-          "PosHomed": 0,
-          "PosMax": 128000,
-          "PosCWL": 128000,
-          "PosCCWL": 0,
-          "Dps": 100,
-		      "Unit":"mm",
-		      "Digits":2
+          "OffsetAfterHome": 0,
+          "MaxStroke": 2500,
+          "CWL": 128000,
+          "CCWL": 0,
+		  "Unit":"um",
+		  "Digits":4
         },
         {
           "Name": 3,
           "Enabled": true,
-          "PosHomed": 0,
-          "PosMax": 128000,
-          "PosCWL": 128000,
-          "PosCCWL": 0,
-          "Dps": 100,
-		      "Unit":"mm",
-		      "Digits":2
+          "OffsetAfterHome": 0,
+          "MaxStroke": 2500,
+          "CWL": 128000,
+          "CCWL": 0,
+		  "Unit":"um",
+		  "Digits":4
         },
         {
           "Name": 4,
           "Enabled": true,
-          "PosHomed": 0,
-          "PosMax": 128000,
-          "PosCWL": 128000,
-          "PosCCWL": 0,
-          "Dps": 100,
-		      "Unit":"mm",
-		      "Digits":2
+          "OffsetAfterHome": 0,
+          "MaxStroke": 3,
+          "CWL": 128000,
+          "CCWL": 0,
+          "Unit": "deg",
+          "Digits": 6
         },
         {
           "Name": 5,
           "Enabled": true,
-          "PosHomed": 0,
-          "PosMax": 128000,
-          "PosCWL": 128000,
-          "PosCCWL": 0,
-          "Dps": 100,
-		          "Unit":"mm",
-		          "Digits":2
+          "OffsetAfterHome": 0,
+          "MaxStroke": 3,
+          "CWL": 128000,
+          "CCWL": 0,
+          "Unit": "deg",
+          "Digits": 6
         },
         {
           "Name": 6,
           "Enabled": true,
-          "PosHomed": 0,
-          "PosMax": 128000,
-          "PosCWL": 128000,
-          "PosCCWL": 0,
-          "Dps": 100,
-		      "Unit":"mm",
-		      "Digits":2
+          "OffsetAfterHome": 0,
+          "MaxStroke": 3,
+          "CWL": 128000,
+          "CCWL": 0,
+          "Unit": "deg",
+          "Digits": 6
         }
       ]
     },
@@ -246,35 +228,32 @@
         {
           "Name": 0,
           "Enabled": true,
-          "PosHomed": 0,
-          "PosMax": 50000,
-          "PosCWL": 50000,
-          "PosCCWL": 0,
-          "Dps": 0.001,
-		      "Unit":"mm",
-		      "Digits":4
+          "OffsetAfterHome": 0,
+          "MaxStroke": 50,
+          "CWL": 50000,
+          "CCWL": 0,
+		  "Unit":"mm",
+		  "Digits":4
         },
         {
           "Name": 1,
           "Enabled": true,
-          "PosHomed": 0,
-          "PosMax": 15000,
-          "PosCWL": 15000,
-          "PosCCWL": 0,
-          "Dps": 0.002,
-		      "Unit":"mm",
-		      "Digits":4
+          "OffsetAfterHome": 0,
+          "MaxStroke": 30,
+          "CWL": 15000,
+          "CCWL": 0,
+		  "Unit":"mm",
+		  "Digits":4
         },
         {
           "Name": 2,
           "Enabled": true,
-          "PosHomed": 0,
-          "PosMax": 50000,
-          "PosCWL": 50000,
-          "PosCCWL": 0,
-          "Dps": 0.001,
-		      "Unit":"mm",
-		      "Digits":4
+          "OffsetAfterHome": 0,
+          "MaxStroke": 50,
+          "CWL": 50000,
+          "CCWL": 0,
+		  "Unit":"mm",
+		  "Digits":4
         }
       ]
     },
@@ -288,35 +267,32 @@
         {
           "Name": 0,
           "Enabled": true,
-          "PosHomed": 0,
-          "PosMax": 50000,
-          "PosCWL": 50000,
-          "PosCCWL": 0,
-          "Dps": 0.001,
-		      "Unit":"mm",
-		      "Digits":2
+          "OffsetAfterHome": 0,
+          "MaxStroke": 50,
+          "CWL": 50000,
+          "CCWL": 0,
+		  "Unit":"mm",
+		  "Digits":2
         },
         {
           "Name": 1,
           "Enabled": true,
-          "PosHomed": 0,
-          "PosMax": 15000,
-          "PosCWL": 15000,
-          "PosCCWL": 0,
-          "Dps": 0.002,
-		      "Unit":"mm",
-		      "Digits":2
+          "OffsetAfterHome": 0,
+          "MaxStroke": 30,
+          "CWL": 15000,
+          "CCWL": 0,
+		  "Unit":"mm",
+		  "Digits":2
         },
         {
           "Name": 2,
           "Enabled": true,
-          "PosHomed": 0,
-          "PosMax": 50000,
-          "PosCWL": 50000,
-          "PosCCWL": 0,
-          "Dps": 0.001,
-		      "Unit":"mm",
-		      "Digits":2
+          "OffsetAfterHome": 0,
+          "MaxStroke": 50,
+          "CWL": 50000,
+          "CCWL": 0,
+		  "Unit":"mm",
+		  "Digits":2
         }
       ]
     },
@@ -330,35 +306,32 @@
         {
           "Name": 0,
           "Enabled": true,
-          "PosHomed": 0,
-          "PosMax": 50000,
-          "PosCWL": 50000,
-          "PosCCWL": 0,
-          "Dps": 0.002,
-		      "Unit":"mm",
-		      "Digits":2
+          "OffsetAfterHome": 0,
+          "MaxStroke": 100,
+          "CWL": 50000,
+          "CCWL": 0,
+		  "Unit":"mm",
+		  "Digits":2
         },
         {
           "Name": 1,
           "Enabled": true,
-          "PosHomed": 0,
-          "PosMax": 15000,
-          "PosCWL": 15000,
-          "PosCCWL": 0,
-          "Dps": 0.002,
-		      "Unit":"mm",
-		      "Digits":2
+          "OffsetAfterHome": 0,
+          "MaxStroke": 30,
+          "CWL": 15000,
+          "CCWL": 0,
+		  "Unit":"mm",
+		  "Digits":2
         },
         {
           "Name": 2,
           "Enabled": true,
-          "PosHomed": 0,
-          "PosMax": 15000,
-          "PosCWL": 15000,
-          "PosCCWL": 0,
-          "Dps": 0.002,
-		      "Unit":"mm",
-		      "Digits":2
+          "OffsetAfterHome": 0,
+          "MaxStroke": 30,
+          "CWL": 15000,
+          "CCWL": 0,
+		  "Unit":"mm",
+		  "Digits":2
         }
       ]
     },
@@ -372,33 +345,30 @@
         {
           "Name": 0,
           "Enabled": true,
-          "PosHomed": 0,
-          "PosMax": 50000,
-          "PosCWL": 50000,
-          "PosCCWL": 0,
-          "Dps": 0.001,
+          "OffsetAfterHome": 0,
+          "MaxStroke": 50,
+          "CWL": 50000,
+          "CCWL": 0,
           "Unit": "mm",
           "Digits": 2
         },
         {
           "Name": 1,
           "Enabled": true,
-          "PosHomed": 0,
-          "PosMax": 50000,
-          "PosCWL": 50000,
-          "PosCCWL": 0,
-          "Dps": 0.001,
+          "OffsetAfterHome": 0,
+          "MaxStroke": 50,
+          "CWL": 50000,
+          "CCWL": 0,
           "Unit": "mm",
           "Digits": 2
         },
         {
           "Name": 2,
           "Enabled": true,
-          "PosHomed": 0,
-          "PosMax": 7500,
-          "PosCWL": 7500,
-          "PosCCWL": 0,
-          "Dps": 0.002,
+          "OffsetAfterHome": 0,
+          "MaxStroke": 15,
+          "CWL": 7500,
+          "CCWL": 0,
           "Unit": "mm",
           "Digits": 2
         }

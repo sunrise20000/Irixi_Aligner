@@ -30,7 +30,7 @@
             <ColumnDefinition Width="40"/>
         </Grid.ColumnDefinitions>
         <TextBlock Text="{Binding LogicalAxis.DisplayName, ElementName=Myself}" VerticalAlignment="Center" HorizontalAlignment="Center"/>
-        <TextBlock x:Name="txtPosUnit" Text="{Binding LogicalAxis.PhysicalAxisInst.UnitHelper.DpsUnit, ElementName=Myself, Mode=OneWay}" Grid.Column="2" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+        <TextBlock x:Name="txtPosUnit" Text="{Binding LogicalAxis.PhysicalAxisInst.UnitHelper.Unit, ElementName=Myself, Mode=OneWay}" Grid.Column="2" HorizontalAlignment="Center" VerticalAlignment="Center"/>
         <TextBlock Text="{Binding Text, ElementName=txtPosUnit}" Grid.Column="7" HorizontalAlignment="Center" VerticalAlignment="Center"/>
         <TextBox x:Name="txtCurrentPosition" Grid.Column="1" VerticalAlignment="Center" TextAlignment="Right" IsReadOnly="True" Margin="1,0,0,0" FontSize="16">
             <TextBox.Text>

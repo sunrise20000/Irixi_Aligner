@@ -5,9 +5,9 @@ using System.Windows.Data;
 
 namespace Irixi_Aligner_Common.Configuration
 {
-    public class SnapshotGUI
+    public class WorkSpaceLayout
     {
-        public PanelLoacation PanelLocation { get; set; }
+        public PanelLayout PanelLocation { get; set; }
 
     }
 

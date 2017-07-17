@@ -2,31 +2,31 @@
   "PanelLocation": {
     "VGrooveAligner": {
       "MDILocation": "120,120",
-      "Visibility": true
+      "Visibility": "true"
     },
     "LensAligner": {
       "MDILocation": "0,0",
-      "Visibility": true
+      "Visibility": "true"
     },
     "PODAligner": {
       "MDILocation": "0,0",
-      "Visibility": true
+      "Visibility": "true"
     },
     "TopCameraBracket": {
       "MDILocation": "0,0",
-      "Visibility": true
+      "Visibility": "true"
     },
     "AngularCameraBracket": {
       "MDILocation": "0,0",
-      "Visibility": true
+      "Visibility": "false"
     },
     "FrontCameraBracket": {
       "MDILocation": "0,0",
-      "Visibility": true
+      "Visibility": "false"
     },
     "CylinderControlPanel": {
       "MDILocation": "0,0",
-      "Visibility": true
+      "Visibility": "false"
     }
   }
 }

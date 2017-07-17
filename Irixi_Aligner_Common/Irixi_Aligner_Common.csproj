@@ -107,9 +107,9 @@
     </Compile>
     <Compile Include="Classes\BaseClass\DistanceUnitHelper.cs" />
     <Compile Include="Configuration\ConfigurationCylinder.cs" />
-    <Compile Include="Configuration\GUISnapshot\Location.cs" />
-    <Compile Include="Configuration\GUISnapshot\PanelLoacation.cs" />
-    <Compile Include="Configuration\GUISnapshot\SnapshotGUI.cs" />
+    <Compile Include="Configuration\WorkspaceLayout\Layout.cs" />
+    <Compile Include="Configuration\WorkspaceLayout\PanelLayout.cs" />
+    <Compile Include="Configuration\WorkspaceLayout\WsLayout.cs" />
     <Compile Include="Equipments\CylinderController.cs" />
     <Compile Include="Interfaces\IBaseEquipment.cs" />
     <Compile Include="MotionControllerEntities\BaseClass\AxisBase.cs" />
@@ -170,7 +170,7 @@
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
     <None Include="App.config" />
-    <None Include="Configuration\gui_snapshot.json">
+    <None Include="Configuration\ws_layout.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="Configuration\motion_controller.json">

@@ -488,10 +488,10 @@ namespace IrixiStepperControllerHelper
 
                         // parse input signal
                         temp = reader.ReadByte();
-                        this.AxisStateCollection[i].CWLS = ((temp >> 0) & 0x1) > 0 ? InputState.Untriggered : InputState.Triggered;
-                        this.AxisStateCollection[i].CCWLS = ((temp >> 1) & 0x1) > 0 ? InputState.Untriggered : InputState.Triggered;
-                        this.AxisStateCollection[i].ORG = ((temp >> 2) & 0x1) > 0 ? InputState.Untriggered : InputState.Triggered;
-                        this.AxisStateCollection[i].ZeroOut = ((temp >> 3) & 0x1) > 0 ? InputState.Untriggered : InputState.Triggered;
+                        this.AxisStateCollection[i].CWLS = ((temp >> 0) & 0x1) > 0 ? InputState.Triggered : InputState.Untriggered;
+                        this.AxisStateCollection[i].CCWLS = ((temp >> 1) & 0x1) > 0 ? InputState.Triggered : InputState.Untriggered;
+                        this.AxisStateCollection[i].ORG = ((temp >> 2) & 0x1) > 0 ? InputState.Triggered : InputState.Untriggered;
+                        this.AxisStateCollection[i].ZeroOut = ((temp >> 3) & 0x1) > 0 ? InputState.Triggered : InputState.Untriggered;
                         this.AxisStateCollection[i].IN_A = ((temp >> 4) & 0x1) > 0 ? InputState.Untriggered : InputState.Triggered;
                         this.AxisStateCollection[i].IN_B = ((temp >> 5) & 0x1) > 0 ? InputState.Untriggered : InputState.Triggered;
                         this.AxisStateCollection[i].OUT_A = ((temp >> 6) & 0x1) > 0 ? OutputState.Enabled : OutputState.Disabled;

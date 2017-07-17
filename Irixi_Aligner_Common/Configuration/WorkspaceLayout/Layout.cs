@@ -1,9 +1,10 @@
 ﻿using System.ComponentModel;
 using System.Runtime.CompilerServices;
+using System.Windows;
 
 namespace Irixi_Aligner_Common.Configuration
 {
-    public class Location : INotifyPropertyChanged
+    public class Layout : INotifyPropertyChanged
     {
         string _mdilocation = "";
         public string MDILocation
