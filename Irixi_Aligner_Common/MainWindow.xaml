@@ -23,7 +23,7 @@
     SnapsToDevicePixels="True" 
     UseLayoutRounding="True" 
     Loaded="DXRibbonWindow_Loaded" 
-    WindowState="Maximized" Closing="DXRibbonWindow_Closing"
+    WindowState="Maximized" Closing="DXRibbonWindow_Closing" Icon="Irixi_Logo.ico"
     >
     <dxr:DXRibbonWindow.Resources>
         <BindingConverter:CvtOutputStateToBool x:Key="CvtOutputStateToBool"/>

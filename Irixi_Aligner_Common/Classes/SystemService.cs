@@ -11,6 +11,7 @@ using Irixi_Aligner_Common.ViewModel;
 using IrixiStepperControllerHelper;
 using System;
 using System.Collections.Generic;
+using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading;
@@ -55,6 +56,9 @@ namespace Irixi_Aligner_Common.Classes
             // whether output the log
             LogHelper.LogEnabled= configmgr.MotionControllerConfig.LogEnabled;
 
+            // read version from AssemblyInfo.cs
+            Version version = Assembly.GetExecutingAssembly().GetName().Version;
+
             // initialize the properties
             this.PhysicalMotionControllerCollection = new Dictionary<Guid, IMotionController>();
             this.LogicalAxisCollection = new ObservableCollectionEx<ConfigLogicalAxis>();
@@ -71,6 +75,8 @@ namespace Irixi_Aligner_Common.Classes
             LogHelper.WriteLine(sb.ToString());
 
             this.LastMessage = new MessageItem(MessageType.Normal, "System startup ...");
+
+            this.LastMessage = new MessageItem(MessageType.Normal, "Assembly Version {0}", version);
 
             // enumerate all physical motion controllers defined in the config file
             foreach (var cfg in configmgr.MotionControllerConfig.PhysicalMotionControllers)
@@ -401,61 +407,66 @@ namespace Irixi_Aligner_Common.Classes
                 int _total_to_move = AxesGroup.Length;
 
                 // how many axes have been moved
-                int _current_moved = 0;
+                int _moved_cnt = 0;
 
-                int _current_order = 0;
+                int _present_order = 0;
                 
 
                 // generate a list which contains the movement tasks
                 // this is used by the Task.WhenAll() function
                 List<Task<bool>> _move_tasks = new List<Task<bool>>();
+                List<ConfigLogicalAxis> _axis_moving = new List<ConfigLogicalAxis>();
 
-                this.LastMessage = new MessageItem(MessageType.Normal, " move simultaneously...");
+                this.LastMessage = new MessageItem(MessageType.Normal, "Executing mass move ...");
 
                 do
                 {
                     // clear the previous tasks
                     _move_tasks.Clear();
+                    _axis_moving.Clear();
 
                     // find the axes which belong to current order
                     foreach (var item in AxesGroup)
                     {
-                        var order = item.Item1;
-                        var logical_axis = item.Item2;
-                        var arg = item.Item3;
+                        var _order = item.Item1;
+                        var _axis = item.Item2;
+                        var _arg = item.Item3;
 
-                        if (order == _current_order)
+                        if (_order == _present_order)
                         {
-                            var t = logical_axis.PhysicalAxisInst.Move(arg.Mode, arg.Speed, arg.Distance);
+                            var t = _axis.PhysicalAxisInst.Move(_arg.Mode, _arg.Speed, _arg.Distance);
                             t.Start();
                             _move_tasks.Add(t);
+                            _axis_moving.Add(_axis);
                         }
                     }
-
-                    // set the order of next loop
-                    _current_order++;
 
                     // if no axes to be moved, move to the next loop
-                    if (_move_tasks.Count == 0)
-                        break;
-
-                    // wait until all the axes are moved
-                    bool[] ret = await Task.WhenAll(_move_tasks);
-
-                    // check the result of movement
-                    for (int i = 0; i < _move_tasks.Count; i++)
+                    if (_move_tasks.Count > 0)
                     {
-                        if (ret[i] == false)
+                        while (_move_tasks.Count > 0)
                         {
-                            this.LastMessage = new MessageItem(MessageType.Error, "{0} Move is failed, {1}", AxesGroup[i].Item1, AxesGroup[i].Item2.PhysicalAxisInst.LastError);
-                            Messenger.Default.Send<NotificationMessage<string>>(new NotificationMessage<string>(this.LastMessage.Message, "Error"));
+                            // wait until all the axes are moved
+                            Task<bool> t = await Task.WhenAny(_move_tasks);
+                            int id = _move_tasks.IndexOf(t);
+
+                            if(t.Result)
+                                this.LastMessage = new MessageItem(MessageType.Good, "{0} Move is completed.", _axis_moving[id]);
+                            else
+                                this.LastMessage = new MessageItem(MessageType.Error, "{0} Move is failed, {1}", _axis_moving[id], _axis_moving[id].PhysicalAxisInst.LastError);
+
+                            _move_tasks.RemoveAt(id);
+                            _move_tasks.RemoveAt(id);
+
+                            // save the sum of homed axes in order to check if all axes have been homed
+                            _moved_cnt++;
                         }
                     }
+                    
+                    // set the order of next loop
+                    _present_order++;
 
-                    // calculate the moved axes
-                    _current_moved += _move_tasks.Count;
-
-                } while (_current_moved < _total_to_move); // loop until all axes were moved
+                } while (_moved_cnt < _total_to_move); // loop until all axes were moved
 
                 
 
@@ -487,7 +498,7 @@ namespace Irixi_Aligner_Common.Classes
             if (GetSystemState() == SystemState.IDLE)
             {
                 int _present_order = 0;
-                int _axis_homed = 0;
+                int _homed_cnt = 0;
                 int _total_axis = this.LogicalAxisCollection.Count;
                 List<Task<bool>> _tasks = new List<Task<bool>>();
                 List<ConfigLogicalAxis> _axis_homing = new List<ConfigLogicalAxis>();
@@ -539,15 +550,14 @@ namespace Irixi_Aligner_Common.Classes
                             _axis_homing.RemoveAt(id);
 
                             // save the sum of homed axes in order to check if all axes have been homed
-                            _axis_homed ++;
+                            _homed_cnt ++;
                         }
-                        
                     }
 
                     // Move to next order
                     _present_order++;
 
-                } while (_axis_homed < _total_axis);
+                } while (_homed_cnt < _total_axis);
 
                 this.LastMessage = new MessageItem(MessageType.Good, "Mass Home is completed");
 
