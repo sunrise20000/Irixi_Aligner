@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
@@ -47,7 +48,7 @@ namespace IrixiStepperControllerHelper
         /// <summary>
         /// Report ID 2: report contains firmware information
         /// </summary>
-        const int REPORT_ID_FWINFO = 0x2;
+        const int REPORT_ID_FACTINFO = 0x2;
 
         /// <summary>
         /// The total steps which is used to acceleration and deceleration
@@ -64,6 +65,8 @@ namespace IrixiStepperControllerHelper
 
         bool _is_connected = false; // whether the contoller is connected
         string _last_err = string.Empty, _serial_number = "";
+
+        List<byte> buf_report_factinfo = new List<byte>();
 
         #endregion
 
@@ -82,6 +85,7 @@ namespace IrixiStepperControllerHelper
             // Generate the instance of the state report object
             this.Report = new DeviceStateReport();
             this.FirmwareInfo = new FimwareInfo();
+            this.PCA9534 = new PCA9534Info();
             this.TotalAxes = -1;
             this.SerialNumber = DeviceSN;
             this.AxisCollection = new ObservableCollection<Axis>();
@@ -162,6 +166,12 @@ namespace IrixiStepperControllerHelper
         /// Get the infomation of the firmware which consists of verion and compiled date
         /// </summary>
         public FimwareInfo FirmwareInfo
+        {
+            private set;
+            get;
+        }
+
+        public PCA9534Info PCA9534
         {
             private set;
             get;
@@ -331,7 +341,7 @@ namespace IrixiStepperControllerHelper
         /// <returns></returns>
         public bool ReadFWInfo()
         {
-            this.FirmwareInfo.SetToDefault();
+            buf_report_factinfo.Clear();
 
             CommandStruct cmd = new CommandStruct()
             {
@@ -340,24 +350,15 @@ namespace IrixiStepperControllerHelper
 
             _hid_device.Write(cmd.ToBytes());
 
-            bool _timeout = false;
-            DateTime _start = DateTime.Now;
-            do
+            if(WaitReportFactinfo())
             {
-                if((DateTime.Now - _start).TotalSeconds > 3)
-                {
-                    _timeout = true;
-                    break;
-                }
-
-                Thread.Sleep(100);
-
-            } while (FirmwareInfo.Validate() == false);
-
-            if (_timeout)
-                return false;
+                return this.FirmwareInfo.Parse(buf_report_factinfo.ToArray());
+            }
             else
-                return true;
+            {
+                return false;
+            }
+
         }
 
         /// <summary>
@@ -369,6 +370,43 @@ namespace IrixiStepperControllerHelper
             return Task.Run<bool>(()=>
             {
                 return ReadFWInfo();
+            });
+        }
+
+        /// <summary>
+        /// read the value of PCA9534
+        /// </summary>
+        /// <returns></returns>
+        public bool ReadPCA9534()
+        {
+            buf_report_factinfo.Clear();
+
+            CommandStruct cmd = new CommandStruct()
+            {
+                Command = EnumCommand.READ9534
+            };
+
+            _hid_device.Write(cmd.ToBytes());
+
+            if(WaitReportFactinfo())
+            {
+                return this.PCA9534.Parse(buf_report_factinfo.ToArray());
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// read the value of PCA9534 asynchronously
+        /// </summary>
+        /// <returns></returns>
+        public Task<bool> ReadPCA9534Async()
+        {
+            return Task.Run<bool>(() =>
+            {
+                return ReadPCA9534();
             });
         }
 
@@ -792,6 +830,31 @@ namespace IrixiStepperControllerHelper
 
         #endregion
 
+        #region private methods
+        private bool WaitReportFactinfo()
+        {
+            bool _timeout = false;
+            DateTime _start = DateTime.Now;
+            do
+            {
+                if ((DateTime.Now - _start).TotalSeconds > 3)
+                {
+                    _timeout = true;
+                    break;
+                }
+
+                Thread.Sleep(100);
+
+            } while (buf_report_factinfo.Count == 0);
+
+            if (_timeout)
+                return false;
+            else
+                return true;
+        }
+
+        #endregion
+
         #region Events
         /// <summary>
         /// The connected hid device was disconnected
@@ -842,17 +905,9 @@ namespace IrixiStepperControllerHelper
                 }
             }
             // report of firmware information
-            else if (_report_id == REPORT_ID_FWINFO)
+            else if (_report_id == REPORT_ID_FACTINFO)
             {
-                this.FirmwareInfo.VerMajor = BitConverter.ToInt32(e, 1);
-                this.FirmwareInfo.VerMinor = BitConverter.ToInt32(e, 5);
-                this.FirmwareInfo.VerRev = BitConverter.ToInt32(e, 9);
-                
-                int year = BitConverter.ToInt32(e, 13);
-                int month = BitConverter.ToInt32(e, 17);
-                int day = BitConverter.ToInt32(e, 21);
-
-                this.FirmwareInfo.SetCompiledDate(year, month, day);
+                buf_report_factinfo.AddRange(e);
             }
         }
         #endregion

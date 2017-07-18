@@ -320,14 +320,44 @@ namespace StepperControllerDebuger.ViewModel
             {
                 Messenger.Default.Send<NotificationMessage<string>>(
                     new NotificationMessage<string>(
-                        string.Format("The firmware is validated, Ver {0}", _controller.FirmwareInfo.ToString()),
+                        string.Format("{0}", _controller.FirmwareInfo.ToString()),
                         "MSG"));
             }
             else
             {
                 Messenger.Default.Send<NotificationMessage<string>>(
                     new NotificationMessage<string>(
-                        string.Format("The format of firmware info is error, {0}", _controller.FirmwareInfo.ToString()),
+                        string.Format("Unable to read firmware info."),
+                        "Error"));
+            }
+        }
+
+        public RelayCommand CommandReadPCA9534
+        {
+            get
+            {
+                return new RelayCommand(() =>
+                {
+                    ReadPCA9534();
+                });
+            }
+        }
+
+        async void ReadPCA9534()
+        {
+            bool success = await _controller.ReadPCA9534Async();
+            if (success)
+            {
+                Messenger.Default.Send<NotificationMessage<string>>(
+                    new NotificationMessage<string>(
+                        string.Format("{0}", _controller.PCA9534.ToString()),
+                        "MSG"));
+            }
+            else
+            {
+                Messenger.Default.Send<NotificationMessage<string>>(
+                    new NotificationMessage<string>(
+                        string.Format("Unable to read PCA9534."),
                         "Error"));
             }
         }
