@@ -1,4 +1,5 @@
-﻿using Irixi_Aligner_Common.Message;
+﻿
+using Irixi_Aligner_Common.Message;
 using Newtonsoft.Json;
 using System;
 using System.IO;
@@ -16,58 +17,77 @@ namespace Irixi_Aligner_Common.Configuration
             try
             {
                 // Read the JSON string from the config file
-                StreamReader reader = File.OpenText(@"Configuration\motion_controller.json");
-                json_string = reader.ReadToEnd();
-                reader.Close();
+                using (StreamReader reader = File.OpenText(@"Configuration\motion_controller.json"))
+                {
+                    json_string = reader.ReadToEnd();
+                    reader.Close();
+                }
 
-                // Convert the string 
+                // Convert to object 
                 MotionControllerConfig = JsonConvert.DeserializeObject<ConfigurationMotionController>(json_string);
             }
             catch (Exception ex)
             {
                 LogHelper.LogEnabled = true;
-                LogHelper.WriteLine("Unable to parse config file of motion controller, {0}", ex.Message, LogHelper.LogType.ERROR);
+                LogHelper.WriteLine("Unable to read config file of motion controller, {0}", ex.Message, LogHelper.LogType.ERROR);
                 LogHelper.LogEnabled = false;
-                throw new JsonException(ex.Message);
+                throw new Exception(ex.Message);
             }
 
             #endregion
 
-            #region Workspace Layout
+            #region read layout
+
             try
             {
+                string filename = "";
+                if (StaticVariables.DefaultLayout)
+                    filename = @"Configuration\defaultlayout.json";
+                else
+                    filename = @"Configuration\layout.json";
+
                 // Read the JSON string from the config file
-                StreamReader reader = File.OpenText(@"Configuration\ws_layout.json");
+                StreamReader reader = File.OpenText(filename);
                 json_string = reader.ReadToEnd();
                 reader.Close();
-                
-                this.WsLayout = JsonConvert.DeserializeObject<WorkSpaceLayout>(json_string);
+
+                // Convert to object
+                WorkspaceLayoutHelper = JsonConvert.DeserializeObject<LayoutManager>(json_string);
             }
             catch (Exception ex)
             {
                 LogHelper.LogEnabled = true;
-                LogHelper.WriteLine("Unable to parse config file of workspace layout, {0}", ex.Message, LogHelper.LogType.ERROR);
+                LogHelper.WriteLine("Unable to read config file of layout, {0}", ex.Message, LogHelper.LogType.ERROR);
                 LogHelper.LogEnabled = false;
-                throw new JsonException(ex.Message);
+                throw new Exception(ex.Message);
             }
+
             #endregion
         }
 
         public ConfigurationMotionController MotionControllerConfig { get; set; }
 
-        public WorkSpaceLayout WsLayout { get; set; }
+        public LayoutManager WorkspaceLayoutHelper { get; set; }
 
         /// <summary>
-        /// Save the GUI snapshot to the json file
+        /// Save the layout of document group
         /// </summary>
-        public void WriteWsLayout()
+        /// <param name="layout"></param>
+        public void SaveLayout(LayoutManager layout)
         {
-            string _json_string = JsonConvert.SerializeObject(WsLayout);
-            FileStream fs = File.Create(@"Configuration\ws_layout.json");
-            StreamWriter sw = new StreamWriter(fs);
-            sw.Write(_json_string);
-            sw.Close();
-            fs.Close();
+            string json_str = JsonConvert.SerializeObject(layout);
+
+            using (FileStream fs = File.Open(@"Configuration\layout.json", FileMode.Create, FileAccess.Write))
+            {
+                using (StreamWriter wr = new StreamWriter(fs))
+                {
+                    wr.Write(json_str);
+                    wr.Close();
+                }
+
+                fs.Close();
+            }
         }
+
     }
 }

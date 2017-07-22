@@ -12,9 +12,17 @@ namespace Irixi_Aligner_Common
         {
             try
             {
-            
+                if (e.Args.Length > 0)
+                {
+                    string arg = e.Args[0];
+
+                    if (arg.ToLower() == "--defaultlayout")
+                        StaticVariables.DefaultLayout = true;
+                }
+
                 base.OnStartup(e);
-                DevExpress.Xpf.Core.ApplicationThemeHelper.UpdateApplicationThemeName();
+
+                //DevExpress.Xpf.Core.ApplicationThemeHelper.UpdateApplicationThemeName();
             }
             catch(Exception ex)
             {
@@ -25,7 +33,7 @@ namespace Irixi_Aligner_Common
         private void OnAppStartup_UpdateThemeName(object sender, StartupEventArgs e)
         {
 
-            DevExpress.Xpf.Core.ApplicationThemeHelper.UpdateApplicationThemeName();
+            //DevExpress.Xpf.Core.ApplicationThemeHelper.UpdateApplicationThemeName();
         }
         
     }

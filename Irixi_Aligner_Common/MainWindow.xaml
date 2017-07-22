@@ -14,50 +14,47 @@
     xmlns:Converters="clr-namespace:Irixi_Aligner_Common.Classes.Converters"
     xmlns:Configuration="clr-namespace:Irixi_Aligner_Common.Configuration"
     xmlns:BindingConverter="clr-namespace:IrixiStepperControllerHelper.BindingConverter;assembly=IrixiStepperControllerHelper"
+    dx:ThemeManager.ThemeName="Office2013"
     mc:Ignorable="d"
-    x:Class="Irixi_Aligner_Common.MainWindow"
-    Title="Irixi Alignment System for 2x25G/10x10G Tx/Rx" 
     d:DesignHeight="1200" 
     d:DesignWidth="1929"
-    dx:ThemeManager.ThemeName="MetropolisLight"
     SnapsToDevicePixels="True" 
     UseLayoutRounding="True" 
     Loaded="DXRibbonWindow_Loaded" 
-    WindowState="Maximized" Closing="DXRibbonWindow_Closing" Icon="Irixi_Logo.ico"
-    >
+    WindowState="Maximized" 
+    Closing="DXRibbonWindow_Closing" 
+    Icon="Irixi_Logo.ico"
+    x:Class="Irixi_Aligner_Common.MainWindow"
+    Title="Irixi Alignment System for 2x25G/10x10G Tx/Rx" >
     <dxr:DXRibbonWindow.Resources>
         <BindingConverter:CvtOutputStateToBool x:Key="CvtOutputStateToBool"/>
-        <Configuration:ConvertStringToPoint x:Key="ConvertStringToPoint"/>
         <Converters:SystemStatusToStartButtonEnable x:Key="SystemStatusToStartButtonEnable"/>
-        <Style x:Key="AxisControlStyle1" TargetType="{x:Type UserControls:Axis}">
-            <Setter Property="Height" Value="35"/>
+        
+        <!--
+        <Style TargetType="{x:Type dxd:DocumentPanel}">
+            <Setter Property="Caption" Value="{Binding DisplayName}"/>
+            <Setter Property="AllowMaximize" Value="False"/>
+            <Setter Property="AllowSizing" Value="False"/>
+            <Setter Property="AllowClose" Value="False"/>
+            <Setter Property="ContentTemplate">
+                <Setter.Value>
+                    <DataTemplate>
+                        <StackPanel>
+                            <ContentControl ContentTemplate="{StaticResource MotionControlPanelTitle}"/>
+                            <ItemsControl ItemsSource="{Binding LogicalAxisCollection}">
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <UserControls:Axis Width="540" SystemService="{Binding Service}" LogicalAxis="{Binding}" Style="{StaticResource AxisControlStyle1}"/>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                        </StackPanel>
+                        
+                    </DataTemplate>
+                </Setter.Value>
+            </Setter>
         </Style>
-        <Style x:Key="AxisItemTitleStyle1" TargetType="{x:Type Grid}">
-            <Setter Property="Height" Value="20"/>
-        </Style>
-
-        <DataTemplate x:Key="AxisControlPanelTitle">
-            <Grid Style="{StaticResource AxisItemTitleStyle1}">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="40"/>
-                    <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="30"/>
-                    <ColumnDefinition Width="70"/>
-                    <ColumnDefinition Width="40"/>
-                    <ColumnDefinition Width="70"/>
-                    <ColumnDefinition Width="90"/>
-                    <ColumnDefinition Width="30"/>
-                    <ColumnDefinition Width="80"/>
-                </Grid.ColumnDefinitions>
-                <TextBlock Text="Axis" VerticalAlignment="Center" HorizontalAlignment="Center"/>
-                <TextBlock Text="Position" VerticalAlignment="Center" Grid.Column="1" HorizontalAlignment="Center"/>
-                <TextBlock Text="Lock" VerticalAlignment="Center" Grid.Column="3" HorizontalAlignment="Center"/>
-                <TextBlock Text="Speed" VerticalAlignment="Center" Grid.Column="4" HorizontalAlignment="Center"/>
-                <TextBlock Text="Mode" VerticalAlignment="Center" Grid.Column="5" HorizontalAlignment="Center"/>
-                <TextBlock Text="Distance" VerticalAlignment="Center" Grid.Column="6" HorizontalAlignment="Center"/>
-                <TextBlock Text="Move" VerticalAlignment="Center" Grid.Column="10" HorizontalAlignment="Center"/>
-            </Grid>
-        </DataTemplate>
+-->
     </dxr:DXRibbonWindow.Resources>
     <DockPanel DataContext="{Binding Source={StaticResource Locator}}">
         <dxr:RibbonControl x:Name="ribbonControl1" RibbonStyle="Office2010" DockPanel.Dock="Top" AllowCustomization="False" ToolbarShowMode="Hide" ToolbarShowCustomizationButton="False">
@@ -96,12 +93,12 @@
                 </dxr:RibbonPage>
                 <dxr:RibbonPage x:Name="rpView" Caption="View">
                     <dxr:RibbonPageGroup Caption="Actuators Control Panel">
-                        <dxb:BarCheckItem Content="VGroove" Glyph="{dx:DXImageOffice2013 Image=Solution_16x16.png}" LargeGlyph="{dx:DXImageOffice2013 Image=Solution_32x32.png}" IsChecked="{Binding Closed, ElementName=PanelVGrooveAligner}" RibbonStyle="Default" />
-                        <dxb:BarCheckItem Content="Lens" Glyph="{dx:DXImageOffice2013 Image=Solution_16x16.png}" LargeGlyph="{dx:DXImageOffice2013 Image=Solution_32x32.png}" RibbonStyle="Default" IsChecked="{Binding Closed, ElementName=PanelLensAligner}" />
-                        <dxb:BarCheckItem Content="POD" Glyph="{dx:DXImageOffice2013 Image=Solution_16x16.png}" LargeGlyph="{dx:DXImageOffice2013 Image=Solution_32x32.png}" RibbonStyle="Default" IsChecked="{Binding Closed, ElementName=PanelPODAligner}" />
-                        <dxb:BarCheckItem Content="Top Cam" Glyph="{dx:DXImageOffice2013 Image=Solution_16x16.png}" LargeGlyph="{dx:DXImageOffice2013 Image=Solution_32x32.png}" RibbonStyle="Default" IsChecked="{Binding Closed, ElementName=TopCameraBracket}" />
-                        <dxb:BarCheckItem Content="Front Cam" Glyph="{dx:DXImageOffice2013 Image=Solution_16x16.png}" LargeGlyph="{dx:DXImageOffice2013 Image=Solution_32x32.png}" RibbonStyle="Default" IsChecked="{Binding Closed, ElementName=FrontCameraBracket}" />
-                        <dxb:BarCheckItem Content="Angle Cam" Glyph="{dx:DXImageOffice2013 Image=Solution_16x16.png}" LargeGlyph="{dx:DXImageOffice2013 Image=Solution_32x32.png}" RibbonStyle="Default" IsChecked="{Binding Closed, ElementName=AngularCameraBracket}" />
+                        <dxb:BarCheckItem Content="VGroove" Glyph="{dx:DXImageOffice2013 Image=Solution_16x16.png}" LargeGlyph="{dx:DXImageOffice2013 Image=Solution_32x32.png}" RibbonStyle="Default" />
+                        <dxb:BarCheckItem Content="Lens" Glyph="{dx:DXImageOffice2013 Image=Solution_16x16.png}" LargeGlyph="{dx:DXImageOffice2013 Image=Solution_32x32.png}" RibbonStyle="Default" />
+                        <dxb:BarCheckItem Content="POD" Glyph="{dx:DXImageOffice2013 Image=Solution_16x16.png}" LargeGlyph="{dx:DXImageOffice2013 Image=Solution_32x32.png}" RibbonStyle="Default" />
+                        <dxb:BarCheckItem Content="Top Cam" Glyph="{dx:DXImageOffice2013 Image=Solution_16x16.png}" LargeGlyph="{dx:DXImageOffice2013 Image=Solution_32x32.png}" RibbonStyle="Default" />
+                        <dxb:BarCheckItem Content="Front Cam" Glyph="{dx:DXImageOffice2013 Image=Solution_16x16.png}" LargeGlyph="{dx:DXImageOffice2013 Image=Solution_32x32.png}" RibbonStyle="Default" />
+                        <dxb:BarCheckItem Content="Angle Cam" Glyph="{dx:DXImageOffice2013 Image=Solution_16x16.png}" LargeGlyph="{dx:DXImageOffice2013 Image=Solution_32x32.png}" RibbonStyle="Default"  />
                     </dxr:RibbonPageGroup>
                     <dxr:RibbonPageGroup Caption="Equipments">
                         <dxb:BarCheckItem Content="Cylinders" Glyph="{dx:DXImageOffice2013 Image=Solution_16x16.png}" LargeGlyph="{dx:DXImageOffice2013 Image=Solution_32x32.png}" RibbonStyle="Default" IsChecked="{Binding Closed, ElementName=CylinderControlPanel}" />
@@ -111,106 +108,38 @@
         </dxr:RibbonControl>
         <dxr:RibbonStatusBarControl dxbh:BlendHelperForBarsAndRibbon.IsDesignControl="true" DockPanel.Dock="Bottom"/>
 
-        <dxd:DockLayoutManager x:Name="dockLayoutManager" FloatingMode="Desktop">
-            <dxd:LayoutGroup>
-                <dxd:LayoutGroup Orientation="Vertical">
-                    <dxd:LayoutGroup  Orientation="Horizontal" ItemHeight="3*">
-                        <dxd:DocumentGroup x:Name="mdiContainer" MDIStyle="MDI">
-
-                            <!-- The control panel of Top VGroove Aligner -->
-                            <dxd:DocumentPanel x:Name="PanelVGrooveAligner"  MDILocation="{Binding Configuration.WsLayout.PanelLocation.VGrooveAligner.MDILocation, Converter={StaticResource ConvertStringToPoint}, Mode=TwoWay}" MDISize="580,280" ShowMaximizeButton="False" AllowSizing="False" AllowRename="False" AllowDock="False" AllowMaximize="False" Caption="{Binding Service.LogicalAlignerlayout.VGrooveAligner.DisplayName}" Closed="{Binding Configuration.WsLayout.PanelLocation.VGrooveAligner.Closed, Mode=TwoWay}">
-                                <StackPanel Orientation="Vertical">
-                                    <ContentControl ContentTemplate="{StaticResource AxisControlPanelTitle}"/>
-                                    <UserControls:Axis SystemService="{Binding Service}" LogicalAxis="{Binding Service.LogicalAlignerlayout.VGrooveAligner.AxisX}" Style="{StaticResource AxisControlStyle1}"/>
-                                    <UserControls:Axis SystemService="{Binding Service}" LogicalAxis="{Binding Service.LogicalAlignerlayout.VGrooveAligner.AxisY}" Style="{StaticResource AxisControlStyle1}"/>
-                                    <UserControls:Axis SystemService="{Binding Service}" LogicalAxis="{Binding Service.LogicalAlignerlayout.VGrooveAligner.AxisZ}" Style="{StaticResource AxisControlStyle1}"/>
-                                    <UserControls:Axis SystemService="{Binding Service}" LogicalAxis="{Binding Service.LogicalAlignerlayout.VGrooveAligner.AxisRoll}" Style="{StaticResource AxisControlStyle1}"/>
-                                    <UserControls:Axis SystemService="{Binding Service}" LogicalAxis="{Binding Service.LogicalAlignerlayout.VGrooveAligner.AxisYaw}" Style="{StaticResource AxisControlStyle1}"/>
-                                    <UserControls:Axis SystemService="{Binding Service}" LogicalAxis="{Binding Service.LogicalAlignerlayout.VGrooveAligner.AxisPitch}" Style="{StaticResource AxisControlStyle1}"/>
-                                </StackPanel>
-                            </dxd:DocumentPanel>
-
-                            <!-- The control panel of Top Lens Aligner -->
-                            <dxd:DocumentPanel x:Name="PanelLensAligner" MDILocation="{Binding Configuration.WsLayout.PanelLocation.LensAligner.MDILocation, Converter={StaticResource ConvertStringToPoint}, Mode=TwoWay}" MDISize="580,280" ShowMaximizeButton="False" AllowSizing="False" AllowRename="False" AllowDock="False" AllowMaximize="False" Caption="{Binding Service.LogicalAlignerlayout.LensAligner.DisplayName}" Closed="{Binding Configuration.WsLayout.PanelLocation.LensAligner.Closed, Mode=TwoWay}">
-                                <StackPanel Orientation="Vertical">
-                                    <ContentControl ContentTemplate="{StaticResource AxisControlPanelTitle}"/>
-                                    <UserControls:Axis SystemService="{Binding Service}" LogicalAxis="{Binding Service.LogicalAlignerlayout.LensAligner.AxisX}" Style="{StaticResource AxisControlStyle1}"/>
-                                    <UserControls:Axis SystemService="{Binding Service}" LogicalAxis="{Binding Service.LogicalAlignerlayout.LensAligner.AxisY}" Style="{StaticResource AxisControlStyle1}"/>
-                                    <UserControls:Axis SystemService="{Binding Service}" LogicalAxis="{Binding Service.LogicalAlignerlayout.LensAligner.AxisZ}" Style="{StaticResource AxisControlStyle1}"/>
-                                    <UserControls:Axis SystemService="{Binding Service}" LogicalAxis="{Binding Service.LogicalAlignerlayout.LensAligner.AxisRoll}" Style="{StaticResource AxisControlStyle1}"/>
-                                    <UserControls:Axis SystemService="{Binding Service}" LogicalAxis="{Binding Service.LogicalAlignerlayout.LensAligner.AxisYaw}" Style="{StaticResource AxisControlStyle1}"/>
-                                    <UserControls:Axis SystemService="{Binding Service}" LogicalAxis="{Binding Service.LogicalAlignerlayout.LensAligner.AxisPitch}" Style="{StaticResource AxisControlStyle1}"/>
-                                </StackPanel>
-                            </dxd:DocumentPanel>
-
-                            <!-- The control panel of Top POD alginer -->
-                            <dxd:DocumentPanel x:Name="PanelPODAligner" Caption="{Binding Service.LogicalAlignerlayout.PODAligner.DisplayName}" MDILocation="{Binding Configuration.WsLayout.PanelLocation.PODAligner.MDILocation, Converter={StaticResource ConvertStringToPoint}, Mode=TwoWay}" MDISize="580,380" ShowMaximizeButton="False" AllowSizing="False" AllowRename="False" AllowDock="False" AllowMaximize="False" Closed="{Binding Configuration.WsLayout.PanelLocation.PODAligner.Closed, Mode=TwoWay}">
-                                <StackPanel Orientation="Vertical">
-                                    <ContentControl ContentTemplate="{StaticResource AxisControlPanelTitle}"/>
-                                    <UserControls:Axis SystemService="{Binding Service}" LogicalAxis="{Binding Service.LogicalAlignerlayout.PODAligner.AxisX}" Style="{StaticResource AxisControlStyle1}"/>
-                                    <UserControls:Axis SystemService="{Binding Service}" LogicalAxis="{Binding Service.LogicalAlignerlayout.PODAligner.AxisY}" Style="{StaticResource AxisControlStyle1}"/>
-                                    <UserControls:Axis SystemService="{Binding Service}" LogicalAxis="{Binding Service.LogicalAlignerlayout.PODAligner.AxisZ}" Style="{StaticResource AxisControlStyle1}"/>
-                                    <UserControls:Axis SystemService="{Binding Service}" LogicalAxis="{Binding Service.LogicalAlignerlayout.PODAligner.AxisRoll}" Style="{StaticResource AxisControlStyle1}"/>
-                                    <UserControls:Axis SystemService="{Binding Service}" LogicalAxis="{Binding Service.LogicalAlignerlayout.PODAligner.AxisYaw}" Style="{StaticResource AxisControlStyle1}"/>
-                                    <UserControls:Axis SystemService="{Binding Service}" LogicalAxis="{Binding Service.LogicalAlignerlayout.PODAligner.AxisPitch}" Style="{StaticResource AxisControlStyle1}"/>
-                                    <UserControls:Axis SystemService="{Binding Service}" LogicalAxis="{Binding Service.LogicalAlignerlayout.PODAligner.AxisBigX}" Style="{StaticResource AxisControlStyle1}"/>
-                                    <UserControls:Axis SystemService="{Binding Service}" LogicalAxis="{Binding Service.LogicalAlignerlayout.PODAligner.AxisBigY}" Style="{StaticResource AxisControlStyle1}"/>
-                                    <UserControls:Axis SystemService="{Binding Service}" LogicalAxis="{Binding Service.LogicalAlignerlayout.PODAligner.AxisProbeZ}" Style="{StaticResource AxisControlStyle1}"/>
-                                </StackPanel>
-                            </dxd:DocumentPanel>
-
-                            <!-- The control panel of Top Camera Bracket -->
-                            <dxd:DocumentPanel x:Name="TopCameraBracket" Caption="{Binding Service.LogicalAlignerlayout.TopCamera.DisplayName}" MDILocation="{Binding Configuration.WsLayout.PanelLocation.TopCameraBracket.MDILocation, Converter={StaticResource ConvertStringToPoint}, Mode=TwoWay}" MDISize="580,180" ShowMaximizeButton="False" AllowSizing="False" AllowRename="False" AllowDock="False" AllowMaximize="False" Closed="{Binding Configuration.WsLayout.PanelLocation.TopCameraBracket.Closed, Mode=TwoWay}">
-                                <StackPanel Orientation="Vertical">
-                                    <ContentControl ContentTemplate="{StaticResource AxisControlPanelTitle}"/>
-                                    <UserControls:Axis SystemService="{Binding Service}" LogicalAxis="{Binding Service.LogicalAlignerlayout.TopCamera.AxisX}" Style="{StaticResource AxisControlStyle1}"/>
-                                    <UserControls:Axis SystemService="{Binding Service}" LogicalAxis="{Binding Service.LogicalAlignerlayout.TopCamera.AxisY}" Style="{StaticResource AxisControlStyle1}"/>
-                                    <UserControls:Axis SystemService="{Binding Service}" LogicalAxis="{Binding Service.LogicalAlignerlayout.TopCamera.AxisZ}" Style="{StaticResource AxisControlStyle1}"/>
-                                </StackPanel>
-                            </dxd:DocumentPanel>
-
-                            <!-- The control panel of Front Camera Bracket -->
-                            <dxd:DocumentPanel x:Name="FrontCameraBracket" Caption="{Binding Service.LogicalAlignerlayout.FrontCamera.DisplayName}" MDILocation="{Binding Configuration.WsLayout.PanelLocation.FrontCameraBracket.MDILocation, Converter={StaticResource ConvertStringToPoint}, Mode=TwoWay}" MDISize="580,170" ShowMaximizeButton="False" AllowSizing="False" AllowRename="False" AllowDock="False" AllowMaximize="False" Closed="{Binding Configuration.WsLayout.PanelLocation.FrontCameraBracket.Closed, Mode=TwoWay}" >
-                                <StackPanel Orientation="Vertical">
-                                    <ContentControl ContentTemplate="{StaticResource AxisControlPanelTitle}"/>
-                                    <UserControls:Axis SystemService="{Binding Service}" LogicalAxis="{Binding Service.LogicalAlignerlayout.FrontCamera.AxisX}" Style="{StaticResource AxisControlStyle1}"/>
-                                    <UserControls:Axis SystemService="{Binding Service}" LogicalAxis="{Binding Service.LogicalAlignerlayout.FrontCamera.AxisY}" Style="{StaticResource AxisControlStyle1}"/>
-                                    <UserControls:Axis SystemService="{Binding Service}" LogicalAxis="{Binding Service.LogicalAlignerlayout.FrontCamera.AxisZ}" Style="{StaticResource AxisControlStyle1}"/>
-                                </StackPanel>
-                            </dxd:DocumentPanel>
-
-                            <!-- The control panel of Top Angle Bracket -->
-                            <dxd:DocumentPanel x:Name="AngularCameraBracket" Caption="{Binding Service.LogicalAlignerlayout.AngleCamera.DisplayName}" MDILocation="{Binding Configuration.WsLayout.PanelLocation.AngularCameraBracket.MDILocation, Converter={StaticResource ConvertStringToPoint}, Mode=TwoWay}" MDISize="580,170" ShowMaximizeButton="False" AllowSizing="False" AllowRename="False" AllowDock="False" AllowMaximize="False" Closed="{Binding Configuration.WsLayout.PanelLocation.AngularCameraBracket.Closed, Mode=TwoWay}" >
-                                <StackPanel Orientation="Vertical">
-                                    <ContentControl ContentTemplate="{StaticResource AxisControlPanelTitle}"/>
-                                    <UserControls:Axis SystemService="{Binding Service}" LogicalAxis="{Binding Service.LogicalAlignerlayout.AngleCamera.AxisX}" Style="{StaticResource AxisControlStyle1}"/>
-                                    <UserControls:Axis SystemService="{Binding Service}" LogicalAxis="{Binding Service.LogicalAlignerlayout.AngleCamera.AxisY}" Style="{StaticResource AxisControlStyle1}"/>
-                                    <UserControls:Axis SystemService="{Binding Service}" LogicalAxis="{Binding Service.LogicalAlignerlayout.AngleCamera.AxisZ}" Style="{StaticResource AxisControlStyle1}"/>
-                                </StackPanel>
-                            </dxd:DocumentPanel>
-                            <!-- The control panel of Cylinder -->
-                            <dxd:DocumentPanel x:Name="CylinderControlPanel" Caption="Cylinders"  MDISize="200,180" ShowMaximizeButton="False" AllowSizing="False" AllowRename="False" AllowDock="False" AllowMaximize="False" MDILocation="{Binding Configuration.WsLayout.PanelLocation.CylinderControlPanel.MDILocation, Converter={StaticResource ConvertStringToPoint}, Mode=TwoWay}" AllowDockToDocumentGroup="False" Closed="{Binding Configuration.WsLayout.PanelLocation.CylinderControlPanel.Closed, Mode=TwoWay}">
-                                <StackPanel Orientation="Vertical" IsEnabled="{Binding Service.CylinderController.IsInitialized}">
-                                    <ToggleButton Height="30" Margin="0,2" Content="Fiber Clamp" Command="{Binding Service.CommandToggleFiberClampState, Mode=OneWay}" IsChecked="{Binding Service.CylinderController.FiberClampState, Converter={StaticResource CvtOutputStateToBool}, Mode=OneWay}"/>
-                                    <ToggleButton Height="30" Margin="0,2" Content="Lens Vacuum" Command="{Binding Service.CommandToggleLensVacuumState, Mode=OneWay}" IsChecked="{Binding Service.CylinderController.LensVacuumState, Converter={StaticResource CvtOutputStateToBool}, Mode=OneWay}"/>
-                                    <ToggleButton Height="30" Margin="0,2" Content="PLC Vacuum" Command="{Binding Service.CommandTogglePlcVacuumState, Mode=OneWay}" IsChecked="{Binding Service.CylinderController.PlcVacuumState, Converter={StaticResource CvtOutputStateToBool}, Mode=OneWay}"/>
-                                    <ToggleButton Height="30" Margin="0,2" Content="POD Vacuum" Command="{Binding Service.CommandTogglePodVacuumState, Mode=OneWay}" IsChecked="{Binding Service.CylinderController.PodVacuumState, Converter={StaticResource CvtOutputStateToBool}, Mode=OneWay}"/>
-                                </StackPanel>
-                            </dxd:DocumentPanel>
-
-                        </dxd:DocumentGroup>
-                    </dxd:LayoutGroup>
-
-                    <dxd:TabbedGroup>
-                        <dxd:LayoutPanel ItemWidth="300" Caption="Log">
-                            <Grid>
-                                <dxe:ListBoxEdit local:ListBoxBehavior.ScrollOnNewItem="True"  IsSynchronizedWithCurrentItem="True" ItemTemplate="{Binding Source={StaticResource MessageItemTemplate}}" ShowBorder="False" ItemsSource="{Binding Service.MessageCollection}"/>
-                            </Grid>
-                        </dxd:LayoutPanel>
-                    </dxd:TabbedGroup>
+        <dxd:DockLayoutManager x:Name="dockLayoutManager" 
+                               FloatingMode="Desktop"
+                               dx:DXSerializer.StoreLayoutMode="UI"
+                               dxd:RestoreLayoutOptions.RemoveOldPanels="False" 
+                               dxd:RestoreLayoutOptions.AddNewLayoutControlItems="False">
+            <dxd:LayoutGroup x:Name="rootLayout" Orientation="Vertical">
+                <dxd:LayoutGroup x:Name="mainWorkspace"  Orientation="Horizontal" AllowSplitters="False" ItemHeight="4*">
+                    <dxd:DocumentGroup x:Name="MotionComponentPanelHost" MDIStyle="MDI" Visibility="Visible"> 
+                        <!-- The control panel of Cylinder -->
+                        <dxd:DocumentPanel x:Name="CylinderControlPanel" Caption="Cylinders"  MDISize="200,170" ShowMaximizeButton="False" AllowSizing="False" AllowRename="False" AllowDock="False" AllowMaximize="False" AllowDockToDocumentGroup="False" Closed="{Binding Configuration.WsLayout.PanelLocation.CylinderControlPanel.Closed, Mode=TwoWay}">
+                            <StackPanel Orientation="Vertical" IsEnabled="{Binding Service.CylinderController.IsInitialized}">
+                                <ToggleButton Height="30" Margin="0,2" Content="Fiber Clamp" Command="{Binding Service.CommandToggleFiberClampState, Mode=OneWay}" IsChecked="{Binding Service.CylinderController.FiberClampState, Converter={StaticResource CvtOutputStateToBool}, Mode=OneWay}"/>
+                                <ToggleButton Height="30" Margin="0,2" Content="Lens Vacuum" Command="{Binding Service.CommandToggleLensVacuumState, Mode=OneWay}" IsChecked="{Binding Service.CylinderController.LensVacuumState, Converter={StaticResource CvtOutputStateToBool}, Mode=OneWay}"/>
+                                <ToggleButton Height="30" Margin="0,2" Content="PLC Vacuum" Command="{Binding Service.CommandTogglePlcVacuumState, Mode=OneWay}" IsChecked="{Binding Service.CylinderController.PlcVacuumState, Converter={StaticResource CvtOutputStateToBool}, Mode=OneWay}"/>
+                                <ToggleButton Height="30" Margin="0,2" Content="POD Vacuum" Command="{Binding Service.CommandTogglePodVacuumState, Mode=OneWay}" IsChecked="{Binding Service.CylinderController.PodVacuumState, Converter={StaticResource CvtOutputStateToBool}, Mode=OneWay}"/>
+                            </StackPanel>
+                        </dxd:DocumentPanel>
+                    </dxd:DocumentGroup>
                 </dxd:LayoutGroup>
+                <dxd:TabbedGroup x:Name="bottomInfoPanelsHost">
+                    <dxd:LayoutPanel x:Name="LogPanel" Caption="Log">
+                        <Grid>
+                            <dxe:ListBoxEdit 
+                                    local:ListBoxBehavior.ScrollOnNewItem="True"  
+                                    IsSynchronizedWithCurrentItem="True" 
+                                    ItemTemplate="{Binding Source={StaticResource MessageItemTemplate}}" 
+                                    ShowBorder="False" 
+                                    ItemsSource="{Binding Service.MessageCollection}"/>
+                        </Grid>
+                    </dxd:LayoutPanel>
+                </dxd:TabbedGroup>
             </dxd:LayoutGroup>
         </dxd:DockLayoutManager>
     </DockPanel>
-
 </dxr:DXRibbonWindow>

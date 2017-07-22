@@ -81,6 +81,8 @@
     <Reference Include="System" />
     <Reference Include="System.Configuration" />
     <Reference Include="System.Data" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Windows.Interactivity, Version=4.5.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\MvvmLightLibs.5.3.0.0\lib\net45\System.Windows.Interactivity.dll</HintPath>
     </Reference>
@@ -110,12 +112,13 @@
     </Compile>
     <Compile Include="Classes\BaseClass\DistanceUnitHelper.cs" />
     <Compile Include="Configuration\ConfigurationCylinder.cs" />
-    <Compile Include="Configuration\WorkspaceLayout\Layout.cs" />
-    <Compile Include="Configuration\WorkspaceLayout\PanelLayout.cs" />
-    <Compile Include="Configuration\WorkspaceLayout\WsLayout.cs" />
+    <Compile Include="Configuration\Layout\Layout.cs" />
+    <Compile Include="Configuration\Layout\LayoutManager.cs" />
     <Compile Include="Equipments\CylinderController.cs" />
     <Compile Include="Interfaces\IBaseEquipment.cs" />
     <Compile Include="MotionControllerEntities\BaseClass\AxisBase.cs" />
+    <Compile Include="MotionControllerEntities\BaseClass\LogicalMotionComponent.cs" />
+    <Compile Include="MotionControllerEntities\BaseClass\LogicalAxis.cs" />
     <Compile Include="MotionControllerEntities\BaseClass\MotionControllerBase.cs" />
     <Compile Include="Classes\BaseClass\MoveArgs.cs" />
     <Compile Include="Classes\BaseClass\ObservableCollectionEx.cs" />
@@ -137,11 +140,16 @@
     <Compile Include="Configuration\ConfigManager.cs" />
     <Compile Include="Configuration\MotionController\ConfigurationMotionController.cs" />
     <Compile Include="Configuration\MotionController\ConfigLogicalAxis.cs" />
-    <Compile Include="Configuration\MotionController\ConfigLogicalLayout.cs" />
-    <Compile Include="Configuration\MotionController\ConfigLogicalAligner.cs" />
+    <Compile Include="Configuration\MotionController\ConfigLogicalMotionComponent.cs" />
     <Compile Include="Configuration\MotionController\ConfigPhysicalAxis.cs" />
     <Compile Include="Configuration\MotionController\ConfigPhysicalMotionController.cs" />
-    <Compile Include="Configuration\MotionController\ConfigurationVariables.cs" />
+    <Compile Include="Splash.xaml.cs">
+      <DependentUpon>Splash.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="StaticVariables.cs" />
+    <Compile Include="UserControls\MotionComponentPanel.xaml.cs">
+      <DependentUpon>MotionComponentPanel.xaml</DependentUpon>
+    </Compile>
     <Compile Include="ViewModel\ViewModelLocator.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -173,9 +181,6 @@
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
     <None Include="App.config" />
-    <None Include="Configuration\ws_layout.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
     <None Include="Configuration\motion_controller.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
@@ -192,7 +197,15 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
+    <Page Include="Splash.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="UserControls\Axis.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="UserControls\MotionComponentPanel.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

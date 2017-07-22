@@ -1,5 +1,6 @@
 ﻿using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
+using GalaSoft.MvvmLight.Ioc;
 using GalaSoft.MvvmLight.Messaging;
 using Irixi_Aligner_Common.Classes.BaseClass;
 using Irixi_Aligner_Common.Configuration;
@@ -7,10 +8,12 @@ using Irixi_Aligner_Common.Equipments;
 using Irixi_Aligner_Common.Interfaces;
 using Irixi_Aligner_Common.Message;
 using Irixi_Aligner_Common.MotionControllerEntities;
+using Irixi_Aligner_Common.MotionControllerEntities.BaseClass;
 using Irixi_Aligner_Common.ViewModel;
 using IrixiStepperControllerHelper;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Text;
@@ -50,8 +53,7 @@ namespace Irixi_Aligner_Common.Classes
 
             // read the configuration from the file named SystemCfg.json
             // the file is located in \Configuration
-            var locator = Application.Current.Resources["Locator"] as ViewModelLocator;
-            ConfigManager configmgr = locator.Configuration;
+            ConfigManager configmgr = SimpleIoc.Default.GetInstance<ConfigManager>();
 
             // whether output the log
             LogHelper.LogEnabled= configmgr.MotionControllerConfig.LogEnabled;
@@ -61,8 +63,8 @@ namespace Irixi_Aligner_Common.Classes
 
             // initialize the properties
             this.PhysicalMotionControllerCollection = new Dictionary<Guid, IMotionController>();
-            this.LogicalAxisCollection = new ObservableCollectionEx<ConfigLogicalAxis>();
-            this.LogicalAlignerlayout = configmgr.MotionControllerConfig.LogicalLayout;
+            this.LogicalAxisCollection = new ObservableCollectionEx<LogicalAxis>();
+            this.LogicalMotionComponentCollection = new ObservableCollectionEx<LogicalMotionComponent>();
             this.State = SystemState.BUSY;
 
 
@@ -79,22 +81,22 @@ namespace Irixi_Aligner_Common.Classes
             this.LastMessage = new MessageItem(MessageType.Normal, "Assembly Version {0}", version);
 
             // enumerate all physical motion controllers defined in the config file
-            foreach (var cfg in configmgr.MotionControllerConfig.PhysicalMotionControllers)
+            foreach (var config in configmgr.MotionControllerConfig.PhysicalMotionControllers)
             {
                 IMotionController _mc = null;
 
-                switch (cfg.Model)
+                switch (config.Model)
                 {
-                    case MotionControllerModel.LUMINOS_P6A:
-                        _mc = new LuminosP6A(cfg);
+                    case ControllerType.LUMINOS_P6A:
+                        _mc = new LuminosP6A(config);
                         break;
 
-                    case MotionControllerModel.THORLABS_TDC001:
+                    case ControllerType.THORLABS_TDC001:
                         //TODO create the instance of thorlabs TDC001
                         break;
 
-                    case MotionControllerModel.IRIXI_EE0017:
-                        _mc = new IrixiEE0017(cfg);
+                    case ControllerType.IRIXI_EE0017:
+                        _mc = new IrixiEE0017(config);
                         ((IrixiEE0017)_mc).OnMessageReported += ((sender, message) =>
                         {
 
@@ -106,7 +108,7 @@ namespace Irixi_Aligner_Common.Classes
                         break;
 
                     default:
-                        this.LastMessage = new MessageItem(MessageType.Error, "Unrecognized controller model {0}.", cfg.Model);
+                        this.LastMessage = new MessageItem(MessageType.Error, "Unrecognized controller model {0}.", config.Model);
                         break;
                 }
 
@@ -117,50 +119,28 @@ namespace Irixi_Aligner_Common.Classes
                 }
             }
 
-            // bind the physical axis to logical motion controller
-            ConfigLogicalAligner aligner = null;
-            
-            aligner = this.LogicalAlignerlayout.VGrooveAligner;
-            BindPhysicalAxis(ref aligner, aligner.AxisX);
-            BindPhysicalAxis(ref aligner, aligner.AxisY);
-            BindPhysicalAxis(ref aligner, aligner.AxisZ);
-            BindPhysicalAxis(ref aligner, aligner.AxisRoll);
-            BindPhysicalAxis(ref aligner, aligner.AxisYaw);
-            BindPhysicalAxis(ref aligner, aligner.AxisPitch);
+            // generate the Logical Motion Component
+            foreach( var cfg_motion_comp in configmgr.MotionControllerConfig.LogicalMotionComponentArray)
+            {
+                LogicalMotionComponent comp = new LogicalMotionComponent(cfg_motion_comp.DisplayName);
 
-            aligner = this.LogicalAlignerlayout.LensAligner;
-            BindPhysicalAxis(ref aligner, aligner.AxisX);
-            BindPhysicalAxis(ref aligner, aligner.AxisY);
-            BindPhysicalAxis(ref aligner, aligner.AxisZ);
-            BindPhysicalAxis(ref aligner, aligner.AxisRoll);
-            BindPhysicalAxis(ref aligner, aligner.AxisYaw);
-            BindPhysicalAxis(ref aligner, aligner.AxisPitch);
+                int axis_id = 0;
+                foreach(var cfg_axis in cfg_motion_comp.LogicalAxisArray)
+                {
+                    // new logical axis object will be added to the Logical Motion Component
+                    LogicalAxis axis = new LogicalAxis(this, cfg_axis, cfg_motion_comp.DisplayName, axis_id);
 
-            aligner = this.LogicalAlignerlayout.PODAligner;
-            BindPhysicalAxis(ref aligner, aligner.AxisX);
-            BindPhysicalAxis(ref aligner, aligner.AxisY);
-            BindPhysicalAxis(ref aligner, aligner.AxisZ);
-            BindPhysicalAxis(ref aligner, aligner.AxisRoll);
-            BindPhysicalAxis(ref aligner, aligner.AxisYaw);
-            BindPhysicalAxis(ref aligner, aligner.AxisPitch);
-            BindPhysicalAxis(ref aligner, aligner.AxisBigX);
-            BindPhysicalAxis(ref aligner, aligner.AxisBigY);
-            BindPhysicalAxis(ref aligner, aligner.AxisProbeZ);
+                    // bind the physical axis instance to logical axis object
+                    BindPhysicalAxis(axis);
 
-            aligner = this.LogicalAlignerlayout.TopCamera;
-            BindPhysicalAxis(ref aligner, aligner.AxisX);
-            BindPhysicalAxis(ref aligner, aligner.AxisY);
-            BindPhysicalAxis(ref aligner, aligner.AxisZ);
+                    comp.LogicalAxisCollection.Add(axis);
+                    this.LogicalAxisCollection.Add(axis);
 
-            aligner = this.LogicalAlignerlayout.AngleCamera;
-            BindPhysicalAxis(ref aligner, aligner.AxisX);
-            BindPhysicalAxis(ref aligner, aligner.AxisY);
-            BindPhysicalAxis(ref aligner, aligner.AxisZ);
+                    axis_id++;
+                }
 
-            aligner = this.LogicalAlignerlayout.FrontCamera;
-            BindPhysicalAxis(ref aligner, aligner.AxisX);
-            BindPhysicalAxis(ref aligner, aligner.AxisY);
-            BindPhysicalAxis(ref aligner, aligner.AxisZ);
+                this.LogicalMotionComponentCollection.Add(comp);
+            }
 
             // Initialize the cylinder controller
             // Currently, the Irixi Motion Controller is used to controller the cylinder
@@ -183,6 +163,8 @@ namespace Irixi_Aligner_Common.Classes
                 this.LastMessage = new MessageItem(MessageType.Error, "Unable to construct the cylinder controller class, {0}", e.Message);
             }
 
+            Debug.WriteLine("{0} SystemService constructed!", DateTime.Now);
+
         }
 
         #endregion
@@ -196,41 +178,39 @@ namespace Irixi_Aligner_Common.Classes
         /// Bind the physical axis to the logical aligner
         /// </summary>
         /// <param name="ParentAligner">which logical aligner belongs to</param>
-        /// <param name="LogicalAxis"></param>
+        /// <param name="Axis"></param>
         /// <returns></returns>
-        private bool BindPhysicalAxis(ref ConfigLogicalAligner ParentAligner, ConfigLogicalAxis LogicalAxis)
+        private bool BindPhysicalAxis(LogicalAxis Axis)
         {
             bool ret = false;
 
-            // set the parent aligner to the logical axis
-            LogicalAxis.Parent = ParentAligner; 
-
-            if (this.PhysicalMotionControllerCollection.ContainsKey(LogicalAxis.DeviceClass)) // does the motion controller with the devclass exist?
+            // find the physical motion controller by the device class
+            if (this.PhysicalMotionControllerCollection.ContainsKey(Axis.Config.DeviceClass)) 
             {
                 // find the axis in the specified controller by the axis name
-                LogicalAxis.PhysicalAxisInst = this.PhysicalMotionControllerCollection[LogicalAxis.DeviceClass].FindAxisByName(LogicalAxis.AxisName);
+                // and bind the physical axis to the logical axis
+                Axis.PhysicalAxisInst = this.PhysicalMotionControllerCollection[Axis.Config.DeviceClass].FindAxisByName(Axis.Config.AxisName);
                 
-                if (LogicalAxis.PhysicalAxisInst == null) // if the physical axis was not found
+                if (Axis.PhysicalAxisInst == null) // if the physical axis was not found
                 {
                     // Create a fake physical axis instance to tell UI this axis is disabled
-                    LogicalAxis.PhysicalAxisInst = new AxisBase(-1, null, null);
+                    Axis.PhysicalAxisInst = new AxisBase(-1, null, null);
                     
-                    this.LastMessage = new MessageItem(MessageType.Error, "{0} bind physical axis error, unable to find the axis", LogicalAxis);
+                    this.LastMessage = new MessageItem(MessageType.Error, "{0} bind physical axis error, unable to find the axis", Axis);
 
                     ret = false;
                 }
                 else 
                 {
-                    this.LogicalAxisCollection.Add(LogicalAxis);
                     ret = true;
                 }
             }
             else // the controller with the specified DevClass does not exist
             {
                 // Create a fake physical axis instance to tell UI this axis is disabled
-                LogicalAxis.PhysicalAxisInst = new AxisBase(-1, null, null);
+                Axis.PhysicalAxisInst = new AxisBase(-1, null, null);
 
-                this.LastMessage = new MessageItem(MessageType.Error, "{0} bind physical axis error, unable to find the controller DevClass *{1}*", LogicalAxis, LogicalAxis.DeviceClass);
+                this.LastMessage = new MessageItem(MessageType.Error, "{0} bind physical axis error, unable to find the controller DevClass *{1}*", Axis, Axis.Config.DeviceClass);
                 ret = false;
             }
 
@@ -263,6 +243,8 @@ namespace Irixi_Aligner_Common.Classes
             List<Task<bool>> _tasks = new List<Task<bool>>();
             List<IBaseEquipment> _equipments = new List<IBaseEquipment>();
 
+            Debug.WriteLine("{0} SystemService initializing ...", DateTime.Now);
+
             SetSystemState(SystemState.BUSY);
 
             #region Initialize motion controllers
@@ -277,6 +259,9 @@ namespace Irixi_Aligner_Common.Classes
                     _tasks.Add(task);
                     _equipments.Add(_mc);
                     this.LastMessage = new MessageItem(MessageType.Normal, "{0} Initializing ...", _mc);
+
+                    // update UI immediately
+                    await Task.Delay(50);
                 }
             }
 
@@ -297,18 +282,7 @@ namespace Irixi_Aligner_Common.Classes
                 _equipments.RemoveAt(id);
             }
 
-            /*
-            ret = await Task.WhenAll(_tasks);
-
-            // Output information according the init result
-            for (int i = 0; i < ret.Length; i++)
-            {
-                if(ret[i])
-                    this.LastMessage = new MessageItem(MessageType.Good, "{0} Initialization is completed.", _equipments[i]);
-                else
-                    this.LastMessage = new MessageItem(MessageType.Error, "{0} Initialization is failed, {1}", _equipments[i], _equipments[i].LastError);
-            }
-            */
+           
 
             #endregion
 
@@ -352,7 +326,9 @@ namespace Irixi_Aligner_Common.Classes
             #endregion
 
             SetSystemState(SystemState.IDLE);
-            
+
+            Debug.WriteLine("{0} SystemService initialized!", DateTime.Now);
+
         }
 
         /// <summary>
@@ -360,7 +336,7 @@ namespace Irixi_Aligner_Common.Classes
         /// </summary>
         /// <param name="Axis"></param>
         /// <param name="Args"></param>
-        public async void MoveLogicalAxis(ConfigLogicalAxis Axis, MoveArgs Args)
+        public async void MoveLogicalAxis(LogicalAxis Axis, MoveArgs Args)
         {
             if(GetSystemState() != SystemState.BUSY)
             {
@@ -397,7 +373,7 @@ namespace Irixi_Aligner_Common.Classes
         /// <remarks>
         /// An args is consisted of 3 elements: Move Order, Logical Axis, How to Move
         /// </remarks>
-        public async void MassMoveLogicalAxis(Tuple<int, ConfigLogicalAxis, MoveArgs>[] AxesGroup)
+        public async void MassMoveLogicalAxis(Tuple<int, LogicalAxis, MoveArgs>[] AxesGroup)
         {
             if (GetSystemState() != SystemState.BUSY)
             {
@@ -415,7 +391,7 @@ namespace Irixi_Aligner_Common.Classes
                 // generate a list which contains the movement tasks
                 // this is used by the Task.WhenAll() function
                 List<Task<bool>> _move_tasks = new List<Task<bool>>();
-                List<ConfigLogicalAxis> _axis_moving = new List<ConfigLogicalAxis>();
+                List<LogicalAxis> _axis_moving = new List<LogicalAxis>();
 
                 this.LastMessage = new MessageItem(MessageType.Normal, "Executing mass move ...");
 
@@ -501,11 +477,11 @@ namespace Irixi_Aligner_Common.Classes
                 int _homed_cnt = 0;
                 int _total_axis = this.LogicalAxisCollection.Count;
                 List<Task<bool>> _tasks = new List<Task<bool>>();
-                List<ConfigLogicalAxis> _axis_homing = new List<ConfigLogicalAxis>();
+                List<LogicalAxis> _axis_homing = new List<LogicalAxis>();
 
                 SetSystemState(SystemState.BUSY);
 
-                // update the UI immediately
+                // update UI immediately
                 await Task.Delay(50);
 
                 // Loop Home() function of each axis
@@ -518,7 +494,7 @@ namespace Irixi_Aligner_Common.Classes
                     // find the axes which are to be homed in current stage
                     foreach (var axis in this.LogicalAxisCollection)
                     {
-                        if (axis.HomeOrder == _present_order)
+                        if (axis.Config.HomeOrder == _present_order)
                         {
                             this.LastMessage = new MessageItem(MessageType.Normal, "{0} Start to home ...", axis);
 
@@ -526,6 +502,9 @@ namespace Irixi_Aligner_Common.Classes
                             t.Start();
                             _tasks.Add(t);
                             _axis_homing.Add(axis);
+
+                            // update UI immediately
+                            await Task.Delay(10);
 
                         }
                     }
@@ -849,7 +828,7 @@ namespace Irixi_Aligner_Common.Classes
         /// Create a collection that contains all logical axes defined in the config file.
         /// this list enable users to operate each axis independently without knowing which physical motion controller it belongs to
         /// </summary>
-        public ObservableCollectionEx<ConfigLogicalAxis> LogicalAxisCollection
+        public ObservableCollectionEx<LogicalAxis> LogicalAxisCollection
         {
             private set;
             get;
@@ -859,7 +838,7 @@ namespace Irixi_Aligner_Common.Classes
         /// Get the layout of logical aligner.
         /// the UI components are binded to this property
         /// </summary>
-        public ConfigLogicalLayout LogicalAlignerlayout
+        public ObservableCollectionEx<LogicalMotionComponent> LogicalMotionComponentCollection
         {
             private set;
             get;

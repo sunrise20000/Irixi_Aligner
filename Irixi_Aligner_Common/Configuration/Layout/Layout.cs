@@ -6,32 +6,42 @@ namespace Irixi_Aligner_Common.Configuration
 {
     public class Layout : INotifyPropertyChanged
     {
-        string _mdilocation = "";
-        public string MDILocation
+        public string PanelName
+        {
+            set;
+            get;
+        }
+
+        Point _mdilocation = new Point(0, 0);
+        public Point MDILocation
         {
             set
             {
-                UpdateProperty<string>(ref _mdilocation, value);
+                UpdateProperty<Point>(ref _mdilocation, value);
             }
             get
             {
                 return _mdilocation;
             }
-        
+
         }
 
-        bool _visibility = false;
-        public bool Visibility
+        bool _isclosed = false;
+        public bool IsClosed
         {
             set
             {
-                UpdateProperty<bool>(ref _visibility, value);
+                UpdateProperty<bool>(ref _isclosed, value);
             }
             get
             {
-                return _visibility;
+                return _isclosed;
             }
         }
+
+        public double Height { set; get; }
+
+        public double Width { set; get; }
 
         #region RaisePropertyChangedEvent
         public event PropertyChangedEventHandler PropertyChanged;

@@ -8,7 +8,7 @@
     x:Class="Irixi_Aligner_Common.UserControls.Axis"
     mc:Ignorable="d"
     d:DesignHeight="35" 
-    d:DesignWidth="500" 
+    d:DesignWidth="600" 
     IsEnabled="{Binding LogicalAxis.PhysicalAxisInst.IsEnabled, ElementName=Myself}">
     <UserControl.Resources>
         <local:ConvertBoolToSolidColorBrush x:Key="ConvertBoolToSolidColorBrush"/>
@@ -18,7 +18,7 @@
     </UserControl.Resources>
     <Grid IsEnabled="{Binding LogicalAxis.PhysicalAxisInst.IsHomed, ElementName=Myself, Mode=OneWay}">
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="40"/>
+            <ColumnDefinition Width="50"/>
             <ColumnDefinition Width="*"/>
             <ColumnDefinition Width="30"/>
             <ColumnDefinition Width="70"/>
@@ -29,7 +29,7 @@
             <ColumnDefinition Width="40"/>
             <ColumnDefinition Width="40"/>
         </Grid.ColumnDefinitions>
-        <TextBlock Text="{Binding LogicalAxis.DisplayName, ElementName=Myself}" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+        <TextBlock Text="{Binding LogicalAxis.AxisName, ElementName=Myself}" VerticalAlignment="Center" HorizontalAlignment="Center"/>
         <TextBlock x:Name="txtPosUnit" Text="{Binding LogicalAxis.PhysicalAxisInst.UnitHelper.Unit, ElementName=Myself, Mode=OneWay}" Grid.Column="2" HorizontalAlignment="Center" VerticalAlignment="Center"/>
         <TextBlock Text="{Binding Text, ElementName=txtPosUnit}" Grid.Column="7" HorizontalAlignment="Center" VerticalAlignment="Center"/>
         <TextBox x:Name="txtCurrentPosition" Grid.Column="1" VerticalAlignment="Center" TextAlignment="Right" IsReadOnly="True" Margin="1,0,0,0" FontSize="16">

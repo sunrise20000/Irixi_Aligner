@@ -28,21 +28,5 @@ namespace Irixi_Aligner_Common.Configuration
         /// Get the order of home action
         /// </summary>
         public int HomeOrder { get; set; }
-
-        /// <summary>
-        /// Get the logical aligner the logical axis belongs to.
-        /// this is used to get the aligner name of current axis belongs to
-        /// </summary>
-        public ConfigLogicalAligner Parent { get; set; }
-
-        /// <summary>
-        /// Get the instance of physical axis
-        /// </summary>
-        public IAxis PhysicalAxisInst { get; set; }
-
-        public override string ToString()
-        {
-            return string.Format("*{0}@{1}*", this.DisplayName, this.Parent.DisplayName);
-        }
     }
 }

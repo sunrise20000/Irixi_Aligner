@@ -1,5 +1,4 @@
 {
-
   "LogEnabled": true,
   "Cylinder": {
     "Enabled": true,
@@ -12,8 +11,8 @@
   },
   "PhysicalMotionControllers": [
     {
-      "Class": "5013d013-f167-4dcb-86d9-599a325744b8",
-      "Name": "Luminos P6A",
+      "DeviceClass": "5013d013-f167-4dcb-86d9-599a325744b8",
+      "Model": "LUMINOS_P6A",
       "Port": "COM4",
       "Enabled": false,
       "Comment": "For VGroove Aligner",
@@ -25,8 +24,8 @@
           "MaxStroke": 12700,
           "CWL": 128000,
           "CCWL": 0,
-		  "Unit":"um",
-		  "Digits":4
+          "Unit": "um",
+          "Digits": 4
         },
         {
           "Name": 2,
@@ -35,8 +34,8 @@
           "MaxStroke": 2500,
           "CWL": 128000,
           "CCWL": 0,
-		  "Unit":"um",
-		  "Digits":4
+          "Unit": "um",
+          "Digits": 4
         },
         {
           "Name": 3,
@@ -45,8 +44,8 @@
           "MaxStroke": 2500,
           "CWL": 128000,
           "CCWL": 0,
-		  "Unit":"um",
-		  "Digits":4
+          "Unit": "um",
+          "Digits": 4
         },
         {
           "Name": 4,
@@ -81,8 +80,8 @@
       ]
     },
     {
-      "Class": "412e55e4-ceae-4eb4-8798-e8de7b5b5669",
-      "Name": "Luminos P6A",
+      "DeviceClass": "412e55e4-ceae-4eb4-8798-e8de7b5b5669",
+      "Model": "LUMINOS_P6A",
       "Port": "COM2",
       "Enabled": false,
       "Comment": "Lens Aligner",
@@ -94,8 +93,8 @@
           "MaxStroke": 12700,
           "CWL": 128000,
           "CCWL": 0,
-		  "Unit":"um",
-		  "Digits":4
+          "Unit": "um",
+          "Digits": 4
         },
         {
           "Name": 2,
@@ -104,8 +103,8 @@
           "MaxStroke": 2500,
           "CWL": 128000,
           "CCWL": 0,
-		  "Unit":"um",
-		  "Digits":4
+          "Unit": "um",
+          "Digits": 4
         },
         {
           "Name": 3,
@@ -114,8 +113,8 @@
           "MaxStroke": 2500,
           "CWL": 128000,
           "CCWL": 0,
-		  "Unit":"um",
-		  "Digits":4
+          "Unit": "um",
+          "Digits": 4
         },
         {
           "Name": 4,
@@ -150,8 +149,8 @@
       ]
     },
     {
-      "Class": "2b39c9d5-66e9-4896-8dd1-94d8df0485e1",
-      "Name": "Luminos P6A",
+      "DeviceClass": "2b39c9d5-66e9-4896-8dd1-94d8df0485e1",
+      "Model": "LUMINOS_P6A",
       "Port": "COM5",
       "Enabled": true,
       "Comment": "POD Aligner",
@@ -163,8 +162,8 @@
           "MaxStroke": 12700,
           "CWL": 128000,
           "CCWL": 0,
-		  "Unit":"um",
-		  "Digits":4
+          "Unit": "um",
+          "Digits": 4
         },
         {
           "Name": 2,
@@ -173,8 +172,8 @@
           "MaxStroke": 2500,
           "CWL": 128000,
           "CCWL": 0,
-		  "Unit":"um",
-		  "Digits":4
+          "Unit": "um",
+          "Digits": 4
         },
         {
           "Name": 3,
@@ -183,8 +182,8 @@
           "MaxStroke": 2500,
           "CWL": 128000,
           "CCWL": 0,
-		  "Unit":"um",
-		  "Digits":4
+          "Unit": "um",
+          "Digits": 4
         },
         {
           "Name": 4,
@@ -219,8 +218,8 @@
       ]
     },
     {
-      "Class": "d11d1864-6315-4c01-b07f-3e268834cd10",
-      "Name": "Irixi EE0017",
+      "DeviceClass": "d11d1864-6315-4c01-b07f-3e268834cd10",
+      "Model": "IRIXI_EE0017",
       "Port": "313932311251363035003800",
       "Enabled": true,
       "Comment": "TOP CAM, Irixi 3-Axis Motion Controller, PCB Board 3",
@@ -232,8 +231,8 @@
           "MaxStroke": 50,
           "CWL": 50000,
           "CCWL": 0,
-		  "Unit":"mm",
-		  "Digits":4
+          "Unit": "mm",
+          "Digits": 4
         },
         {
           "Name": 1,
@@ -242,8 +241,8 @@
           "MaxStroke": 30,
           "CWL": 15000,
           "CCWL": 0,
-		  "Unit":"mm",
-		  "Digits":4
+          "Unit": "mm",
+          "Digits": 4
         },
         {
           "Name": 2,
@@ -252,14 +251,14 @@
           "MaxStroke": 50,
           "CWL": 50000,
           "CCWL": 0,
-		  "Unit":"mm",
-		  "Digits":4
+          "Unit": "mm",
+          "Digits": 4
         }
       ]
     },
     {
-      "Class": "c6af0f93-7e49-4b1a-b08d-0c84f8d812c0",
-      "Name": "Irixi EE0017",
+      "DeviceClass": "c6af0f93-7e49-4b1a-b08d-0c84f8d812c0",
+      "Model": "IRIXI_EE0017",
       "Port": "313932311251363030003800",
       "Enabled": true,
       "Comment": "45 CAM, Irixi 3-Axis Motion Controller, PCB Board 1",
@@ -271,8 +270,8 @@
           "MaxStroke": 50,
           "CWL": 50000,
           "CCWL": 0,
-		  "Unit":"mm",
-		  "Digits":2
+          "Unit": "mm",
+          "Digits": 2
         },
         {
           "Name": 1,
@@ -281,8 +280,8 @@
           "MaxStroke": 30,
           "CWL": 15000,
           "CCWL": 0,
-		  "Unit":"mm",
-		  "Digits":2
+          "Unit": "mm",
+          "Digits": 2
         },
         {
           "Name": 2,
@@ -291,14 +290,14 @@
           "MaxStroke": 50,
           "CWL": 50000,
           "CCWL": 0,
-		  "Unit":"mm",
-		  "Digits":2
+          "Unit": "mm",
+          "Digits": 2
         }
       ]
     },
     {
-      "Class": "86e3e6c8-0fce-455b-8545-9011cd3fe6a7",
-      "Name": "Irixi EE0017",
+      "DeviceClass": "86e3e6c8-0fce-455b-8545-9011cd3fe6a7",
+      "Model": "IRIXI_EE0017",
       "Port": "313932311251363033005500",
       "Enabled": true,
       "Comment": "Front CAM, Irixi 3-Axis Motion Controller, PCB Board 4",
@@ -310,8 +309,8 @@
           "MaxStroke": 100,
           "CWL": 50000,
           "CCWL": 0,
-		  "Unit":"mm",
-		  "Digits":2
+          "Unit": "mm",
+          "Digits": 2
         },
         {
           "Name": 1,
@@ -320,8 +319,8 @@
           "MaxStroke": 30,
           "CWL": 15000,
           "CCWL": 0,
-		  "Unit":"mm",
-		  "Digits":2
+          "Unit": "mm",
+          "Digits": 2
         },
         {
           "Name": 2,
@@ -330,14 +329,14 @@
           "MaxStroke": 30,
           "CWL": 15000,
           "CCWL": 0,
-		  "Unit":"mm",
-		  "Digits":2
+          "Unit": "mm",
+          "Digits": 2
         }
       ]
     },
     {
-      "Class": "df4d5339-f472-4bee-97f0-a10f8aecbc1a",
-      "Name": "Irixi EE0017",
+      "DeviceClass": "df4d5339-f472-4bee-97f0-a10f8aecbc1a",
+      "Model": "IRIXI_EE0017",
       "Port": "31393231125136302E005500",
       "Enabled": true,
       "Comment": "POD Aligner, Irixi 3-Axis Motion Controller, PCB Board 5",
@@ -375,204 +374,216 @@
       ]
     }
   ],
-  "LogicalLayout": {
-    "VGrooveAligner": {
+  "LogicalMotionComponentArray": [
+	{
       "DisplayName": "VGroove Aligner",
-      "AxisX": {
-        "DeviceClass": "5013d013-f167-4dcb-86d9-599a325744b8",
-        "AxisName": 2,
-        "DisplayName": "X",
-        "HomeOrder": 0
-      },
-      "AxisY": {
-        "DeviceClass": "5013d013-f167-4dcb-86d9-599a325744b8",
-        "AxisName": 3,
-        "DisplayName": "Y",
-        "HomeOrder": 0
-      },
-      "AxisZ": {
-        "DeviceClass": "5013d013-f167-4dcb-86d9-599a325744b8",
-        "AxisName": 1,
-        "DisplayName": "Z",
-        "HomeOrder": 0
-      },
-      "AxisRoll": {
-        "DeviceClass": "5013d013-f167-4dcb-86d9-599a325744b8",
-        "AxisName": 4,
-        "DisplayName": "Roll",
-        "HomeOrder": 0
-      },
-      "AxisYaw": {
-        "DeviceClass": "5013d013-f167-4dcb-86d9-599a325744b8",
-        "AxisName": 5,
-        "DisplayName": "Yaw",
-        "HomeOrder": 0
-      },
-      "AxisPitch": {
-        "DeviceClass": "5013d013-f167-4dcb-86d9-599a325744b8",
-        "AxisName": 6,
-        "DisplayName": "Pitch",
-        "HomeOrder": 0
-      }
+      "LogicalAxisArray": [
+        {
+          "DeviceClass": "5013d013-f167-4dcb-86d9-599a325744b8",
+          "AxisName": 2,
+          "DisplayName": "X",
+          "HomeOrder": 0
+        },
+        {
+          "DeviceClass": "5013d013-f167-4dcb-86d9-599a325744b8",
+          "AxisName": 3,
+          "DisplayName": "Y",
+          "HomeOrder": 0
+        },
+        {
+          "DeviceClass": "5013d013-f167-4dcb-86d9-599a325744b8",
+          "AxisName": 1,
+          "DisplayName": "Z",
+          "HomeOrder": 0
+        },
+        {
+          "DeviceClass": "5013d013-f167-4dcb-86d9-599a325744b8",
+          "AxisName": 4,
+          "DisplayName": "Roll",
+          "HomeOrder": 0
+        },
+        {
+          "DeviceClass": "5013d013-f167-4dcb-86d9-599a325744b8",
+          "AxisName": 5,
+          "DisplayName": "Yaw",
+          "HomeOrder": 0
+        },
+        {
+          "DeviceClass": "5013d013-f167-4dcb-86d9-599a325744b8",
+          "AxisName": 6,
+          "DisplayName": "Pitch",
+          "HomeOrder": 0
+        }
+      ]
     },
-    "LensAligner": {
+    {
       "DisplayName": "Lens Aligner",
-      "AxisX": {
-        "DeviceClass": "412e55e4-ceae-4eb4-8798-e8de7b5b5669",
-        "AxisName": 2,
-        "DisplayName": "X",
-        "HomeOrder": 0
-      },
-      "AxisY": {
-        "DeviceClass": "412e55e4-ceae-4eb4-8798-e8de7b5b5669",
-        "AxisName": 3,
-        "DisplayName": "Y",
-        "HomeOrder": 0
-      },
-      "AxisZ": {
-        "DeviceClass": "412e55e4-ceae-4eb4-8798-e8de7b5b5669",
-        "AxisName": 1,
-        "DisplayName": "Z",
-        "HomeOrder": 0
-      },
-      "AxisRoll": {
-        "DeviceClass": "412e55e4-ceae-4eb4-8798-e8de7b5b5669",
-        "AxisName": 4,
-        "DisplayName": "Roll",
-        "HomeOrder": 0
-      },
-      "AxisYaw": {
-        "DeviceClass": "412e55e4-ceae-4eb4-8798-e8de7b5b5669",
-        "AxisName": 5,
-        "DisplayName": "Yaw",
-        "HomeOrder": 0
-      },
-      "AxisPitch": {
-        "DeviceClass": "412e55e4-ceae-4eb4-8798-e8de7b5b5669",
-        "AxisName": 6,
-        "DisplayName": "Pitch",
-        "HomeOrder": 0
-      }
+      "LogicalAxisArray": [
+        {
+          "DeviceClass": "412e55e4-ceae-4eb4-8798-e8de7b5b5669",
+          "AxisName": 2,
+          "DisplayName": "X",
+          "HomeOrder": 0
+        },
+        {
+          "DeviceClass": "412e55e4-ceae-4eb4-8798-e8de7b5b5669",
+          "AxisName": 3,
+          "DisplayName": "Y",
+          "HomeOrder": 0
+        },
+        {
+          "DeviceClass": "412e55e4-ceae-4eb4-8798-e8de7b5b5669",
+          "AxisName": 1,
+          "DisplayName": "Z",
+          "HomeOrder": 0
+        },
+        {
+          "DeviceClass": "412e55e4-ceae-4eb4-8798-e8de7b5b5669",
+          "AxisName": 4,
+          "DisplayName": "Roll",
+          "HomeOrder": 0
+        },
+        {
+          "DeviceClass": "412e55e4-ceae-4eb4-8798-e8de7b5b5669",
+          "AxisName": 5,
+          "DisplayName": "Yaw",
+          "HomeOrder": 0
+        },
+        {
+          "DeviceClass": "412e55e4-ceae-4eb4-8798-e8de7b5b5669",
+          "AxisName": 6,
+          "DisplayName": "Pitch",
+          "HomeOrder": 0
+        }
+      ]
     },
-    "PODAligner": {
+    {
       "DisplayName": "POD Aligner",
-      "AxisX": {
-        "DeviceClass": "2b39c9d5-66e9-4896-8dd1-94d8df0485e1",
-        "AxisName": 2,
-        "DisplayName": "X",
-        "HomeOrder": 0
-      },
-      "AxisY": {
-        "DeviceClass": "2b39c9d5-66e9-4896-8dd1-94d8df0485e1",
-        "AxisName": 3,
-        "DisplayName": "Y",
-        "HomeOrder": 0
-      },
-      "AxisZ": {
-        "DeviceClass": "2b39c9d5-66e9-4896-8dd1-94d8df0485e1",
-        "AxisName": 1,
-        "DisplayName": "Z",
-        "HomeOrder": 0
-      },
-      "AxisRoll": {
-        "DeviceClass": "2b39c9d5-66e9-4896-8dd1-94d8df0485e1",
-        "AxisName": 4,
-        "DisplayName": "Roll",
-        "HomeOrder": 0
-      },
-      "AxisYaw": {
-        "DeviceClass": "2b39c9d5-66e9-4896-8dd1-94d8df0485e1",
-        "AxisName": 5,
-        "DisplayName": "Yaw",
-        "HomeOrder": 0
-      },
-      "AxisPitch": {
-        "DeviceClass": "2b39c9d5-66e9-4896-8dd1-94d8df0485e1",
-        "AxisName": 6,
-        "DisplayName": "Pitch",
-        "HomeOrder": 0
-      },
-      "AxisBigX": {
-        "DeviceClass": "df4d5339-f472-4bee-97f0-a10f8aecbc1a",
-        "AxisName": 0,
-        "DisplayName": "BigX",
-        "HomeOrder": 0
-      },
-      "AxisBigY": {
-        "DeviceClass": "df4d5339-f472-4bee-97f0-a10f8aecbc1a",
-        "AxisName": 1,
-        "DisplayName": "BigY",
-        "HomeOrder": 0
-      },
-      "AxisProbeZ": {
-        "DeviceClass": "df4d5339-f472-4bee-97f0-a10f8aecbc1a",
-        "AxisName": 2,
-        "DisplayName": "ProbeZ",
-        "HomeOrder": 0
-      }
+      "LogicalAxisArray": [
+        {
+          "DeviceClass": "2b39c9d5-66e9-4896-8dd1-94d8df0485e1",
+          "AxisName": 2,
+          "DisplayName": "X",
+          "HomeOrder": 0
+        },
+        {
+          "DeviceClass": "2b39c9d5-66e9-4896-8dd1-94d8df0485e1",
+          "AxisName": 3,
+          "DisplayName": "Y",
+          "HomeOrder": 0
+        },
+        {
+          "DeviceClass": "2b39c9d5-66e9-4896-8dd1-94d8df0485e1",
+          "AxisName": 1,
+          "DisplayName": "Z",
+          "HomeOrder": 0
+        },
+        {
+          "DeviceClass": "2b39c9d5-66e9-4896-8dd1-94d8df0485e1",
+          "AxisName": 4,
+          "DisplayName": "Roll",
+          "HomeOrder": 0
+        },
+        {
+          "DeviceClass": "2b39c9d5-66e9-4896-8dd1-94d8df0485e1",
+          "AxisName": 5,
+          "DisplayName": "Yaw",
+          "HomeOrder": 0
+        },
+        {
+          "DeviceClass": "2b39c9d5-66e9-4896-8dd1-94d8df0485e1",
+          "AxisName": 6,
+          "DisplayName": "Pitch",
+          "HomeOrder": 0
+        },
+        {
+          "DeviceClass": "df4d5339-f472-4bee-97f0-a10f8aecbc1a",
+          "AxisName": 0,
+          "DisplayName": "Big X",
+          "HomeOrder": 0
+        },
+        {
+          "DeviceClass": "df4d5339-f472-4bee-97f0-a10f8aecbc1a",
+          "AxisName": 1,
+          "DisplayName": "Big Y",
+          "HomeOrder": 0
+        },
+        {
+          "DeviceClass": "df4d5339-f472-4bee-97f0-a10f8aecbc1a",
+          "AxisName": 2,
+          "DisplayName": "Probe Z",
+          "HomeOrder": 0
+        }
+      ]
     },
-    "AngleCamera": {
+    {
       "DisplayName": "Angle Camera",
-      "AxisX": {
-        "DeviceClass": "c6af0f93-7e49-4b1a-b08d-0c84f8d812c0",
-        "AxisName": "0",
-        "DisplayName": "X",
-        "HomeOrder": 0
-      },
-      "AxisY": {
-        "DeviceClass": "c6af0f93-7e49-4b1a-b08d-0c84f8d812c0",
-        "AxisName": "1",
-        "DisplayName": "Y",
-        "HomeOrder": 0
-      },
-      "AxisZ": {
-        "DeviceClass": "c6af0f93-7e49-4b1a-b08d-0c84f8d812c0",
-        "AxisName": "2",
-        "DisplayName": "Z",
-        "HomeOrder": 0
-      }
+      "LogicalAxisArray": [
+        {
+          "DeviceClass": "c6af0f93-7e49-4b1a-b08d-0c84f8d812c0",
+          "AxisName": "0",
+          "DisplayName": "X",
+          "HomeOrder": 0
+        },
+        {
+          "DeviceClass": "c6af0f93-7e49-4b1a-b08d-0c84f8d812c0",
+          "AxisName": "1",
+          "DisplayName": "Y",
+          "HomeOrder": 0
+        },
+        {
+          "DeviceClass": "c6af0f93-7e49-4b1a-b08d-0c84f8d812c0",
+          "AxisName": "2",
+          "DisplayName": "Z",
+          "HomeOrder": 0
+        }
+      ]
     },
-    "TopCamera": {
+    {
       "DisplayName": "Top Camera",
-      "AxisX": {
-        "DeviceClass": "d11d1864-6315-4c01-b07f-3e268834cd10",
-        "AxisName": "0",
-        "DisplayName": "X",
-        "HomeOrder": 10
-      },
-      "AxisY": {
-        "DeviceClass": "d11d1864-6315-4c01-b07f-3e268834cd10",
-        "AxisName": "1",
-        "DisplayName": "Y",
-        "HomeOrder": 10
-      },
-      "AxisZ": {
-        "DeviceClass": "d11d1864-6315-4c01-b07f-3e268834cd10",
-        "AxisName": "2",
-        "DisplayName": "Z",
-        "HomeOrder": 10
-      }
+      "LogicalAxisArray": [
+        {
+          "DeviceClass": "d11d1864-6315-4c01-b07f-3e268834cd10",
+          "AxisName": "0",
+          "DisplayName": "X",
+          "HomeOrder": 10
+        },
+        {
+          "DeviceClass": "d11d1864-6315-4c01-b07f-3e268834cd10",
+          "AxisName": "1",
+          "DisplayName": "Y",
+          "HomeOrder": 10
+        },
+        {
+          "DeviceClass": "d11d1864-6315-4c01-b07f-3e268834cd10",
+          "AxisName": "2",
+          "DisplayName": "Z",
+          "HomeOrder": 10
+        }
+      ]
     },
-    "FrontCamera": {
+    {
       "DisplayName": "Front Camera",
-      "AxisX": {
-        "DeviceClass": "86e3e6c8-0fce-455b-8545-9011cd3fe6a7",
-        "AxisName": "0",
-        "DisplayName": "X",
-        "HomeOrder": 0
-      },
-      "AxisY": {
-        "DeviceClass": "86e3e6c8-0fce-455b-8545-9011cd3fe6a7",
-        "AxisName": "1",
-        "DisplayName": "Y",
-        "HomeOrder": 0
-      },
-      "AxisZ": {
-        "DeviceClass": "86e3e6c8-0fce-455b-8545-9011cd3fe6a7",
-        "AxisName": "2",
-        "DisplayName": "Z",
-        "HomeOrder": 0
-      }
+      "LogicalAxisArray": [
+        {
+          "DeviceClass": "86e3e6c8-0fce-455b-8545-9011cd3fe6a7",
+          "AxisName": "0",
+          "DisplayName": "X",
+          "HomeOrder": 0
+        },
+        {
+          "DeviceClass": "86e3e6c8-0fce-455b-8545-9011cd3fe6a7",
+          "AxisName": "1",
+          "DisplayName": "Y",
+          "HomeOrder": 0
+        },
+        {
+          "DeviceClass": "86e3e6c8-0fce-455b-8545-9011cd3fe6a7",
+          "AxisName": "2",
+          "DisplayName": "Z",
+          "HomeOrder": 0
+        }
+      ]
     }
-  }
+  ]
 }

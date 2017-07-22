@@ -1,11 +1,16 @@
-﻿using Irixi_Aligner_Common.Configuration;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Threading.Tasks;
 
 namespace Irixi_Aligner_Common.Interfaces
 {
+
+    public enum ControllerType
+    {
+        LUMINOS_P6A,
+        THORLABS_TDC001,
+        IRIXI_EE0017
+    }
 
     public interface IMotionController : IBaseEquipment
     {
@@ -23,7 +28,7 @@ namespace Irixi_Aligner_Common.Interfaces
         /// <summary>
         /// Get the model of this controller.
         /// </summary>
-        MotionControllerModel Model { get; }
+        ControllerType Model { get; }
 
         /// <summary>
         /// Get the communication port of the controller.
