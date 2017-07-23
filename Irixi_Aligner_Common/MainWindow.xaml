@@ -10,9 +10,7 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:local="clr-namespace:Irixi_Aligner_Common"
-    xmlns:UserControls="clr-namespace:Irixi_Aligner_Common.UserControls"
     xmlns:Converters="clr-namespace:Irixi_Aligner_Common.Classes.Converters"
-    xmlns:Configuration="clr-namespace:Irixi_Aligner_Common.Configuration"
     xmlns:BindingConverter="clr-namespace:IrixiStepperControllerHelper.BindingConverter;assembly=IrixiStepperControllerHelper"
     dx:ThemeManager.ThemeName="Office2013"
     mc:Ignorable="d"
@@ -23,13 +21,11 @@
     Loaded="DXRibbonWindow_Loaded" 
     WindowState="Maximized" 
     Closing="DXRibbonWindow_Closing" 
-    Icon="Irixi_Logo.ico"
+    Icon="AlignerLogo.ico"
     x:Class="Irixi_Aligner_Common.MainWindow"
     Title="Irixi Alignment System for 2x25G/10x10G Tx/Rx" >
     <dxr:DXRibbonWindow.Resources>
-        <BindingConverter:CvtOutputStateToBool x:Key="CvtOutputStateToBool"/>
-        <Converters:SystemStatusToStartButtonEnable x:Key="SystemStatusToStartButtonEnable"/>
-        
+
         <!--
         <Style TargetType="{x:Type dxd:DocumentPanel}">
             <Setter Property="Caption" Value="{Binding DisplayName}"/>
@@ -55,6 +51,10 @@
             </Setter>
         </Style>
 -->
+        <Converters:BooleanToVisibility x:Key="BooleanToVisibility"/>
+        <BindingConverter:CvtOutputStateToBool x:Key="CvtOutputStateToBool"/>
+        <Converters:SystemStatusToStartButtonEnable x:Key="SystemStatusToStartButtonEnable"/>
+
     </dxr:DXRibbonWindow.Resources>
     <DockPanel DataContext="{Binding Source={StaticResource Locator}}">
         <dxr:RibbonControl x:Name="ribbonControl1" RibbonStyle="Office2010" DockPanel.Dock="Top" AllowCustomization="False" ToolbarShowMode="Hide" ToolbarShowCustomizationButton="False">
@@ -91,17 +91,12 @@
                         <dxb:BarButtonItem Content="Alignment 2D" Glyph="{dx:DXImageOffice2013 Image=Solution_16x16.png}" LargeGlyph="{dx:DXImageOffice2013 Image=Solution_32x32.png}" />
                     </dxr:RibbonPageGroup>
                 </dxr:RibbonPage>
-                <dxr:RibbonPage x:Name="rpView" Caption="View">
-                    <dxr:RibbonPageGroup Caption="Actuators Control Panel">
-                        <dxb:BarCheckItem Content="VGroove" Glyph="{dx:DXImageOffice2013 Image=Solution_16x16.png}" LargeGlyph="{dx:DXImageOffice2013 Image=Solution_32x32.png}" RibbonStyle="Default" />
-                        <dxb:BarCheckItem Content="Lens" Glyph="{dx:DXImageOffice2013 Image=Solution_16x16.png}" LargeGlyph="{dx:DXImageOffice2013 Image=Solution_32x32.png}" RibbonStyle="Default" />
-                        <dxb:BarCheckItem Content="POD" Glyph="{dx:DXImageOffice2013 Image=Solution_16x16.png}" LargeGlyph="{dx:DXImageOffice2013 Image=Solution_32x32.png}" RibbonStyle="Default" />
-                        <dxb:BarCheckItem Content="Top Cam" Glyph="{dx:DXImageOffice2013 Image=Solution_16x16.png}" LargeGlyph="{dx:DXImageOffice2013 Image=Solution_32x32.png}" RibbonStyle="Default" />
-                        <dxb:BarCheckItem Content="Front Cam" Glyph="{dx:DXImageOffice2013 Image=Solution_16x16.png}" LargeGlyph="{dx:DXImageOffice2013 Image=Solution_32x32.png}" RibbonStyle="Default" />
-                        <dxb:BarCheckItem Content="Angle Cam" Glyph="{dx:DXImageOffice2013 Image=Solution_16x16.png}" LargeGlyph="{dx:DXImageOffice2013 Image=Solution_32x32.png}" RibbonStyle="Default"  />
+                <dxr:RibbonPage x:Name="rpgView" Caption="View">
+                    <dxr:RibbonPageGroup x:Name="rpgView_MotionComponent" Caption="Motion Control">
+                        
                     </dxr:RibbonPageGroup>
                     <dxr:RibbonPageGroup Caption="Equipments">
-                        <dxb:BarCheckItem Content="Cylinders" Glyph="{dx:DXImageOffice2013 Image=Solution_16x16.png}" LargeGlyph="{dx:DXImageOffice2013 Image=Solution_32x32.png}" RibbonStyle="Default" IsChecked="{Binding Closed, ElementName=CylinderControlPanel}" />
+                        <dxb:BarCheckItem Content="Cylinders" Glyph="{dx:DXImageOffice2013 Image=Solution_16x16.png}" LargeGlyph="{dx:DXImageOffice2013 Image=Solution_32x32.png}" RibbonStyle="Default" IsChecked="{Binding Visibility, ElementName=CylinderControlPanel, Mode=TwoWay, Converter={StaticResource BooleanToVisibility}}" />
                     </dxr:RibbonPageGroup>
                 </dxr:RibbonPage>
             </dxr:RibbonDefaultPageCategory>
@@ -109,15 +104,27 @@
         <dxr:RibbonStatusBarControl dxbh:BlendHelperForBarsAndRibbon.IsDesignControl="true" DockPanel.Dock="Bottom"/>
 
         <dxd:DockLayoutManager x:Name="dockLayoutManager" 
+                               ClosingBehavior="HideToClosedPanelsCollection"
                                FloatingMode="Desktop"
                                dx:DXSerializer.StoreLayoutMode="UI"
                                dxd:RestoreLayoutOptions.RemoveOldPanels="False" 
-                               dxd:RestoreLayoutOptions.AddNewLayoutControlItems="False">
+                               dxd:RestoreLayoutOptions.AddNewLayoutControlItems="False" DockItemClosing="dockLayoutManager_DockItemClosing" ItemIsVisibleChanged="dockLayoutManager_ItemIsVisibleChanged">
             <dxd:LayoutGroup x:Name="rootLayout" Orientation="Vertical">
                 <dxd:LayoutGroup x:Name="mainWorkspace"  Orientation="Horizontal" AllowSplitters="False" ItemHeight="4*">
-                    <dxd:DocumentGroup x:Name="MotionComponentPanelHost" MDIStyle="MDI" Visibility="Visible"> 
+                    <dxd:DocumentGroup x:Name="MotionComponentPanelHost" 
+                                       MDIStyle="MDI">
                         <!-- The control panel of Cylinder -->
-                        <dxd:DocumentPanel x:Name="CylinderControlPanel" Caption="Cylinders"  MDISize="200,170" ShowMaximizeButton="False" AllowSizing="False" AllowRename="False" AllowDock="False" AllowMaximize="False" AllowDockToDocumentGroup="False" Closed="{Binding Configuration.WsLayout.PanelLocation.CylinderControlPanel.Closed, Mode=TwoWay}">
+                        <dxd:DocumentPanel 
+                            x:Name="CylinderControlPanel" 
+                            Caption="Cylinders" 
+                            MDISize="200,170" 
+                            ShowMaximizeButton="False" 
+                            AllowSizing="False" 
+                            AllowRename="False" 
+                            AllowDock="False" 
+                            AllowMaximize="False" 
+                            AllowDockToDocumentGroup="False" 
+                            ClosingBehavior="HideToClosedPanelsCollection">
                             <StackPanel Orientation="Vertical" IsEnabled="{Binding Service.CylinderController.IsInitialized}">
                                 <ToggleButton Height="30" Margin="0,2" Content="Fiber Clamp" Command="{Binding Service.CommandToggleFiberClampState, Mode=OneWay}" IsChecked="{Binding Service.CylinderController.FiberClampState, Converter={StaticResource CvtOutputStateToBool}, Mode=OneWay}"/>
                                 <ToggleButton Height="30" Margin="0,2" Content="Lens Vacuum" Command="{Binding Service.CommandToggleLensVacuumState, Mode=OneWay}" IsChecked="{Binding Service.CylinderController.LensVacuumState, Converter={StaticResource CvtOutputStateToBool}, Mode=OneWay}"/>

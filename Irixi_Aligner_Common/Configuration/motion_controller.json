@@ -376,7 +376,8 @@
   ],
   "LogicalMotionComponentArray": [
 	{
-      "DisplayName": "VGroove Aligner",
+      "Caption": "VGroove Aligner",
+	  "Icon": "IconViewWsPanels",
       "LogicalAxisArray": [
         {
           "DeviceClass": "5013d013-f167-4dcb-86d9-599a325744b8",
@@ -417,7 +418,8 @@
       ]
     },
     {
-      "DisplayName": "Lens Aligner",
+      "Caption": "Lens Aligner",
+	  "Icon": "IconViewWsPanels",
       "LogicalAxisArray": [
         {
           "DeviceClass": "412e55e4-ceae-4eb4-8798-e8de7b5b5669",
@@ -458,7 +460,8 @@
       ]
     },
     {
-      "DisplayName": "POD Aligner",
+      "Caption": "POD Aligner",
+	  "Icon": "IconViewWsPanels",
       "LogicalAxisArray": [
         {
           "DeviceClass": "2b39c9d5-66e9-4896-8dd1-94d8df0485e1",
@@ -517,7 +520,8 @@
       ]
     },
     {
-      "DisplayName": "Angle Camera",
+      "Caption": "Angle Camera",
+	  "Icon": "IconViewWsPanels",
       "LogicalAxisArray": [
         {
           "DeviceClass": "c6af0f93-7e49-4b1a-b08d-0c84f8d812c0",
@@ -540,7 +544,8 @@
       ]
     },
     {
-      "DisplayName": "Top Camera",
+      "Caption": "Top Camera",
+	  "Icon": "IconViewWsPanels",
       "LogicalAxisArray": [
         {
           "DeviceClass": "d11d1864-6315-4c01-b07f-3e268834cd10",
@@ -563,7 +568,8 @@
       ]
     },
     {
-      "DisplayName": "Front Camera",
+      "Caption": "Front Camera",
+	  "Icon": "IconViewWsPanels",
       "LogicalAxisArray": [
         {
           "DeviceClass": "86e3e6c8-0fce-455b-8545-9011cd3fe6a7",

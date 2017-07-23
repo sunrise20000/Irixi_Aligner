@@ -8,6 +8,9 @@
              xmlns:d1p1="http://schemas.openxmlformats.org/markup-compatibility/2006" Startup="OnAppStartup_UpdateThemeName">
     <Application.Resources>
         <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="Resources/IconsCollection.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
             <Converters:SystemStatusToStopButtonEnable x:Key="SystemStatusToStopButtonEnable" />
             <Converters:JogPositionModeToBoolean x:Key="JogPositionModeToBoolean" />
             <Converters:JogPositionModeToText x:Key="JogPositionModeToText" />

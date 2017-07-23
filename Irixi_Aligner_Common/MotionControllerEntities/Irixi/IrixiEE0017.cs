@@ -336,6 +336,7 @@ namespace Irixi_Aligner_Common.MotionControllerEntities
 
         public override void Dispose()
         {
+            _controller.CloseDevice();
             _controller = null;
         }
         #endregion

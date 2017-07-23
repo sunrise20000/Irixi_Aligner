@@ -9,7 +9,7 @@ namespace Irixi_Aligner_Common.Configuration
         /// <summary>
         /// Get the name of the aligner shown on the window which is defined in the json file
         /// </summary>
-        public string DisplayName
+        public string Caption
         {
             set
             {
@@ -19,6 +19,15 @@ namespace Irixi_Aligner_Common.Configuration
             {
                 return _displayname;
             }
+        }
+
+        /// <summary>
+        /// Get which icon should be displayed on the caption and the show/hide button
+        /// </summary>
+        public string Icon
+        {
+            get;
+            set;
         }
 
         /// <summary>

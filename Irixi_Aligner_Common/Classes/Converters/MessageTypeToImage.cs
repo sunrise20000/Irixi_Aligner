@@ -21,15 +21,15 @@ namespace Irixi_Aligner_Common.Classes.Converters
                     break;
 
                 case MessageType.Good:
-                    image = new BitmapImage(new Uri("pack://application:,,,/images/icons/right.png"));
+                    image = new BitmapImage(new Uri("pack://application:,,,/Resources/images/icons/right.png"));
                     break;
 
                 case MessageType.Warning:
-                    image = new BitmapImage(new Uri("pack://application:,,,/images/icons/warning_32x32.png"));
+                    image = new BitmapImage(new Uri("pack://application:,,,/Resources/images/icons/warning_32x32.png"));
                     break;
 
                 case MessageType.Error:
-                    image = new BitmapImage(new Uri("pack://application:,,,/images/icons/wrong.png"));
+                    image = new BitmapImage(new Uri("pack://application:,,,/Resources/images/icons/wrong.png"));
                     break;
             }
             return image;

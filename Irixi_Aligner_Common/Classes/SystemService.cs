@@ -9,7 +9,6 @@ using Irixi_Aligner_Common.Interfaces;
 using Irixi_Aligner_Common.Message;
 using Irixi_Aligner_Common.MotionControllerEntities;
 using Irixi_Aligner_Common.MotionControllerEntities.BaseClass;
-using Irixi_Aligner_Common.ViewModel;
 using IrixiStepperControllerHelper;
 using System;
 using System.Collections.Generic;
@@ -122,13 +121,13 @@ namespace Irixi_Aligner_Common.Classes
             // generate the Logical Motion Component
             foreach( var cfg_motion_comp in configmgr.MotionControllerConfig.LogicalMotionComponentArray)
             {
-                LogicalMotionComponent comp = new LogicalMotionComponent(cfg_motion_comp.DisplayName);
+                LogicalMotionComponent comp = new LogicalMotionComponent(cfg_motion_comp.Caption, cfg_motion_comp.Icon);
 
                 int axis_id = 0;
                 foreach(var cfg_axis in cfg_motion_comp.LogicalAxisArray)
                 {
                     // new logical axis object will be added to the Logical Motion Component
-                    LogicalAxis axis = new LogicalAxis(this, cfg_axis, cfg_motion_comp.DisplayName, axis_id);
+                    LogicalAxis axis = new LogicalAxis(this, cfg_axis, cfg_motion_comp.Caption, axis_id);
 
                     // bind the physical axis instance to logical axis object
                     BindPhysicalAxis(axis);

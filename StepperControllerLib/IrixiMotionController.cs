@@ -331,7 +331,7 @@ namespace IrixiStepperControllerHelper
         /// </summary>
         public void CloseDevice()
         {
-            _hid_device.Disconnect();
+            _hid_device.StopRead();
         }
 
         /// <summary>

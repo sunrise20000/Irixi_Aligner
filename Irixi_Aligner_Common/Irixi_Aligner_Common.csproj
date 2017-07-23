@@ -38,7 +38,7 @@
     <Prefer32Bit>true</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup>
-    <ApplicationIcon>Irixi_Logo.ico</ApplicationIcon>
+    <ApplicationIcon>AlignerLogo.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="DevExpress.Charts.v15.1.Core, Version=15.1.3.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL" />
@@ -111,6 +111,7 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Classes\BaseClass\DistanceUnitHelper.cs" />
+    <Compile Include="Classes\Converters\BooleanToVisibility.cs" />
     <Compile Include="Configuration\ConfigurationCylinder.cs" />
     <Compile Include="Configuration\Layout\Layout.cs" />
     <Compile Include="Configuration\Layout\LayoutManager.cs" />
@@ -197,6 +198,10 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
+    <Page Include="Resources\IconsCollection.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Splash.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -211,15 +216,15 @@
     </Page>
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Images\Icons\Group.png" />
+    <Resource Include="Resources\Images\Icons\Group.png" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Images\Icons\Item.png" />
+    <Resource Include="Resources\Images\Icons\Item.png" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Images\Icons\right.png" />
-    <Resource Include="Images\Icons\warning_32x32.png" />
-    <Resource Include="Images\Icons\wrong.png" />
+    <Resource Include="Resources\Images\Icons\right.png" />
+    <Resource Include="Resources\Images\Icons\warning_32x32.png" />
+    <Resource Include="Resources\Images\Icons\wrong.png" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="MotionControllerEntities\Thorlabs\" />
@@ -231,17 +236,20 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="ExtDlls\IronPython.dll" />
-    <Content Include="ExtDlls\IronPython.Modules.dll" />
-    <Content Include="ExtDlls\IronPython.SQLite.dll" />
-    <Content Include="ExtDlls\IronPython.Wpf.dll" />
-    <Content Include="ExtDlls\log4net.dll" />
-    <Content Include="ExtDlls\Microsoft.Dynamic.dll" />
-    <Content Include="ExtDlls\Microsoft.Scripting.AspNet.dll" />
-    <Content Include="ExtDlls\Microsoft.Scripting.dll" />
-    <Content Include="ExtDlls\Microsoft.Scripting.Metadata.dll" />
-    <Content Include="ExtDlls\Zaber.dll" />
-    <Content Include="ExtDlls\Zaber.Units.dll" />
+    <Resource Include="AlignerLogo.ico" />
+    <Content Include="Resources\ExtDlls\IronPython.dll" />
+    <Content Include="Resources\ExtDlls\IronPython.Modules.dll" />
+    <Content Include="Resources\ExtDlls\IronPython.SQLite.dll" />
+    <Content Include="Resources\ExtDlls\IronPython.Wpf.dll" />
+    <Content Include="Resources\ExtDlls\log4net.dll" />
+    <Content Include="Resources\ExtDlls\Microsoft.Dynamic.dll" />
+    <Content Include="Resources\ExtDlls\Microsoft.Scripting.AspNet.dll" />
+    <Content Include="Resources\ExtDlls\Microsoft.Scripting.dll" />
+    <Content Include="Resources\ExtDlls\Microsoft.Scripting.Metadata.dll" />
+    <Content Include="Resources\ExtDlls\Zaber.dll" />
+    <Content Include="Resources\ExtDlls\Zaber.Units.dll" />
+    <Resource Include="Resources\Images\Icons\show_view.png" />
+    <Resource Include="Resources\Images\Icons\Irixi_Logo_128x128.png" />
     <Resource Include="Irixi_Logo.ico" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
