@@ -1,0 +1,7 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <BitmapImage x:Key="IconMessageConfirm">Images/Icons/right.png</BitmapImage>
+    <BitmapImage x:Key="IconMessageWarning">Images/Icons/warning_32x32.png</BitmapImage>
+    <BitmapImage x:Key="IconMessageError">Images/Icons/wrong.png</BitmapImage>
+    <BitmapImage x:Key="IconViewWsPanels">Images/Icons/show_view.png</BitmapImage>
+</ResourceDictionary>

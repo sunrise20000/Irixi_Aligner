@@ -27,7 +27,7 @@ namespace Irixi_Aligner_Common.MotionControllerEntities
         #endregion
 
         #region Constructor
-        public LuminosP6A(ConfigPhysicalMotionController Config):base(Config)
+        public LuminosP6A(ConfigPhysicalMotionController Config) : base(Config)
         {
             //_wait_axis_register = new SemaphoreSlim(0);
 
@@ -43,42 +43,47 @@ namespace Irixi_Aligner_Common.MotionControllerEntities
 
                 ZaberDevice allDevices = _zaber_port_facade.GetDevice(0);
 
-                allDevices.MessageReceived += ((s, e) =>
-                {
-                // if the command relative to position is received, flush the AbsPosition of axis 
-                int device = e.DeviceMessage.DeviceNumber;
-                    LuminosAxis _axis = FindAxisByName(device.ToString()) as LuminosAxis;
+                allDevices.MessageReceived += AllDevices_MessageReceived;
 
-                    if (_axis != null)
-                    {
-                        switch (e.DeviceMessage.Command)
-                        {
-                            case Command.Home:
-                            case Command.ManualMove:
-                            case Command.ManualMoveTracking:
-                            case Command.MoveAbsolute:
-                            case Command.MoveToStoredPosition:
-                            case Command.MoveTracking:
-                            case Command.LimitActive:
-                            case Command.SlipTracking:
-                            case Command.UnexpectedPosition:
-                            case Command.MoveRelative:
-                                _axis.AbsPosition = e.DeviceMessage.Data;
-                                break;
-
-                        }
-                    }
-
-                });
-
-                allDevices.MessageSent += ((s, e) =>
-                {
-
-                });
+                allDevices.MessageSent += AllDevices_MessageSent;
             }
-
-            //pos.OnAxisCreated += Pos_OnAxisCreated;
         }
+
+        #endregion
+
+        #region Events of Zaber
+
+        private void AllDevices_MessageSent(object sender, DeviceMessageEventArgs e)
+        {
+            
+        }
+
+        private void AllDevices_MessageReceived(object sender, DeviceMessageEventArgs e)
+        {
+            // if the command relative to position is received, flush the AbsPosition of axis 
+            int device = e.DeviceMessage.DeviceNumber;
+            LuminosAxis _axis = FindAxisByName(device.ToString()) as LuminosAxis;
+
+            if (_axis != null)
+            {
+                switch (e.DeviceMessage.Command)
+                {
+                    case Command.Home:
+                    case Command.ManualMove:
+                    case Command.ManualMoveTracking:
+                    case Command.MoveAbsolute:
+                    case Command.MoveToStoredPosition:
+                    case Command.MoveTracking:
+                    case Command.LimitActive:
+                    case Command.SlipTracking:
+                    case Command.UnexpectedPosition:
+                    case Command.MoveRelative:
+                        _axis.AbsPosition = e.DeviceMessage.Data;
+                        break;
+                }
+            }
+        }
+        
 
         #endregion
 
@@ -95,14 +100,11 @@ namespace Irixi_Aligner_Common.MotionControllerEntities
                     if (t.Result == false)
                         return false;
                 }
-
-                //pos.Port = _config.Port;
+                
                 bool _init_ret = true;
                 
                 try
                 {
-                    //pos.Connect();
-
                     _zaber_port_facade.Open(_config.Port);
                     Thread.Sleep(1000);
 
@@ -121,8 +123,8 @@ namespace Irixi_Aligner_Common.MotionControllerEntities
                             {
                                 if (FindAxisByName(conversation.Device.DeviceNumber.ToString()) is LuminosAxis _axis)
                                 {
-
                                     _axis.RegisterZaberConversation(conversation);
+                                    
                                     LogHelper.WriteLine("One luminos axis was find, the id is {0}.", conversation.Device.DeviceNumber);
                                 }
                                 else
@@ -148,17 +150,6 @@ namespace Irixi_Aligner_Common.MotionControllerEntities
 
                     return _init_ret;
 
-                    //// wait until all luminos axes are returned by SDK
-                    //if (_wait_axis_register.Wait(new TimeSpan(0, 0, 30)))
-                    //{
-                    //    this.IsInitialized = true;
-                    //    return true;
-                    //}
-                    //else
-                    //{
-                    //    this.LastError = "Initialization timeout, the SDK did not return expected amount of axes";
-                    //    return false;
-                    //}
                 }
                 catch (Exception ex)
                 {

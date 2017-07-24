@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Irixi_Aligner_Common.Interfaces;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -13,42 +14,12 @@ namespace Irixi_Aligner_Common.Configuration
         /// <summary>
         /// Get the guid that makes each controller exclusively
         /// </summary>
-        public Guid Class { get; set; }
+        public Guid DeviceClass { get; set; }
 
         /// <summary>
-        /// Get the name of the controller.
-        /// this property is used to determine what type of class to be implemented as the instance of the controller
+        /// Get the model of controller defined by ControllerType
         /// </summary>
-        public string Name
-        {
-            get
-            {
-                return _controller_name;
-            }
-            set
-            {
-                _controller_name = value;
-                
-                // determine the model of the controller according the controller name
-                switch(_controller_name)
-                {
-                    case "Luminos P6A":
-                        this.Model = MotionControllerModel.LUMINOS_P6A;
-                        break;
-
-                    case "Thorlabs TDC001":
-                        this.Model = MotionControllerModel.THORLABS_TDC001;
-                        break;
-
-                    case "Irixi EE0017":
-                        this.Model = MotionControllerModel.IRIXI_EE0017;
-                        break;
-
-                }
-            }
-        }
-
-        public MotionControllerModel Model { get; set; }
+        public ControllerType Model { get; set; }
 
         /// <summary>
         /// Get the communication port of the controller.

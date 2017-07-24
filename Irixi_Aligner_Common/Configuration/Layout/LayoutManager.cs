@@ -6,11 +6,8 @@ using System.Threading.Tasks;
 
 namespace Irixi_Aligner_Common.Configuration
 {
-    public enum MotionControllerModel
+    public class LayoutManager
     {
-        LUMINOS_P6A,
-        THORLABS_TDC001,
-        IRIXI_EE0017
+        public Layout[] WorkspaceLayout { get; set; }
     }
-
 }

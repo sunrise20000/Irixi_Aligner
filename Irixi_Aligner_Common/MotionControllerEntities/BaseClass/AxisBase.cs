@@ -139,7 +139,7 @@ namespace Irixi_Aligner_Common.MotionControllerEntities
 
         public object Tag { get; set; }
 
-        public int MaxStroke { private set; get; }
+        public double MaxStroke { private set; get; }
 
         public int CWL
         {
@@ -204,11 +204,11 @@ namespace Irixi_Aligner_Common.MotionControllerEntities
             {
                 this.AxisName = Config.Name;
                 this.IsEnabled = Config.Enabled;
-                this.InitPosition = Config.PosHomed;
-                this.CWL = Config.PosCWL;
-                this.CCWL = Config.PosCCWL;
-                this.MaxStroke = Config.PosMax;
-                this.UnitHelper = new RealworldDistanceUnitHelper(Config.Dps, Config.Unit, Config.Digits);
+                this.InitPosition = Config.OffsetAfterHome;
+                this.CWL = Config.CWL;
+                this.CCWL = Config.CCWL;
+                this.MaxStroke = Config.MaxStroke;
+                this.UnitHelper = new RealworldDistanceUnitHelper(Config.CWL, Config.MaxStroke, Config.Unit, Config.Digits);
                 this.ParentController = Controller;
             }
         }

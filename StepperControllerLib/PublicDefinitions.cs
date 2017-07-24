@@ -42,7 +42,12 @@
         /// <summary>
         /// Get the information of firmware
         /// </summary>
-        FWINFO = 21
+        FWINFO = 21,
+
+        /// <summary>
+        /// Read the value of pca9534
+        /// </summary>
+        READ9534 = 22,
     }
 
     public enum MoveMode

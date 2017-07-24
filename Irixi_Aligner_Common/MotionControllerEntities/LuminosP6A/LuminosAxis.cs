@@ -1,5 +1,7 @@
-﻿using Irixi_Aligner_Common.Configuration;
+﻿using Irixi_Aligner_Common.Classes.BaseClass;
+using Irixi_Aligner_Common.Configuration;
 using Irixi_Aligner_Common.Interfaces;
+using Irixi_Aligner_Common.Message;
 using System.Threading.Tasks;
 using Zaber;
 
@@ -12,27 +14,15 @@ namespace Irixi_Aligner_Common.MotionControllerEntities
         #endregion
 
         #region Properties
-        /// <summary>
-        /// Get the instance of axis from luminos sdk
-        /// </summary>
-        ////public PositionerLib.Axis LuminosAxisInstance { private set; get; }
 
+        /// <summary>
+        /// Get the instance of zaber conversation object
+        /// </summary>
         public Conversation ZaberConversation { private set; get; }
 
         #endregion
 
         #region Methods
-
-        /// <summary>
-        /// Set instance of luminos axis of stage
-        /// </summary>
-        /// <param name="AxisInstance"></param>
-        ////public void RegisterLuminosSDKAxis(PositionerLib.Axis AxisInstance)
-        ////{
-        ////    this.LuminosAxisInstance = AxisInstance;
-        ////    this.LuminosAxisInstance.OnChanged += LuminosAxisInstance_OnChanged;
-        ////    this.LuminosAxisInstance.OnPositionUpdate += LuminosAxisInstance_OnPositionUpdate;
-        ////}
 
         /// <summary>
         /// Set the zaber conversation
@@ -41,43 +31,41 @@ namespace Irixi_Aligner_Common.MotionControllerEntities
         public void RegisterZaberConversation(Conversation cs)
         {
             this.ZaberConversation = cs;
+            GetCurrentState();
         }
-        #endregion
 
-        #region Events raised by luminos sdk
         /// <summary>
-        /// the position changing has reported by sdk, update the corresponding property
+        /// read the current state of the stage
         /// </summary>
-        /// <param name="Position"></param>
-        private void LuminosAxisInstance_OnPositionUpdate(int Position)
+        private void GetCurrentState()
         {
-            this.AbsPosition = Position;
-            this.IsBusy = false;
+            // read home state
+            DeviceModes mode =  (DeviceModes)ZaberConversation.Request(Command.ReturnSetting, (int)Command.SetDeviceMode).Data;
+            this.IsHomed = ((mode & DeviceModes.HomeStatus) == DeviceModes.HomeStatus);
+
+            // read current position
+            if(int.TryParse(ZaberConversation.Request(Command.ReturnSetting, (int)Command.SetCurrentPosition).Data.ToString(), out int pos))
+            {
+                this.AbsPosition = pos;
+            }
+            else
+            {
+                this.AbsPosition = -1;
+            }
+
+            // read max position
+            if (int.TryParse(ZaberConversation.Request(Command.ReturnSetting, (int)Command.SetMaximumPosition).Data.ToString(), out int max))
+            {
+                this.CWL = max;
+                this.UnitHelper.Dps = this.MaxStroke / max;
+
+                LogHelper.WriteLine("{0} CWL is set to {1}", this, max, LogHelper.LogType.NORMAL);
+            }
+            else
+            {
+                // keep the value set in the config file
+            }
         }
-
-        /// <summary>
-        /// The state of the axis has changed, update the corresponding properties
-        /// </summary>
-        /// <param name="PropID"></param>
-        ////private void LuminosAxisInstance_OnChanged(PositionerLib.AxisPropertyID PropID)
-        ////{
-        ////    switch (PropID)
-        ////    {
-        ////        // Set the manual control of the actuator
-        ////        case PositionerLib.AxisPropertyID.AxisManualEnabledID:
-        ////            this.IsManualEnabled = this.LuminosAxisInstance.ManualEnabled;
-        ////            break;
-
-        ////        case PositionerLib.AxisPropertyID.AxisRequiresHomingID:
-        ////            this.IsHomed = !this.LuminosAxisInstance.RequiresHoming;
-        ////            break;
-
-        ////        case PositionerLib.AxisPropertyID.AxisLastPositionID:
-        ////            this.AbsPosition = this.LuminosAxisInstance.LastPosition;
-        ////            break;
-
-        ////    }
-        ////}
 
         #endregion
     }

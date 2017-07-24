@@ -88,16 +88,18 @@
         <Grid Grid.Row="2">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="70"/>
-                <ColumnDefinition Width="100"/>
-                <ColumnDefinition Width="100"/>
-                <ColumnDefinition Width="100"/>
+                <ColumnDefinition Width="70"/>
+                <ColumnDefinition Width="70"/>
+                <ColumnDefinition Width="70"/>
+                <ColumnDefinition Width="70"/>
                 <ColumnDefinition/>
             </Grid.ColumnDefinitions>
             <Button x:Name="btn_Home" Content="Home" Margin="3" Tag="-1" Command="{Binding Main.CommandHome, Mode=OneWay}" FontSize="16" CommandParameter="{Binding Tag, Converter={StaticResource CvtObjectToInt}, RelativeSource={RelativeSource Self}}"/>
             <Button x:Name="btn_Stop" Content="Stop" Grid.Column="1" Margin="3" Background="Red" Foreground="White" FontWeight="Bold" Tag="0" Command="{Binding Main.CommandStop, Mode=OneWay}" FontSize="16"/>
             <Button x:Name="btnGetFwInfo" Content="FW Info" Grid.Column="2" Margin="3" Command="{Binding Main.CommandReadFWInfo, Mode=OneWay}"/>
-            <Button Content="Copy SN" Margin="3" Grid.Column="3" Command="{Binding Main.CommandCopySN, Mode=OneWay}"/>
-            <Grid Grid.Column="4">
+            <Button x:Name="btnRead9534" Content="PCA9534" Grid.Column="3" Margin="3" Command="{Binding Main.CommandReadPCA9534, Mode=OneWay}"/>
+            <Button Content="COPY SN" Margin="3" Grid.Column="4" Command="{Binding Main.CommandCopySN, Mode=OneWay}"/>
+            <Grid Grid.Column="5">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="20"/>
                     <RowDefinition Height="1*"/>

@@ -124,17 +124,28 @@ namespace Irixi_Aligner_Common.MotionControllerEntities
                 _controller.OpenDevice();
                 if (_controller.IsConnected)
                 {
-                    _controller.ReadFWInfo();
-                    LogHelper.WriteLine("{0}, firmware version {1}", this, _controller.FirmwareInfo);
-
-                    for (int i = 0; i < this.AxisCollection.Count; i++)
+                    if (_controller.ReadFWInfo())
                     {
-                        _controller.AxisCollection[i].SoftCCWLS = this.AxisCollection[i.ToString()].CCWL;
-                        _controller.AxisCollection[i].SoftCWLS = this.AxisCollection[i.ToString()].CWL;
-                        _controller.AxisCollection[i].MaxDistance = this.AxisCollection[i.ToString()].MaxStroke;
+                        LogHelper.WriteLine("{0}, firmware version {1}", this, _controller.FirmwareInfo);
+
+                        // pass the configurations to the instance of irixi motion controller class
+                        for (int i = 0; i < this.AxisCollection.Count; i++)
+                        {
+                            _controller.AxisCollection[i].SoftCCWLS = this.AxisCollection[i.ToString()].CCWL;
+                            _controller.AxisCollection[i].SoftCWLS = this.AxisCollection[i.ToString()].CWL;
+                            _controller.AxisCollection[i].MaxDistance = this.AxisCollection[i.ToString()].CWL;
+                        }
+
+                        return true;
+                    }
+                    else
+                    {
+
+                        LogHelper.WriteLine("{0}, unable to read the firmware info, {1}", this, _controller.LastError);
+                        return false;
                     }
 
-                    return true;
+                    
                 }
                 else
                 {
@@ -325,6 +336,7 @@ namespace Irixi_Aligner_Common.MotionControllerEntities
 
         public override void Dispose()
         {
+            _controller.CloseDevice();
             _controller = null;
         }
         #endregion

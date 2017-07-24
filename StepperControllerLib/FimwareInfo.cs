@@ -32,7 +32,30 @@ namespace IrixiStepperControllerHelper
             get;
         }
 
-        public void SetCompiledDate(int year, int month, int day)
+        public bool Parse(byte[] data)
+        {
+            this.VerMajor = BitConverter.ToInt32(data, 1);
+            this.VerMinor = BitConverter.ToInt32(data, 5);
+            this.VerRev = BitConverter.ToInt32(data, 9);
+
+            int year = BitConverter.ToInt32(data, 13);
+            int month = BitConverter.ToInt32(data, 17);
+            int day = BitConverter.ToInt32(data, 21);
+
+            this.SetCompiledDate(year, month, day);
+
+            return Validate();
+
+        }
+
+        public override string ToString()
+        {
+            return string.Format("VER {0}.{1}.{2}, {3:yyyy/MM/dd}", new object[] { VerMajor, VerMinor, VerRev, CompiledDate });
+        }
+
+        #region private methods
+
+        private void SetCompiledDate(int year, int month, int day)
         {
             try
             {
@@ -47,7 +70,7 @@ namespace IrixiStepperControllerHelper
         /// <summary>
         /// Clear all values
         /// </summary>
-        public void SetToDefault()
+        private void SetToDefault()
         {
             VerMajor = 0;
             VerMinor = 0;
@@ -61,7 +84,7 @@ namespace IrixiStepperControllerHelper
         /// compiled date >= 2017/7/1
         /// </summary>
         /// <returns></returns>
-        public bool Validate()
+        private bool Validate()
         {
             if (VerMajor >= 1 && CompiledDate >= new DateTime(2017, 7, 1))
                 return true;
@@ -69,10 +92,7 @@ namespace IrixiStepperControllerHelper
                 return false;
         }
 
-        public override string ToString()
-        {
-            return string.Format("{0}.{1}.{2}, {3:yyyy/MM/dd}", new object[] { VerMajor, VerMinor, VerRev, CompiledDate });
-        }
+        #endregion
 
     }
 }

@@ -61,7 +61,7 @@ namespace Irixi_Aligner_Common.Interfaces
         /// <summary>
         /// Get the maximum stroke the axis supports
         /// </summary>
-        int MaxStroke { get; }
+        double MaxStroke { get; }
 
         /// <summary>
         /// Get or set the CW limitaion

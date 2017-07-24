@@ -22,30 +22,24 @@ namespace Irixi_Aligner_Common.Configuration
         /// <summary>
         /// Get the initial position after homing
         /// </summary>
-        public int PosHomed { get; set; }
+        public int OffsetAfterHome { get; set; }
 
         /// <summary>
         /// Get the maximum distance that the axis supports
         /// </summary>
-        public int PosMax { get; set; }
+        public double MaxStroke { get; set; }
 
         /// <summary>
         /// Get the CW limitaion
         /// normally this value indicates how far the mounting block could move from the mechanical zero point
         /// </summary>
-        public int PosCWL { get; set; }
+        public int CWL { get; set; }
 
         /// <summary>
         ///  Get the CCW limitaion
         ///  normally this value indicates how close the mounting block could be to the mechanical zero point 
         /// </summary>
-        public int PosCCWL { get; set; }
-
-        /// <summary>
-        /// Get the distance per step.
-        /// the unit should be nm
-        /// </summary>
-        public double Dps { get; set; }
+        public int CCWL { get; set; }
 
         /// <summary>
         /// Get the decimal digits of the real world distance displayed on the window

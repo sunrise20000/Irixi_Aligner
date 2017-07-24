@@ -1,8 +1,8 @@
 ﻿using Irixi_Aligner_Common.Message;
 using System;
 using System.Globalization;
-using System.Windows;
 using System.Windows.Data;
+using System.Windows;
 using System.Windows.Media.Imaging;
 
 namespace Irixi_Aligner_Common.Classes.Converters
@@ -11,25 +11,25 @@ namespace Irixi_Aligner_Common.Classes.Converters
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            BitmapImage image = null;
+            BitmapFrame image = null;
 
             MessageType state = (MessageType)value;
             switch (state)
             {
                 case MessageType.Normal:
-                    image = image = new BitmapImage();
+                    image = null;
                     break;
 
                 case MessageType.Good:
-                    image = new BitmapImage(new Uri("pack://application:,,,/images/icons/right.png"));
+                    image = (BitmapFrame)Application.Current.TryFindResource("IconMessageConfirm");
                     break;
 
                 case MessageType.Warning:
-                    image = new BitmapImage(new Uri("pack://application:,,,/images/icons/warning_32x32.png"));
+                    image = (BitmapFrame)Application.Current.TryFindResource("IconMessageWarning");
                     break;
 
                 case MessageType.Error:
-                    image = new BitmapImage(new Uri("pack://application:,,,/images/icons/wrong.png"));
+                    image = (BitmapFrame)Application.Current.TryFindResource("IconMessageError");
                     break;
             }
             return image;

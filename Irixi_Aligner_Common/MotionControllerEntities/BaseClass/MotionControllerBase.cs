@@ -11,6 +11,7 @@ namespace Irixi_Aligner_Common.MotionControllerEntities
     public class MotionControllerBase<T> : IMotionController, IDisposable
         where T : IAxis, new()
     {
+
         #region Variables
         public event EventHandler<string> OnErrorOccurred;
         public event EventHandler<object> OnHomeCompleted;
@@ -30,8 +31,8 @@ namespace Irixi_Aligner_Common.MotionControllerEntities
         public MotionControllerBase(ConfigPhysicalMotionController Config)
         {
             _config = Config;
-            this.DevClass = _config.Class;
-            this.Name = _config.Name;
+            this.DevClass = _config.DeviceClass;
+            this.Name = _config.Model.ToString();
             this.Port = _config.Port;
             this.IsEnabled = Config.Enabled;
             this.IsInitialized = false;
@@ -56,7 +57,7 @@ namespace Irixi_Aligner_Common.MotionControllerEntities
         #region Properties
         public Guid DevClass { private set; get; }
 
-        public MotionControllerModel Model { private set; get; }
+        public ControllerType Model { private set; get; }
 
         public string Port { private set; get; }
 

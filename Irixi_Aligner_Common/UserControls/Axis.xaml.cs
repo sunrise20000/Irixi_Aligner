@@ -1,6 +1,7 @@
 ﻿using Irixi_Aligner_Common.Classes;
 using Irixi_Aligner_Common.Classes.BaseClass;
 using Irixi_Aligner_Common.Configuration;
+using Irixi_Aligner_Common.MotionControllerEntities.BaseClass;
 using System;
 using System.Globalization;
 using System.Windows;
@@ -23,30 +24,15 @@ namespace Irixi_Aligner_Common.UserControls
         #region DP Logical Axis
 
 
-        public ConfigLogicalAxis LogicalAxis
+        public LogicalAxis LogicalAxis
         {
-            get { return (Configuration.ConfigLogicalAxis)GetValue(LogicalAxisProperty); }
+            get { return (LogicalAxis)GetValue(LogicalAxisProperty); }
             set { SetValue(LogicalAxisProperty, value); }
         }
 
         // Using a DependencyProperty as the backing store for LogicalAxis.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty LogicalAxisProperty =
-            DependencyProperty.Register("LogicalAxis", typeof(ConfigLogicalAxis), typeof(Axis), new PropertyMetadata());
-
-        #endregion
-
-        #region DP System Service Class
-
-
-        public Irixi_Aligner_Common.Classes.SystemService SystemService
-        {
-            get { return (Irixi_Aligner_Common.Classes.SystemService)GetValue(SystemServiceProperty); }
-            set { SetValue(SystemServiceProperty, value); }
-        }
-
-        // Using a DependencyProperty as the backing store for SystemService.  This enables animation, styling, binding, etc...
-        public static readonly DependencyProperty SystemServiceProperty =
-            DependencyProperty.Register("SystemService", typeof(SystemService), typeof(Axis), new PropertyMetadata());
+            DependencyProperty.Register("LogicalAxis", typeof(LogicalAxis), typeof(Axis), new PropertyMetadata());
 
         #endregion
 
@@ -78,7 +64,7 @@ namespace Irixi_Aligner_Common.UserControls
                 }
 
                 // call the move function of the systemservice
-                this.SystemService.MoveLogicalAxis(
+                this.LogicalAxis.Service.MoveLogicalAxis(
                     this.LogicalAxis,
                     new Classes.BaseClass.MoveArgs()
                     {
@@ -91,7 +77,7 @@ namespace Irixi_Aligner_Common.UserControls
 
         private void tbtnAbsMode_Click(object sender, RoutedEventArgs e)
         {
-            this.SystemService.ToggleAxisMoveMode(this.LogicalAxis.PhysicalAxisInst);
+            this.LogicalAxis.Service.ToggleAxisMoveMode(this.LogicalAxis.PhysicalAxisInst);
         }
 
         #endregion
@@ -162,11 +148,11 @@ namespace Irixi_Aligner_Common.UserControls
             // if IsChecked == true, the axis is locked
             if (ret)
             {
-                return "LOCK";
+                return "Y";
             }
             else
             {
-                return "MAN";
+                return "N";
             }
         }
 

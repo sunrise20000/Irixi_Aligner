@@ -1,21 +1,126 @@
-﻿using DevExpress.Xpf.Ribbon;
+﻿using DevExpress.Xpf.Docking;
+using DevExpress.Xpf.Ribbon;
+using GalaSoft.MvvmLight.Ioc;
 using GalaSoft.MvvmLight.Messaging;
-using Irixi_Aligner_Common.ViewModel;
+using Irixi_Aligner_Common.Classes;
+using Irixi_Aligner_Common.Configuration;
+using Irixi_Aligner_Common.UserControls;
 using System;
+using System.Linq;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using System.Windows;
+using DevExpress.Xpf.Bars;
+using System.Windows.Data;
+using Irixi_Aligner_Common.Classes.Converters;
+using System.Windows.Media.Imaging;
 
 namespace Irixi_Aligner_Common
 {
     public partial class MainWindow : DXRibbonWindow
     {
+        Splash splashscreen;
+
         public MainWindow()
         {
             try
             {
+                // show splash screen
+                splashscreen = new Splash();
+                splashscreen.Show();
+
                 InitializeComponent();
 
-                Messenger.Default.Register<NotificationMessage<string>>(this, PopNotiicationMessage);
+                Messenger.Default.Register<NotificationMessage<string>>(this, PopNotificationMessage);
 
+                // create DocumentPanel by the logical motion components defined in the config file
+                var service = SimpleIoc.Default.GetInstance<SystemService>();
+                var config = SimpleIoc.Default.GetInstance<ConfigManager>();
+
+                foreach (var motionpart in service.LogicalMotionComponentCollection)
+                {
+                    // create a motion component panel control
+                    // which is the content of the document panel
+                    MotionComponentPanel mp = new MotionComponentPanel()
+                    {
+                        // set the datacontext to the LogicalMotionComponent
+                        DataContext = motionpart
+                    };
+
+                    // create a document panel shown on the document group
+                    DocumentPanel dp = new DocumentPanel()
+                    {
+                        Name = string.Format("dp{0}", motionpart.Caption.Replace(" ", "")),
+                        Caption = motionpart.Caption,
+                        AllowMaximize = false,
+                        AllowSizing = false,
+                        //AllowClose = false,
+                        ClosingBehavior = ClosingBehavior.HideToClosedPanelsCollection,
+
+                        // set the actual content into DocumentPanel
+                        // which contains title and axis array
+                        Content = mp
+                    };
+
+                    // add the documentpanel to the documentgroup
+                    MotionComponentPanelHost.Items.Add(dp);
+
+
+                    // add view buttons to Ribbon toolbar
+                    var image = (BitmapFrame)TryFindResource(motionpart.Icon);
+                    BarCheckItem btn = new BarCheckItem()
+                    {
+                        Content = motionpart.Caption,
+                        LargeGlyph = image
+
+                    };
+
+                    // --- the following codes are moved to ItemIsVisibleChanged, the event of DockLayoutManager --//
+                    //// bring the panel to front
+                    //btn.CheckedChanged += (s, e) =>
+                    //{
+                    //    if(dp.Closed == false)
+                    //        dockLayoutManager.MDIController.Activate(dp);
+                    //};
+
+                    // bind the IsCheck property to the document panel's Closed property
+                    Binding b = new Binding()
+                    {
+                        Source = dp,
+                        Path = new PropertyPath("Visibility"),
+                        Mode = BindingMode.TwoWay,
+                        Converter = new BooleanToVisibility()
+                    };
+                    btn.SetBinding(BarCheckItem.IsCheckedProperty, b);
+
+                    rpgView_MotionComponent.Items.Add(btn);
+
+                }
+
+                // restore workspace layout
+                for (int i = 0; i < MotionComponentPanelHost.Items.Count; i++)
+                {
+                    var panel = MotionComponentPanelHost.Items[i];
+
+                    if (panel is DocumentPanel)
+                    {
+                        var layout =
+                            (from items
+                            in config.WorkspaceLayoutHelper.WorkspaceLayout
+                             where items.PanelName == panel.Name
+                             select items).First();
+
+
+                        panel.Visibility = layout.IsClosed ? Visibility.Hidden : Visibility.Visible;
+                        ((DocumentPanel)panel).MDILocation = layout.MDILocation;
+
+                        //// if IsClosed property is set to true, the panel will be remove from
+                        //// the Items, so the "i" should be rolled back; otherwise, some panel
+                        //// will be missed.
+                        //if (layout.IsClosed)
+                        //    i--;
+                    }
+                }
             }
             catch(Exception ex)
             {
@@ -23,7 +128,7 @@ namespace Irixi_Aligner_Common
             }
         }
 
-        private void PopNotiicationMessage(NotificationMessage<string> message)
+        private void PopNotificationMessage(NotificationMessage<string> message)
         {
             switch(message.Notification.ToLower())
             {
@@ -33,13 +138,17 @@ namespace Irixi_Aligner_Common
             }
         }
 
-        private void DXRibbonWindow_Loaded(object sender, RoutedEventArgs e)
+        private async void DXRibbonWindow_Loaded(object sender, RoutedEventArgs e)
         {
-            var locator = Application.Current.Resources["Locator"] as ViewModelLocator;
+            var service = SimpleIoc.Default.GetInstance<SystemService>();
 
             try
             {
-                locator.Service.Init();
+                await Task.Delay(100);
+
+                service.Init();
+
+                splashscreen.Close();
             }
             catch (Exception ex)
             {
@@ -49,12 +158,68 @@ namespace Irixi_Aligner_Common
 
         private void DXRibbonWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
-            var locator = Application.Current.Resources["Locator"] as ViewModelLocator;
-            var config = locator.Configuration;
-            config.WriteSnapshotGUI();
+            #region Configuration
+            var config = SimpleIoc.Default.GetInstance<ConfigManager>();
 
-            locator.Service.Dispose();
+            // create layout object for each panel on the screen
+            List<Layout> layout_arr = new List<Layout>();
+
+            // save the workspace layout
+            foreach (DocumentPanel panel in MotionComponentPanelHost.Items)
+            {
+                // get the layout info
+                Layout layout = new Layout()
+                {
+                    PanelName = panel.Name,
+                    MDILocation = panel.MDILocation,
+                    IsClosed = (panel.Visibility == Visibility.Hidden ? true : false)
+                };
+
+                layout_arr.Add(layout);
+            }
+            
+            // save the layout to json file
+            config.SaveLayout(new LayoutManager() { WorkspaceLayout = layout_arr.ToArray() });
+
+            #endregion
+            
+            #region System Service            
+            // close all devices in the system service object
+            var service = SimpleIoc.Default.GetInstance<SystemService>();
+            service.Dispose();
+            #endregion
+
+        }
+
+        /// <summary>
+        /// if a document panel is requsted to be closed, *do not* actually close it, just hide it instead,
+        /// otherwise, the panel will be moved to the HidenPanelCollection, and can not be enumerated in the documentgroup items.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void dockLayoutManager_DockItemClosing(object sender, DevExpress.Xpf.Docking.Base.ItemCancelEventArgs e)
+        {
+            if (e.Item is DocumentPanel)
+            {
+                e.Cancel = true;
+                ((DocumentPanel)e.Item).Visibility = Visibility.Hidden;
+            }
+        }
+
+        /// <summary>
+        /// bring the MDI panel to the front
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void dockLayoutManager_ItemIsVisibleChanged(object sender, DevExpress.Xpf.Docking.Base.ItemIsVisibleChangedEventArgs e)
+        {
+            if(e.Item is DocumentPanel)
+            {
+                if(e.Item.Visibility == Visibility.Visible)
+                    dockLayoutManager.MDIController.Activate(e.Item);
+            }
         }
     }
 
 }
+
