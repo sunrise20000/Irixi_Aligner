@@ -129,6 +129,10 @@ namespace Irixi_Aligner_Common.Classes
                     // new logical axis object will be added to the Logical Motion Component
                     LogicalAxis axis = new LogicalAxis(this, cfg_axis, cfg_motion_comp.Caption, axis_id);
 
+                    axis.OnHomeRequsted += LogicalAxis_OnHomeRequsted;
+                    axis.OnMoveRequsted += LogicalAxis_OnMoveRequsted;
+                    axis.OnStopRequsted += LigicalAxis_OnStopRequsted;
+
                     // bind the physical axis instance to logical axis object
                     BindPhysicalAxis(axis);
 
@@ -154,8 +158,10 @@ namespace Irixi_Aligner_Common.Classes
                 configmgr.MotionControllerConfig.Cylinder.LensVacuumOutput,
                 configmgr.MotionControllerConfig.Cylinder.PLCVacuumOutput,
                 configmgr.MotionControllerConfig.Cylinder.PODVacuumOutput
-                );
-                CylinderController.IsEnabled = configmgr.MotionControllerConfig.Cylinder.Enabled;
+                )
+                {
+                    IsEnabled = configmgr.MotionControllerConfig.Cylinder.Enabled
+                };
             }
             catch (Exception e)
             {
@@ -165,13 +171,30 @@ namespace Irixi_Aligner_Common.Classes
             Debug.WriteLine("{0} SystemService constructed!", DateTime.Now);
 
         }
-
+        
         #endregion
 
         #region Events
+        private void LogicalAxis_OnHomeRequsted(object sender, EventArgs args)
+        {
+            var s = sender as LogicalAxis;
+            Home(s.PhysicalAxisInst);
+        }
+
+        private void LogicalAxis_OnMoveRequsted(object sender, MoveArgs args)
+        {
+            var s = sender as LogicalAxis;
+            MoveLogicalAxis(s, args);
+        }
+
+        private void LigicalAxis_OnStopRequsted(object sender, EventArgs args)
+        {
+            var s = sender as LogicalAxis;
+            s.PhysicalAxisInst.Stop();
+        }
 
         #endregion
-        
+
         #region Methods
         /// <summary>
         /// Bind the physical axis to the logical aligner

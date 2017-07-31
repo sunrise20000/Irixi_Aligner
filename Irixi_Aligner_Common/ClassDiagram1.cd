@@ -1,0 +1,421 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="Irixi_Aligner_Common.App" Collapsed="true">
+    <Position X="8" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>IAAAAAAAAAAAAAAAAAAAAAAAAAIAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>App.xaml.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Irixi_Aligner_Common.CLSIDCheck" Collapsed="true">
+    <Position X="15" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAARAEIAAAAAAAAAABAAABAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Classes\CLSIDCheck.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Irixi_Aligner_Common.FunctionLoader" Collapsed="true">
+    <Position X="13.25" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAAQAAAAAA=</HashCode>
+      <FileName>Classes\CLSIDCheck.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Irixi_Aligner_Common.ListBoxBehavior" Collapsed="true">
+    <Position X="9.75" Y="3.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAACAAAAAIAIAAAACAAAAAIAAQgAQA=</HashCode>
+      <FileName>Classes\ListBosBehavior.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Irixi_Aligner_Common.MainWindow" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="16.75" Y="3.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAgAAAAAAAAAAAACAAAAAAAEAAAAAAABIBAAAAAAA=</HashCode>
+      <FileName>MainWindow.xaml.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="Irixi_Aligner_Common.Splash" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="11.5" Y="5.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Splash.xaml.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="Irixi_Aligner_Common.StaticVariables" Collapsed="true">
+    <Position X="13.25" Y="5.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAIAAAAA=</HashCode>
+      <FileName>StaticVariables.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Irixi_Aligner_Common.Classes.BaseClass.RealworldDistanceUnitHelper" Collapsed="true">
+    <Position X="18.5" Y="4.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAKAAAAAEgAAAAAAgAAAAAAAAEAAA=</HashCode>
+      <FileName>Classes\BaseClass\DistanceUnitHelper.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Irixi_Aligner_Common.Classes.BaseClass.MoveArgs" Collapsed="true">
+    <Position X="15" Y="4.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAIAAAAAEAAAAAAABAAAAAABAAAAAAAAAAAA=</HashCode>
+      <FileName>Classes\BaseClass\MoveArgs.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Irixi_Aligner_Common.Classes.BaseClass.ObservableCollectionEx&lt;T&gt;" Collapsed="true">
+    <Position X="16.75" Y="4.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAABAAAAAAAIAEACA=</HashCode>
+      <FileName>Classes\BaseClass\ObservableCollectionEx.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Irixi_Aligner_Common.Classes.Converters.BooleanToVisibility" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="13.25" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAIAAAAAAAAgAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Classes\Converters\BooleanToVisibility.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="Irixi_Aligner_Common.Classes.Converters.JogPositionModeToBoolean" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="15" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAgAAAAAAAAAAAAAAAAAAAAAAIAAAAAAAAAAA=</HashCode>
+      <FileName>Classes\Converters\JogPositionModeToBoolean.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="Irixi_Aligner_Common.Classes.Converters.JogPositionModeToText" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="16.75" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAIAAAAAAAAgAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Classes\Converters\JogPositionModeToText.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="Irixi_Aligner_Common.Classes.Converters.MessageTypeToColor" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="9.75" Y="4.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAIAAAAAAAAgAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Classes\Converters\MessageTypeToColor.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="Irixi_Aligner_Common.Classes.Converters.MessageTypeToImage" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="11.5" Y="4.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAIAAAAAAAAgAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Classes\Converters\MessageTypeToImage.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="Irixi_Aligner_Common.Classes.Converters.SystemStatusToStartButtonEnable" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="16.75" Y="5.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAIAAAAAAAAgAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Classes\Converters\SystemStatusToStartButtonEnable.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="Irixi_Aligner_Common.Classes.Converters.SystemStatusToStopButtonEnable" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="18.5" Y="5.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAIAAAAAAAAgAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Classes\Converters\SystemStatusToStopButtonEnable.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="Irixi_Aligner_Common.Message.LogHelper" Collapsed="true">
+    <Position X="11.5" Y="3.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AQAAAAAAAAAAIAAIAAAAAAAAAIAAAAQAAAAAAAAAAAA=</HashCode>
+      <FileName>Classes\MessageSystem\LogHelper.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Irixi_Aligner_Common.Message.MessageHelper" Collapsed="true">
+    <Position X="18.5" Y="3.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAABAAAAAAAAAAAAA=</HashCode>
+      <FileName>Classes\MessageSystem\MessageHelper.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Irixi_Aligner_Common.Message.MessageItem" Collapsed="true">
+    <Position X="8" Y="4.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAEAAAAAAAAAAAAAIAAAQAAIAAAAQA=</HashCode>
+      <FileName>Classes\MessageSystem\MessageHelper.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Irixi_Aligner_Common.Classes.SystemService" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="15" Y="5.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>DCAAEARAAiEAEkgIMAHGCggABEQZ0IAAo2ADBAUAgQI=</HashCode>
+      <FileName>Classes\SystemService.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="Irixi_Aligner_Common.Configuration.ConfigManager" Collapsed="true">
+    <Position X="8" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AACAAAAAAAAAAAAAAAAAAAAAAAACBAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Configuration\ConfigManager.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Irixi_Aligner_Common.Configuration.ConfigurationCylinder" Collapsed="true">
+    <Position X="13.25" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAABAoAAQAAAhEAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Configuration\ConfigurationCylinder.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Irixi_Aligner_Common.Configuration.Layout" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="18.5" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAIRAAAAAAAIAAAAEAAgAAAAEAgAAABAAAAAAA=</HashCode>
+      <FileName>Configuration\Layout\Layout.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="Irixi_Aligner_Common.Configuration.LayoutManager" Collapsed="true">
+    <Position X="8" Y="3.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Configuration\Layout\LayoutManager.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Irixi_Aligner_Common.Configuration.ConfigLogicalAxis" Collapsed="true">
+    <Position X="16.75" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAEAAAAAAAAAABAAAAAAAAAAAQAAAAAAAAAAAAEAA=</HashCode>
+      <FileName>Configuration\MotionController\ConfigLogicalAxis.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Irixi_Aligner_Common.Configuration.ConfigLogicalMotionComponent" Collapsed="true">
+    <Position X="18.5" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAQAAAAAAAAACAAAACEAAAA=</HashCode>
+      <FileName>Configuration\MotionController\ConfigLogicalMotionComponent.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Irixi_Aligner_Common.Configuration.ConfigPhysicalAxis" Collapsed="true">
+    <Position X="9.75" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAIAJICAAAAUAAAABAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Configuration\MotionController\ConfigPhysicalAxis.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Irixi_Aligner_Common.Configuration.ConfigPhysicalMotionController" Collapsed="true">
+    <Position X="11.5" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAgAAEAAAAAIAAAAAAAAAACAAQAAAAAAgAAAAAAAA=</HashCode>
+      <FileName>Configuration\MotionController\ConfigPhysicalMotionController.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Irixi_Aligner_Common.Configuration.ConfigurationMotionController" Collapsed="true">
+    <Position X="15" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAQAAAAAAAAAAAAAQAAAQAAAAgAAA=</HashCode>
+      <FileName>Configuration\MotionController\ConfigurationMotionController.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Irixi_Aligner_Common.Equipments.CylinderController" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="11.5" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>CBAAEAAgIyAKgAAEIAEAABAQgAKEAAAQAACLRgAAIEA=</HashCode>
+      <FileName>Equipments\CylinderController.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="Irixi_Aligner_Common.MotionControllerEntities.AxisBase" Collapsed="true">
+    <Position X="1.75" Y="3.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>gAMQCAAQoIAgAAENMhEIAQBUiASBAAACJBAFQgAAjAA=</HashCode>
+      <FileName>MotionControllerEntities\BaseClass\AxisBase.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="Irixi_Aligner_Common.MotionControllerEntities.MotionControllerBase&lt;T&gt;" Collapsed="true">
+    <Position X="1.75" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>BAGIiAAAIKAAAAAEABEAAEQAGAQAAAAEoAgCRAAAkAA=</HashCode>
+      <FileName>MotionControllerEntities\BaseClass\MotionControllerBase.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="Irixi_Aligner_Common.MotionControllerEntities.IrixiAxis" Collapsed="true">
+    <Position X="0.5" Y="4.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>MotionControllerEntities\Irixi\IrixiAxis.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Irixi_Aligner_Common.MotionControllerEntities.IrixiEE0017" Collapsed="true">
+    <Position X="0.5" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>gAIAAAAAAKAAQAAAAACAAAAAAAQAQAAAIAACAEAAEAA=</HashCode>
+      <FileName>MotionControllerEntities\Irixi\IrixiEE0017.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Irixi_Aligner_Common.MotionControllerEntities.LuminosAxis" Collapsed="true">
+    <Position X="2.75" Y="4.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAEAAAAAAAAIAAAAAAABAAAAAAAA=</HashCode>
+      <FileName>MotionControllerEntities\LuminosP6A\LuminosAxis.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Irixi_Aligner_Common.MotionControllerEntities.LuminosP6A" Collapsed="true">
+    <Position X="2.75" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAACAAAAKAAAAAAAAAQAAAAAAcAAAAAIAACAAQAAAA=</HashCode>
+      <FileName>MotionControllerEntities\LuminosP6A\LuminosP6A.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Irixi_Aligner_Common.MotionControllerEntities.BaseClass.LogicalAxis" Collapsed="true">
+    <Position X="13.25" Y="3.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAoAAgAAFACAAAABAAAQAQIAAIAAEAAAMAAA=</HashCode>
+      <FileName>MotionControllerEntities\BaseClass\LogicalAxis.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Irixi_Aligner_Common.MotionControllerEntities.BaseClass.LogicalMotionComponent" Collapsed="true">
+    <Position X="15" Y="3.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAgAAAAAAAAAAAAAAAAACAAAAAEAAAA=</HashCode>
+      <FileName>MotionControllerEntities\BaseClass\LogicalMotionComponent.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Irixi_Aligner_Common.Properties.Resources" Collapsed="true">
+    <Position X="8" Y="5.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAABEAAAAQAAAAAAAAAAAAAAAIA=</HashCode>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Irixi_Aligner_Common.Properties.Settings" Collapsed="true">
+    <Position X="9.75" Y="5.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAIAAAAAABAAAAAAAAAAAAAAA=</HashCode>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Irixi_Aligner_Common.UserControls.Axis" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="9.75" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAgAAAAAQAAAAAAAAIAAAAAAAAAEAAAAAAAAAAAAAA=</HashCode>
+      <FileName>UserControls\Axis.xaml.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="Irixi_Aligner_Common.UserControls.AxisUserControlViewModel" Collapsed="true">
+    <Position X="11.5" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAUAAAAAAAAAAAAAA=</HashCode>
+      <FileName>UserControls\Axis.xaml.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Irixi_Aligner_Common.UserControls.ConvertAbsModeToCaption" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="16.75" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAIAAAAAAAAgAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>UserControls\Axis.xaml.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="Irixi_Aligner_Common.UserControls.ConvertBoolToSolidColorBrush" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="18.5" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAIAAAAAAAAgAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>UserControls\Axis.xaml.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="Irixi_Aligner_Common.UserControls.ConvertManualEnabledToCaption" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="8" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAIAAAAAAAAgAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>UserControls\Axis.xaml.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="Irixi_Aligner_Common.UserControls.ConvertStepsToRealWorldDistance" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="9.75" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAIAAAAAAAAgAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>UserControls\Axis.xaml.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="Irixi_Aligner_Common.UserControls.MotionComponentPanel" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="13.25" Y="4.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>UserControls\MotionComponentPanel.xaml.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="Irixi_Aligner_Common.ViewModel.ViewModelLocator" Collapsed="true">
+    <Position X="8" Y="6.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAQAAAgAAAAEAAAAA=</HashCode>
+      <FileName>ViewModel\ViewModelLocator.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Interface Name="Irixi_Aligner_Common.Interfaces.IAxis" Collapsed="true">
+    <Position X="8" Y="7.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>gAEQCAAAoIAgAAAJABEAAQBECAQBAAACJAAAAAAAjAA=</HashCode>
+      <FileName>Interfaces\IAxis.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="Irixi_Aligner_Common.Interfaces.IBaseEquipment" Collapsed="true">
+    <Position X="5.5" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAIAAAAAAAAAEAAAAAAAAAAAAAAAACBAAAAAA=</HashCode>
+      <FileName>Interfaces\IBaseEquipment.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="Irixi_Aligner_Common.Interfaces.IMotionController" Collapsed="true">
+    <Position X="5.5" Y="2" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>BAEAiAAAAKAAAAAAAAAAAEQAGAQAAAAAoAgAQAAAkAA=</HashCode>
+      <FileName>Interfaces\IMotionController.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Enum Name="Irixi_Aligner_Common.MoveDirection" Collapsed="true">
+    <Position X="11.5" Y="8.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>gAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAIAAAAAAAAA=</HashCode>
+      <FileName>Classes\EnumDefination.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="Irixi_Aligner_Common.MoveMode" Collapsed="true">
+    <Position X="13.25" Y="8.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAIAAAAAAAAAAAAAAAAAAAAAAAAAAAAI=</HashCode>
+      <FileName>Classes\EnumDefination.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="Irixi_Aligner_Common.SystemState" Collapsed="true">
+    <Position X="15" Y="8.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAEAAAAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Classes\EnumDefination.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="Irixi_Aligner_Common.Message.MessageType" Collapsed="true">
+    <Position X="9.75" Y="8.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAQAAAAAAABAAAAAIAAAAAAAAAAAAAAE=</HashCode>
+      <FileName>Classes\MessageSystem\MessageHelper.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="Irixi_Aligner_Common.Interfaces.ControllerType" Collapsed="true">
+    <Position X="8" Y="8.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAgAAAAAAAAAAAAACAAIAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Interfaces\IMotionController.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>

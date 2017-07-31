@@ -49,27 +49,27 @@ namespace Irixi_Aligner_Common.Interfaces
         int InitPosition { get; }
 
         /// <summary>
-        /// Get the absolute position
+        /// Get the absolute position in steps
         /// </summary>
         int AbsPosition { set; get; }
 
         /// <summary>
-        /// Get the relative position
+        /// Get the relative position in steps
         /// </summary>
         int RelPosition { get; }
 
         /// <summary>
-        /// Get the maximum stroke the axis supports
+        /// Get the maximum stroke the axis supports in real world unit
         /// </summary>
         double MaxStroke { get; }
 
         /// <summary>
-        /// Get or set the CW limitaion
+        /// Get or set the CW limitaion in steps
         /// </summary>
         int CWL { set; get; }
 
         /// <summary>
-        /// Get or set the CCW limitaion
+        /// Get or set the CCW limitaion in steps
         /// </summary>
         int CCWL { set; get; }
 
@@ -118,35 +118,66 @@ namespace Irixi_Aligner_Common.Interfaces
         Task<bool> Home();
 
         /// <summary>
-        /// Start a task to move the axis
+        /// Start to move the axis by steps
         /// </summary>
         /// <param name="Mode">ABS/REL</param>
         /// <param name="Speed">1 ~ 100</param>
-        /// <param name="Distance">The steps to move, in steps</param>
+        /// <param name="Steps">The steps to move</param>
         /// <returns></returns>
-        Task<bool> Move(MoveMode Mode, int Speed, int Distance);
+        Task<bool> Move(MoveMode Mode, int Speed, int Steps);
+
+        /// <summary>
+        /// Start to move the axis by real world distance
+        /// </summary>
+        /// <param name="Mode">ABS/REL</param>
+        /// <param name="Speed">1 ~ 100</param>
+        /// <param name="Distance">The real world distance to move</param>
+        /// <returns></returns>
+        Task<bool> Move(MoveMode Mode, int Speed, double Distance);
 
         /// <summary>
         /// Start a task to move the axis and output a series of trigger pulses on the specified channel(I/O)
         /// </summary>
         /// <param name="Mode">ABS/REL</param>
         /// <param name="Speed">1 ~ 100</param>
-        /// <param name="Distance">The steps to move, in steps</param>
+        /// <param name="Steps">The steps to move</param>
         /// <param name="Interval">The steps between adjacent trigger pulse, in steps</param>
         /// <param name="Channel">The trigger channel</param>
         /// <returns></returns>
-        Task<bool> MoveWithTrigger(MoveMode Mode, int Speed, int Distance, int Interval, int Channel);
+        Task<bool> MoveWithTrigger(MoveMode Mode, int Speed, int Steps, int Interval, int Channel);
+
+        /// <summary>
+        /// Start a task to move the axis and output a series of trigger pulses on the specified channel(I/O)
+        /// </summary>
+        /// <param name="Mode">ABS/REL</param>
+        /// <param name="Speed">1 ~ 100</param>
+        /// <param name="Distance">The real world distance to move</param>
+        /// <param name="Interval">The distance between adjacent trigger pulse</param>
+        /// <param name="Channel">The trigger channel</param>
+        /// <returns></returns>
+        Task<bool> MoveWithTrigger(MoveMode Mode, int Speed, double Distance, double Interval, int Channel);
 
         /// <summary>
         /// Start a task to move the axis and activate a series of conversion with the specified adc
         /// </summary>
         /// <param name="Mode">ABS/REL</param>
         /// <param name="Speed">1 ~ 100</param>
-        /// <param name="Distance">The steps to move, in steps</param>
-        /// <param name="Interval">The steps between adjacent ADC conversion, in steps</param>
+        /// <param name="Steps">The steps to move</param>
+        /// <param name="Interval">The steps between adjacent ADC conversion</param>
         /// <param name="AdcIndex">The channle of ADC</param>
         /// <returns></returns>
-        Task<bool> MoveWithInnerADC(MoveMode Mode, int Speed, int Distance, int Interval, int Channel);
+        Task<bool> MoveWithInnerADC(MoveMode Mode, int Speed, int Steps, int Interval, int Channel);
+
+        /// <summary>
+        /// Start a task to move the axis and activate a series of conversion with the specified adc
+        /// </summary>
+        /// <param name="Mode">ABS/REL</param>
+        /// <param name="Speed">1 ~ 100</param>
+        /// <param name="Distance">The real world distance to move</param>
+        /// <param name="Interval">The distance between adjacent ADC conversion</param>
+        /// <param name="AdcIndex">The channle of ADC</param>
+        /// <returns></returns>
+        Task<bool> MoveWithInnerADC(MoveMode Mode, int Speed, double Distance, double Interval, int Channel);
 
         /// <summary>
         /// Stop the current activity immediately 

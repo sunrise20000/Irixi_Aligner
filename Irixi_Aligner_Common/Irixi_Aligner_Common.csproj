@@ -182,6 +182,7 @@
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
     <None Include="App.config" />
+    <None Include="ClassDiagram1.cd" />
     <None Include="Configuration\motion_controller.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

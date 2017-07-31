@@ -122,6 +122,9 @@ namespace Irixi_Aligner_Common.MotionControllerEntities
                 this.RelPosition += (value - _abs_pos);
 
                 UpdateProperty<int>(ref _abs_pos, value);
+
+                // convert steps to real world distance
+                this.UnitHelper.SetAbsPosition(_abs_pos);
             }
         }
 
@@ -165,7 +168,7 @@ namespace Irixi_Aligner_Common.MotionControllerEntities
             }
         }
 
-        public RealworldDistanceUnitHelper UnitHelper { private set; get; }
+        public RealworldDistanceUnitHelper UnitHelper { protected set; get; }
 
         public string LastError { set; get; }
 
@@ -226,19 +229,57 @@ namespace Irixi_Aligner_Common.MotionControllerEntities
             return this.ParentController.Home(this);
         }
 
-        public virtual Task<bool> Move(MoveMode Mode, int Speed, int Distance)
+        public virtual Task<bool> Move(MoveMode Mode, int Speed, int Steps)
         {
-            return this.ParentController.Move(this, Mode, Speed, Distance);
+            return this.ParentController.Move(this, Mode, Speed, Steps);
         }
 
-        public virtual Task<bool> MoveWithTrigger(MoveMode Mode, int Speed, int Distance, int Interval, int Channel)
+        public virtual Task<bool> Move(MoveMode Mode, int Speed, double Distance)
         {
-            return this.ParentController.MoveWithTrigger(this, Mode, Speed, Distance, Interval, Channel);
+            return this.ParentController.Move(this, Mode, Speed, this.UnitHelper.ConvertToSteps(Distance));
         }
 
-        public virtual Task<bool> MoveWithInnerADC(MoveMode Mode, int Speed, int Distance, int Interval, int Channel)
+        public virtual Task<bool> MoveWithTrigger(MoveMode Mode, int Speed, int Steps, int Interval, int Channel)
         {
-            return this.ParentController.MoveWithInnerADC(this, Mode, Speed, Distance, Interval, Channel);
+            return this.ParentController.MoveWithTrigger(
+                this, 
+                Mode, 
+                Speed, 
+                Steps, 
+                Interval, 
+                Channel);
+        }
+
+        public virtual Task<bool> MoveWithTrigger(MoveMode Mode, int Speed, double Distance, double Interval, int Channel)
+        {
+            return this.ParentController.MoveWithTrigger(
+                this, 
+                Mode, 
+                Speed, 
+                this.UnitHelper.ConvertToSteps(Distance),
+                this.UnitHelper.ConvertToSteps(Interval), 
+                Channel);
+        }
+
+        public virtual Task<bool> MoveWithInnerADC(MoveMode Mode, int Speed, int Steps, int Interval, int Channel)
+        {
+            return this.ParentController.MoveWithInnerADC(
+                this, 
+                Mode, 
+                Speed, 
+                Steps, 
+                Interval, 
+                Channel);
+        }
+
+        public virtual Task<bool> MoveWithInnerADC(MoveMode Mode, int Speed, double Distance, double Interval, int Channel)
+        {
+            return this.ParentController.MoveWithInnerADC(this,
+                Mode,
+                Speed,
+                this.UnitHelper.ConvertToSteps(Distance),
+                this.UnitHelper.ConvertToSteps(Interval),
+                Channel);
         }
 
         public virtual void Stop()

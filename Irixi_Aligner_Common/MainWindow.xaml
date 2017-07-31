@@ -77,13 +77,7 @@
                         <dxb:BarButtonItem x:Name="btnStart" Content="Start" RibbonStyle="SmallWithText" Glyph="{dx:DXImageOffice2013 Image=Solution_16x16.png}" LargeGlyph="{dx:DXImageOffice2013 Image=Solution_32x32.png}" IsEnabled="{Binding Service.State, Converter={StaticResource SystemStatusToStartButtonEnable}}" />
                         <dxb:BarButtonItem x:Name="btnStop" Content="Stop" Glyph="{dx:DXImageOffice2013 Image=Solution_16x16.png}" LargeGlyph="{dx:DXImageOffice2013 Image=Solution_32x32.png}" IsEnabled="{Binding Service.State, Converter={StaticResource SystemStatusToStopButtonEnable}}" RibbonStyle="SmallWithText"/>
                     </dxr:RibbonPageGroup>
-                    <dxr:RibbonPageGroup Caption="Preset Position">
-                        <dxb:BarButtonItem Content="VGroove" Glyph="{dx:DXImageOffice2013 Image=Solution_16x16.png}" LargeGlyph="{dx:DXImageOffice2013 Image=Solution_32x32.png}" />
-                        <dxb:BarButtonItem Content="Lens" Glyph="{dx:DXImageOffice2013 Image=Solution_16x16.png}" LargeGlyph="{dx:DXImageOffice2013 Image=Solution_32x32.png}" />
-                        <dxb:BarButtonItem Content="POD" Glyph="{dx:DXImageOffice2013 Image=Solution_16x16.png}" LargeGlyph="{dx:DXImageOffice2013 Image=Solution_32x32.png}" />
-                        <dxb:BarButtonItem Content="Top Cam" Glyph="{dx:DXImageOffice2013 Image=Solution_16x16.png}" LargeGlyph="{dx:DXImageOffice2013 Image=Solution_32x32.png}" />
-                        <dxb:BarButtonItem Content="Angle Cam" Glyph="{dx:DXImageOffice2013 Image=Solution_16x16.png}" LargeGlyph="{dx:DXImageOffice2013 Image=Solution_32x32.png}" />
-                        <dxb:BarButtonItem Content="Front Cam" Glyph="{dx:DXImageOffice2013 Image=Solution_16x16.png}" LargeGlyph="{dx:DXImageOffice2013 Image=Solution_32x32.png}" />
+                    <dxr:RibbonPageGroup x:Name="rpgPresetPositionButtonsHost" Caption="Preset Position">
                     </dxr:RibbonPageGroup>
                     <dxr:RibbonPageGroup Caption="Alignment">
                         <dxb:BarButtonItem Content="Blind Search" Glyph="{dx:DXImageOffice2013 Image=Solution_16x16.png}" LargeGlyph="{dx:DXImageOffice2013 Image=Solution_32x32.png}" />

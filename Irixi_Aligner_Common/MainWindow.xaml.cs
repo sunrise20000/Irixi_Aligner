@@ -65,23 +65,15 @@ namespace Irixi_Aligner_Common
                     // add the documentpanel to the documentgroup
                     MotionComponentPanelHost.Items.Add(dp);
 
+                    // find the icon shown in the button
+                    var image = (BitmapFrame)TryFindResource(motionpart.Icon);
 
                     // add view buttons to Ribbon toolbar
-                    var image = (BitmapFrame)TryFindResource(motionpart.Icon);
-                    BarCheckItem btn = new BarCheckItem()
+                    BarCheckItem chk = new BarCheckItem()
                     {
                         Content = motionpart.Caption,
                         LargeGlyph = image
-
                     };
-
-                    // --- the following codes are moved to ItemIsVisibleChanged, the event of DockLayoutManager --//
-                    //// bring the panel to front
-                    //btn.CheckedChanged += (s, e) =>
-                    //{
-                    //    if(dp.Closed == false)
-                    //        dockLayoutManager.MDIController.Activate(dp);
-                    //};
 
                     // bind the IsCheck property to the document panel's Closed property
                     Binding b = new Binding()
@@ -91,9 +83,20 @@ namespace Irixi_Aligner_Common
                         Mode = BindingMode.TwoWay,
                         Converter = new BooleanToVisibility()
                     };
-                    btn.SetBinding(BarCheckItem.IsCheckedProperty, b);
+                    chk.SetBinding(BarCheckItem.IsCheckedProperty, b);
 
-                    rpgView_MotionComponent.Items.Add(btn);
+                    rpgView_MotionComponent.Items.Add(chk);
+
+                    // add buttons to show the preset window 
+                    BarButtonItem btn = new BarButtonItem()
+                    {
+                        Content = motionpart.Caption,
+                        LargeGlyph = image,
+                        DataContext = motionpart
+                    };
+                    rpgPresetPositionButtonsHost.Items.Add(btn);
+
+
 
                 }
 

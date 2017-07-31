@@ -64,8 +64,7 @@ namespace Irixi_Aligner_Common.UserControls
                 }
 
                 // call the move function of the systemservice
-                this.LogicalAxis.Service.MoveLogicalAxis(
-                    this.LogicalAxis,
+                this.LogicalAxis.Move.Execute(
                     new Classes.BaseClass.MoveArgs()
                     {
                         Mode = _mode,
@@ -136,6 +135,7 @@ namespace Irixi_Aligner_Common.UserControls
         }
     }
 
+
     /// <summary>
     /// The converter converts the IsCheck value to the caption text of the Manual toggle button
     /// </summary>
@@ -157,38 +157,6 @@ namespace Irixi_Aligner_Common.UserControls
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
-        {
-            throw new NotImplementedException();
-        }
-    }
-
-    /// <summary>
-    /// Convert steps to real world distance
-    /// </summary>
-    class ConvertStepsToRealWorldDistance : IMultiValueConverter
-    {
-
-        public object Convert(object []value, Type targetType, object parameter, CultureInfo culture)
-        {
-            // position in steps
-            if (int.TryParse(value[0].ToString(), out int pos))
-            {
-                if (value[1] is RealworldDistanceUnitHelper helper)
-                {
-                    return helper.ConvertToRealworldDistance(pos).ToString();
-                }
-                else
-                {
-                    return "Error";
-                }
-            }
-            else
-            {
-                return "Design Mode";
-            }
-        }
-
-        public object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture)
         {
             throw new NotImplementedException();
         }

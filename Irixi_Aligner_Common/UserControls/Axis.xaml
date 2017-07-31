@@ -14,7 +14,6 @@
         <local:ConvertBoolToSolidColorBrush x:Key="ConvertBoolToSolidColorBrush"/>
         <local:ConvertManualEnabledToCaption x:Key="ConvertManualEnabledToCaption"/>
         <local:ConvertAbsModeToCaption x:Key="ConvertAbsModeToCaption"/>
-        <local:ConvertStepsToRealWorldDistance x:Key="ConvertUnitToRealWorld"/>
     </UserControl.Resources>
     <Grid IsEnabled="{Binding LogicalAxis.PhysicalAxisInst.IsHomed, ElementName=Myself, Mode=OneWay}">
         <Grid.ColumnDefinitions>
@@ -32,20 +31,12 @@
         <TextBlock Text="{Binding LogicalAxis.AxisName, ElementName=Myself}" VerticalAlignment="Center" HorizontalAlignment="Center"/>
         <TextBlock x:Name="txtPosUnit" Text="{Binding LogicalAxis.PhysicalAxisInst.UnitHelper.Unit, ElementName=Myself, Mode=OneWay}" Grid.Column="2" HorizontalAlignment="Center" VerticalAlignment="Center"/>
         <TextBlock Text="{Binding Text, ElementName=txtPosUnit}" Grid.Column="7" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-        <TextBox x:Name="txtCurrentPosition" Grid.Column="1" VerticalAlignment="Center" TextAlignment="Right" IsReadOnly="True" Margin="1,0,0,0" FontSize="16">
-            <TextBox.Text>
-                <MultiBinding Converter="{StaticResource ConvertUnitToRealWorld}" Mode="OneWay">
-                    <Binding RelativeSource="{RelativeSource AncestorLevel=1, Mode=FindAncestor, AncestorType=UserControl}" Path="LogicalAxis.PhysicalAxisInst.RelPosition"/>
-                    <Binding RelativeSource="{RelativeSource AncestorLevel=1, Mode=FindAncestor, AncestorType=UserControl}" Path="LogicalAxis.PhysicalAxisInst.UnitHelper"/>
-                </MultiBinding>
-            </TextBox.Text>
-        </TextBox>
+        <TextBox x:Name="txtCurrentPosition" Text="{Binding LogicalAxis.PhysicalAxisInst.UnitHelper.RelDistance, ElementName=Myself, Mode=OneWay}" Grid.Column="1" VerticalAlignment="Center" TextAlignment="Right" IsReadOnly="True" Margin="1,0,0,0" FontSize="16"/>
         <TextBox x:Name="txtMoveSpeed" Grid.Column="4" VerticalAlignment="Center" TextAlignment="Center" MaxLength="3" Margin="1,0,0,0" FontSize="16" Text="100"/>
         <TextBox x:Name="txtDistance" Grid.Column="6" VerticalAlignment="Center" TextAlignment="Center" MaxLength="10" Margin="1,0,0,0" FontSize="16" Text="0"/>
         <Button x:Name="btnMoveCCW" Content="-" Grid.Column="8" Margin="1,0" Click="btnMove_Click" Tag="CCW" FontWeight="Bold" VerticalAlignment="Center" Height="27"/>
         <Button x:Name="btnMoveCW" Content="+" Grid.Column="9" Margin="1,0" Tag="CW" Click="btnMove_Click" FontWeight="Bold" VerticalAlignment="Center" Height="27"/>
         <Button x:Name="tbtnAbsMode" Content="{Binding LogicalAxis.PhysicalAxisInst.IsAbsMode, Converter={StaticResource ConvertAbsModeToCaption}, ElementName=Myself}" Grid.Column="5" Margin="3,0" VerticalAlignment="Center" Height="27" Click="tbtnAbsMode_Click" Foreground="{Binding LogicalAxis.PhysicalAxisInst.IsAbsMode, Converter={StaticResource ConvertBoolToSolidColorBrush}, ElementName=Myself, Mode=OneWay}"/>
         <Button x:Name="tbtnManualEnable" Content="{Binding LogicalAxis.PhysicalAxisInst.IsManualEnabled, Converter={StaticResource ConvertManualEnabledToCaption}, ElementName=Myself}" Grid.Column="3" Margin="3,0" HorizontalContentAlignment="Center" VerticalAlignment="Center" Height="27" Foreground="{Binding LogicalAxis.PhysicalAxisInst.IsManualEnabled, Converter={StaticResource ConvertBoolToSolidColorBrush}, ElementName=Myself, Mode=OneWay}"/>
-
     </Grid>
 </UserControl>

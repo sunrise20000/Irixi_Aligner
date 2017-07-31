@@ -220,7 +220,7 @@
     {
       "DeviceClass": "d11d1864-6315-4c01-b07f-3e268834cd10",
       "Model": "IRIXI_EE0017",
-      "Port": "313932311251363035003800",
+      "Port": "31393231125136302D005500",
       "Enabled": true,
       "Comment": "TOP CAM, Irixi 3-Axis Motion Controller, PCB Board 3",
       "AxisCollection": [
