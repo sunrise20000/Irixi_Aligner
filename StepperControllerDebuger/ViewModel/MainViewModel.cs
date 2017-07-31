@@ -291,6 +291,17 @@ namespace StepperControllerDebuger.ViewModel
             }
         }
 
+        public RelayCommand<Tuple<int, bool>> CommandSetMoveDirection
+        {
+            get
+            {
+                return new RelayCommand<Tuple<int, bool>>(arg =>
+                {
+                    bool ret = _controller.ReverseMoveDirection(arg.Item1, arg.Item2);
+                });
+            }
+        }
+
         public RelayCommand<Tuple<int, OutputState>> CommandSetGeneralOutput
         {
             get
@@ -350,7 +361,7 @@ namespace StepperControllerDebuger.ViewModel
             {
                 Messenger.Default.Send<NotificationMessage<string>>(
                     new NotificationMessage<string>(
-                        string.Format("{0}", _controller.PCA9534.ToString()),
+                        string.Format("{0}", _controller.PCA9534Info.ToString()),
                         "MSG"));
             }
             else

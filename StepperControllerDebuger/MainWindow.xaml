@@ -8,7 +8,7 @@
         xmlns:Converter="clr-namespace:StepperControllerDebuger.Converter" x:Class="StepperControllerDebuger.MainWindow"
     xmlns:System="clr-namespace:System;assembly=mscorlib"
     mc:Ignorable="d"
-        Title="Stepper Controller Debuger" Height="520" Width="900" WindowStartupLocation="CenterScreen" Icon="StepperMotor.ico" ResizeMode="CanMinimize" WindowStyle="SingleBorderWindow" Background="#FF1B1B1B">
+        Title="Stepper Controller Debuger" Height="520" Width="1100" WindowStartupLocation="CenterScreen" Icon="StepperMotor.ico" ResizeMode="CanMinimize" WindowStyle="SingleBorderWindow" Background="#FF1B1B1B">
     <Window.Resources>
         <Converter:CvtControllerErrorToColor x:Key="CvtControllerErrorToColor"/>
         <Converter:CvtInputStateToColor x:Key="CvtInputStateToColor"/>
@@ -25,7 +25,7 @@
             <ItemsControl ItemsSource="{Binding Main.StepperController.Report.AxisStateCollection}">
                 <ItemsControl.ItemTemplate>
                     <DataTemplate>
-                        <local:AxisControl AxisState="{Binding}" HorizontalAlignment="Stretch" Margin="2" Height="100" MoveToCCW="{Binding Main.CommandMove, Mode=OneWay, Source={StaticResource Locator}}" MoveToCW="{Binding Main.CommandMove, Mode=OneWay, Source={StaticResource Locator}}" SetOutPort="{Binding Main.CommandSetGeneralOutput, Mode=OneWay, Source={StaticResource Locator}}">
+                        <local:AxisControl AxisState="{Binding}" HorizontalAlignment="Stretch" Margin="2" Height="100" MoveToCCW="{Binding Main.CommandMove, Mode=OneWay, Source={StaticResource Locator}}" MoveToCW="{Binding Main.CommandMove, Mode=OneWay, Source={StaticResource Locator}}" SetOutPort="{Binding Main.CommandSetGeneralOutput, Mode=OneWay, Source={StaticResource Locator}}" SetMoveDirection="{Binding Main.CommandSetMoveDirection, Mode=OneWay,Source={StaticResource Locator}}">
                             <local:AxisControl.MoveToCCWParameters>
                                 <MultiBinding Converter="{StaticResource StepperCommandGenerator}">
                                     <Binding Source="{x:Static stepper:EnumCommand.MOVE}"/>

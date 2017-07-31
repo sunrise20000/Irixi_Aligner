@@ -38,8 +38,6 @@ namespace StepperControllerDebuger
             DependencyProperty.Register("IsAbsMode", typeof(bool), typeof(AxisControl), new PropertyMetadata(true));
 
 
-
-
         public int Distance
         {
             get { return (int)GetValue(DistanceProperty); }
@@ -127,6 +125,18 @@ namespace StepperControllerDebuger
 
 
 
+
+        public ICommand SetMoveDirection
+        {
+            get { return (ICommand)GetValue(SetMoveDirectionProperty); }
+            set { SetValue(SetMoveDirectionProperty, value); }
+        }
+
+        // Using a DependencyProperty as the backing store for SetMoveDirection.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty SetMoveDirectionProperty =
+            DependencyProperty.Register("SetMoveDirection", typeof(ICommand), typeof(AxisControl), new PropertyMetadata(null));
+
+
         private void btnMoveCCW_Click(object sender, RoutedEventArgs e)
         {
             this.MoveToCCW.Execute(this.MoveToCCWParameters);
@@ -163,6 +173,16 @@ namespace StepperControllerDebuger
             this.SetOutPort.Execute(new Tuple<int, OutputState>
                 (this.AxisState.AxisIndex * 2 + 1,   // Convert Port B to channel 1, 3, 5
                 OutputState.Disabled));    // Set OFF
+        }
+
+        private void btnDefaultDirction_Click(object sender, RoutedEventArgs e)
+        {
+            this.SetMoveDirection.Execute(new Tuple<int, bool>(this.AxisState.AxisIndex, false));
+        }
+
+        private void btnReverseDirection_Click(object sender, RoutedEventArgs e)
+        {
+            this.SetMoveDirection.Execute(new Tuple<int, bool>(this.AxisState.AxisIndex, true));
         }
     }
 }
