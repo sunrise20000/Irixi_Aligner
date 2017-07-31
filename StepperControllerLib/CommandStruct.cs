@@ -23,6 +23,8 @@ namespace IrixiStepperControllerHelper
         public int GenOutPort { set; get; }
         public OutputState GenOutState { set; get; }
 
+        public bool IsReversed { set; get; }
+
         /// <summary>
         /// Convert the command struct to the byte array
         /// </summary>
@@ -46,6 +48,10 @@ namespace IrixiStepperControllerHelper
                 case EnumCommand.GENOUT:
                     writer.Write(this.GenOutPort);
                     writer.Write((int)this.GenOutState);
+                    break;
+
+                case EnumCommand.REVERSE:
+                    writer.Write(this.IsReversed ? (int)1 : (int)0);
                     break;
 
                 default:

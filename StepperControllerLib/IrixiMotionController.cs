@@ -85,7 +85,7 @@ namespace IrixiStepperControllerHelper
             // Generate the instance of the state report object
             this.Report = new DeviceStateReport();
             this.FirmwareInfo = new FimwareInfo();
-            this.PCA9534 = new PCA9534Info();
+            this.PCA9534Info = new PCA9534Info();
             this.TotalAxes = -1;
             this.SerialNumber = DeviceSN;
             this.AxisCollection = new ObservableCollection<Axis>();
@@ -171,7 +171,7 @@ namespace IrixiStepperControllerHelper
             get;
         }
 
-        public PCA9534Info PCA9534
+        public PCA9534Info PCA9534Info
         {
             private set;
             get;
@@ -390,7 +390,7 @@ namespace IrixiStepperControllerHelper
 
             if(WaitReportFactinfo())
             {
-                return this.PCA9534.Parse(buf_report_factinfo.ToArray());
+                return this.PCA9534Info.Parse(buf_report_factinfo.ToArray());
             }
             else
             {
@@ -694,6 +694,34 @@ namespace IrixiStepperControllerHelper
             {
                 return Move(AxisIndex, Velocity, Distance, Mode);
             });
+        }
+
+        public bool ReverseMoveDirection(int AxisIndex, bool IsReverse)
+        {
+            // if the controller is not connected, return
+            if (!this.IsConnected)
+            {
+                this.LastError = string.Format("The controller is not connected.");
+                return false;
+            }
+
+            try
+            {
+                CommandStruct cmd = new CommandStruct()
+                {
+                    Command = EnumCommand.REVERSE,
+                    AxisIndex = AxisIndex,
+                    IsReversed = IsReverse
+                };
+                _hid_device.Write(cmd.ToBytes());
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                this.LastError = ex.Message;
+                return false;
+            }
         }
 
         /// <summary>

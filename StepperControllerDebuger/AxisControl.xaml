@@ -6,14 +6,14 @@
     xmlns:Converter="clr-namespace:StepperControllerDebuger.Converter" 
     x:Name="userControl" 
     x:Class="StepperControllerDebuger.AxisControl"
-             mc:Ignorable="d" Width="800" Height="110">
+             mc:Ignorable="d" Width="1000" Height="110">
     <UserControl.Resources>
         <Converter:CvtOutputStateToColor x:Key="CvtOutputStateToColor"/>
         <Converter:CvtInputStateToColor x:Key="CvtInputStateToColor"/>
         <Converter:CvtBoolToColor x:Key="CvtBoolToColor"/>
         <Converter:CvtErrorCodeToString x:Key="CvtErrorToString"/>
     </UserControl.Resources>
-    <Border BorderBrush="#979797" BorderThickness="1">
+    <Border x:Name="border" BorderBrush="#979797" BorderThickness="1" Background="Black">
         <Grid>
             <Grid.RowDefinitions>
                 <RowDefinition Height="35"/>
@@ -22,6 +22,7 @@
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="50"/>
                 <ColumnDefinition/>
+                <ColumnDefinition Width="100"/>
             </Grid.ColumnDefinitions>
             <TextBlock Grid.RowSpan="2" Text="{Binding AxisState.AxisIndex, ElementName=userControl, Mode=OneWay}" Foreground="#33FFFFFF" HorizontalAlignment="Left" VerticalAlignment="Top" FontSize="72" FontWeight="Bold" FontStyle="Italic"/>
             <Grid Grid.Column="1">
@@ -90,6 +91,14 @@
                 <TextBlock Text="{Binding AxisState.IN_B, ElementName=userControl, Mode=OneWay}" VerticalAlignment="Center" Foreground="{Binding AxisState.IN_B, Converter={StaticResource CvtInputStateToColor}, ElementName=userControl, Mode=OneWay}" HorizontalAlignment="Center" Grid.Column="8" Grid.Row="1"/>
                 <TextBlock Text="{Binding AxisState.OUT_A, ElementName=userControl, Mode=OneWay}" VerticalAlignment="Center" Foreground="{Binding AxisState.OUT_A, Converter={StaticResource CvtOutputStateToColor}, ElementName=userControl, Mode=OneWay}" HorizontalAlignment="Center" Grid.Column="9" Grid.Row="1"/>
                 <TextBlock Text="{Binding AxisState.OUT_B, ElementName=userControl, Mode=OneWay}" VerticalAlignment="Center" Foreground="{Binding AxisState.OUT_B, Converter={StaticResource CvtOutputStateToColor}, ElementName=userControl, Mode=OneWay}" HorizontalAlignment="Center" Grid.Column="10" Grid.Row="1"/>
+            </Grid>
+            <Grid Grid.Column="2" Grid.RowSpan="2">
+                <Grid.RowDefinitions>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                </Grid.RowDefinitions>
+                <Button x:Name="btnDefaultDirction" Content="Default Dir" Margin="5,10" Click="btnDefaultDirction_Click" />
+                <Button x:Name="btnReverseDirection" Content="Reverse Dir" Grid.Row="1" Margin="5,10" Click="btnReverseDirection_Click"/>
             </Grid>
         </Grid>
     </Border>

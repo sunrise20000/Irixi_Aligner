@@ -35,6 +35,11 @@
         STOP,
 
         /// <summary>
+        /// Reverse the move direction 
+        /// </summary>
+        REVERSE,
+
+        /// <summary>
         /// Set the state of the general output port
         /// </summary>
         GENOUT = 10,
