@@ -11,7 +11,6 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:local="clr-namespace:Irixi_Aligner_Common"
     xmlns:Converters="clr-namespace:Irixi_Aligner_Common.Classes.Converters"
-    xmlns:BindingConverter="clr-namespace:IrixiStepperControllerHelper.BindingConverter;assembly=IrixiStepperControllerHelper"
     dx:ThemeManager.ThemeName="Office2013"
     mc:Ignorable="d"
     d:DesignHeight="1200" 
@@ -26,34 +25,10 @@
     Title="Irixi Alignment System for 2x25G/10x10G Tx/Rx" >
     <dxr:DXRibbonWindow.Resources>
 
-        <!--
-        <Style TargetType="{x:Type dxd:DocumentPanel}">
-            <Setter Property="Caption" Value="{Binding DisplayName}"/>
-            <Setter Property="AllowMaximize" Value="False"/>
-            <Setter Property="AllowSizing" Value="False"/>
-            <Setter Property="AllowClose" Value="False"/>
-            <Setter Property="ContentTemplate">
-                <Setter.Value>
-                    <DataTemplate>
-                        <StackPanel>
-                            <ContentControl ContentTemplate="{StaticResource MotionControlPanelTitle}"/>
-                            <ItemsControl ItemsSource="{Binding LogicalAxisCollection}">
-                                <ItemsControl.ItemTemplate>
-                                    <DataTemplate>
-                                        <UserControls:Axis Width="540" SystemService="{Binding Service}" LogicalAxis="{Binding}" Style="{StaticResource AxisControlStyle1}"/>
-                                    </DataTemplate>
-                                </ItemsControl.ItemTemplate>
-                            </ItemsControl>
-                        </StackPanel>
-                        
-                    </DataTemplate>
-                </Setter.Value>
-            </Setter>
-        </Style>
--->
         <Converters:BooleanToVisibility x:Key="BooleanToVisibility"/>
-        <BindingConverter:CvtOutputStateToBool x:Key="CvtOutputStateToBool"/>
+        <Converters:OutputStateToBoolean x:Key="OutputStateToBoolean"/>
         <Converters:SystemStatusToStartButtonEnable x:Key="SystemStatusToStartButtonEnable"/>
+
 
     </dxr:DXRibbonWindow.Resources>
     <DockPanel DataContext="{Binding Source={StaticResource Locator}}">
@@ -87,7 +62,7 @@
                 </dxr:RibbonPage>
                 <dxr:RibbonPage x:Name="rpgView" Caption="View">
                     <dxr:RibbonPageGroup x:Name="rpgView_MotionComponent" Caption="Motion Control">
-                        
+
                     </dxr:RibbonPageGroup>
                     <dxr:RibbonPageGroup Caption="Equipments">
                         <dxb:BarCheckItem Content="Cylinders" Glyph="{dx:DXImageOffice2013 Image=Solution_16x16.png}" LargeGlyph="{dx:DXImageOffice2013 Image=Solution_32x32.png}" RibbonStyle="Default" IsChecked="{Binding Visibility, ElementName=CylinderControlPanel, Mode=TwoWay, Converter={StaticResource BooleanToVisibility}}" />
@@ -111,7 +86,7 @@
                         <dxd:DocumentPanel 
                             x:Name="CylinderControlPanel" 
                             Caption="Cylinders" 
-                            MDISize="200,170" 
+                            MDISize="200,180" 
                             ShowMaximizeButton="False" 
                             AllowSizing="False" 
                             AllowRename="False" 
@@ -119,12 +94,26 @@
                             AllowMaximize="False" 
                             AllowDockToDocumentGroup="False" 
                             ClosingBehavior="HideToClosedPanelsCollection">
-                            <StackPanel Orientation="Vertical" IsEnabled="{Binding Service.CylinderController.IsInitialized}">
-                                <ToggleButton Height="30" Margin="0,2" Content="Fiber Clamp" Command="{Binding Service.CommandToggleFiberClampState, Mode=OneWay}" IsChecked="{Binding Service.CylinderController.FiberClampState, Converter={StaticResource CvtOutputStateToBool}, Mode=OneWay}"/>
-                                <ToggleButton Height="30" Margin="0,2" Content="Lens Vacuum" Command="{Binding Service.CommandToggleLensVacuumState, Mode=OneWay}" IsChecked="{Binding Service.CylinderController.LensVacuumState, Converter={StaticResource CvtOutputStateToBool}, Mode=OneWay}"/>
-                                <ToggleButton Height="30" Margin="0,2" Content="PLC Vacuum" Command="{Binding Service.CommandTogglePlcVacuumState, Mode=OneWay}" IsChecked="{Binding Service.CylinderController.PlcVacuumState, Converter={StaticResource CvtOutputStateToBool}, Mode=OneWay}"/>
-                                <ToggleButton Height="30" Margin="0,2" Content="POD Vacuum" Command="{Binding Service.CommandTogglePodVacuumState, Mode=OneWay}" IsChecked="{Binding Service.CylinderController.PodVacuumState, Converter={StaticResource CvtOutputStateToBool}, Mode=OneWay}"/>
-                            </StackPanel>
+                            <Grid IsEnabled="{Binding Service.CylinderController.IsInitialized}">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition/>
+                                    <RowDefinition/>
+                                    <RowDefinition/>
+                                    <RowDefinition/>
+                                </Grid.RowDefinitions>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="30"/>
+                                    <ColumnDefinition/>
+                                </Grid.ColumnDefinitions>
+                                <CheckBox IsChecked="{Binding Service.CylinderController.FiberClampState, Converter={StaticResource OutputStateToBoolean}, Mode=OneWay}" Style="{DynamicResource CheckBoxStyle1}"/>
+                                <CheckBox Grid.Row="1" IsChecked="{Binding Service.CylinderController.LensVacuumState, Converter={StaticResource OutputStateToBoolean}, Mode=OneWay}" Style="{DynamicResource CheckBoxStyle1}"/>
+                                <CheckBox Grid.Row="2" IsChecked="{Binding Service.CylinderController.PlcVacuumState, Converter={StaticResource OutputStateToBoolean}, Mode=OneWay}" Style="{DynamicResource CheckBoxStyle1}"/>
+                                <CheckBox Grid.Row="3" IsChecked="{Binding Service.CylinderController.PodVacuumState, Converter={StaticResource OutputStateToBoolean}, Mode=OneWay}" Style="{DynamicResource CheckBoxStyle1}"/>
+                                <ToggleButton Height="30" Margin="0,2" Content="Fiber Clamp" Command="{Binding Service.CommandToggleFiberClampState, Mode=OneWay}" IsChecked="{Binding Service.CylinderController.FiberClampState, Converter={StaticResource OutputStateToBoolean}, Mode=OneWay}" Grid.Column="1"/>
+                                <ToggleButton Height="30" Margin="0,2" Content="Lens Vacuum" Command="{Binding Service.CommandToggleLensVacuumState, Mode=OneWay}" IsChecked="{Binding Service.CylinderController.LensVacuumState, Converter={StaticResource OutputStateToBoolean}, Mode=OneWay}" Grid.Row="1" Grid.Column="1"/>
+                                <ToggleButton Height="30" Margin="0,2" Content="PLC Vacuum" Command="{Binding Service.CommandTogglePlcVacuumState, Mode=OneWay}" IsChecked="{Binding Service.CylinderController.PlcVacuumState, Converter={StaticResource OutputStateToBoolean}, Mode=OneWay}" Grid.Row="2" Grid.Column="1"/>
+                                <ToggleButton Height="30" Margin="0,2" Content="POD Vacuum" Command="{Binding Service.CommandTogglePodVacuumState, Mode=OneWay}" IsChecked="{Binding Service.CylinderController.PodVacuumState, Converter={StaticResource OutputStateToBoolean}, Mode=OneWay}" Grid.Row="3" Grid.Column="1"/>
+                            </Grid>
                         </dxd:DocumentPanel>
                     </dxd:DocumentGroup>
                 </dxd:LayoutGroup>

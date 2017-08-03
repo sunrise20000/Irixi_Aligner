@@ -112,6 +112,7 @@
     </Compile>
     <Compile Include="Classes\BaseClass\DistanceUnitHelper.cs" />
     <Compile Include="Classes\Converters\BooleanToVisibility.cs" />
+    <Compile Include="Classes\Converters\OutputStateToBoolean.cs" />
     <Compile Include="Configuration\ConfigurationCylinder.cs" />
     <Compile Include="Configuration\Layout\Layout.cs" />
     <Compile Include="Configuration\Layout\LayoutManager.cs" />
@@ -195,6 +196,10 @@
     <AppDesigner Include="Properties\" />
   </ItemGroup>
   <ItemGroup>
+    <Page Include="ControlThemes.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -237,6 +242,8 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <Resource Include="Resources\Images\Icons\lamp_off_64x64.png" />
+    <Resource Include="Resources\Images\Icons\lamp_on_64x64.png" />
     <Resource Include="AlignerLogo.ico" />
     <Content Include="Resources\ExtDlls\IronPython.dll" />
     <Content Include="Resources\ExtDlls\IronPython.Modules.dll" />

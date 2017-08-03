@@ -277,7 +277,6 @@ namespace Irixi_Aligner_Common.Equipments
 
         #endregion
 
-
         #region IDisposable Support
         private bool disposedValue = false; // 要检测冗余调用
 

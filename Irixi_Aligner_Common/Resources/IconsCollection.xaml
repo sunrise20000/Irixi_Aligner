@@ -4,4 +4,6 @@
     <BitmapImage x:Key="IconMessageWarning">Images/Icons/warning_32x32.png</BitmapImage>
     <BitmapImage x:Key="IconMessageError">Images/Icons/wrong.png</BitmapImage>
     <BitmapImage x:Key="IconViewWsPanels">Images/Icons/show_view.png</BitmapImage>
+    <BitmapImage x:Key="IconLampON_64x64">Images/Icons/lamp_on_64x64.png</BitmapImage>
+    <BitmapImage x:Key="IconLampOFF_64x64">Images/Icons/lamp_off_64x64.png</BitmapImage>
 </ResourceDictionary>
