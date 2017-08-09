@@ -77,7 +77,7 @@ namespace Irixi_Aligner_Common.Classes
 
             this.LastMessage = new MessageItem(MessageType.Normal, "System startup ...");
 
-            this.LastMessage = new MessageItem(MessageType.Normal, "Assembly Version {0}", version);
+            this.LastMessage = new MessageItem(MessageType.Normal, "Application Version {0}", version);
 
             // enumerate all physical motion controllers defined in the config file
             foreach (var config in configmgr.MotionControllerConfig.PhysicalMotionControllers)
@@ -377,7 +377,14 @@ namespace Irixi_Aligner_Common.Classes
                 }
                 else
                 {
-                    this.LastMessage = new MessageItem(MessageType.Normal, "{0} Move is completed, the final position is {1}", Axis, Axis.PhysicalAxisInst.AbsPosition);
+                    this.LastMessage = new MessageItem(MessageType.Normal, "{0} Move is completed, the final position is {1}/{2}{3}", 
+                        new object[]
+                        {
+                            Axis,
+                            Axis.PhysicalAxisInst.AbsPosition,
+                            Axis.PhysicalAxisInst.UnitHelper.AbsDistance,
+                            Axis.PhysicalAxisInst.UnitHelper.Unit
+                        });
                 }
 
                 SetSystemState(SystemState.IDLE);

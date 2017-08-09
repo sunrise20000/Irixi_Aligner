@@ -258,7 +258,7 @@
     <Content Include="Resources\ExtDlls\Zaber.Units.dll" />
     <Resource Include="Resources\Images\Icons\show_view.png" />
     <Resource Include="Resources\Images\Icons\Irixi_Logo_128x128.png" />
-    <Resource Include="Irixi_Logo.ico" />
+    <Resource Include="Resources\Images\Icons\Irixi_Logo.ico" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <ProjectExtensions />

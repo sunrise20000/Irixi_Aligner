@@ -147,6 +147,7 @@ namespace Irixi_Aligner_Common
 
             try
             {
+                // update window immediately
                 await Task.Delay(100);
 
                 service.Init();

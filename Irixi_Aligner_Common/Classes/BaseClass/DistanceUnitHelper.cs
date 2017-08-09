@@ -28,25 +28,53 @@ namespace Irixi_Aligner_Common.Classes.BaseClass
             this.Unit = Unit;
             this.MaxSteps = MaxSteps;
             this.MaxStroke = MaxStroke;
-            this.Dps = MaxStroke / MaxSteps;
         }
 
         #region Properties 
+        int _max_steps = 0;
+        /// <summary>
+        /// Get the maximum steps
+        /// </summary>
         public int MaxSteps
         {
-            private set;
-            get;
+            internal set
+            {
+                _max_steps = value;
+                if(_max_steps == 0)
+                {
+                    this.Dps = 0;
+                }
+                else
+                {
+                    this.Dps = _max_stroke / _max_steps;
+                }
+            }
+            get
+            {
+                return _max_steps;
+            }
         }
 
+        double _max_stroke = 0;
+        /// <summary>
+        /// Get the maximum range of real world unit distance
+        /// </summary>
         public double MaxStroke
         {
-            private set;
-            get;
+            internal set
+            {
+                _max_stroke = value;
+                this.Dps = _max_stroke / _max_steps;
+            }
+            get
+            {
+                return _max_stroke;
+            }
         }
 
         public int Digits
         {
-            private set;
+            internal set;
             get;
         }
 
@@ -61,7 +89,7 @@ namespace Irixi_Aligner_Common.Classes.BaseClass
 
         public UnitType Unit
         {
-            private set;
+            internal set;
             get;
         }
 

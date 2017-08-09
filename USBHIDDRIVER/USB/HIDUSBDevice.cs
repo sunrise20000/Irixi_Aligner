@@ -272,7 +272,7 @@ namespace USBHIDDRIVER.USB
         {
             return Task.Run(() =>
             {
-                int receivedNull = 0;
+                //int receivedNull = 0;
                 //byte[] recv_buf = null;
 
                 while (true)

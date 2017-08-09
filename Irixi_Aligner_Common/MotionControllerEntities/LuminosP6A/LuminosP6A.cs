@@ -62,9 +62,8 @@ namespace Irixi_Aligner_Common.MotionControllerEntities
         {
             // if the command relative to position is received, flush the AbsPosition of axis 
             int device = e.DeviceMessage.DeviceNumber;
-            LuminosAxis _axis = FindAxisByName(device.ToString()) as LuminosAxis;
 
-            if (_axis != null)
+            if (FindAxisByName(device.ToString()) is LuminosAxis _axis)
             {
                 switch (e.DeviceMessage.Command)
                 {

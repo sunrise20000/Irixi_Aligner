@@ -36,6 +36,7 @@ namespace Irixi_Aligner_Common.MotionControllerEntities
 
         /// <summary>
         /// read the current state of the stage
+        /// include IsHomed, MaxSteps, AbsPosition
         /// </summary>
         private void GetCurrentState()
         {
@@ -57,10 +58,11 @@ namespace Irixi_Aligner_Common.MotionControllerEntities
             if (int.TryParse(ZaberConversation.Request(Command.ReturnSetting, (int)Command.SetMaximumPosition).Data.ToString(), out int max_steps))
             {
                 this.CWL = max_steps;
+                this.UnitHelper.MaxSteps = max_steps;
 
                 // re-init the unit helper due to the max-steps is read from the hardware controller
-                var prev = this.UnitHelper.Clone() as RealworldDistanceUnitHelper;
-                this.UnitHelper = new RealworldDistanceUnitHelper(max_steps, prev.MaxStroke, prev.Unit, prev.Digits);
+                // var prev = this.UnitHelper.Clone() as RealworldDistanceUnitHelper;
+                // this.UnitHelper = new RealworldDistanceUnitHelper(max_steps, prev.MaxStroke, prev.Unit, prev.Digits);
 
                 LogHelper.WriteLine("{0} CWL is set to {1}", this, max_steps, LogHelper.LogType.NORMAL);
             }
