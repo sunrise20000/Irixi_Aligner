@@ -25,6 +25,16 @@ namespace Irixi_Aligner_Common.Configuration
         public int OffsetAfterHome { get; set; }
 
         /// <summary>
+        /// Get the max drive speed
+        /// </summary>
+        public int MaxSpeed { get; set; }
+
+        /// <summary>
+        /// Get how many steps to accelerate to the max speed
+        /// </summary>
+        public int AccelerationSteps { get; set; }
+
+        /// <summary>
         /// Get the maximum distance that the axis supports
         /// </summary>
         public double MaxStroke { get; set; }

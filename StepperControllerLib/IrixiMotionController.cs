@@ -59,7 +59,7 @@ namespace IrixiStepperControllerHelper
         /// The maximum drive veloctiy
         /// The real velocity is Velocity_Set * MAX_VELOCITY
         /// </summary>
-        const int MAX_VELOCITY = 10000;
+        const int MAX_VELOCITY = 25000;
 
         USBInterface _hid_device;
 
@@ -274,7 +274,10 @@ namespace IrixiStepperControllerHelper
                                 MaxDistance = 15000,
                                 SoftCCWLS = 0,
                                 SoftCWLS = 15000,
-                                PosAfterHome = 0
+                                PosAfterHome = 0,
+                                MaxSpeed = MAX_VELOCITY,
+                                AccelerationSteps = ACC_DEC_STEPS
+
                             });
                         }
 
@@ -463,7 +466,7 @@ namespace IrixiStepperControllerHelper
                 while (this.Report.AxisStateCollection[AxisIndex].IsRunning == true)
                 {
                     Thread.Sleep(100);
-                    if ((DateTime.Now - _start).TotalSeconds > 60)
+                    if ((DateTime.Now - _start).TotalSeconds > 300)
                     {
                         _timeout = true;
                         break;
@@ -638,8 +641,8 @@ namespace IrixiStepperControllerHelper
                 {
                     Command = EnumCommand.MOVE,
                     AxisIndex = AxisIndex,
-                    AccSteps = ACC_DEC_STEPS,
-                    DriveVelocity = Velocity * MAX_VELOCITY / 100,
+                    AccSteps = this.AxisCollection[AxisIndex].AccelerationSteps,
+                    DriveVelocity = Velocity * this.AxisCollection[AxisIndex].MaxSpeed / 100,
                     TotalSteps = Distance
                 };
                 _hid_device.Write(cmd.ToBytes());

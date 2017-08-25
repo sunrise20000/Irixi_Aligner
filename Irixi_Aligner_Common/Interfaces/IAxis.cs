@@ -59,6 +59,16 @@ namespace Irixi_Aligner_Common.Interfaces
         int RelPosition { get; }
 
         /// <summary>
+        /// Get the maximum driven speed
+        /// </summary>
+        int MaxSpeed { get; }
+
+        /// <summary>
+        /// Get how many steps are used to accelerate to the max speed
+        /// </summary>
+        int AccelerationSteps { get; }
+
+        /// <summary>
         /// Get the maximum stroke the axis supports in real world unit
         /// </summary>
         double MaxStroke { get; }

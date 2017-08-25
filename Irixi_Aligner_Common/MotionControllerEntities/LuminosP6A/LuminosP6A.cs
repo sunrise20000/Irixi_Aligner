@@ -318,8 +318,8 @@ namespace Irixi_Aligner_Common.MotionControllerEntities
 
         public override void Stop()
         {
-            //pos.Axes.StopAll();
-            _zaber_conversation_collection.Request(Command.Stop);
+            if(this.IsInitialized)
+                _zaber_conversation_collection.Request(Command.Stop);
         }
 
         public override void Dispose()

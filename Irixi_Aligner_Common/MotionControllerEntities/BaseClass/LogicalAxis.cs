@@ -11,7 +11,7 @@ namespace Irixi_Aligner_Common.MotionControllerEntities.BaseClass
     public class LogicalAxis : ViewModelBase
     {
         public delegate void HomeRequestedEventHandle(object sender, EventArgs args);
-        public delegate void MoveRequestedEventHandle(object sender, MoveArgs args);
+        public delegate void MoveRequestedEventHandle(object sender, MoveByDistanceArgs args);
         public delegate void StopRequestedEventHandle(object sender, EventArgs args);
 
         public event HomeRequestedEventHandle OnHomeRequsted;
@@ -77,11 +77,11 @@ namespace Irixi_Aligner_Common.MotionControllerEntities.BaseClass
             }
         }
 
-        public RelayCommand<MoveArgs> Move
+        public RelayCommand<MoveByDistanceArgs> Move
         {
             get
             {
-                return new RelayCommand<MoveArgs>(arg =>
+                return new RelayCommand<MoveByDistanceArgs>(arg =>
                 {
                     OnMoveRequsted?.Invoke(this, arg);
                 });
@@ -105,7 +105,13 @@ namespace Irixi_Aligner_Common.MotionControllerEntities.BaseClass
         #region Overrided Methods
         public override int GetHashCode()
         {
-            return base.GetHashCode();
+            int _hashcode = 0;
+
+            _hashcode ^= AxisName.GetHashCode();
+            _hashcode ^= ID.GetHashCode();
+            _hashcode ^= PhysicalAxisInst.GetHashCode();
+
+            return _hashcode;
         }
 
         public override string ToString()

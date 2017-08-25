@@ -22,7 +22,7 @@ namespace Irixi_Aligner_Common
 
                 base.OnStartup(e);
 
-                //DevExpress.Xpf.Core.ApplicationThemeHelper.UpdateApplicationThemeName();
+                DevExpress.Xpf.Core.ApplicationThemeHelper.UpdateApplicationThemeName();
             }
             catch(Exception ex)
             {
@@ -33,7 +33,7 @@ namespace Irixi_Aligner_Common
         private void OnAppStartup_UpdateThemeName(object sender, StartupEventArgs e)
         {
 
-            //DevExpress.Xpf.Core.ApplicationThemeHelper.UpdateApplicationThemeName();
+            DevExpress.Xpf.Core.ApplicationThemeHelper.UpdateApplicationThemeName();
         }
         
     }

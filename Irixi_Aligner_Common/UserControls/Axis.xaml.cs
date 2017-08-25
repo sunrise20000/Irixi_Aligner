@@ -55,21 +55,21 @@ namespace Irixi_Aligner_Common.UserControls
             else
             {
                 // convert distance to stpes
-                int steps = this.LogicalAxis.PhysicalAxisInst.UnitHelper.ConvertToSteps(_distance);
+                // int steps = this.LogicalAxis.PhysicalAxisInst.UnitHelper.ConvertToSteps(_distance);
 
                 // if move backword, the distance should be minus
                 if (_direction == "CCW")
                 {
-                    steps *= -1;
+                    _distance *= -1;
                 }
 
                 // call the move function of the systemservice
                 this.LogicalAxis.Move.Execute(
-                    new Classes.BaseClass.MoveArgs()
+                    new Classes.BaseClass.MoveByDistanceArgs()
                     {
                         Mode = _mode,
                         Speed = _speed,
-                        Distance = steps
+                        Distance = _distance
                     });
             }
         }

@@ -43,6 +43,16 @@ namespace IrixiStepperControllerHelper
             get;
         }
 
+        /// <summary>
+        /// Get the max drive speed
+        /// </summary>
+        public int MaxSpeed { get; set; }
+
+        /// <summary>
+        /// Get how many steps are used to accelerate to the max speed
+        /// </summary>
+        public int AccelerationSteps { set; get; }
+
         #region RaisePropertyChangedEvent
         public event PropertyChangedEventHandler PropertyChanged;
 

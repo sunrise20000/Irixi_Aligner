@@ -134,6 +134,8 @@ namespace Irixi_Aligner_Common.MotionControllerEntities
                             _controller.AxisCollection[i].SoftCCWLS = this.AxisCollection[i.ToString()].CCWL;
                             _controller.AxisCollection[i].SoftCWLS = this.AxisCollection[i.ToString()].CWL;
                             _controller.AxisCollection[i].MaxDistance = this.AxisCollection[i.ToString()].CWL;
+                            _controller.AxisCollection[i].MaxSpeed = this.AxisCollection[i.ToString()].MaxSpeed;
+                            _controller.AxisCollection[i].AccelerationSteps = this.AxisCollection[i.ToString()].AccelerationSteps;
                         }
 
                         return true;
@@ -280,11 +282,18 @@ namespace Irixi_Aligner_Common.MotionControllerEntities
                         {
                             ret = _controller.Move(_axis.AxisIndex, Speed, target_pos, IrixiStepperControllerHelper.MoveMode.ABS);
 
-                            if(!ret)
+                            if (!ret)
                             {
-                                _axis.LastError = string.Format("sdk reported error code {0}", _controller.LastError);
-
-                                ret = false;
+                                if (_controller.LastError.EndsWith("31"))
+                                {
+                                    // ignore the error 31 which indicates that uesr interrupted the movement
+                                    ret = true;
+                                }
+                                else
+                                {
+                                    _axis.LastError = string.Format("sdk reported error code {0}", _controller.LastError);
+                                    ret = false;
+                                }
                             }
                         }
                         else
@@ -313,6 +322,12 @@ namespace Irixi_Aligner_Common.MotionControllerEntities
                 return ret;
 
             });
+        }
+
+        public override void Stop()
+        {
+            if (this.IsInitialized)
+                _controller.Stop(-1);
         }
 
         /// <summary>

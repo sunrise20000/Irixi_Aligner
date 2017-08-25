@@ -5,7 +5,8 @@
              StartupUri="MainWindow.xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              d1p1:Ignorable="d" 
-             xmlns:d1p1="http://schemas.openxmlformats.org/markup-compatibility/2006" Startup="OnAppStartup_UpdateThemeName">
+             xmlns:d1p1="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             Startup="OnAppStartup_UpdateThemeName">
     <Application.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
@@ -32,6 +33,7 @@
                 </Border>
             </DataTemplate>
             <vm:ViewModelLocator x:Key="Locator" d:IsDataSource="True" xmlns:vm="clr-namespace:Irixi_Aligner_Common.ViewModel" />
+            <SolidColorBrush x:Key="Color_IrixiYellow" Color="#FFFF9700"/>
         </ResourceDictionary>
     </Application.Resources>
 </Application>

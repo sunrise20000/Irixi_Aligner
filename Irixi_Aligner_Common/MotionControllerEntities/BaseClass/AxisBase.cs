@@ -142,6 +142,10 @@ namespace Irixi_Aligner_Common.MotionControllerEntities
 
         public object Tag { get; set; }
 
+        public int MaxSpeed { get; private set; }
+
+        public int AccelerationSteps { private set; get; }
+
         public double MaxStroke { private set; get; }
 
         public int CWL
@@ -210,6 +214,8 @@ namespace Irixi_Aligner_Common.MotionControllerEntities
                 this.InitPosition = Config.OffsetAfterHome;
                 this.CWL = Config.CWL;
                 this.CCWL = Config.CCWL;
+                this.MaxSpeed = Config.MaxSpeed;
+                this.AccelerationSteps = Config.AccelerationSteps;
                 this.MaxStroke = Config.MaxStroke;
                 this.UnitHelper = new RealworldDistanceUnitHelper(Config.CWL, Config.MaxStroke, Config.Unit, Config.Digits);
                 this.ParentController = Controller;
@@ -296,6 +302,7 @@ namespace Irixi_Aligner_Common.MotionControllerEntities
             }
             else  // change move mode from REL to ABS
             {
+                this.UnitHelper.RelDistance = this.UnitHelper.AbsDistance;
                 this.RelPosition = this.AbsPosition;
                 this.IsAbsMode = true;
             }
@@ -304,12 +311,19 @@ namespace Irixi_Aligner_Common.MotionControllerEntities
         public void ClearRelPosition()
         {
             this.RelPosition = 0;
+            this.UnitHelper.RelDistance = 0;
         }
 
         public override string ToString()
         {
             return string.Format("*{0}@{1}*", this.AxisName, this.ParentController.DevClass);
         }
+
+        public override int GetHashCode()
+        {
+            return ParentController.DevClass.GetHashCode() ^ this.AxisName.GetHashCode();
+        }
+
         #endregion
 
         #region RaisePropertyChangedEvent

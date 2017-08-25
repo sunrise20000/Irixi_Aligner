@@ -14,6 +14,8 @@ using DevExpress.Xpf.Bars;
 using System.Windows.Data;
 using Irixi_Aligner_Common.Classes.Converters;
 using System.Windows.Media.Imaging;
+using Irixi_Aligner_Common.ViewModel;
+using Irixi_Aligner_Common.Windows;
 
 namespace Irixi_Aligner_Common
 {
@@ -87,13 +89,23 @@ namespace Irixi_Aligner_Common
 
                     rpgView_MotionComponent.Items.Add(chk);
 
-                    // add buttons to show the preset window 
+                    // add buttons to show the preset position window 
                     BarButtonItem btn = new BarButtonItem()
                     {
                         Content = motionpart.Caption,
                         LargeGlyph = image,
                         DataContext = motionpart
                     };
+
+                    // raise the click event
+                    btn.ItemClick += (s, e) =>
+                    {
+                        ViewMassMove view = new ViewMassMove(service, motionpart);
+                        MassMoveWindow w = new MassMoveWindow();
+                        w.DataContext = view;
+                        w.ShowDialog();
+                    };
+
                     rpgPresetPositionButtonsHost.Items.Add(btn);
 
 
@@ -133,11 +145,14 @@ namespace Irixi_Aligner_Common
 
         private void PopNotificationMessage(NotificationMessage<string> message)
         {
-            switch(message.Notification.ToLower())
+            if (message.Sender is SystemService)
             {
-                case "error":
-                    MessageBox.Show(message.Content, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                    break;
+                switch (message.Notification.ToLower())
+                {
+                    case "error":
+                        MessageBox.Show(message.Content, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                        break;
+                }
             }
         }
 

@@ -181,7 +181,7 @@ namespace Irixi_Aligner_Common.Classes
             Home(s.PhysicalAxisInst);
         }
 
-        private void LogicalAxis_OnMoveRequsted(object sender, MoveArgs args)
+        private void LogicalAxis_OnMoveRequsted(object sender, MoveByDistanceArgs args)
         {
             var s = sender as LogicalAxis;
             MoveLogicalAxis(s, args);
@@ -358,7 +358,7 @@ namespace Irixi_Aligner_Common.Classes
         /// </summary>
         /// <param name="Axis"></param>
         /// <param name="Args"></param>
-        public async void MoveLogicalAxis(LogicalAxis Axis, MoveArgs Args)
+        public async void MoveLogicalAxis(LogicalAxis Axis, MoveByDistanceArgs Args)
         {
             if(GetSystemState() != SystemState.BUSY)
             {
@@ -373,7 +373,10 @@ namespace Irixi_Aligner_Common.Classes
                 {
                     this.LastMessage = new MessageItem(MessageType.Error, "{0} Unable to move, {1}", Axis, Axis.PhysicalAxisInst.LastError);
 
-                    Messenger.Default.Send<NotificationMessage<string>>(new NotificationMessage<string>(this.LastMessage.Message, "Error"));
+                    Messenger.Default.Send<NotificationMessage<string>>(new NotificationMessage<string>(
+                        this,
+                        this.LastMessage.Message, 
+                        "ERROR"));
                 }
                 else
                 {
@@ -402,7 +405,7 @@ namespace Irixi_Aligner_Common.Classes
         /// <remarks>
         /// An args is consisted of 3 elements: Move Order, Logical Axis, How to Move
         /// </remarks>
-        public async void MassMoveLogicalAxis(Tuple<int, LogicalAxis, MoveArgs>[] AxesGroup)
+        public async void MassMoveLogicalAxis(Tuple<int, LogicalAxis, MoveByDistanceArgs>[] AxesGroup)
         {
             if (GetSystemState() != SystemState.BUSY)
             {

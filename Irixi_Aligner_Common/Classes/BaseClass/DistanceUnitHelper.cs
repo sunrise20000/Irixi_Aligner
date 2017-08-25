@@ -93,7 +93,6 @@ namespace Irixi_Aligner_Common.Classes.BaseClass
             get;
         }
 
-
         double _abs_distance = 0;
         /// <summary>
         /// Get the absolut distance in real world unit
@@ -117,7 +116,7 @@ namespace Irixi_Aligner_Common.Classes.BaseClass
         /// </summary>
         public double RelDistance
         {
-            private set
+            set
             {
                 UpdateProperty<double>(ref _rel_distance, value);
             }

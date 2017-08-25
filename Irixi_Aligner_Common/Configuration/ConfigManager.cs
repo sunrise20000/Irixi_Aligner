@@ -88,6 +88,5 @@ namespace Irixi_Aligner_Common.Configuration
                 fs.Close();
             }
         }
-
     }
 }
