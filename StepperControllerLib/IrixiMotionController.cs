@@ -647,20 +647,18 @@ namespace IrixiStepperControllerHelper
                 };
                 _hid_device.Write(cmd.ToBytes());
 
-                //! Wait for 2 report packages to ensure that the move command has been 
-                //! executed by the device.
-                uint _report_counter = this.Report.Counter + 2;
-
+                // wait for the next hid report
+                uint _report_counter = this.Report.Counter + 1;
                 do
                 {
-                    Thread.Sleep(10);
+                    Thread.Sleep(2);
                 } while (this.Report.Counter <= _report_counter);
 
                 // the TRUE value of the IsRunning property indicates that the axis is running
                 // wait until the running process is done
                 while (this.Report.AxisStateCollection[AxisIndex].IsRunning)
                 {
-                    Thread.Sleep(10);
+                    Thread.Sleep(2);
                 }
 
                 if (Report.AxisStateCollection[AxisIndex].Error != 0)
