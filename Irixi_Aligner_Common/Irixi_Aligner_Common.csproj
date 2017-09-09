@@ -218,6 +218,7 @@
     <None Include="Configuration\motion_controller.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Include="Configuration\profile_suruga_stages.json" />
     <None Include="install.bat" />
     <None Include="my.db" />
     <None Include="packages.config" />
