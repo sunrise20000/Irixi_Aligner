@@ -94,7 +94,7 @@ namespace Irixi_Aligner_Common.Windows
                     Axis4MassMove _axis_view = view.AxisControlCollection[i];
                     LogicalAxis _log_axis = view.MotionComponent.LogicalAxisCollection[i];
 
-                    _axis_view.Position = _log_axis.PhysicalAxisInst.UnitHelper.RelDistance;
+                    _axis_view.Position = _log_axis.PhysicalAxisInst.UnitHelper.RelPosition;
                     _axis_view.IsAbsMode = _log_axis.PhysicalAxisInst.IsAbsMode;
                     _axis_view.Speed = 100;
                 }

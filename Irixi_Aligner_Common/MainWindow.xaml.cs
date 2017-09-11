@@ -16,6 +16,7 @@ using Irixi_Aligner_Common.Classes.Converters;
 using System.Windows.Media.Imaging;
 using Irixi_Aligner_Common.ViewModel;
 using Irixi_Aligner_Common.Windows;
+using System.Collections;
 
 namespace Irixi_Aligner_Common
 {
@@ -25,121 +26,114 @@ namespace Irixi_Aligner_Common
 
         public MainWindow()
         {
-            try
+
+            // show splash screen
+            splashscreen = new Splash();
+            splashscreen.Show();
+
+            InitializeComponent();
+
+            Messenger.Default.Register<NotificationMessage<string>>(this, PopNotificationMessage);
+
+            // create DocumentPanel by the logical motion components defined in the config file
+            var service = SimpleIoc.Default.GetInstance<SystemService>();
+            var config = SimpleIoc.Default.GetInstance<ConfigManager>();
+
+            foreach (var motionpart in service.LogicalMotionComponentCollection)
             {
-                // show splash screen
-                splashscreen = new Splash();
-                splashscreen.Show();
-
-                InitializeComponent();
-
-                Messenger.Default.Register<NotificationMessage<string>>(this, PopNotificationMessage);
-
-                // create DocumentPanel by the logical motion components defined in the config file
-                var service = SimpleIoc.Default.GetInstance<SystemService>();
-                var config = SimpleIoc.Default.GetInstance<ConfigManager>();
-
-                foreach (var motionpart in service.LogicalMotionComponentCollection)
+                // create a motion component panel control
+                // which is the content of the document panel
+                MotionComponentPanel mp = new MotionComponentPanel()
                 {
-                    // create a motion component panel control
-                    // which is the content of the document panel
-                    MotionComponentPanel mp = new MotionComponentPanel()
-                    {
-                        // set the datacontext to the LogicalMotionComponent
-                        DataContext = motionpart
-                    };
+                    // set the datacontext to the LogicalMotionComponent
+                    DataContext = motionpart
+                };
 
-                    // create a document panel shown on the document group
-                    DocumentPanel dp = new DocumentPanel()
-                    {
-                        Name = string.Format("dp{0}", motionpart.Caption.Replace(" ", "")),
-                        Caption = motionpart.Caption,
-                        AllowMaximize = false,
-                        AllowSizing = false,
-                        //AllowClose = false,
-                        ClosingBehavior = ClosingBehavior.HideToClosedPanelsCollection,
-
-                        // set the actual content into DocumentPanel
-                        // which contains title and axis array
-                        Content = mp
-                    };
-
-                    // add the documentpanel to the documentgroup
-                    MotionComponentPanelHost.Items.Add(dp);
-
-                    // find the icon shown in the button
-                    var image = (BitmapFrame)TryFindResource(motionpart.Icon);
-
-                    // add view buttons to Ribbon toolbar
-                    BarCheckItem chk = new BarCheckItem()
-                    {
-                        Content = motionpart.Caption,
-                        LargeGlyph = image
-                    };
-
-                    // bind the IsCheck property to the document panel's Closed property
-                    Binding b = new Binding()
-                    {
-                        Source = dp,
-                        Path = new PropertyPath("Visibility"),
-                        Mode = BindingMode.TwoWay,
-                        Converter = new BooleanToVisibility()
-                    };
-                    chk.SetBinding(BarCheckItem.IsCheckedProperty, b);
-
-                    rpgView_MotionComponent.Items.Add(chk);
-
-                    // add buttons to show the preset position window 
-                    BarButtonItem btn = new BarButtonItem()
-                    {
-                        Content = motionpart.Caption,
-                        LargeGlyph = image,
-                        DataContext = motionpart
-                    };
-
-                    // raise the click event
-                    btn.ItemClick += (s, e) =>
-                    {
-                        ViewMassMove view = new ViewMassMove(service, motionpart);
-                        MassMoveWindow w = new MassMoveWindow();
-                        w.DataContext = view;
-                        w.ShowDialog();
-                    };
-
-                    rpgPresetPositionButtonsHost.Items.Add(btn);
-
-
-
-                }
-
-                // restore workspace layout
-                for (int i = 0; i < MotionComponentPanelHost.Items.Count; i++)
+                // create a document panel shown on the document group
+                DocumentPanel dp = new DocumentPanel()
                 {
-                    var panel = MotionComponentPanelHost.Items[i];
+                    Name = string.Format("dp{0}", motionpart.Caption.Replace(" ", "")),
+                    Caption = motionpart.Caption,
+                    AllowMaximize = false,
+                    AllowSizing = false,
+                    //AllowClose = false,
+                    ClosingBehavior = ClosingBehavior.HideToClosedPanelsCollection,
 
-                    if (panel is DocumentPanel)
-                    {
-                        var layout =
-                            (from items
-                            in config.WorkspaceLayoutHelper.WorkspaceLayout
-                             where items.PanelName == panel.Name
-                             select items).First();
+                    // set the actual content into DocumentPanel
+                    // which contains title and axis array
+                    Content = mp
+                };
 
+                // add the documentpanel to the documentgroup
+                MotionComponentPanelHost.Items.Add(dp);
 
-                        panel.Visibility = layout.IsClosed ? Visibility.Hidden : Visibility.Visible;
-                        ((DocumentPanel)panel).MDILocation = layout.MDILocation;
+                // find the icon shown in the button
+                var image = (BitmapFrame)TryFindResource(motionpart.Icon);
 
-                        //// if IsClosed property is set to true, the panel will be remove from
-                        //// the Items, so the "i" should be rolled back; otherwise, some panel
-                        //// will be missed.
-                        //if (layout.IsClosed)
-                        //    i--;
-                    }
-                }
+                // add view buttons to Ribbon toolbar
+                BarCheckItem chk = new BarCheckItem()
+                {
+                    Content = motionpart.Caption,
+                    LargeGlyph = image
+                };
+
+                // bind the IsCheck property to the document panel's Closed property
+                Binding b = new Binding()
+                {
+                    Source = dp,
+                    Path = new PropertyPath("Visibility"),
+                    Mode = BindingMode.TwoWay,
+                    Converter = new BooleanToVisibility()
+                };
+                chk.SetBinding(BarCheckItem.IsCheckedProperty, b);
+
+                rpgView_MotionComponent.Items.Add(chk);
+
+                // add buttons to show the preset position window 
+                BarButtonItem btn = new BarButtonItem()
+                {
+                    Content = motionpart.Caption,
+                    LargeGlyph = image,
+                    DataContext = motionpart
+                };
+
+                // raise the click event
+                btn.ItemClick += (s, e) =>
+                {
+                    ViewMassMove view = new ViewMassMove(service, motionpart);
+                    MassMoveWindow w = new MassMoveWindow();
+                    w.DataContext = view;
+                    w.ShowDialog();
+                };
+
+                rpgPresetPositionButtonsHost.Items.Add(btn);
             }
-            catch(Exception ex)
+
+            // restore workspace layout
+            for (int i = 0; i < MotionComponentPanelHost.Items.Count; i++)
             {
-                MessageBox.Show(ex.Message, "Fatal Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                var panel = MotionComponentPanelHost.Items[i];
+
+                if (panel is DocumentPanel)
+                {
+                    //var layout =
+                    //    (from items
+                    //    in config.WorkspaceLayoutHelper.WorkspaceLayout
+                    //     where items.PanelName == panel.Name
+                    //     select items).First();
+
+                    var layout = ((IEnumerable)config.ConfWSLayout.WorkspaceLayout).Cast<dynamic>().Where(item => item.PanelName == panel.Name).First();
+
+
+                    panel.Visibility = layout.IsClosed ? Visibility.Hidden : Visibility.Visible;
+                    ((DocumentPanel)panel).MDILocation = layout.MDILocation;
+
+                    //// if IsClosed property is set to true, the panel will be remove from
+                    //// the Items, so the "i" should be rolled back; otherwise, some panel
+                    //// will be missed.
+                    //if (layout.IsClosed)
+                    //    i--;
+                }
             }
         }
 

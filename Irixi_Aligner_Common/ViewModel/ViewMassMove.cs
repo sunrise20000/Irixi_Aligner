@@ -30,7 +30,7 @@ namespace Irixi_Aligner_Common.ViewModel
                 {
                     TotalAxes = component.LogicalAxisCollection.Count,
                     AxisName = logicalaxis.AxisName,
-                    Position = logicalaxis.PhysicalAxisInst.UnitHelper.RelDistance,
+                    Position = logicalaxis.PhysicalAxisInst.UnitHelper.RelPosition,
                     IsAbsMode = logicalaxis.PhysicalAxisInst.IsAbsMode,
                     LogicalAxis = logicalaxis
                 });

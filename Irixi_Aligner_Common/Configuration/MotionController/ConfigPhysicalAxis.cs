@@ -1,14 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using static Irixi_Aligner_Common.Classes.BaseClass.RealworldDistanceUnitHelper;
+﻿using static Irixi_Aligner_Common.Classes.BaseClass.RealworldPositionManager;
 
 namespace Irixi_Aligner_Common.Configuration
 {
     public class ConfigPhysicalAxis
     {
+        #region Constructor
+
+        #endregion
+
+        public string Comment { get; set; }
+
         /// <summary>
         /// Get the name of the axis
         /// </summary>
@@ -35,30 +36,65 @@ namespace Irixi_Aligner_Common.Configuration
         public int AccelerationSteps { get; set; }
 
         /// <summary>
-        /// Get the maximum distance that the axis supports
+        /// Get the subdivsion set of the motor driver hardware
         /// </summary>
-        public double MaxStroke { get; set; }
-
-        /// <summary>
-        /// Get the CW limitaion
-        /// normally this value indicates how far the mounting block could move from the mechanical zero point
-        /// </summary>
-        public int CWL { get; set; }
-
-        /// <summary>
-        ///  Get the CCW limitaion
-        ///  normally this value indicates how close the mounting block could be to the mechanical zero point 
-        /// </summary>
-        public int CCWL { get; set; }
+        public int SubDivision { get; set; }
 
         /// <summary>
         /// Get the decimal digits of the real world distance displayed on the window
         /// </summary>
-        public int Digits { get; set; }
+        public int ScaleDisplayed { get; set; }
+
+        /// <summary>
+        /// Get the vendor of the motorized actuator
+        /// </summary>
+        public string Vendor { get; set; }
+
+        /// <summary>
+        /// Get the model of the motorized actuator
+        /// </summary>
+        public string Model { get; set; }
 
         /// <summary>
         /// Get the unit of the real world distance
         /// </summary>
         public UnitType Unit { get; set; }
+
+        /// <summary>
+        /// Get whether the home point should be reversed
+        /// </summary>
+        public bool ReverseHomePoint { get; set; }
+
+
+        public MotorizedStageProfile MotorizedStageProfile { private set; get; }
+
+        /// <summary>
+        /// Some of parameters should be re-calculated while the profile is set,
+        /// because the Unit/Subdivision settings effect the profile.
+        /// </summary>
+        /// <param name="Profile"></param>
+        public void SetProfile(MotorizedStageProfile Profile)
+        {
+            /*
+             * NOTE: Make sure that the execution order is:
+             *   1. Change Unit
+             *   2. Recalculate parameters
+             */
+
+            // note that the desired unit might be different from the definition in the motorized stage profile,
+            // it because that the profile is the common definition, but for each particular usage, we may want
+            // the different definition.
+            Profile.ChangeUnit(this.Unit);
+
+            // re-set the resolution occording the subdivision
+            Profile.Resolution /= this.SubDivision;
+
+            this.MotorizedStageProfile = Profile;
+        }
+
+        public override string ToString()
+        {
+            return Comment;
+        }
     }
 }

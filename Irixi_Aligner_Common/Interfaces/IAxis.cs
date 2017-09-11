@@ -69,26 +69,11 @@ namespace Irixi_Aligner_Common.Interfaces
         int AccelerationSteps { get; }
 
         /// <summary>
-        /// Get the maximum stroke the axis supports in real world unit
-        /// </summary>
-        double MaxStroke { get; }
-
-        /// <summary>
-        /// Get or set the CW limitaion in steps
-        /// </summary>
-        int CWL { set; get; }
-
-        /// <summary>
-        /// Get or set the CCW limitaion in steps
-        /// </summary>
-        int CCWL { set; get; }
-
-        /// <summary>
         /// Get or set the tag of axis
         /// </summary>
         object Tag { set; get; }
 
-        RealworldDistanceUnitHelper UnitHelper { get; }
+        RealworldPositionManager UnitHelper { get; }
 
         /// <summary>
         /// Get the last error

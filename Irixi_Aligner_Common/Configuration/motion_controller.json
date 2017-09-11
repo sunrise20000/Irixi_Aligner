@@ -13,7 +13,7 @@
     {
       "DeviceClass": "5013d013-f167-4dcb-86d9-599a325744b8",
       "Model": "LUMINOS_P6A",
-      "Port": "COM4",
+      "Port": "COM5",
       "Enabled": true,
       "Comment": "For VGroove Aligner",
       "AxisCollection": [
@@ -23,11 +23,11 @@
           "OffsetAfterHome": 0,
           "MaxSpeed": 10000,
           "AccelerationSteps": 2000,
-          "MaxStroke": 12700,
-          "CWL": 128000,
-          "CCWL": 0,
-          "Unit": "um",
-          "Digits": 4
+          "SubDivision": 1,
+          "ScaleDisplayed": 4,
+          "Vendor": "Luminos",
+          "Model": "Z",
+          "Unit": "um"
         },
         {
           "Name": 2,
@@ -35,11 +35,11 @@
           "OffsetAfterHome": 0,
           "MaxSpeed": 10000,
           "AccelerationSteps": 2000,
-          "MaxStroke": 2500,
-          "CWL": 128000,
-          "CCWL": 0,
-          "Unit": "um",
-          "Digits": 4
+          "SubDivision": 1,
+          "ScaleDisplayed": 4,
+          "Vendor": "Luminos",
+          "Model": "X",
+          "Unit": "um"
         },
         {
           "Name": 3,
@@ -47,11 +47,11 @@
           "OffsetAfterHome": 0,
           "MaxSpeed": 10000,
           "AccelerationSteps": 2000,
-          "MaxStroke": 2500,
-          "CWL": 128000,
-          "CCWL": 0,
-          "Unit": "um",
-          "Digits": 4
+          "SubDivision": 1,
+          "ScaleDisplayed": 4,
+          "Vendor": "Luminos",
+          "Model": "Y",
+          "Unit": "um"
         },
         {
           "Name": 4,
@@ -59,11 +59,11 @@
           "OffsetAfterHome": 0,
           "MaxSpeed": 10000,
           "AccelerationSteps": 2000,
-          "MaxStroke": 3,
-          "CWL": 128000,
-          "CCWL": 0,
-          "Unit": "deg",
-          "Digits": 6
+          "SubDivision": 1,
+          "ScaleDisplayed": 6,
+          "Vendor": "Luminos",
+          "Model": "Roll",
+          "Unit": "deg"
         },
         {
           "Name": 5,
@@ -71,11 +71,11 @@
           "OffsetAfterHome": 0,
           "MaxSpeed": 10000,
           "AccelerationSteps": 2000,
-          "MaxStroke": 3,
-          "CWL": 128000,
-          "CCWL": 0,
-          "Unit": "deg",
-          "Digits": 6
+          "SubDivision": 1,
+          "ScaleDisplayed": 6,
+          "Vendor": "Luminos",
+          "Model": "Yaw",
+          "Unit": "deg"
         },
         {
           "Name": 6,
@@ -83,11 +83,11 @@
           "OffsetAfterHome": 0,
           "MaxSpeed": 10000,
           "AccelerationSteps": 2000,
-          "MaxStroke": 3,
-          "CWL": 128000,
-          "CCWL": 0,
-          "Unit": "deg",
-          "Digits": 6
+          "SubDivision": 1,
+          "ScaleDisplayed": 6,
+          "Vendor": "Luminos",
+          "Model": "Pitch",
+          "Unit": "deg"
         }
       ]
     },
@@ -104,11 +104,11 @@
           "OffsetAfterHome": 0,
           "MaxSpeed": 10000,
           "AccelerationSteps": 2000,
-          "MaxStroke": 12700,
-          "CWL": 128000,
-          "CCWL": 0,
-          "Unit": "um",
-          "Digits": 4
+          "SubDivision": 1,
+          "ScaleDisplayed": 4,
+          "Vendor": "Luminos",
+          "Model": "Z",
+          "Unit": "um"
         },
         {
           "Name": 2,
@@ -116,11 +116,11 @@
           "OffsetAfterHome": 0,
           "MaxSpeed": 10000,
           "AccelerationSteps": 2000,
-          "MaxStroke": 2500,
-          "CWL": 128000,
-          "CCWL": 0,
-          "Unit": "um",
-          "Digits": 4
+          "SubDivision": 1,
+          "ScaleDisplayed": 4,
+          "Vendor": "Luminos",
+          "Model": "X",
+          "Unit": "um"
         },
         {
           "Name": 3,
@@ -128,11 +128,11 @@
           "OffsetAfterHome": 0,
           "MaxSpeed": 10000,
           "AccelerationSteps": 2000,
-          "MaxStroke": 2500,
-          "CWL": 128000,
-          "CCWL": 0,
-          "Unit": "um",
-          "Digits": 4
+          "SubDivision": 1,
+          "ScaleDisplayed": 4,
+          "Vendor": "Luminos",
+          "Model": "Y",
+          "Unit": "um"
         },
         {
           "Name": 4,
@@ -140,11 +140,11 @@
           "OffsetAfterHome": 0,
           "MaxSpeed": 10000,
           "AccelerationSteps": 2000,
-          "MaxStroke": 3,
-          "CWL": 128000,
-          "CCWL": 0,
-          "Unit": "deg",
-          "Digits": 6
+          "SubDivision": 1,
+          "ScaleDisplayed": 6,
+          "Vendor": "Luminos",
+          "Model": "Roll",
+          "Unit": "deg"
         },
         {
           "Name": 5,
@@ -152,11 +152,11 @@
           "OffsetAfterHome": 0,
           "MaxSpeed": 10000,
           "AccelerationSteps": 2000,
-          "MaxStroke": 3,
-          "CWL": 128000,
-          "CCWL": 0,
-          "Unit": "deg",
-          "Digits": 6
+          "SubDivision": 1,
+          "ScaleDisplayed": 6,
+          "Vendor": "Luminos",
+          "Model": "Yaw",
+          "Unit": "deg"
         },
         {
           "Name": 6,
@@ -164,11 +164,11 @@
           "OffsetAfterHome": 0,
           "MaxSpeed": 10000,
           "AccelerationSteps": 2000,
-          "MaxStroke": 3,
-          "CWL": 128000,
-          "CCWL": 0,
-          "Unit": "deg",
-          "Digits": 6
+          "SubDivision": 1,
+          "ScaleDisplayed": 6,
+          "Vendor": "Luminos",
+          "Model": "Pitch",
+          "Unit": "deg"
         }
       ]
     },
@@ -185,11 +185,11 @@
           "OffsetAfterHome": 0,
           "MaxSpeed": 10000,
           "AccelerationSteps": 2000,
-          "MaxStroke": 12700,
-          "CWL": 128000,
-          "CCWL": 0,
-          "Unit": "um",
-          "Digits": 4
+          "SubDivision": 1,
+          "ScaleDisplayed": 4,
+          "Vendor": "Luminos",
+          "Model": "Z",
+          "Unit": "um"
         },
         {
           "Name": 2,
@@ -197,11 +197,11 @@
           "OffsetAfterHome": 0,
           "MaxSpeed": 10000,
           "AccelerationSteps": 2000,
-          "MaxStroke": 2500,
-          "CWL": 128000,
-          "CCWL": 0,
-          "Unit": "um",
-          "Digits": 4
+          "SubDivision": 1,
+          "ScaleDisplayed": 4,
+          "Vendor": "Luminos",
+          "Model": "X",
+          "Unit": "um"
         },
         {
           "Name": 3,
@@ -209,11 +209,11 @@
           "OffsetAfterHome": 0,
           "MaxSpeed": 10000,
           "AccelerationSteps": 2000,
-          "MaxStroke": 2500,
-          "CWL": 128000,
-          "CCWL": 0,
-          "Unit": "um",
-          "Digits": 4
+          "SubDivision": 1,
+          "ScaleDisplayed": 4,
+          "Vendor": "Luminos",
+          "Model": "Y",
+          "Unit": "um"
         },
         {
           "Name": 4,
@@ -221,11 +221,11 @@
           "OffsetAfterHome": 0,
           "MaxSpeed": 10000,
           "AccelerationSteps": 2000,
-          "MaxStroke": 3,
-          "CWL": 128000,
-          "CCWL": 0,
-          "Unit": "deg",
-          "Digits": 6
+          "SubDivision": 1,
+          "ScaleDisplayed": 6,
+          "Vendor": "Luminos",
+          "Model": "Roll",
+          "Unit": "deg"
         },
         {
           "Name": 5,
@@ -233,11 +233,11 @@
           "OffsetAfterHome": 0,
           "MaxSpeed": 10000,
           "AccelerationSteps": 2000,
-          "MaxStroke": 3,
-          "CWL": 128000,
-          "CCWL": 0,
-          "Unit": "deg",
-          "Digits": 6
+          "SubDivision": 1,
+          "ScaleDisplayed": 6,
+          "Vendor": "Luminos",
+          "Model": "Yaw",
+          "Unit": "deg"
         },
         {
           "Name": 6,
@@ -245,11 +245,11 @@
           "OffsetAfterHome": 0,
           "MaxSpeed": 10000,
           "AccelerationSteps": 2000,
-          "MaxStroke": 3,
-          "CWL": 128000,
-          "CCWL": 0,
-          "Unit": "deg",
-          "Digits": 6
+          "SubDivision": 1,
+          "ScaleDisplayed": 6,
+          "Vendor": "Luminos",
+          "Model": "Pitch",
+          "Unit": "deg"
         }
       ]
     },
@@ -261,40 +261,46 @@
       "Comment": "TOP CAM, Irixi 3-Axis Motion Controller, PCB Board 3",
       "AxisCollection": [
         {
+          "Comment": "",
           "Name": 0,
           "Enabled": true,
           "OffsetAfterHome": 0,
           "MaxSpeed": 10000,
           "AccelerationSteps": 2000,
-          "MaxStroke": 50,
-          "CWL": 100000,
-          "CCWL": 0,
+          "SubDivision": 2,
+          "ScaleDisplayed": 4,
+          "Vendor": "Suruga",
+          "Model": "KXL06050-C1-G",
           "Unit": "mm",
-          "Digits": 4
+          "ReverseHomePoint": false
         },
         {
+          "Comment": "",
           "Name": 1,
           "Enabled": true,
           "OffsetAfterHome": 0,
           "MaxSpeed": 10000,
           "AccelerationSteps": 2000,
-          "MaxStroke": 30,
-          "CWL": 30000,
-          "CCWL": 0,
+          "SubDivision": 2,
+          "ScaleDisplayed": 4,
+          "Vendor": "Suruga",
+          "Model": "KZG06030-C",
           "Unit": "mm",
-          "Digits": 4
+          "ReverseHomePoint": false
         },
         {
+          "Comment": "",
           "Name": 2,
           "Enabled": true,
           "OffsetAfterHome": 0,
           "MaxSpeed": 10000,
           "AccelerationSteps": 2000,
-          "MaxStroke": 50,
-          "CWL": 100000,
-          "CCWL": 0,
+          "SubDivision": 2,
+          "ScaleDisplayed": 4,
+          "Vendor": "Suruga",
+          "Model": "KXL06050-C1-G",
           "Unit": "mm",
-          "Digits": 4
+          "ReverseHomePoint": false
         }
       ]
     },
@@ -306,40 +312,46 @@
       "Comment": "ANGLE CAM, Irixi 3-Axis Motion Controller, PCB Board 1",
       "AxisCollection": [
         {
+          "Comment": "",
           "Name": 0,
           "Enabled": true,
           "OffsetAfterHome": 0,
           "MaxSpeed": 10000,
           "AccelerationSteps": 2000,
-          "MaxStroke": 50,
-          "CWL": 100000,
-          "CCWL": 0,
+          "SubDivision": 2,
+          "ScaleDisplayed": 4,
+          "Vendor": "Suruga",
+          "Model": "KXL06050-C1-G",
           "Unit": "mm",
-          "Digits": 2
+          "ReverseHomePoint": false
         },
         {
+          "Comment": "",
           "Name": 1,
           "Enabled": true,
           "OffsetAfterHome": 0,
           "MaxSpeed": 10000,
           "AccelerationSteps": 2000,
-          "MaxStroke": 30,
-          "CWL": 30000,
-          "CCWL": 0,
+          "SubDivision": 2,
+          "ScaleDisplayed": 4,
+          "Vendor": "Suruga",
+          "Model": "KZG06030-C",
           "Unit": "mm",
-          "Digits": 2
+          "ReverseHomePoint": false
         },
         {
+          "Comment": "",
           "Name": 2,
           "Enabled": true,
           "OffsetAfterHome": 0,
           "MaxSpeed": 10000,
           "AccelerationSteps": 2000,
-          "MaxStroke": 50,
-          "CWL": 100000,
-          "CCWL": 0,
+          "SubDivision": 2,
+          "ScaleDisplayed": 4,
+          "Vendor": "Suruga",
+          "Model": "KXL06050-C1-G",
           "Unit": "mm",
-          "Digits": 2
+          "ReverseHomePoint": false
         }
       ]
     },
@@ -351,43 +363,46 @@
       "Comment": "Front CAM, Irixi 3-Axis Motion Controller, PCB Board 4",
       "AxisCollection": [
         {
+          "Comment": "X Axis of front camera",
           "Name": 0,
           "Enabled": true,
           "OffsetAfterHome": 0,
           "MaxSpeed": 10000,
           "AccelerationSteps": 2000,
-          "MaxStroke": 100,
-          "CWL": 100000,
-          "CCWL": 0,
+          "SubDivision": 1,
+          "ScaleDisplayed": 4,
+          "Vendor": "Suruga",
+          "Model": "KXL06100-C2-G",
           "Unit": "mm",
-          "Digits": 2,
-          "Comment": "Front CAM X, Cable 11, KXL06100-C2-G"
+          "ReverseHomePoint": false
         },
         {
+          "Comment": "Y Axis of front camera",
           "Name": 1,
           "Enabled": true,
           "OffsetAfterHome": 0,
           "MaxSpeed": 10000,
           "AccelerationSteps": 2000,
-          "MaxStroke": 30,
-          "CWL": 30000,
-          "CCWL": 0,
+          "SubDivision": 2,
+          "ScaleDisplayed": 4,
+          "Vendor": "Suruga",
+          "Model": "KXG06030-C",
           "Unit": "mm",
-          "Digits": 2,
-          "Comment": "Front CAM Y, Cable 12, KXG06030-C"
+          "ReverseHomePoint": false
         },
         {
+          "Comment": "Z Axis of front camera",
           "Name": 2,
           "Enabled": true,
           "OffsetAfterHome": 0,
           "MaxSpeed": 10000,
           "AccelerationSteps": 2000,
-          "MaxStroke": 30,
-          "CWL": 30000,
-          "CCWL": 0,
+          "SubDivision": 2,
+          "ScaleDisplayed": 4,
+          "Vendor": "Suruga",
+          "Model": "KZG06030-C",
           "Unit": "mm",
-          "Digits": 2,
-          "Comment": "Front CAM Z, Cable 13, KZG06030-C"
+          "ReverseHomePoint": false
         }
       ]
     },
@@ -399,43 +414,46 @@
       "Comment": "Probe Card Z, Lens Expansion Z, VGroove Expansion X",
       "AxisCollection": [
         {
+          "Comment": "VGroove Expansion X, Cable 7",
           "Name": 0,
           "Enabled": true,
           "OffsetAfterHome": 0,
           "MaxSpeed": 10000,
           "AccelerationSteps": 2000,
-          "MaxStroke": 50,
-          "CWL": 100000,
-          "CCWL": 0,
+          "SubDivision": 2,
+          "ScaleDisplayed": 4,
+          "Vendor": "Suruga",
+          "Model": "KXL06050-C1-G",
           "Unit": "mm",
-          "Digits": 2,
-          "Comment": "VGroove Expansion X, Cable 7, KXL06050-C1-G"
+          "ReverseHomePoint": false
         },
         {
+          "Comment": "Lens Expansion Z, Cable 16",
           "Name": 1,
           "Enabled": true,
           "OffsetAfterHome": 0,
           "MaxSpeed": 10000,
           "AccelerationSteps": 2000,
-          "MaxStroke": 30,
-          "CWL": 30000,
-          "CCWL": 0,
+          "SubDivision": 2,
+          "ScaleDisplayed": 4,
+          "Vendor": "Suruga",
+          "Model": "KZG06030-C",
           "Unit": "mm",
-          "Digits": 2,
-          "Comment": "Lens Expansion Z, Cable 16, KZG06030-C"
+          "ReverseHomePoint": false
         },
         {
+          "Comment": "Probe Card, Cable 10",
           "Name": 2,
           "Enabled": true,
           "OffsetAfterHome": 0,
           "MaxSpeed": 10000,
           "AccelerationSteps": 2000,
-          "MaxStroke": 15,
-          "CWL": 15000,
-          "CCWL": 0,
+          "SubDivision": 2,
+          "ScaleDisplayed": 4,
+          "Vendor": "Suruga",
+          "Model": "KZC04015-C",
           "Unit": "mm",
-          "Digits": 2,
-          "Comment": "Probe Card, Cable 10, KZC04015-C"
+          "ReverseHomePoint": false
         }
       ]
     },
@@ -447,43 +465,46 @@
       "Comment": "POD Aligner, Irixi 3-Axis Motion Controller, PCB Board 5",
       "AxisCollection": [
         {
+          "Comment": "POD X, Cable 8, KXL06050-C1-G",
           "Name": 0,
           "Enabled": true,
           "OffsetAfterHome": 0,
           "MaxSpeed": 20000,
           "AccelerationSteps": 2000,
-          "MaxStroke": 50000,
-          "CWL": 1000000,
-          "CCWL": 0,
+          "SubDivision": 20,
+          "ScaleDisplayed": 4,
+          "Vendor": "Suruga",
+          "Model": "KXL06050-C1-G",
           "Unit": "um",
-          "Digits": 2,
-          "Comment": "POD X, Cable 8, KXL06050-C1-G"
+          "ReverseHomePoint": false
         },
         {
+          "Comment": "POD Y, Cable 9",
           "Name": 1,
           "Enabled": true,
           "OffsetAfterHome": 0,
           "MaxSpeed": 20000,
           "AccelerationSteps": 2000,
-          "MaxStroke": 50000,
-          "CWL": 1000000,
-          "CCWL": 0,
+          "SubDivision": 20,
+          "ScaleDisplayed": 4,
+          "Vendor": "Suruga",
+          "Model": "KXL06050-C1-G",
           "Unit": "um",
-          "Digits": 2,
-          "Comment": "POD Y, Cable 9, KXL06050-C1-G"
+          "ReverseHomePoint": false
         },
         {
+          "Comment": "POD Z, Cable 14",
           "Name": 2,
           "Enabled": true,
           "OffsetAfterHome": 0,
           "MaxSpeed": 20000,
           "AccelerationSteps": 2000,
-          "MaxStroke": 20000,
-          "CWL": 200000,
-          "CCWL": 0,
+          "SubDivision": 20,
+          "ScaleDisplayed": 4,
+          "Vendor": "Suruga",
+          "Model": "KXG06020-C",
           "Unit": "um",
-          "Digits": 2,
-          "Comment": "POD Z, Cable 14, KXG06020-C"
+          "ReverseHomePoint": false
         }
       ]
     },
@@ -495,46 +516,51 @@
       "Comment": "Lens Expansion Y",
       "AxisCollection": [
         {
+          "Comment": "Lens Expansion Y",
           "Name": 0,
           "Enabled": true,
           "OffsetAfterHome": 0,
           "MaxSpeed": 10000,
           "AccelerationSteps": 2000,
-          "MaxStroke": 150,
-          "CWL": 150000,
-          "CCWL": 0,
+          "SubDivision": 2,
+          "ScaleDisplayed": 4,
+          "Vendor": "Suruga",
+          "Model": "KXL06150-C2-G4",
           "Unit": "mm",
-          "Digits": 2,
-          "Comment": "Lens Expansion Y, KXL06150-C4-G2"
+          "ReverseHomePoint": false
         },
         {
+          "Comment": "No Connection",
           "Name": 1,
           "Enabled": false,
           "OffsetAfterHome": 0,
           "MaxSpeed": 10000,
           "AccelerationSteps": 2000,
-          "MaxStroke": 50000,
-          "CWL": 1000000,
-          "CCWL": 0,
+          "SubDivision": 2,
+          "ScaleDisplayed": 4,
+          "Vendor": "Suruga",
+          "Model": "KXL06150-C2-G4",
           "Unit": "um",
-          "Digits": 2
+          "ReverseHomePoint": false
         },
         {
+          "Comment": "No Connection",
           "Name": 2,
           "Enabled": false,
           "OffsetAfterHome": 0,
           "MaxSpeed": 10000,
           "AccelerationSteps": 2000,
-          "MaxStroke": 15,
-          "CWL": 7500,
-          "CCWL": 0,
-          "Unit": "mm",
-          "Digits": 2
+          "SubDivision": 2,
+          "ScaleDisplayed": 4,
+          "Vendor": "Suruga",
+          "Model": "KXL06150-C2-G4",
+          "Unit": "um",
+          "ReverseHomePoint": false
         }
       ]
     }
   ],
-  "LogicalMotionComponentArray": [
+  "LogicalMotionComponents": [
     {
       "Caption": "VGroove Aligner",
       "Icon": "IconViewWsPanels",

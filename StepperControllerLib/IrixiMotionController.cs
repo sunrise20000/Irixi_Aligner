@@ -271,7 +271,7 @@ namespace IrixiStepperControllerHelper
                             this.AxisCollection.Add(new Axis()
                             {
                                 // set the properties to the default value
-                                MaxDistance = 15000,
+                                MaxSteps = 15000,
                                 SoftCCWLS = 0,
                                 SoftCWLS = 15000,
                                 PosAfterHome = 0,
@@ -519,10 +519,10 @@ namespace IrixiStepperControllerHelper
         /// </summary>
         /// <param name="AxisIndex"></param>
         /// <param name="Velocity"></param>
-        /// <param name="Distance"></param>
+        /// <param name="Position"></param>
         /// <param name="Mode"></param>
         /// <returns></returns>
-        public bool Move(int AxisIndex, int Velocity, int Distance, MoveMode Mode)
+        public bool Move(int AxisIndex, int Velocity, int Position, MoveMode Mode)
         {
             int _curr_pos = this.Report.AxisStateCollection[AxisIndex].AbsPosition;   // Get current ABS position
             int _pos_aftermove = 0;
@@ -563,11 +563,12 @@ namespace IrixiStepperControllerHelper
             // Validate the parameters restricted in the config file
             //
             // MaxDistance > 0
-            if (this.AxisCollection[AxisIndex].MaxDistance <= 0)
+            if (this.AxisCollection[AxisIndex].MaxSteps == 0)
             {
                 this.LastError = string.Format("The value of the Max Distance has not been set.");
                 return false;
             }
+            
 
             // SoftCWLS > SoftCCWLS
             if (this.AxisCollection[AxisIndex].SoftCWLS <= this.AxisCollection[AxisIndex].SoftCCWLS)
@@ -577,7 +578,7 @@ namespace IrixiStepperControllerHelper
             }
 
             // SoftCWLS >= MaxDistance
-            if (this.AxisCollection[AxisIndex].SoftCWLS < this.AxisCollection[AxisIndex].MaxDistance)
+            if (this.AxisCollection[AxisIndex].SoftCWLS < this.AxisCollection[AxisIndex].MaxSteps)
             {
                 this.LastError = string.Format("The value of the SoftCWLS should be greater than the value of the Max Distance.");
                 return false;
@@ -590,6 +591,7 @@ namespace IrixiStepperControllerHelper
                 this.LastError = string.Format("The value of the PosAfterHome exceeds the soft limitaion.");
                 return false;
             }
+            
 
             //
             // Validate the position after moving,
@@ -597,25 +599,26 @@ namespace IrixiStepperControllerHelper
             //
             if (Mode == MoveMode.ABS)
             {
-                if (Distance < this.AxisCollection[AxisIndex].SoftCCWLS || Distance > this.AxisCollection[AxisIndex].SoftCWLS)
+                if (Position < this.AxisCollection[AxisIndex].SoftCCWLS || Position > this.AxisCollection[AxisIndex].SoftCWLS)
                 {
-                    this.LastError = string.Format("The abs position you are going to move exceeds the soft limitaion.");
+                    this.LastError = string.Format("The target position is out of range.");
                     return false;
                 }
                 else
                 {
-                    _pos_aftermove = Distance;
+                    _pos_aftermove = Position;
 
-                    Distance = Distance - _curr_pos;
+                    Position = Position - _curr_pos;
                 }
             }
-            else
+            else // rel positioning
             {
-                _pos_aftermove = (int)(_curr_pos + Distance);
+                _pos_aftermove = (int)(_curr_pos + Position);
 
-                if (Distance > 0) // CW
+                if (Position > 0) // CW
                 {
-                    if (_pos_aftermove > this.AxisCollection[AxisIndex].SoftCWLS)
+                    // if (_pos_aftermove > this.AxisCollection[AxisIndex].SoftCWLS)
+                    if (_pos_aftermove > this.AxisCollection[AxisIndex].MaxSteps)
                     {
                         this.LastError = string.Format("The position you are going to move exceeds the soft CW limitation.");
                         return false;
@@ -623,7 +626,8 @@ namespace IrixiStepperControllerHelper
                 }
                 else // CCW
                 {
-                    if (_pos_aftermove < this.AxisCollection[AxisIndex].SoftCCWLS)
+                    // if (_pos_aftermove < this.AxisCollection[AxisIndex].SoftCCWLS)
+                    if (_pos_aftermove < 0)
                     {
                         this.LastError = string.Format("The position you are going to move exceeds the soft CCW limitation.");
                         return false;
@@ -634,7 +638,7 @@ namespace IrixiStepperControllerHelper
             try
             {
                 // No need to move
-                if (Distance == 0)
+                if (Position == 0)
                     return true;
 
                 // write the 'move' command to the controller
@@ -644,7 +648,7 @@ namespace IrixiStepperControllerHelper
                     AxisIndex = AxisIndex,
                     AccSteps = this.AxisCollection[AxisIndex].AccelerationSteps,
                     DriveVelocity = Velocity * this.AxisCollection[AxisIndex].MaxSpeed / 100,
-                    TotalSteps = Distance
+                    TotalSteps = Position
                 };
                 _hid_device.Write(cmd.ToBytes());
 

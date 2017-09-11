@@ -25,7 +25,7 @@ namespace Irixi_Aligner_Common.Configuration
         /// <summary>
         /// Logical layout of the aligner
         /// </summary>
-        public ConfigLogicalMotionComponent[] LogicalMotionComponentArray{ get; set; }
+        public ConfigLogicalMotionComponent[] LogicalMotionComponents{ get; set; }
 
        
     }

@@ -9,35 +9,27 @@ namespace IrixiStepperControllerHelper
         /// Get the max distance(steps) the axis supports
         /// Typically, this value is set in the application's config files.
         /// </summary>
-        public int MaxDistance
+        public int MaxSteps
         {
             set;
             get;
         }
+
+        /// <summary>
+        /// Get the CCW (home point) direction limitation
+        /// </summary>
+        public int SoftCCWLS { get; set; }
+
+        /// <summary>
+        /// Get the CW direction limitation
+        /// </summary>
+        public int SoftCWLS { get; set; }
 
         /// <summary>
         /// Get the position after the home process
         /// Typically, this value is set in the application's config files.
         /// </summary>
         public int PosAfterHome
-        {
-            set;
-            get;
-        }
-
-        /// <summary>
-        /// Get the soft CWLS
-        /// </summary>
-        public int SoftCWLS
-        {
-            set;
-            get;
-        }
-
-        /// <summary>
-        /// Get the soft CCWLS
-        /// </summary>
-        public int SoftCCWLS
         {
             set;
             get;

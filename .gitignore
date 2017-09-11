@@ -12,3 +12,5 @@ StepperControllerLib/bin/
 packages/
 Irixi_Aligner_Common/ExtDlls/
 log/
+
+\.vs/

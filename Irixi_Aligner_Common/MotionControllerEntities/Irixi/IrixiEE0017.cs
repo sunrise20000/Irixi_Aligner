@@ -11,7 +11,7 @@ namespace Irixi_Aligner_Common.MotionControllerEntities
     {
         #region Variables
         /// <summary>
-        /// Raise when some messages are generated and pass the messages to the subscriber
+        /// Report the messages when the state of the controller changed such as device connected/disconnected
         /// </summary>
         public event EventHandler<string> OnMessageReported;
 
@@ -35,8 +35,7 @@ namespace Irixi_Aligner_Common.MotionControllerEntities
 
         #region Constructors
 
-        public IrixiEE0017(ConfigPhysicalMotionController Config)
-            : base(Config)
+        public IrixiEE0017(ConfigPhysicalMotionController Config) : base(Config)
         {
             _controller = new IrixiMotionController(Config.Port);
             _controller.OnConnectionStatusChanged += _controller_OnConnectionProgressChanged;
@@ -131,9 +130,9 @@ namespace Irixi_Aligner_Common.MotionControllerEntities
                         // pass the configurations to the instance of irixi motion controller class
                         for (int i = 0; i < this.AxisCollection.Count; i++)
                         {
-                            _controller.AxisCollection[i].SoftCCWLS = this.AxisCollection[i.ToString()].CCWL;
-                            _controller.AxisCollection[i].SoftCWLS = this.AxisCollection[i.ToString()].CWL;
-                            _controller.AxisCollection[i].MaxDistance = this.AxisCollection[i.ToString()].CWL;
+                            _controller.AxisCollection[i].SoftCCWLS = 0;
+                            _controller.AxisCollection[i].SoftCWLS = this.AxisCollection[i.ToString()].UnitHelper.MaxSteps;
+                            _controller.AxisCollection[i].MaxSteps = this.AxisCollection[i.ToString()].UnitHelper.MaxSteps;
                             _controller.AxisCollection[i].MaxSpeed = this.AxisCollection[i.ToString()].MaxSpeed;
                             _controller.AxisCollection[i].AccelerationSteps = this.AxisCollection[i.ToString()].AccelerationSteps;
                         }

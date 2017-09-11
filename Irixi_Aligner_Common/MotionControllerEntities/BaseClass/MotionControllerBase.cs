@@ -2,8 +2,6 @@
 using Irixi_Aligner_Common.Interfaces;
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace Irixi_Aligner_Common.MotionControllerEntities
@@ -32,7 +30,7 @@ namespace Irixi_Aligner_Common.MotionControllerEntities
         {
             _config = Config;
             this.DevClass = _config.DeviceClass;
-            this.Name = _config.Model.ToString();
+            this.Model = _config.Model;
             this.Port = _config.Port;
             this.IsEnabled = Config.Enabled;
             this.IsInitialized = false;
@@ -57,11 +55,9 @@ namespace Irixi_Aligner_Common.MotionControllerEntities
         #region Properties
         public Guid DevClass { private set; get; }
 
-        public ControllerType Model { private set; get; }
+        public MotionControllerModel Model { private set; get; }
 
         public string Port { private set; get; }
-
-        public string Name { private set; get; }
 
         public bool IsEnabled { private set; get; }
 
@@ -193,7 +189,12 @@ namespace Irixi_Aligner_Common.MotionControllerEntities
 
         public override string ToString()
         {
-            return string.Format("*{0}@{1}*", this.Name, this.Port);
+            return string.Format("*{0}@{1}*", this.Model.ToString(), this.Port);
+        }
+
+        public override int GetHashCode()
+        {
+            return this.DevClass.GetHashCode() ^ this.Model.GetHashCode() ^ this.Port.GetHashCode();
         }
 
         #endregion
