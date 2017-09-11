@@ -130,11 +130,18 @@ namespace Irixi_Aligner_Common.MotionControllerEntities
                         // pass the configurations to the instance of irixi motion controller class
                         for (int i = 0; i < this.AxisCollection.Count; i++)
                         {
-                            _controller.AxisCollection[i].SoftCCWLS = 0;
-                            _controller.AxisCollection[i].SoftCWLS = this.AxisCollection[i.ToString()].UnitHelper.MaxSteps;
-                            _controller.AxisCollection[i].MaxSteps = this.AxisCollection[i.ToString()].UnitHelper.MaxSteps;
-                            _controller.AxisCollection[i].MaxSpeed = this.AxisCollection[i.ToString()].MaxSpeed;
-                            _controller.AxisCollection[i].AccelerationSteps = this.AxisCollection[i.ToString()].AccelerationSteps;
+                            var axis = this.AxisCollection[i.ToString()] as IrixiAxis;
+                            var axis_of_sdk = _controller.AxisCollection[i];
+
+                            axis_of_sdk.SoftCCWLS = 0;
+                            axis_of_sdk.SoftCWLS = axis.UnitHelper.MaxSteps;
+                            axis_of_sdk.MaxSteps = axis.UnitHelper.MaxSteps;
+                            axis_of_sdk.MaxSpeed = axis.MaxSpeed;
+                            axis_of_sdk.AccelerationSteps = axis.AccelerationSteps;
+
+                            // reverse the drive directoin
+                            if (axis.ReverseDriveDirecton)
+                                _controller.ReverseMoveDirection(i, true);
                         }
 
                         return true;

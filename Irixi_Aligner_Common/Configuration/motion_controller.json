@@ -261,7 +261,7 @@
       "Comment": "TOP CAM, Irixi 3-Axis Motion Controller, PCB Board 3",
       "AxisCollection": [
         {
-          "Comment": "",
+          "Comment": "X Axis of Top Camera, Cable 5",
           "Name": 0,
           "Enabled": true,
           "OffsetAfterHome": 0,
@@ -272,10 +272,10 @@
           "Vendor": "Suruga",
           "Model": "KXL06050-C1-G",
           "Unit": "mm",
-          "ReverseHomePoint": false
+          "ReverseDriveDirection": false
         },
         {
-          "Comment": "",
+          "Comment": "Z Axis of Top Camera, Cable 6",
           "Name": 1,
           "Enabled": true,
           "OffsetAfterHome": 0,
@@ -286,10 +286,10 @@
           "Vendor": "Suruga",
           "Model": "KZG06030-C",
           "Unit": "mm",
-          "ReverseHomePoint": false
+          "ReverseDriveDirection": true
         },
         {
-          "Comment": "",
+          "Comment": "Y Axis of Top Camera, Cable 4",
           "Name": 2,
           "Enabled": true,
           "OffsetAfterHome": 0,
@@ -300,7 +300,7 @@
           "Vendor": "Suruga",
           "Model": "KXL06050-C1-G",
           "Unit": "mm",
-          "ReverseHomePoint": false
+          "ReverseDriveDirection": false
         }
       ]
     },
@@ -312,7 +312,7 @@
       "Comment": "ANGLE CAM, Irixi 3-Axis Motion Controller, PCB Board 1",
       "AxisCollection": [
         {
-          "Comment": "",
+          "Comment": "X Axis of Angle Camera, Cable 1",
           "Name": 0,
           "Enabled": true,
           "OffsetAfterHome": 0,
@@ -323,10 +323,10 @@
           "Vendor": "Suruga",
           "Model": "KXL06050-C1-G",
           "Unit": "mm",
-          "ReverseHomePoint": false
+          "ReverseDriveDirection": false
         },
         {
-          "Comment": "",
+          "Comment": "Z Axis of Top Camera, Cable 3",
           "Name": 1,
           "Enabled": true,
           "OffsetAfterHome": 0,
@@ -337,10 +337,10 @@
           "Vendor": "Suruga",
           "Model": "KZG06030-C",
           "Unit": "mm",
-          "ReverseHomePoint": false
+          "ReverseDriveDirection": true
         },
         {
-          "Comment": "",
+          "Comment": "Y Axis of Top Camera, Cable 2",
           "Name": 2,
           "Enabled": true,
           "OffsetAfterHome": 0,
@@ -351,7 +351,7 @@
           "Vendor": "Suruga",
           "Model": "KXL06050-C1-G",
           "Unit": "mm",
-          "ReverseHomePoint": false
+          "ReverseDriveDirection": false
         }
       ]
     },
@@ -363,7 +363,7 @@
       "Comment": "Front CAM, Irixi 3-Axis Motion Controller, PCB Board 4",
       "AxisCollection": [
         {
-          "Comment": "X Axis of front camera",
+          "Comment": "X Axis of Front Camera, Cable 11",
           "Name": 0,
           "Enabled": true,
           "OffsetAfterHome": 0,
@@ -374,10 +374,10 @@
           "Vendor": "Suruga",
           "Model": "KXL06100-C2-G",
           "Unit": "mm",
-          "ReverseHomePoint": false
+          "ReverseDriveDirection": false
         },
         {
-          "Comment": "Y Axis of front camera",
+          "Comment": "Y Axis of Front Camera, Cable 12",
           "Name": 1,
           "Enabled": true,
           "OffsetAfterHome": 0,
@@ -388,10 +388,10 @@
           "Vendor": "Suruga",
           "Model": "KXG06030-C",
           "Unit": "mm",
-          "ReverseHomePoint": false
+          "ReverseDriveDirection": true
         },
         {
-          "Comment": "Z Axis of front camera",
+          "Comment": "Z Axis of Front Camera, Cable 13",
           "Name": 2,
           "Enabled": true,
           "OffsetAfterHome": 0,
@@ -402,7 +402,7 @@
           "Vendor": "Suruga",
           "Model": "KZG06030-C",
           "Unit": "mm",
-          "ReverseHomePoint": false
+          "ReverseDriveDirection": false
         }
       ]
     },
@@ -425,7 +425,7 @@
           "Vendor": "Suruga",
           "Model": "KXL06050-C1-G",
           "Unit": "mm",
-          "ReverseHomePoint": false
+          "ReverseDriveDirection": false
         },
         {
           "Comment": "Lens Expansion Z, Cable 16",
@@ -439,7 +439,7 @@
           "Vendor": "Suruga",
           "Model": "KZG06030-C",
           "Unit": "mm",
-          "ReverseHomePoint": false
+          "ReverseDriveDirection": false
         },
         {
           "Comment": "Probe Card, Cable 10",
@@ -453,7 +453,7 @@
           "Vendor": "Suruga",
           "Model": "KZC04015-C",
           "Unit": "mm",
-          "ReverseHomePoint": false
+          "ReverseDriveDirection": false
         }
       ]
     },
@@ -476,7 +476,7 @@
           "Vendor": "Suruga",
           "Model": "KXL06050-C1-G",
           "Unit": "um",
-          "ReverseHomePoint": false
+          "ReverseDriveDirection": false
         },
         {
           "Comment": "POD Y, Cable 9",
@@ -490,7 +490,7 @@
           "Vendor": "Suruga",
           "Model": "KXL06050-C1-G",
           "Unit": "um",
-          "ReverseHomePoint": false
+          "ReverseDriveDirection": false
         },
         {
           "Comment": "POD Z, Cable 14",
@@ -504,7 +504,7 @@
           "Vendor": "Suruga",
           "Model": "KXG06020-C",
           "Unit": "um",
-          "ReverseHomePoint": false
+          "ReverseDriveDirection": false
         }
       ]
     },
@@ -527,7 +527,7 @@
           "Vendor": "Suruga",
           "Model": "KXL06150-C2-G4",
           "Unit": "mm",
-          "ReverseHomePoint": false
+          "ReverseDriveDirection": false
         },
         {
           "Comment": "No Connection",
@@ -541,7 +541,7 @@
           "Vendor": "Suruga",
           "Model": "KXL06150-C2-G4",
           "Unit": "um",
-          "ReverseHomePoint": false
+          "ReverseDriveDirection": false
         },
         {
           "Comment": "No Connection",
@@ -555,7 +555,7 @@
           "Vendor": "Suruga",
           "Model": "KXL06150-C2-G4",
           "Unit": "um",
-          "ReverseHomePoint": false
+          "ReverseDriveDirection": false
         }
       ]
     }

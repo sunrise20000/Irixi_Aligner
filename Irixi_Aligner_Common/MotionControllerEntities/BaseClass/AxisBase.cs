@@ -229,7 +229,7 @@ namespace Irixi_Aligner_Common.MotionControllerEntities
         /// <param name="AxisIndex"></param>
         /// <param name="Config"></param>
         /// <param name="Controller"></param>
-        public void SetParameters(int AxisIndex, ConfigPhysicalAxis Config, IMotionController Controller)
+        public virtual void SetParameters(int AxisIndex, ConfigPhysicalAxis Config, IMotionController Controller)
         {
             this.AxisIndex = AxisIndex;
 

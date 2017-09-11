@@ -11,6 +11,20 @@ namespace Irixi_Aligner_Common.MotionControllerEntities
 
         #endregion
 
+        public bool ReverseDriveDirecton { set; get; }
 
+
+        public override void SetParameters(int AxisIndex, ConfigPhysicalAxis Config, IMotionController Controller)
+        {
+            base.SetParameters(AxisIndex, Config, Controller);
+            if(Config.ReverseDriveDirection.HasValue)
+            {
+                this.ReverseDriveDirecton = Config.ReverseDriveDirection.Value;
+            }
+            else
+            {
+                this.ReverseDriveDirecton = false;
+            }
+        }
     }
 }

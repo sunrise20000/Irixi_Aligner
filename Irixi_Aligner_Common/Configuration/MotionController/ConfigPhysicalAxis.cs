@@ -61,11 +61,13 @@ namespace Irixi_Aligner_Common.Configuration
         public UnitType Unit { get; set; }
 
         /// <summary>
-        /// Get whether the home point should be reversed
+        /// Get whether the CWLS and CCWLS should be switched
         /// </summary>
-        public bool ReverseHomePoint { get; set; }
+        public bool? ReverseDriveDirection { get; set; }
 
-
+        /// <summary>
+        /// The profile of the stage defined in the config file
+        /// </summary>
         public MotorizedStageProfile MotorizedStageProfile { private set; get; }
 
         /// <summary>
