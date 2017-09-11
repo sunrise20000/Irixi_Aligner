@@ -57,14 +57,14 @@ namespace Irixi_Aligner_Common.MotionControllerEntities
             // read max position
             if (int.TryParse(ZaberConversation.Request(Command.ReturnSetting, (int)Command.SetMaximumPosition).Data.ToString(), out int max_steps))
             {
-                this.CWL = max_steps;
-                this.UnitHelper.MaxSteps = max_steps;
+                this.SCWL = max_steps;
+                this.UnitHelper.ChangeMaxSteps(max_steps);
 
                 // re-init the unit helper due to the max-steps is read from the hardware controller
                 // var prev = this.UnitHelper.Clone() as RealworldDistanceUnitHelper;
                 // this.UnitHelper = new RealworldDistanceUnitHelper(max_steps, prev.MaxStroke, prev.Unit, prev.Digits);
 
-                LogHelper.WriteLine("{0} CWL is set to {1}", this, max_steps, LogHelper.LogType.NORMAL);
+                LogHelper.WriteLine("{0} MaxSteps was read from flash, the new value is {1}", this, max_steps, LogHelper.LogType.NORMAL);
             }
             else
             {

@@ -43,29 +43,18 @@ namespace Irixi_Aligner_Common.Classes
         readonly object _sys_state_lock = new object();
 
         #endregion
-        
+
         #region Constructor
 
         public SystemService()
         {
             ThreadPool.SetMinThreads(50, 50);
 
-            // read the configuration from the file named SystemCfg.json
-            // the file is located in \Configuration
-            ConfigManager configmgr = SimpleIoc.Default.GetInstance<ConfigManager>();
-
-            // whether output the log
-            LogHelper.LogEnabled= configmgr.MotionControllerConfig.LogEnabled;
-
             // read version from AssemblyInfo.cs
             Version version = Assembly.GetExecutingAssembly().GetName().Version;
 
-            // initialize the properties
-            this.PhysicalMotionControllerCollection = new Dictionary<Guid, IMotionController>();
-            this.LogicalAxisCollection = new ObservableCollectionEx<LogicalAxis>();
-            this.LogicalMotionComponentCollection = new ObservableCollectionEx<LogicalMotionComponent>();
-            this.State = SystemState.BUSY;
-
+            // force to enable the log, otherwise the initial message could not be recored
+            LogHelper.LogEnabled = true;
 
             StringBuilder sb = new StringBuilder();
             sb.Append("\r\n");
@@ -79,26 +68,43 @@ namespace Irixi_Aligner_Common.Classes
 
             this.LastMessage = new MessageItem(MessageType.Normal, "Application Version {0}", version);
 
-            // enumerate all physical motion controllers defined in the config file
-            foreach (var config in configmgr.MotionControllerConfig.PhysicalMotionControllers)
-            {
-                IMotionController _mc = null;
 
-                switch (config.Model)
+            // read the configuration from the file named SystemCfg.json
+            // the file is located in \Configuration
+            ConfigManager conf_manager = SimpleIoc.Default.GetInstance<ConfigManager>();
+
+            // whether output the log
+            LogHelper.LogEnabled = conf_manager.ConfMotionController.LogEnabled;
+
+            // initialize the properties
+            this.PhysicalMotionControllerCollection = new Dictionary<Guid, IMotionController>();
+            this.LogicalAxisCollection = new ObservableCollectionEx<LogicalAxis>();
+            this.LogicalMotionComponentCollection = new ObservableCollectionEx<LogicalMotionComponent>();
+            this.State = SystemState.BUSY;
+
+
+            /*
+             * enumerate all physical motion controllers defined in the config file,
+             * and create the instance of the motion controller class.
+             */
+            foreach (var conf in conf_manager.ConfMotionController.PhysicalMotionControllers)
+            {
+                IMotionController motion_controller = null;
+
+                switch (conf.Model)
                 {
-                    case ControllerType.LUMINOS_P6A:
-                        _mc = new LuminosP6A(config);
+                    case MotionControllerModel.LUMINOS_P6A:
+                        motion_controller = new LuminosP6A(conf);
                         break;
 
-                    case ControllerType.THORLABS_TDC001:
+                    case MotionControllerModel.THORLABS_TDC001:
                         //TODO create the instance of thorlabs TDC001
                         break;
 
-                    case ControllerType.IRIXI_EE0017:
-                        _mc = new IrixiEE0017(config);
-                        ((IrixiEE0017)_mc).OnMessageReported += ((sender, message) =>
+                    case MotionControllerModel.IRIXI_EE0017:
+                        motion_controller = new IrixiEE0017(conf);
+                        ((IrixiEE0017)motion_controller).OnMessageReported += ((sender, message) =>
                         {
-
                             Application.Current.Dispatcher.Invoke(() =>
                             {
                                 this.LastMessage = new MessageItem(MessageType.Normal, string.Format("{0} {1}", sender, message));
@@ -107,24 +113,24 @@ namespace Irixi_Aligner_Common.Classes
                         break;
 
                     default:
-                        this.LastMessage = new MessageItem(MessageType.Error, "Unrecognized controller model {0}.", config.Model);
+                        this.LastMessage = new MessageItem(MessageType.Error, "Unrecognized controller model {0}.", conf.Model);
                         break;
                 }
 
                 // Add the controller to the dictionary<Guid, Controller>
-                if (_mc != null)
+                if (motion_controller != null)
                 {
-                    this.PhysicalMotionControllerCollection.Add(_mc.DevClass, _mc);
+                    this.PhysicalMotionControllerCollection.Add(motion_controller.DevClass, motion_controller);
                 }
             }
 
             // generate the Logical Motion Component
-            foreach( var cfg_motion_comp in configmgr.MotionControllerConfig.LogicalMotionComponentArray)
+            foreach (var cfg_motion_comp in conf_manager.ConfMotionController.LogicalMotionComponents)
             {
                 LogicalMotionComponent comp = new LogicalMotionComponent(cfg_motion_comp.Caption, cfg_motion_comp.Icon);
 
                 int axis_id = 0;
-                foreach(var cfg_axis in cfg_motion_comp.LogicalAxisArray)
+                foreach (var cfg_axis in cfg_motion_comp.LogicalAxisArray)
                 {
                     // new logical axis object will be added to the Logical Motion Component
                     LogicalAxis axis = new LogicalAxis(this, cfg_axis, cfg_motion_comp.Caption, axis_id);
@@ -147,29 +153,26 @@ namespace Irixi_Aligner_Common.Classes
 
             // Initialize the cylinder controller
             // Currently, the Irixi Motion Controller is used to controller the cylinder
+
             try
             {
-
-                IrixiEE0017 ctrl = PhysicalMotionControllerCollection[configmgr.MotionControllerConfig.Cylinder.HardwareClass] as IrixiEE0017;
+                IrixiEE0017 ctrl = PhysicalMotionControllerCollection[conf_manager.ConfMotionController.Cylinder.HardwareClass] as IrixiEE0017;
                 CylinderController = new CylinderController(
                 ctrl,
-                configmgr.MotionControllerConfig.Cylinder.PedalInput,
-                configmgr.MotionControllerConfig.Cylinder.FiberClampOutput,
-                configmgr.MotionControllerConfig.Cylinder.LensVacuumOutput,
-                configmgr.MotionControllerConfig.Cylinder.PLCVacuumOutput,
-                configmgr.MotionControllerConfig.Cylinder.PODVacuumOutput
+                conf_manager.ConfMotionController.Cylinder.PedalInput,
+                conf_manager.ConfMotionController.Cylinder.FiberClampOutput,
+                conf_manager.ConfMotionController.Cylinder.LensVacuumOutput,
+                conf_manager.ConfMotionController.Cylinder.PLCVacuumOutput,
+                conf_manager.ConfMotionController.Cylinder.PODVacuumOutput
                 )
                 {
-                    IsEnabled = configmgr.MotionControllerConfig.Cylinder.Enabled
+                    IsEnabled = conf_manager.ConfMotionController.Cylinder.Enabled
                 };
             }
             catch (Exception e)
             {
-                this.LastMessage = new MessageItem(MessageType.Error, "Unable to construct the cylinder controller class, {0}", e.Message);
+                this.LastMessage = new MessageItem(MessageType.Error, "Unable to initialize the cylinder controller, {0}", e.Message);
             }
-
-            Debug.WriteLine("{0} SystemService constructed!", DateTime.Now);
-
         }
         
         #endregion
@@ -181,7 +184,7 @@ namespace Irixi_Aligner_Common.Classes
             Home(s.PhysicalAxisInst);
         }
 
-        private void LogicalAxis_OnMoveRequsted(object sender, MoveArgs args)
+        private void LogicalAxis_OnMoveRequsted(object sender, MoveByDistanceArgs args)
         {
             var s = sender as LogicalAxis;
             MoveLogicalAxis(s, args);
@@ -358,13 +361,16 @@ namespace Irixi_Aligner_Common.Classes
         /// </summary>
         /// <param name="Axis"></param>
         /// <param name="Args"></param>
-        public async void MoveLogicalAxis(LogicalAxis Axis, MoveArgs Args)
+        public async void MoveLogicalAxis(LogicalAxis Axis, MoveByDistanceArgs Args)
         {
             if(GetSystemState() != SystemState.BUSY)
             {
                 SetSystemState(SystemState.BUSY);
 
-                this.LastMessage = new MessageItem(MessageType.Normal, "{0} Move with argument {1} ...", Axis, Args);
+                this.LastMessage = new MessageItem(MessageType.Normal, "{0} Move with argument {1}{2} ...", 
+                    Axis, 
+                    Args, 
+                    Axis.PhysicalAxisInst.UnitHelper.Unit);
 
                 var t = Axis.PhysicalAxisInst.Move(Args.Mode, Args.Speed, Args.Distance);
                 t.Start();
@@ -373,7 +379,10 @@ namespace Irixi_Aligner_Common.Classes
                 {
                     this.LastMessage = new MessageItem(MessageType.Error, "{0} Unable to move, {1}", Axis, Axis.PhysicalAxisInst.LastError);
 
-                    Messenger.Default.Send<NotificationMessage<string>>(new NotificationMessage<string>(this.LastMessage.Message, "Error"));
+                    Messenger.Default.Send<NotificationMessage<string>>(new NotificationMessage<string>(
+                        this,
+                        this.LastMessage.Message, 
+                        "ERROR"));
                 }
                 else
                 {
@@ -382,7 +391,7 @@ namespace Irixi_Aligner_Common.Classes
                         {
                             Axis,
                             Axis.PhysicalAxisInst.AbsPosition,
-                            Axis.PhysicalAxisInst.UnitHelper.AbsDistance,
+                            Axis.PhysicalAxisInst.UnitHelper.AbsPosition,
                             Axis.PhysicalAxisInst.UnitHelper.Unit
                         });
                 }
@@ -402,7 +411,7 @@ namespace Irixi_Aligner_Common.Classes
         /// <remarks>
         /// An args is consisted of 3 elements: Move Order, Logical Axis, How to Move
         /// </remarks>
-        public async void MassMoveLogicalAxis(Tuple<int, LogicalAxis, MoveArgs>[] AxesGroup)
+        public async void MassMoveLogicalAxis(Tuple<int, LogicalAxis, MoveByDistanceArgs>[] AxesGroup)
         {
             if (GetSystemState() != SystemState.BUSY)
             {

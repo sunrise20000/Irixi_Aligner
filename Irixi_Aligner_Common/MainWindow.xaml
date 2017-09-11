@@ -50,7 +50,7 @@
                     <dxr:RibbonPageGroup Caption="Actions">
                         <dxb:BarButtonItem Content="Home" Glyph="{dx:DXImageOffice2013 Image=Solution_16x16.png}" LargeGlyph="{dx:DXImageOffice2013 Image=Solution_32x32.png}" Command="{Binding Service.CommandHomeAllAxes}" IsEnabled="{Binding IsEnabled, ElementName=btnStart}"/>
                         <dxb:BarButtonItem x:Name="btnStart" Content="Start" RibbonStyle="SmallWithText" Glyph="{dx:DXImageOffice2013 Image=Solution_16x16.png}" LargeGlyph="{dx:DXImageOffice2013 Image=Solution_32x32.png}" IsEnabled="{Binding Service.State, Converter={StaticResource SystemStatusToStartButtonEnable}}" />
-                        <dxb:BarButtonItem x:Name="btnStop" Content="Stop" Glyph="{dx:DXImageOffice2013 Image=Solution_16x16.png}" LargeGlyph="{dx:DXImageOffice2013 Image=Solution_32x32.png}" IsEnabled="{Binding Service.State, Converter={StaticResource SystemStatusToStopButtonEnable}}" RibbonStyle="SmallWithText"/>
+                        <dxb:BarButtonItem x:Name="btnStop" Content="Stop" Glyph="{dx:DXImageOffice2013 Image=Solution_16x16.png}" LargeGlyph="{dx:DXImageOffice2013 Image=Solution_32x32.png}" IsEnabled="{Binding Service.State, Converter={StaticResource SystemStatusToStopButtonEnable}}" Command="{Binding Service.CommandStop}" RibbonStyle="SmallWithText"/>
                     </dxr:RibbonPageGroup>
                     <dxr:RibbonPageGroup x:Name="rpgPresetPositionButtonsHost" Caption="Preset Position">
                     </dxr:RibbonPageGroup>

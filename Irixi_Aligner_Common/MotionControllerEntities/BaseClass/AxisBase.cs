@@ -9,6 +9,10 @@ using Irixi_Aligner_Common.Classes.BaseClass;
 
 namespace Irixi_Aligner_Common.MotionControllerEntities
 {
+    /*
+     * NOTE: 
+     * All parameters in this class that related position are arranged in 'STEPS' except UnitHelper
+     */
     public class AxisBase : IAxis, INotifyPropertyChanged
     {
         #region Variables
@@ -34,10 +38,10 @@ namespace Irixi_Aligner_Common.MotionControllerEntities
             _axis_lock = new SemaphoreSlim(1);
         }
 
-        public AxisBase(int AxisIndex, ConfigPhysicalAxis Config, IMotionController Controller)
+        public AxisBase(int AxisIndex, ConfigPhysicalAxis Configuration, IMotionController ParentController)
         {
             _axis_lock = new SemaphoreSlim(1);
-            SetParameters(AxisIndex, Config, Controller);
+            SetParameters(AxisIndex, Configuration, ParentController);
         }
         
         #endregion
@@ -109,6 +113,9 @@ namespace Irixi_Aligner_Common.MotionControllerEntities
 
         public int InitPosition { get; private set; }
 
+        /// <summary>
+        /// Absolute position in STEPS
+        /// </summary>
         public int AbsPosition
         {
             get
@@ -117,17 +124,19 @@ namespace Irixi_Aligner_Common.MotionControllerEntities
             }
             set
             {
-
                 // calculate relative postion once the absolute position was changed
                 this.RelPosition += (value - _abs_pos);
 
                 UpdateProperty<int>(ref _abs_pos, value);
 
-                // convert steps to real world distance
-                this.UnitHelper.SetAbsPosition(_abs_pos);
+                // convert steps to real-world distance
+                this.UnitHelper.AbsPosition = this.UnitHelper.ConvertStepsToPosition(_abs_pos);
             }
         }
 
+        /// <summary>
+        /// Relevant position in STEPS
+        /// </summary>
         public int RelPosition
         {
             get
@@ -137,26 +146,28 @@ namespace Irixi_Aligner_Common.MotionControllerEntities
             private set
             {
                 UpdateProperty<int>(ref _rel_pos, value);
+
+                // convert steps to real-world distance
+                this.UnitHelper.RelPosition = this.UnitHelper.ConvertStepsToPosition(_rel_pos);
             }
         }
 
         public object Tag { get; set; }
 
-        public double MaxStroke { private set; get; }
+        /// <summary>
+        /// Maximum drive velocity in STEPS/s
+        /// </summary>
+        public int MaxSpeed { get; private set; }
 
-        public int CWL
-        {
-            get
-            {
-                return _cwl;
-            }
-            set
-            {
-                UpdateProperty<int>(ref _cwl, value);
-            }
-        }
-
-        public int CCWL
+        /// <summary>
+        /// Acceleration and deceleration in STEPS/ss
+        /// </summary>
+        public int AccelerationSteps { private set; get; }
+        
+        /// <summary>
+        /// Software limitation of CCW (close to the home point) in STEPS
+        /// </summary>
+        public int SCCWL
         {
             get
             {
@@ -168,8 +179,26 @@ namespace Irixi_Aligner_Common.MotionControllerEntities
             }
         }
 
-        public RealworldDistanceUnitHelper UnitHelper { protected set; get; }
+        /// <summary>
+        /// Software limitation of CW (far from the home point) in STEPS
+        /// </summary>
+        public int SCWL
+        {
+            get
+            {
+                return _cwl;
+            }
+            set
+            {
+                UpdateProperty<int>(ref _cwl, value);
+            }
+        }
 
+        /// <summary>
+        /// The helper used to convert steps to real-world position
+        /// </summary>
+        public RealworldPositionManager UnitHelper { protected set; get; }
+        
         public string LastError { set; get; }
 
         public IMotionController ParentController { get; private set; }
@@ -194,31 +223,49 @@ namespace Irixi_Aligner_Common.MotionControllerEntities
             _axis_lock.Release();
         }
 
-        public void SetParameters(int AxisIndex, ConfigPhysicalAxis Config, IMotionController Controller)
+        /// <summary>
+        /// Set configurations at the startup of the application
+        /// </summary>
+        /// <param name="AxisIndex"></param>
+        /// <param name="Config"></param>
+        /// <param name="Controller"></param>
+        public virtual void SetParameters(int AxisIndex, ConfigPhysicalAxis Config, IMotionController Controller)
         {
             this.AxisIndex = AxisIndex;
 
             if (Config == null)
             {
                 this.IsEnabled = false;
-                this.AxisName = "Fake";
+                this.AxisName = "Unkonwn";
             }
             else
             {
                 this.AxisName = Config.Name;
                 this.IsEnabled = Config.Enabled;
                 this.InitPosition = Config.OffsetAfterHome;
-                this.CWL = Config.CWL;
-                this.CCWL = Config.CCWL;
-                this.MaxStroke = Config.MaxStroke;
-                this.UnitHelper = new RealworldDistanceUnitHelper(Config.CWL, Config.MaxStroke, Config.Unit, Config.Digits);
+                this.MaxSpeed = Config.MaxSpeed;
+                this.AccelerationSteps = Config.AccelerationSteps;
                 this.ParentController = Controller;
+                
+                this.UnitHelper = new RealworldPositionManager(
+                    Config.MotorizedStageProfile.TravelDistance,
+                    Config.MotorizedStageProfile.Resolution,
+                    Config.MotorizedStageProfile.Unit,
+                    Config.ScaleDisplayed);
+                
+                this.SCCWL = 0;
+                this.SCWL = this.UnitHelper.MaxSteps;
             }
         }
         
+        /// <summary>
+        /// Check whether the targe position is out of range, note that the postion (in STEPS)
+        /// </summary>
+        /// <param name="TargetPosition"></param>
+        /// <returns></returns>
         public bool CheckSoftLimitation(int TargetPosition)
         {
-            if (TargetPosition < this.CCWL || TargetPosition > this.CWL)
+            if (TargetPosition < this.SCCWL || TargetPosition > this.SCWL)
                 return false;
             else
                 return true;
@@ -236,7 +283,7 @@ namespace Irixi_Aligner_Common.MotionControllerEntities
 
         public virtual Task<bool> Move(MoveMode Mode, int Speed, double Distance)
         {
-            return this.ParentController.Move(this, Mode, Speed, this.UnitHelper.ConvertToSteps(Distance));
+            return this.ParentController.Move(this, Mode, Speed, this.UnitHelper.ConvertPositionToSteps(Distance));
         }
 
         public virtual Task<bool> MoveWithTrigger(MoveMode Mode, int Speed, int Steps, int Interval, int Channel)
@@ -256,8 +303,8 @@ namespace Irixi_Aligner_Common.MotionControllerEntities
                 this, 
                 Mode, 
                 Speed, 
-                this.UnitHelper.ConvertToSteps(Distance),
-                this.UnitHelper.ConvertToSteps(Interval), 
+                this.UnitHelper.ConvertPositionToSteps(Distance),
+                this.UnitHelper.ConvertPositionToSteps(Interval), 
                 Channel);
         }
 
@@ -277,8 +324,8 @@ namespace Irixi_Aligner_Common.MotionControllerEntities
             return this.ParentController.MoveWithInnerADC(this,
                 Mode,
                 Speed,
-                this.UnitHelper.ConvertToSteps(Distance),
-                this.UnitHelper.ConvertToSteps(Interval),
+                this.UnitHelper.ConvertPositionToSteps(Distance),
+                this.UnitHelper.ConvertPositionToSteps(Interval),
                 Channel);
         }
 
@@ -296,6 +343,7 @@ namespace Irixi_Aligner_Common.MotionControllerEntities
             }
             else  // change move mode from REL to ABS
             {
+                this.UnitHelper.RelPosition = this.UnitHelper.AbsPosition;
                 this.RelPosition = this.AbsPosition;
                 this.IsAbsMode = true;
             }
@@ -304,12 +352,19 @@ namespace Irixi_Aligner_Common.MotionControllerEntities
         public void ClearRelPosition()
         {
             this.RelPosition = 0;
+            this.UnitHelper.RelPosition = 0;
         }
 
         public override string ToString()
         {
             return string.Format("*{0}@{1}*", this.AxisName, this.ParentController.DevClass);
         }
+
+        public override int GetHashCode()
+        {
+            return ParentController.DevClass.GetHashCode() ^ this.AxisName.GetHashCode() ^ this.AxisIndex;
+        }
+
         #endregion
 
         #region RaisePropertyChangedEvent

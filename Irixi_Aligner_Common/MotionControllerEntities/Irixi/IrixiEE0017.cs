@@ -11,7 +11,7 @@ namespace Irixi_Aligner_Common.MotionControllerEntities
     {
         #region Variables
         /// <summary>
-        /// Raise when some messages are generated and pass the messages to the subscriber
+        /// Report the messages when the state of the controller changed such as device connected/disconnected
         /// </summary>
         public event EventHandler<string> OnMessageReported;
 
@@ -35,8 +35,7 @@ namespace Irixi_Aligner_Common.MotionControllerEntities
 
         #region Constructors
 
-        public IrixiEE0017(ConfigPhysicalMotionController Config)
-            : base(Config)
+        public IrixiEE0017(ConfigPhysicalMotionController Config) : base(Config)
         {
             _controller = new IrixiMotionController(Config.Port);
             _controller.OnConnectionStatusChanged += _controller_OnConnectionProgressChanged;
@@ -131,9 +130,18 @@ namespace Irixi_Aligner_Common.MotionControllerEntities
                         // pass the configurations to the instance of irixi motion controller class
                         for (int i = 0; i < this.AxisCollection.Count; i++)
                         {
-                            _controller.AxisCollection[i].SoftCCWLS = this.AxisCollection[i.ToString()].CCWL;
-                            _controller.AxisCollection[i].SoftCWLS = this.AxisCollection[i.ToString()].CWL;
-                            _controller.AxisCollection[i].MaxDistance = this.AxisCollection[i.ToString()].CWL;
+                            var axis = this.AxisCollection[i.ToString()] as IrixiAxis;
+                            var axis_of_sdk = _controller.AxisCollection[i];
+
+                            axis_of_sdk.SoftCCWLS = 0;
+                            axis_of_sdk.SoftCWLS = axis.UnitHelper.MaxSteps;
+                            axis_of_sdk.MaxSteps = axis.UnitHelper.MaxSteps;
+                            axis_of_sdk.MaxSpeed = axis.MaxSpeed;
+                            axis_of_sdk.AccelerationSteps = axis.AccelerationSteps;
+
+                            // reverse the drive directoin
+                            if (axis.ReverseDriveDirecton)
+                                _controller.ReverseMoveDirection(i, true);
                         }
 
                         return true;
@@ -280,11 +288,18 @@ namespace Irixi_Aligner_Common.MotionControllerEntities
                         {
                             ret = _controller.Move(_axis.AxisIndex, Speed, target_pos, IrixiStepperControllerHelper.MoveMode.ABS);
 
-                            if(!ret)
+                            if (!ret)
                             {
-                                _axis.LastError = string.Format("sdk reported error code {0}", _controller.LastError);
-
-                                ret = false;
+                                if (_controller.LastError.EndsWith("31"))
+                                {
+                                    // ignore the error 31 which indicates that uesr interrupted the movement
+                                    ret = true;
+                                }
+                                else
+                                {
+                                    _axis.LastError = string.Format("sdk reported error code {0}", _controller.LastError);
+                                    ret = false;
+                                }
                             }
                         }
                         else
@@ -313,6 +328,12 @@ namespace Irixi_Aligner_Common.MotionControllerEntities
                 return ret;
 
             });
+        }
+
+        public override void Stop()
+        {
+            if (this.IsInitialized)
+                _controller.Stop(-1);
         }
 
         /// <summary>

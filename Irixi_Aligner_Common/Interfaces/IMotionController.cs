@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 namespace Irixi_Aligner_Common.Interfaces
 {
 
-    public enum ControllerType
+    public enum MotionControllerModel
     {
         LUMINOS_P6A,
         THORLABS_TDC001,
@@ -28,18 +28,13 @@ namespace Irixi_Aligner_Common.Interfaces
         /// <summary>
         /// Get the model of this controller.
         /// </summary>
-        ControllerType Model { get; }
+        MotionControllerModel Model { get; }
 
         /// <summary>
         /// Get the communication port of the controller.
         /// this might be serial port name, usb hid device serial number, etc.
         /// </summary>
         string Port { get;}
-
-        /// <summary>
-        ///  Get the name of the controller
-        /// </summary>
-        string Name { get; }
 
         /// <summary>
         /// Get how many axes are moving.

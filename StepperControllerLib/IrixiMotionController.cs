@@ -59,7 +59,7 @@ namespace IrixiStepperControllerHelper
         /// The maximum drive veloctiy
         /// The real velocity is Velocity_Set * MAX_VELOCITY
         /// </summary>
-        const int MAX_VELOCITY = 10000;
+        const int MAX_VELOCITY = 25000;
 
         USBInterface _hid_device;
 
@@ -271,10 +271,13 @@ namespace IrixiStepperControllerHelper
                             this.AxisCollection.Add(new Axis()
                             {
                                 // set the properties to the default value
-                                MaxDistance = 15000,
+                                MaxSteps = 15000,
                                 SoftCCWLS = 0,
                                 SoftCWLS = 15000,
-                                PosAfterHome = 0
+                                PosAfterHome = 0,
+                                MaxSpeed = MAX_VELOCITY,
+                                AccelerationSteps = ACC_DEC_STEPS
+
                             });
                         }
 
@@ -447,23 +450,24 @@ namespace IrixiStepperControllerHelper
                 };
                 _hid_device.Write(cmd.ToBytes());
 
-                //! Wait for 2 report packages to ensure that the move command has been 
-                //! executed by the device.
-                uint _report_counter = this.Report.Counter + 2;
+                // wait for 10 HID reposts in order to ensure that the home command is actually executed
+                uint _report_counter = this.Report.Counter + 10;
 
                 do
                 {
                     Thread.Sleep(10);
                 } while (this.Report.Counter <= _report_counter);
 
-                // the TRUE value of the IsRunning property indicates that the axis is running
-                // wait until the running process is done
+                /*
+                 * wait until the command execution is done;
+                 * the timeout is set to 2 minutes.
+                */ 
                 bool _timeout = false;
                 DateTime _start = DateTime.Now;
                 while (this.Report.AxisStateCollection[AxisIndex].IsRunning == true)
                 {
                     Thread.Sleep(100);
-                    if ((DateTime.Now - _start).TotalSeconds > 60)
+                    if ((DateTime.Now - _start).TotalSeconds > 120)
                     {
                         _timeout = true;
                         break;
@@ -515,10 +519,10 @@ namespace IrixiStepperControllerHelper
         /// </summary>
         /// <param name="AxisIndex"></param>
         /// <param name="Velocity"></param>
-        /// <param name="Distance"></param>
+        /// <param name="Position"></param>
         /// <param name="Mode"></param>
         /// <returns></returns>
-        public bool Move(int AxisIndex, int Velocity, int Distance, MoveMode Mode)
+        public bool Move(int AxisIndex, int Velocity, int Position, MoveMode Mode)
         {
             int _curr_pos = this.Report.AxisStateCollection[AxisIndex].AbsPosition;   // Get current ABS position
             int _pos_aftermove = 0;
@@ -559,11 +563,12 @@ namespace IrixiStepperControllerHelper
             // Validate the parameters restricted in the config file
             //
             // MaxDistance > 0
-            if (this.AxisCollection[AxisIndex].MaxDistance <= 0)
+            if (this.AxisCollection[AxisIndex].MaxSteps == 0)
             {
                 this.LastError = string.Format("The value of the Max Distance has not been set.");
                 return false;
             }
+            
 
             // SoftCWLS > SoftCCWLS
             if (this.AxisCollection[AxisIndex].SoftCWLS <= this.AxisCollection[AxisIndex].SoftCCWLS)
@@ -573,7 +578,7 @@ namespace IrixiStepperControllerHelper
             }
 
             // SoftCWLS >= MaxDistance
-            if (this.AxisCollection[AxisIndex].SoftCWLS < this.AxisCollection[AxisIndex].MaxDistance)
+            if (this.AxisCollection[AxisIndex].SoftCWLS < this.AxisCollection[AxisIndex].MaxSteps)
             {
                 this.LastError = string.Format("The value of the SoftCWLS should be greater than the value of the Max Distance.");
                 return false;
@@ -586,6 +591,7 @@ namespace IrixiStepperControllerHelper
                 this.LastError = string.Format("The value of the PosAfterHome exceeds the soft limitaion.");
                 return false;
             }
+            
 
             //
             // Validate the position after moving,
@@ -593,25 +599,26 @@ namespace IrixiStepperControllerHelper
             //
             if (Mode == MoveMode.ABS)
             {
-                if (Distance < this.AxisCollection[AxisIndex].SoftCCWLS || Distance > this.AxisCollection[AxisIndex].SoftCWLS)
+                if (Position < this.AxisCollection[AxisIndex].SoftCCWLS || Position > this.AxisCollection[AxisIndex].SoftCWLS)
                 {
-                    this.LastError = string.Format("The abs position you are going to move exceeds the soft limitaion.");
+                    this.LastError = string.Format("The target position is out of range.");
                     return false;
                 }
                 else
                 {
-                    _pos_aftermove = Distance;
+                    _pos_aftermove = Position;
 
-                    Distance = Distance - _curr_pos;
+                    Position = Position - _curr_pos;
                 }
             }
-            else
+            else // rel positioning
             {
-                _pos_aftermove = (int)(_curr_pos + Distance);
+                _pos_aftermove = (int)(_curr_pos + Position);
 
-                if (Distance > 0) // CW
+                if (Position > 0) // CW
                 {
-                    if (_pos_aftermove > this.AxisCollection[AxisIndex].SoftCWLS)
+                    // if (_pos_aftermove > this.AxisCollection[AxisIndex].SoftCWLS)
+                    if (_pos_aftermove > this.AxisCollection[AxisIndex].MaxSteps)
                     {
                         this.LastError = string.Format("The position you are going to move exceeds the soft CW limitation.");
                         return false;
@@ -619,7 +626,8 @@ namespace IrixiStepperControllerHelper
                 }
                 else // CCW
                 {
-                    if (_pos_aftermove < this.AxisCollection[AxisIndex].SoftCCWLS)
+                    // if (_pos_aftermove < this.AxisCollection[AxisIndex].SoftCCWLS)
+                    if (_pos_aftermove < 0)
                     {
                         this.LastError = string.Format("The position you are going to move exceeds the soft CCW limitation.");
                         return false;
@@ -630,7 +638,7 @@ namespace IrixiStepperControllerHelper
             try
             {
                 // No need to move
-                if (Distance == 0)
+                if (Position == 0)
                     return true;
 
                 // write the 'move' command to the controller
@@ -638,26 +646,24 @@ namespace IrixiStepperControllerHelper
                 {
                     Command = EnumCommand.MOVE,
                     AxisIndex = AxisIndex,
-                    AccSteps = ACC_DEC_STEPS,
-                    DriveVelocity = Velocity * MAX_VELOCITY / 100,
-                    TotalSteps = Distance
+                    AccSteps = this.AxisCollection[AxisIndex].AccelerationSteps,
+                    DriveVelocity = Velocity * this.AxisCollection[AxisIndex].MaxSpeed / 100,
+                    TotalSteps = Position
                 };
                 _hid_device.Write(cmd.ToBytes());
 
-                //! Wait for 2 report packages to ensure that the move command has been 
-                //! executed by the device.
-                uint _report_counter = this.Report.Counter + 2;
-
+                // wait for the next hid report
+                uint _report_counter = this.Report.Counter + 1;
                 do
                 {
-                    Thread.Sleep(10);
+                    Thread.Sleep(2);
                 } while (this.Report.Counter <= _report_counter);
 
                 // the TRUE value of the IsRunning property indicates that the axis is running
                 // wait until the running process is done
                 while (this.Report.AxisStateCollection[AxisIndex].IsRunning)
                 {
-                    Thread.Sleep(10);
+                    Thread.Sleep(2);
                 }
 
                 if (Report.AxisStateCollection[AxisIndex].Error != 0)

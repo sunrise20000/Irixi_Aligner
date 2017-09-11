@@ -1,16 +1,10 @@
 ﻿using Irixi_Aligner_Common.Interfaces;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Irixi_Aligner_Common.Configuration
 {
     public class ConfigPhysicalMotionController
     {
-        string _controller_name = "";
-
         /// <summary>
         /// Get the guid that makes each controller exclusively
         /// </summary>
@@ -19,7 +13,7 @@ namespace Irixi_Aligner_Common.Configuration
         /// <summary>
         /// Get the model of controller defined by ControllerType
         /// </summary>
-        public ControllerType Model { get; set; }
+        public MotionControllerModel Model { get; set; }
 
         /// <summary>
         /// Get the communication port of the controller.
@@ -42,5 +36,10 @@ namespace Irixi_Aligner_Common.Configuration
         /// Get the collection of the axes controled by the controller
         /// </summary>
         public ConfigPhysicalAxis[] AxisCollection { get; set; }
+
+        public override string ToString()
+        {
+            return string.Format("{0}\\{1} - {2}", this.DeviceClass, this.Port, this.Comment);
+        }
     }
 }

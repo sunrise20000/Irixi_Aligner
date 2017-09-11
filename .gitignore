@@ -12,3 +12,7 @@ StepperControllerLib/bin/
 packages/
 Irixi_Aligner_Common/ExtDlls/
 log/
+
+\.vs/
+
+Irixi_Aligner_Common/Configuration/motion_controller - Copy\.json

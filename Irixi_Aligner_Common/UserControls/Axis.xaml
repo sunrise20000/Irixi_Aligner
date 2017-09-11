@@ -31,7 +31,7 @@
         <TextBlock Text="{Binding LogicalAxis.AxisName, ElementName=Myself}" VerticalAlignment="Center" HorizontalAlignment="Center"/>
         <TextBlock x:Name="txtPosUnit" Text="{Binding LogicalAxis.PhysicalAxisInst.UnitHelper.Unit, ElementName=Myself, Mode=OneWay}" Grid.Column="2" HorizontalAlignment="Center" VerticalAlignment="Center"/>
         <TextBlock Text="{Binding Text, ElementName=txtPosUnit}" Grid.Column="7" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-        <TextBox x:Name="txtCurrentPosition" Text="{Binding LogicalAxis.PhysicalAxisInst.UnitHelper.RelDistance, ElementName=Myself, Mode=OneWay}" Grid.Column="1" VerticalAlignment="Center" TextAlignment="Right" IsReadOnly="True" Margin="1,0,0,0" FontSize="16"/>
+        <TextBox x:Name="txtCurrentPosition" Text="{Binding LogicalAxis.PhysicalAxisInst.UnitHelper.RelPosition, ElementName=Myself, Mode=OneWay}" Grid.Column="1" VerticalAlignment="Center" TextAlignment="Right" IsReadOnly="True" Margin="1,0,0,0" FontSize="16"/>
         <TextBox x:Name="txtMoveSpeed" Grid.Column="4" VerticalAlignment="Center" TextAlignment="Center" MaxLength="3" Margin="1,0,0,0" FontSize="16" Text="100"/>
         <TextBox x:Name="txtDistance" Grid.Column="6" VerticalAlignment="Center" TextAlignment="Center" MaxLength="10" Margin="1,0,0,0" FontSize="16" Text="0"/>
         <Button x:Name="btnMoveCCW" Content="-" Grid.Column="8" Margin="1,0" Click="btnMove_Click" Tag="CCW" FontWeight="Bold" VerticalAlignment="Center" Height="27"/>

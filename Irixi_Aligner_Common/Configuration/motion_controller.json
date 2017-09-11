@@ -13,246 +13,294 @@
     {
       "DeviceClass": "5013d013-f167-4dcb-86d9-599a325744b8",
       "Model": "LUMINOS_P6A",
-      "Port": "COM4",
-      "Enabled": false,
+      "Port": "COM5",
+      "Enabled": true,
       "Comment": "For VGroove Aligner",
       "AxisCollection": [
         {
           "Name": 1,
           "Enabled": true,
           "OffsetAfterHome": 0,
-          "MaxStroke": 12700,
-          "CWL": 128000,
-          "CCWL": 0,
-          "Unit": "um",
-          "Digits": 4
+          "MaxSpeed": 10000,
+          "AccelerationSteps": 2000,
+          "SubDivision": 1,
+          "ScaleDisplayed": 4,
+          "Vendor": "Luminos",
+          "Model": "Z",
+          "Unit": "um"
         },
         {
           "Name": 2,
           "Enabled": true,
           "OffsetAfterHome": 0,
-          "MaxStroke": 2500,
-          "CWL": 128000,
-          "CCWL": 0,
-          "Unit": "um",
-          "Digits": 4
+          "MaxSpeed": 10000,
+          "AccelerationSteps": 2000,
+          "SubDivision": 1,
+          "ScaleDisplayed": 4,
+          "Vendor": "Luminos",
+          "Model": "X",
+          "Unit": "um"
         },
         {
           "Name": 3,
           "Enabled": true,
           "OffsetAfterHome": 0,
-          "MaxStroke": 2500,
-          "CWL": 128000,
-          "CCWL": 0,
-          "Unit": "um",
-          "Digits": 4
+          "MaxSpeed": 10000,
+          "AccelerationSteps": 2000,
+          "SubDivision": 1,
+          "ScaleDisplayed": 4,
+          "Vendor": "Luminos",
+          "Model": "Y",
+          "Unit": "um"
         },
         {
           "Name": 4,
           "Enabled": true,
           "OffsetAfterHome": 0,
-          "MaxStroke": 3,
-          "CWL": 128000,
-          "CCWL": 0,
-          "Unit": "deg",
-          "Digits": 6
+          "MaxSpeed": 10000,
+          "AccelerationSteps": 2000,
+          "SubDivision": 1,
+          "ScaleDisplayed": 6,
+          "Vendor": "Luminos",
+          "Model": "Roll",
+          "Unit": "deg"
         },
         {
           "Name": 5,
           "Enabled": true,
           "OffsetAfterHome": 0,
-          "MaxStroke": 3,
-          "CWL": 128000,
-          "CCWL": 0,
-          "Unit": "deg",
-          "Digits": 6
+          "MaxSpeed": 10000,
+          "AccelerationSteps": 2000,
+          "SubDivision": 1,
+          "ScaleDisplayed": 6,
+          "Vendor": "Luminos",
+          "Model": "Yaw",
+          "Unit": "deg"
         },
         {
           "Name": 6,
           "Enabled": true,
           "OffsetAfterHome": 0,
-          "MaxStroke": 3,
-          "CWL": 128000,
-          "CCWL": 0,
-          "Unit": "deg",
-          "Digits": 6
+          "MaxSpeed": 10000,
+          "AccelerationSteps": 2000,
+          "SubDivision": 1,
+          "ScaleDisplayed": 6,
+          "Vendor": "Luminos",
+          "Model": "Pitch",
+          "Unit": "deg"
         }
       ]
     },
     {
       "DeviceClass": "412e55e4-ceae-4eb4-8798-e8de7b5b5669",
       "Model": "LUMINOS_P6A",
-      "Port": "COM2",
-      "Enabled": false,
+      "Port": "COM1",
+      "Enabled": true,
       "Comment": "Lens Aligner",
       "AxisCollection": [
         {
           "Name": 1,
           "Enabled": true,
           "OffsetAfterHome": 0,
-          "MaxStroke": 12700,
-          "CWL": 128000,
-          "CCWL": 0,
-          "Unit": "um",
-          "Digits": 4
+          "MaxSpeed": 10000,
+          "AccelerationSteps": 2000,
+          "SubDivision": 1,
+          "ScaleDisplayed": 4,
+          "Vendor": "Luminos",
+          "Model": "Z",
+          "Unit": "um"
         },
         {
           "Name": 2,
           "Enabled": true,
           "OffsetAfterHome": 0,
-          "MaxStroke": 2500,
-          "CWL": 128000,
-          "CCWL": 0,
-          "Unit": "um",
-          "Digits": 4
+          "MaxSpeed": 10000,
+          "AccelerationSteps": 2000,
+          "SubDivision": 1,
+          "ScaleDisplayed": 4,
+          "Vendor": "Luminos",
+          "Model": "X",
+          "Unit": "um"
         },
         {
           "Name": 3,
           "Enabled": true,
           "OffsetAfterHome": 0,
-          "MaxStroke": 2500,
-          "CWL": 128000,
-          "CCWL": 0,
-          "Unit": "um",
-          "Digits": 4
+          "MaxSpeed": 10000,
+          "AccelerationSteps": 2000,
+          "SubDivision": 1,
+          "ScaleDisplayed": 4,
+          "Vendor": "Luminos",
+          "Model": "Y",
+          "Unit": "um"
         },
         {
           "Name": 4,
           "Enabled": true,
           "OffsetAfterHome": 0,
-          "MaxStroke": 3,
-          "CWL": 128000,
-          "CCWL": 0,
-          "Unit": "deg",
-          "Digits": 6
+          "MaxSpeed": 10000,
+          "AccelerationSteps": 2000,
+          "SubDivision": 1,
+          "ScaleDisplayed": 6,
+          "Vendor": "Luminos",
+          "Model": "Roll",
+          "Unit": "deg"
         },
         {
           "Name": 5,
           "Enabled": true,
           "OffsetAfterHome": 0,
-          "MaxStroke": 3,
-          "CWL": 128000,
-          "CCWL": 0,
-          "Unit": "deg",
-          "Digits": 6
+          "MaxSpeed": 10000,
+          "AccelerationSteps": 2000,
+          "SubDivision": 1,
+          "ScaleDisplayed": 6,
+          "Vendor": "Luminos",
+          "Model": "Yaw",
+          "Unit": "deg"
         },
         {
           "Name": 6,
           "Enabled": true,
           "OffsetAfterHome": 0,
-          "MaxStroke": 3,
-          "CWL": 128000,
-          "CCWL": 0,
-          "Unit": "deg",
-          "Digits": 6
+          "MaxSpeed": 10000,
+          "AccelerationSteps": 2000,
+          "SubDivision": 1,
+          "ScaleDisplayed": 6,
+          "Vendor": "Luminos",
+          "Model": "Pitch",
+          "Unit": "deg"
         }
       ]
     },
     {
       "DeviceClass": "2b39c9d5-66e9-4896-8dd1-94d8df0485e1",
       "Model": "LUMINOS_P6A",
-      "Port": "COM5",
-      "Enabled": true,
+      "Port": "COM1",
+      "Enabled": false,
       "Comment": "POD Aligner",
       "AxisCollection": [
         {
           "Name": 1,
           "Enabled": true,
           "OffsetAfterHome": 0,
-          "MaxStroke": 12700,
-          "CWL": 128000,
-          "CCWL": 0,
-          "Unit": "um",
-          "Digits": 4
+          "MaxSpeed": 10000,
+          "AccelerationSteps": 2000,
+          "SubDivision": 1,
+          "ScaleDisplayed": 4,
+          "Vendor": "Luminos",
+          "Model": "Z",
+          "Unit": "um"
         },
         {
           "Name": 2,
           "Enabled": true,
           "OffsetAfterHome": 0,
-          "MaxStroke": 2500,
-          "CWL": 128000,
-          "CCWL": 0,
-          "Unit": "um",
-          "Digits": 4
+          "MaxSpeed": 10000,
+          "AccelerationSteps": 2000,
+          "SubDivision": 1,
+          "ScaleDisplayed": 4,
+          "Vendor": "Luminos",
+          "Model": "X",
+          "Unit": "um"
         },
         {
           "Name": 3,
           "Enabled": true,
           "OffsetAfterHome": 0,
-          "MaxStroke": 2500,
-          "CWL": 128000,
-          "CCWL": 0,
-          "Unit": "um",
-          "Digits": 4
+          "MaxSpeed": 10000,
+          "AccelerationSteps": 2000,
+          "SubDivision": 1,
+          "ScaleDisplayed": 4,
+          "Vendor": "Luminos",
+          "Model": "Y",
+          "Unit": "um"
         },
         {
           "Name": 4,
           "Enabled": true,
           "OffsetAfterHome": 0,
-          "MaxStroke": 3,
-          "CWL": 128000,
-          "CCWL": 0,
-          "Unit": "deg",
-          "Digits": 6
+          "MaxSpeed": 10000,
+          "AccelerationSteps": 2000,
+          "SubDivision": 1,
+          "ScaleDisplayed": 6,
+          "Vendor": "Luminos",
+          "Model": "Roll",
+          "Unit": "deg"
         },
         {
           "Name": 5,
           "Enabled": true,
           "OffsetAfterHome": 0,
-          "MaxStroke": 3,
-          "CWL": 128000,
-          "CCWL": 0,
-          "Unit": "deg",
-          "Digits": 6
+          "MaxSpeed": 10000,
+          "AccelerationSteps": 2000,
+          "SubDivision": 1,
+          "ScaleDisplayed": 6,
+          "Vendor": "Luminos",
+          "Model": "Yaw",
+          "Unit": "deg"
         },
         {
           "Name": 6,
           "Enabled": true,
           "OffsetAfterHome": 0,
-          "MaxStroke": 3,
-          "CWL": 128000,
-          "CCWL": 0,
-          "Unit": "deg",
-          "Digits": 6
+          "MaxSpeed": 10000,
+          "AccelerationSteps": 2000,
+          "SubDivision": 1,
+          "ScaleDisplayed": 6,
+          "Vendor": "Luminos",
+          "Model": "Pitch",
+          "Unit": "deg"
         }
       ]
     },
     {
       "DeviceClass": "d11d1864-6315-4c01-b07f-3e268834cd10",
       "Model": "IRIXI_EE0017",
-      "Port": "31393231125136302D005500",
+      "Port": "313932311251363035003800",
       "Enabled": true,
       "Comment": "TOP CAM, Irixi 3-Axis Motion Controller, PCB Board 3",
       "AxisCollection": [
         {
+          "Comment": "X Axis of Top Camera, Cable 5",
           "Name": 0,
           "Enabled": true,
           "OffsetAfterHome": 0,
-          "MaxStroke": 50,
-          "CWL": 50000,
-          "CCWL": 0,
+          "MaxSpeed": 10000,
+          "AccelerationSteps": 2000,
+          "SubDivision": 2,
+          "ScaleDisplayed": 4,
+          "Vendor": "Suruga",
+          "Model": "KXL06050-C1-G",
           "Unit": "mm",
-          "Digits": 4
+          "ReverseDriveDirection": false
         },
         {
+          "Comment": "Z Axis of Top Camera, Cable 6",
           "Name": 1,
           "Enabled": true,
           "OffsetAfterHome": 0,
-          "MaxStroke": 30,
-          "CWL": 15000,
-          "CCWL": 0,
+          "MaxSpeed": 10000,
+          "AccelerationSteps": 2000,
+          "SubDivision": 2,
+          "ScaleDisplayed": 4,
+          "Vendor": "Suruga",
+          "Model": "KZG06030-C",
           "Unit": "mm",
-          "Digits": 4
+          "ReverseDriveDirection": true
         },
         {
+          "Comment": "Y Axis of Top Camera, Cable 4",
           "Name": 2,
           "Enabled": true,
           "OffsetAfterHome": 0,
-          "MaxStroke": 50,
-          "CWL": 50000,
-          "CCWL": 0,
+          "MaxSpeed": 10000,
+          "AccelerationSteps": 2000,
+          "SubDivision": 2,
+          "ScaleDisplayed": 4,
+          "Vendor": "Suruga",
+          "Model": "KXL06050-C1-G",
           "Unit": "mm",
-          "Digits": 4
+          "ReverseDriveDirection": false
         }
       ]
     },
@@ -261,37 +309,49 @@
       "Model": "IRIXI_EE0017",
       "Port": "313932311251363030003800",
       "Enabled": true,
-      "Comment": "45 CAM, Irixi 3-Axis Motion Controller, PCB Board 1",
+      "Comment": "ANGLE CAM, Irixi 3-Axis Motion Controller, PCB Board 1",
       "AxisCollection": [
         {
+          "Comment": "X Axis of Angle Camera, Cable 1",
           "Name": 0,
           "Enabled": true,
           "OffsetAfterHome": 0,
-          "MaxStroke": 50,
-          "CWL": 50000,
-          "CCWL": 0,
+          "MaxSpeed": 10000,
+          "AccelerationSteps": 2000,
+          "SubDivision": 2,
+          "ScaleDisplayed": 4,
+          "Vendor": "Suruga",
+          "Model": "KXL06050-C1-G",
           "Unit": "mm",
-          "Digits": 2
+          "ReverseDriveDirection": false
         },
         {
+          "Comment": "Z Axis of Top Camera, Cable 3",
           "Name": 1,
           "Enabled": true,
           "OffsetAfterHome": 0,
-          "MaxStroke": 30,
-          "CWL": 15000,
-          "CCWL": 0,
+          "MaxSpeed": 10000,
+          "AccelerationSteps": 2000,
+          "SubDivision": 2,
+          "ScaleDisplayed": 4,
+          "Vendor": "Suruga",
+          "Model": "KZG06030-C",
           "Unit": "mm",
-          "Digits": 2
+          "ReverseDriveDirection": true
         },
         {
+          "Comment": "Y Axis of Top Camera, Cable 2",
           "Name": 2,
           "Enabled": true,
           "OffsetAfterHome": 0,
-          "MaxStroke": 50,
-          "CWL": 50000,
-          "CCWL": 0,
+          "MaxSpeed": 10000,
+          "AccelerationSteps": 2000,
+          "SubDivision": 2,
+          "ScaleDisplayed": 4,
+          "Vendor": "Suruga",
+          "Model": "KXL06050-C1-G",
           "Unit": "mm",
-          "Digits": 2
+          "ReverseDriveDirection": false
         }
       ]
     },
@@ -303,34 +363,46 @@
       "Comment": "Front CAM, Irixi 3-Axis Motion Controller, PCB Board 4",
       "AxisCollection": [
         {
+          "Comment": "X Axis of Front Camera, Cable 11",
           "Name": 0,
           "Enabled": true,
           "OffsetAfterHome": 0,
-          "MaxStroke": 100,
-          "CWL": 50000,
-          "CCWL": 0,
+          "MaxSpeed": 10000,
+          "AccelerationSteps": 2000,
+          "SubDivision": 1,
+          "ScaleDisplayed": 4,
+          "Vendor": "Suruga",
+          "Model": "KXL06100-C2-G",
           "Unit": "mm",
-          "Digits": 2
+          "ReverseDriveDirection": false
         },
         {
+          "Comment": "Y Axis of Front Camera, Cable 12",
           "Name": 1,
           "Enabled": true,
           "OffsetAfterHome": 0,
-          "MaxStroke": 30,
-          "CWL": 15000,
-          "CCWL": 0,
+          "MaxSpeed": 10000,
+          "AccelerationSteps": 2000,
+          "SubDivision": 2,
+          "ScaleDisplayed": 4,
+          "Vendor": "Suruga",
+          "Model": "KXG06030-C",
           "Unit": "mm",
-          "Digits": 2
+          "ReverseDriveDirection": true
         },
         {
+          "Comment": "Z Axis of Front Camera, Cable 13",
           "Name": 2,
           "Enabled": true,
           "OffsetAfterHome": 0,
-          "MaxStroke": 30,
-          "CWL": 15000,
-          "CCWL": 0,
+          "MaxSpeed": 10000,
+          "AccelerationSteps": 2000,
+          "SubDivision": 2,
+          "ScaleDisplayed": 4,
+          "Vendor": "Suruga",
+          "Model": "KZG06030-C",
           "Unit": "mm",
-          "Digits": 2
+          "ReverseDriveDirection": false
         }
       ]
     },
@@ -339,45 +411,159 @@
       "Model": "IRIXI_EE0017",
       "Port": "31393231125136302E005500",
       "Enabled": true,
-      "Comment": "POD Aligner, Irixi 3-Axis Motion Controller, PCB Board 5",
+      "Comment": "Probe Card Z, Lens Expansion Z, VGroove Expansion X",
       "AxisCollection": [
         {
+          "Comment": "VGroove Expansion X, Cable 7",
           "Name": 0,
           "Enabled": true,
           "OffsetAfterHome": 0,
-          "MaxStroke": 50,
-          "CWL": 50000,
-          "CCWL": 0,
+          "MaxSpeed": 10000,
+          "AccelerationSteps": 2000,
+          "SubDivision": 2,
+          "ScaleDisplayed": 4,
+          "Vendor": "Suruga",
+          "Model": "KXL06050-C1-G",
           "Unit": "mm",
-          "Digits": 2
+          "ReverseDriveDirection": false
         },
         {
+          "Comment": "Lens Expansion Z, Cable 16",
           "Name": 1,
           "Enabled": true,
           "OffsetAfterHome": 0,
-          "MaxStroke": 50,
-          "CWL": 50000,
-          "CCWL": 0,
+          "MaxSpeed": 10000,
+          "AccelerationSteps": 2000,
+          "SubDivision": 2,
+          "ScaleDisplayed": 4,
+          "Vendor": "Suruga",
+          "Model": "KZG06030-C",
           "Unit": "mm",
-          "Digits": 2
+          "ReverseDriveDirection": false
         },
         {
+          "Comment": "Probe Card, Cable 10",
           "Name": 2,
           "Enabled": true,
           "OffsetAfterHome": 0,
-          "MaxStroke": 15,
-          "CWL": 7500,
-          "CCWL": 0,
+          "MaxSpeed": 10000,
+          "AccelerationSteps": 2000,
+          "SubDivision": 2,
+          "ScaleDisplayed": 4,
+          "Vendor": "Suruga",
+          "Model": "KZC04015-C",
           "Unit": "mm",
-          "Digits": 2
+          "ReverseDriveDirection": false
+        }
+      ]
+    },
+    {
+      "DeviceClass": "19dcf462-f4b8-4e99-bd5c-9f0bd78726d3",
+      "Model": "IRIXI_EE0017",
+      "Port": "313932311251363031005500",
+      "Enabled": true,
+      "Comment": "POD Aligner, Irixi 3-Axis Motion Controller, PCB Board 5",
+      "AxisCollection": [
+        {
+          "Comment": "POD X, Cable 8, KXL06050-C1-G",
+          "Name": 0,
+          "Enabled": true,
+          "OffsetAfterHome": 0,
+          "MaxSpeed": 20000,
+          "AccelerationSteps": 2000,
+          "SubDivision": 20,
+          "ScaleDisplayed": 4,
+          "Vendor": "Suruga",
+          "Model": "KXL06050-C1-G",
+          "Unit": "um",
+          "ReverseDriveDirection": false
+        },
+        {
+          "Comment": "POD Y, Cable 9",
+          "Name": 1,
+          "Enabled": true,
+          "OffsetAfterHome": 0,
+          "MaxSpeed": 20000,
+          "AccelerationSteps": 2000,
+          "SubDivision": 20,
+          "ScaleDisplayed": 4,
+          "Vendor": "Suruga",
+          "Model": "KXL06050-C1-G",
+          "Unit": "um",
+          "ReverseDriveDirection": false
+        },
+        {
+          "Comment": "POD Z, Cable 14",
+          "Name": 2,
+          "Enabled": true,
+          "OffsetAfterHome": 0,
+          "MaxSpeed": 20000,
+          "AccelerationSteps": 2000,
+          "SubDivision": 20,
+          "ScaleDisplayed": 4,
+          "Vendor": "Suruga",
+          "Model": "KXG06020-C",
+          "Unit": "um",
+          "ReverseDriveDirection": false
+        }
+      ]
+    },
+    {
+      "DeviceClass": "e6e06aad-f8f8-405e-9ea3-1c975b5fa99b",
+      "Model": "IRIXI_EE0017",
+      "Port": "313932311251363031003800",
+      "Enabled": true,
+      "Comment": "Lens Expansion Y",
+      "AxisCollection": [
+        {
+          "Comment": "Lens Expansion Y",
+          "Name": 0,
+          "Enabled": true,
+          "OffsetAfterHome": 0,
+          "MaxSpeed": 10000,
+          "AccelerationSteps": 2000,
+          "SubDivision": 2,
+          "ScaleDisplayed": 4,
+          "Vendor": "Suruga",
+          "Model": "KXL06150-C2-G4",
+          "Unit": "mm",
+          "ReverseDriveDirection": false
+        },
+        {
+          "Comment": "No Connection",
+          "Name": 1,
+          "Enabled": false,
+          "OffsetAfterHome": 0,
+          "MaxSpeed": 10000,
+          "AccelerationSteps": 2000,
+          "SubDivision": 2,
+          "ScaleDisplayed": 4,
+          "Vendor": "Suruga",
+          "Model": "KXL06150-C2-G4",
+          "Unit": "um",
+          "ReverseDriveDirection": false
+        },
+        {
+          "Comment": "No Connection",
+          "Name": 2,
+          "Enabled": false,
+          "OffsetAfterHome": 0,
+          "MaxSpeed": 10000,
+          "AccelerationSteps": 2000,
+          "SubDivision": 2,
+          "ScaleDisplayed": 4,
+          "Vendor": "Suruga",
+          "Model": "KXL06150-C2-G4",
+          "Unit": "um",
+          "ReverseDriveDirection": false
         }
       ]
     }
   ],
-  "LogicalMotionComponentArray": [
-	{
+  "LogicalMotionComponents": [
+    {
       "Caption": "VGroove Aligner",
-	  "Icon": "IconViewWsPanels",
+      "Icon": "IconViewWsPanels",
       "LogicalAxisArray": [
         {
           "DeviceClass": "5013d013-f167-4dcb-86d9-599a325744b8",
@@ -411,90 +597,6 @@
         },
         {
           "DeviceClass": "5013d013-f167-4dcb-86d9-599a325744b8",
-          "AxisName": 6,
-          "DisplayName": "Pitch",
-          "HomeOrder": 0
-        }
-      ]
-    },
-    {
-      "Caption": "Lens Aligner",
-	  "Icon": "IconViewWsPanels",
-      "LogicalAxisArray": [
-        {
-          "DeviceClass": "412e55e4-ceae-4eb4-8798-e8de7b5b5669",
-          "AxisName": 2,
-          "DisplayName": "X",
-          "HomeOrder": 0
-        },
-        {
-          "DeviceClass": "412e55e4-ceae-4eb4-8798-e8de7b5b5669",
-          "AxisName": 3,
-          "DisplayName": "Y",
-          "HomeOrder": 0
-        },
-        {
-          "DeviceClass": "412e55e4-ceae-4eb4-8798-e8de7b5b5669",
-          "AxisName": 1,
-          "DisplayName": "Z",
-          "HomeOrder": 0
-        },
-        {
-          "DeviceClass": "412e55e4-ceae-4eb4-8798-e8de7b5b5669",
-          "AxisName": 4,
-          "DisplayName": "Roll",
-          "HomeOrder": 0
-        },
-        {
-          "DeviceClass": "412e55e4-ceae-4eb4-8798-e8de7b5b5669",
-          "AxisName": 5,
-          "DisplayName": "Yaw",
-          "HomeOrder": 0
-        },
-        {
-          "DeviceClass": "412e55e4-ceae-4eb4-8798-e8de7b5b5669",
-          "AxisName": 6,
-          "DisplayName": "Pitch",
-          "HomeOrder": 0
-        }
-      ]
-    },
-    {
-      "Caption": "POD Aligner",
-	  "Icon": "IconViewWsPanels",
-      "LogicalAxisArray": [
-        {
-          "DeviceClass": "2b39c9d5-66e9-4896-8dd1-94d8df0485e1",
-          "AxisName": 2,
-          "DisplayName": "X",
-          "HomeOrder": 0
-        },
-        {
-          "DeviceClass": "2b39c9d5-66e9-4896-8dd1-94d8df0485e1",
-          "AxisName": 3,
-          "DisplayName": "Y",
-          "HomeOrder": 0
-        },
-        {
-          "DeviceClass": "2b39c9d5-66e9-4896-8dd1-94d8df0485e1",
-          "AxisName": 1,
-          "DisplayName": "Z",
-          "HomeOrder": 0
-        },
-        {
-          "DeviceClass": "2b39c9d5-66e9-4896-8dd1-94d8df0485e1",
-          "AxisName": 4,
-          "DisplayName": "Roll",
-          "HomeOrder": 0
-        },
-        {
-          "DeviceClass": "2b39c9d5-66e9-4896-8dd1-94d8df0485e1",
-          "AxisName": 5,
-          "DisplayName": "Yaw",
-          "HomeOrder": 0
-        },
-        {
-          "DeviceClass": "2b39c9d5-66e9-4896-8dd1-94d8df0485e1",
           "AxisName": 6,
           "DisplayName": "Pitch",
           "HomeOrder": 0
@@ -502,26 +604,105 @@
         {
           "DeviceClass": "df4d5339-f472-4bee-97f0-a10f8aecbc1a",
           "AxisName": 0,
-          "DisplayName": "Big X",
+          "DisplayName": "Exp X",
+          "HomeOrder": 0
+        }
+      ]
+    },
+    {
+      "Caption": "Lens Aligner",
+      "Icon": "IconViewWsPanels",
+      "LogicalAxisArray": [
+        {
+          "DeviceClass": "412e55e4-ceae-4eb4-8798-e8de7b5b5669",
+          "AxisName": 2,
+          "DisplayName": "X",
+          "HomeOrder": 0
+        },
+        {
+          "DeviceClass": "412e55e4-ceae-4eb4-8798-e8de7b5b5669",
+          "AxisName": 3,
+          "DisplayName": "Y",
+          "HomeOrder": 0
+        },
+        {
+          "DeviceClass": "412e55e4-ceae-4eb4-8798-e8de7b5b5669",
+          "AxisName": 1,
+          "DisplayName": "Z",
+          "HomeOrder": 0
+        },
+        {
+          "DeviceClass": "412e55e4-ceae-4eb4-8798-e8de7b5b5669",
+          "AxisName": 4,
+          "DisplayName": "Roll",
+          "HomeOrder": 0
+        },
+        {
+          "DeviceClass": "412e55e4-ceae-4eb4-8798-e8de7b5b5669",
+          "AxisName": 5,
+          "DisplayName": "Yaw",
+          "HomeOrder": 0
+        },
+        {
+          "DeviceClass": "412e55e4-ceae-4eb4-8798-e8de7b5b5669",
+          "AxisName": 6,
+          "DisplayName": "Pitch",
+          "HomeOrder": 0
+        },
+        {
+          "DeviceClass": "e6e06aad-f8f8-405e-9ea3-1c975b5fa99b",
+          "AxisName": 1,
+          "DisplayName": "Feed",
+          "HomeOrder": 0
+        },
+        {
+          "DeviceClass": "e6e06aad-f8f8-405e-9ea3-1c975b5fa99b",
+          "AxisName": 0,
+          "DisplayName": "Exp Y",
           "HomeOrder": 0
         },
         {
           "DeviceClass": "df4d5339-f472-4bee-97f0-a10f8aecbc1a",
           "AxisName": 1,
-          "DisplayName": "Big Y",
+          "DisplayName": "Exp Z",
+          "HomeOrder": 0,
+          "Comment": "Axis Z expension, Lens Aligner"
+        }
+      ]
+    },
+    {
+      "Caption": "POD Aligner",
+      "Icon": "IconViewWsPanels",
+      "LogicalAxisArray": [
+        {
+          "DeviceClass": "19dcf462-f4b8-4e99-bd5c-9f0bd78726d3",
+          "AxisName": 0,
+          "DisplayName": "X",
+          "HomeOrder": 0
+        },
+        {
+          "DeviceClass": "19dcf462-f4b8-4e99-bd5c-9f0bd78726d3",
+          "AxisName": 1,
+          "DisplayName": "Y",
+          "HomeOrder": 0
+        },
+        {
+          "DeviceClass": "19dcf462-f4b8-4e99-bd5c-9f0bd78726d3",
+          "AxisName": 2,
+          "DisplayName": "Z",
           "HomeOrder": 0
         },
         {
           "DeviceClass": "df4d5339-f472-4bee-97f0-a10f8aecbc1a",
           "AxisName": 2,
-          "DisplayName": "Probe Z",
+          "DisplayName": "Probe",
           "HomeOrder": 0
         }
       ]
     },
     {
       "Caption": "Angle Camera",
-	  "Icon": "IconViewWsPanels",
+      "Icon": "IconViewWsPanels",
       "LogicalAxisArray": [
         {
           "DeviceClass": "c6af0f93-7e49-4b1a-b08d-0c84f8d812c0",
@@ -531,13 +712,13 @@
         },
         {
           "DeviceClass": "c6af0f93-7e49-4b1a-b08d-0c84f8d812c0",
-          "AxisName": "1",
+          "AxisName": "2",
           "DisplayName": "Y",
           "HomeOrder": 0
         },
         {
           "DeviceClass": "c6af0f93-7e49-4b1a-b08d-0c84f8d812c0",
-          "AxisName": "2",
+          "AxisName": "1",
           "DisplayName": "Z",
           "HomeOrder": 0
         }
@@ -545,7 +726,7 @@
     },
     {
       "Caption": "Top Camera",
-	  "Icon": "IconViewWsPanels",
+      "Icon": "IconViewWsPanels",
       "LogicalAxisArray": [
         {
           "DeviceClass": "d11d1864-6315-4c01-b07f-3e268834cd10",
@@ -555,13 +736,13 @@
         },
         {
           "DeviceClass": "d11d1864-6315-4c01-b07f-3e268834cd10",
-          "AxisName": "1",
+          "AxisName": "2",
           "DisplayName": "Y",
           "HomeOrder": 10
         },
         {
           "DeviceClass": "d11d1864-6315-4c01-b07f-3e268834cd10",
-          "AxisName": "2",
+          "AxisName": "1",
           "DisplayName": "Z",
           "HomeOrder": 10
         }
@@ -569,7 +750,7 @@
     },
     {
       "Caption": "Front Camera",
-	  "Icon": "IconViewWsPanels",
+      "Icon": "IconViewWsPanels",
       "LogicalAxisArray": [
         {
           "DeviceClass": "86e3e6c8-0fce-455b-8545-9011cd3fe6a7",

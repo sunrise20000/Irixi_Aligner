@@ -2,6 +2,7 @@
 using Irixi_Aligner_Common.Message;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO.Ports;
 using System.Threading;
 using System.Threading.Tasks;
@@ -63,7 +64,7 @@ namespace Irixi_Aligner_Common.MotionControllerEntities
             // if the command relative to position is received, flush the AbsPosition of axis 
             int device = e.DeviceMessage.DeviceNumber;
 
-            if (FindAxisByName(device.ToString()) is LuminosAxis _axis)
+            if (FindAxisByName(device.ToString()) is LuminosAxis axis)
             {
                 switch (e.DeviceMessage.Command)
                 {
@@ -77,7 +78,7 @@ namespace Irixi_Aligner_Common.MotionControllerEntities
                     case Command.SlipTracking:
                     case Command.UnexpectedPosition:
                     case Command.MoveRelative:
-                        _axis.AbsPosition = e.DeviceMessage.Data;
+                        axis.AbsPosition = e.DeviceMessage.Data;
                         break;
                 }
             }
@@ -242,19 +243,19 @@ namespace Irixi_Aligner_Common.MotionControllerEntities
                         return false;
                 }
 
-                LuminosAxis _axis = Axis as LuminosAxis;
+                LuminosAxis axis = Axis as LuminosAxis;
 
                 bool ret = false;
                 int target_pos = 0;
 
-                if(_axis.IsHomed == false)
+                if(axis.IsHomed == false)
                 {
-                    _axis.LastError = "the axis is not homed";
+                    axis.LastError = "the axis is not homed";
                     return false;
                 }
 
                 // lock the axis
-                if (_axis.Lock())
+                if (axis.Lock())
                 {
                     this.IncreaseRunningAxes();
 
@@ -268,29 +269,33 @@ namespace Irixi_Aligner_Common.MotionControllerEntities
                         }
                         else
                         {
-                            target_pos = _axis.AbsPosition + Distance;
+                            target_pos = axis.AbsPosition + Distance;
                         }
 
                         // Move the the target position
-                        if (_axis.CheckSoftLimitation(target_pos))
+                        if (axis.CheckSoftLimitation(target_pos))
                         {
-                            DeviceMessage _zaber_msg = _axis.ZaberConversation.Request(Command.MoveAbsolute, target_pos);
+                            DeviceMessage zaber_msg = axis.ZaberConversation.Request(Command.MoveAbsolute, target_pos);
                             //luminos_ret = _axis.LuminosAxisInstance.SetPosition(target_pos, true, out object lastpos);
 
-                            if (_zaber_msg.HasFault == false)
+                            if (zaber_msg.HasFault == false)
                             {
+                                //axis.AbsPosition = zaber_msg.Data;
+                                //Debug.WriteLine(string.Format("Final Position in STEPS: {0}, in um {1}", axis.AbsPosition, axis.UnitHelper.AbsPosition));
+                                //Task.Delay(10);
+
                                 ret = true;
                             }
                             else
                             {
-                                _axis.LastError = string.Format("sdk reported error code {0}", "null");
+                                axis.LastError = string.Format("sdk reported error code {0}", "null");
 
                                 ret = false;
                             }
                         }
                         else
                         {
-                            _axis.LastError = "target position exceeds the limitation.";
+                            axis.LastError = "target position exceeds the limitation.";
 
                             ret = false;
                         }
@@ -298,7 +303,7 @@ namespace Irixi_Aligner_Common.MotionControllerEntities
                     }
                     catch (Exception ex)
                     {
-                        _axis.LastError = ex.Message;
+                        axis.LastError = ex.Message;
                         ret = false;
                     }
 
@@ -307,7 +312,7 @@ namespace Irixi_Aligner_Common.MotionControllerEntities
                         this.DecreaseRunningAxes();
 
                         // release the axis
-                        _axis.Unlock();
+                        axis.Unlock();
                     }
 
                 }
@@ -318,8 +323,8 @@ namespace Irixi_Aligner_Common.MotionControllerEntities
 
         public override void Stop()
         {
-            //pos.Axes.StopAll();
-            _zaber_conversation_collection.Request(Command.Stop);
+            if(this.IsInitialized)
+                _zaber_conversation_collection.Request(Command.Stop);
         }
 
         public override void Dispose()

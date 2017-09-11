@@ -31,5 +31,18 @@ namespace Irixi_Aligner_Common.MotionControllerEntities.BaseClass
             private set;
             get;
         }
+
+        public override int GetHashCode()
+        {
+            int _hashcode = 0;
+            foreach(var axis in LogicalAxisCollection)
+            {
+                _hashcode ^= axis.GetHashCode();
+            }
+
+            _hashcode ^= Caption.GetHashCode();
+
+            return _hashcode;
+        }
     }
 }

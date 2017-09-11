@@ -44,7 +44,6 @@ namespace StepperControllerDebuger.ViewModel
                 this.DeviceSN = GlobalVariables.HidSN;
 
                 _controller = new IrixiStepperControllerHelper.IrixiMotionController(GlobalVariables.HidSN); // For debug, the default SN of the controller is used.
-
                 //
                 // While scanning the controller, report the state to user window
                 //
@@ -54,6 +53,10 @@ namespace StepperControllerDebuger.ViewModel
                     {
                         case ConnectionEventArgs.EventType.TotalAxesReturned:
                             this.ConnectionStateChangedMessage = "Connected";
+                            for(int i = 0; i < _controller.AxisCollection.Count; i++)
+                            {
+                                _controller.AxisCollection[i].SoftCWLS = 1000000;
+                            }
                             break;
 
                         case ConnectionEventArgs.EventType.ConnectionRetried: // how many times tried to connect to the device is reported
