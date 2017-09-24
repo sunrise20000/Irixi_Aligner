@@ -6,10 +6,8 @@ using System.Threading.Tasks;
 
 namespace Irixi_Aligner_Common.Configuration
 {
-    public class ConfigurationCylinder
+    public class ConfigurationCylinder : ConfigurationBase
     {
-        public bool Enabled { get; set; }
-        public Guid HardwareClass { get; set; }
         public int PedalInput { get; set; }
         public int FiberClampOutput { get; set; }
         public int LensVacuumOutput { get; set; }

@@ -6,14 +6,20 @@ using System.Threading.Tasks;
 
 namespace Irixi_Aligner_Common.Interfaces
 {
-    public interface IBaseEquipment : IDisposable
+    public interface IEquipmentBase : IDisposable
     {
-        /// <summary>
-        /// Initialize the controller
-        /// </summary>
-        /// <returns></returns>
-        Task<bool> Init();
 
+        /// <summary>
+        /// Get the device class which makes this controller exclusively in the system.
+        /// the controller could be located by the device class.
+        /// </summary>
+        Guid DeviceClass { get; }
+
+        /// <summary>
+        /// Get the communication port of the controller.
+        /// this might be serial port name, usb hid device serial number, etc.
+        /// </summary>
+        string Port { get; }
 
         /// <summary>
         /// Get whehter the controller is available or not
@@ -25,10 +31,16 @@ namespace Irixi_Aligner_Common.Interfaces
         /// </summary>
         bool IsInitialized { get; }
 
-
         /// <summary>
         /// Get the last error message
         /// </summary>
         string LastError { get; }
+
+        /// <summary>
+        /// Initialize the controller
+        /// </summary>
+        /// <returns></returns>
+        Task<bool> Init();
+
     }
 }

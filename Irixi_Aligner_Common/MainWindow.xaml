@@ -25,7 +25,7 @@
     Title="Irixi Alignment System for 2x25G/10x10G Tx/Rx" >
     <dxr:DXRibbonWindow.Resources>
 
-        <Converters:BooleanToVisibility x:Key="BooleanToVisibility"/>
+        <Converters:VisibilityToBoolean x:Key="VisibilityToBoolean"/>
         <Converters:OutputStateToBoolean x:Key="OutputStateToBoolean"/>
         <Converters:SystemStatusToStartButtonEnable x:Key="SystemStatusToStartButtonEnable"/>
 
@@ -64,8 +64,8 @@
                     <dxr:RibbonPageGroup x:Name="rpgView_MotionComponent" Caption="Motion Control">
 
                     </dxr:RibbonPageGroup>
-                    <dxr:RibbonPageGroup Caption="Equipments">
-                        <dxb:BarCheckItem Content="Cylinders" Glyph="{dx:DXImageOffice2013 Image=Solution_16x16.png}" LargeGlyph="{dx:DXImageOffice2013 Image=Solution_32x32.png}" RibbonStyle="Default" IsChecked="{Binding Visibility, ElementName=CylinderControlPanel, Mode=TwoWay, Converter={StaticResource BooleanToVisibility}}" />
+                    <dxr:RibbonPageGroup x:Name="rpgView_Equipments" Caption="Equipments">
+                        <dxb:BarCheckItem Content="Cylinders" Glyph="{dx:DXImageOffice2013 Image=Solution_16x16.png}" LargeGlyph="{dx:DXImageOffice2013 Image=Solution_32x32.png}" RibbonStyle="Default" IsChecked="{Binding Visibility, ElementName=CylinderControlPanel, Mode=TwoWay, Converter={StaticResource VisibilityToBoolean}}" />
                     </dxr:RibbonPageGroup>
                 </dxr:RibbonPage>
             </dxr:RibbonDefaultPageCategory>

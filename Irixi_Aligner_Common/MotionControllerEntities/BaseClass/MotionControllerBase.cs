@@ -29,7 +29,7 @@ namespace Irixi_Aligner_Common.MotionControllerEntities
         public MotionControllerBase(ConfigPhysicalMotionController Config)
         {
             _config = Config;
-            this.DevClass = _config.DeviceClass;
+            this.DeviceClass = _config.DeviceClass;
             this.Model = _config.Model;
             this.Port = _config.Port;
             this.IsEnabled = Config.Enabled;
@@ -53,7 +53,7 @@ namespace Irixi_Aligner_Common.MotionControllerEntities
         #endregion
 
         #region Properties
-        public Guid DevClass { private set; get; }
+        public Guid DeviceClass { private set; get; }
 
         public MotionControllerModel Model { private set; get; }
 
@@ -194,7 +194,7 @@ namespace Irixi_Aligner_Common.MotionControllerEntities
 
         public override int GetHashCode()
         {
-            return this.DevClass.GetHashCode() ^ this.Model.GetHashCode() ^ this.Port.GetHashCode();
+            return this.DeviceClass.GetHashCode();
         }
 
         #endregion

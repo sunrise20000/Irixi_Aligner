@@ -12,29 +12,19 @@ namespace Irixi_Aligner_Common.Interfaces
         IRIXI_EE0017
     }
 
-    public interface IMotionController : IBaseEquipment
+    public interface IMotionController : IEquipmentBase
     {
         event EventHandler<string> OnErrorOccurred;
         event EventHandler<object> OnHomeCompleted;
 
         #region Properties
 
-        /// <summary>
-        /// Get the device class which makes this controller exclusively in the system.
-        /// the controller could be located by the device class.
-        /// </summary>
-        Guid DevClass { get; }
+        
 
         /// <summary>
         /// Get the model of this controller.
         /// </summary>
         MotionControllerModel Model { get; }
-
-        /// <summary>
-        /// Get the communication port of the controller.
-        /// this might be serial port name, usb hid device serial number, etc.
-        /// </summary>
-        string Port { get;}
 
         /// <summary>
         /// Get how many axes are moving.

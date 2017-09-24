@@ -100,18 +100,10 @@ namespace Irixi_Aligner_Common.MotionControllerEntities.BaseClass
         }
         #endregion
 
-
-
         #region Overrided Methods
         public override int GetHashCode()
         {
-            int _hashcode = 0;
-
-            _hashcode ^= AxisName.GetHashCode();
-            _hashcode ^= ID.GetHashCode();
-            _hashcode ^= PhysicalAxisInst.GetHashCode();
-
-            return _hashcode;
+            return PhysicalAxisInst.GetHashCode();
         }
 
         public override string ToString()

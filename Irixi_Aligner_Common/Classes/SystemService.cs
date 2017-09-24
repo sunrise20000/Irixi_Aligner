@@ -120,11 +120,11 @@ namespace Irixi_Aligner_Common.Classes
                 // Add the controller to the dictionary<Guid, Controller>
                 if (motion_controller != null)
                 {
-                    this.PhysicalMotionControllerCollection.Add(motion_controller.DevClass, motion_controller);
+                    this.PhysicalMotionControllerCollection.Add(motion_controller.DeviceClass, motion_controller);
                 }
             }
 
-            // generate the Logical Motion Component
+            // create the instance of the Logical Motion Components
             foreach (var cfg_motion_comp in conf_manager.ConfMotionController.LogicalMotionComponents)
             {
                 LogicalMotionComponent comp = new LogicalMotionComponent(cfg_motion_comp.Caption, cfg_motion_comp.Icon);
@@ -151,27 +151,22 @@ namespace Irixi_Aligner_Common.Classes
                 this.LogicalMotionComponentCollection.Add(comp);
             }
 
-            // Initialize the cylinder controller
-            // Currently, the Irixi Motion Controller is used to controller the cylinder
-
+            // create the instance of the cylinder
             try
             {
-                IrixiEE0017 ctrl = PhysicalMotionControllerCollection[conf_manager.ConfMotionController.Cylinder.HardwareClass] as IrixiEE0017;
-                CylinderController = new CylinderController(
-                ctrl,
-                conf_manager.ConfMotionController.Cylinder.PedalInput,
-                conf_manager.ConfMotionController.Cylinder.FiberClampOutput,
-                conf_manager.ConfMotionController.Cylinder.LensVacuumOutput,
-                conf_manager.ConfMotionController.Cylinder.PLCVacuumOutput,
-                conf_manager.ConfMotionController.Cylinder.PODVacuumOutput
-                )
-                {
-                    IsEnabled = conf_manager.ConfMotionController.Cylinder.Enabled
-                };
+                IrixiEE0017 ctrl = PhysicalMotionControllerCollection[Guid.Parse(conf_manager.ConfMotionController.Cylinder.Port)] as IrixiEE0017;
+                CylinderController = new CylinderController(conf_manager.ConfMotionController.Cylinder, ctrl);
             }
             catch (Exception e)
             {
                 this.LastMessage = new MessageItem(MessageType.Error, "Unable to initialize the cylinder controller, {0}", e.Message);
+            }
+
+            // create instance of the keithley 2400
+            this.Keithley2400Collection = new ObservableCollectionEx<Keithley2400>();
+            foreach(var cfg_item in conf_manager.ConfMotionController.Keithley2400s)
+            {
+                this.Keithley2400Collection.Add(new Keithley2400(cfg_item));
             }
         }
         
@@ -266,7 +261,7 @@ namespace Irixi_Aligner_Common.Classes
 
             bool[] ret;
             List<Task<bool>> _tasks = new List<Task<bool>>();
-            List<IBaseEquipment> _equipments = new List<IBaseEquipment>();
+            List<IEquipmentBase> _equipments = new List<IEquipmentBase>();
 
             Debug.WriteLine("{0} SystemService initializing ...", DateTime.Now);
 
@@ -311,7 +306,7 @@ namespace Irixi_Aligner_Common.Classes
 
             #endregion
 
-            #region Clear the conllections in order to restart the initilization process
+            #region Clear the task conllections to inititalize the other equipments
 
             _tasks.Clear();
             _equipments.Clear();
@@ -327,12 +322,27 @@ namespace Irixi_Aligner_Common.Classes
              */
 
             #region Initialize the other equipments
-            
+
             // initialize the cylinder controller
-            var _t = this.CylinderController.Init();
-            _t.Start();
-            _tasks.Add(_t);
-            _equipments.Add(this.CylinderController);
+            if (CylinderController.IsEnabled)
+            {
+                var _t = this.CylinderController.Init();
+                _t.Start();
+                _tasks.Add(_t);
+                _equipments.Add(this.CylinderController);
+            }
+
+            // initizlize the keithley 2400
+            foreach (var k2400 in this.Keithley2400Collection)
+            {
+                if (k2400.IsEnabled)
+                {
+                    var _t = k2400.Init();
+                    _t.Start();
+                    _tasks.Add(_t);
+                    _equipments.Add(k2400);
+                }
+            }
 
 
             this.LastMessage = new MessageItem(MessageType.Normal, "{0} Initializing ...", this.CylinderController);
@@ -803,9 +813,16 @@ namespace Irixi_Aligner_Common.Classes
 
         public void Dispose()
         {
+            // dispose motion controllers
             foreach (var ctrl in this.PhysicalMotionControllerCollection)
             {
                 ctrl.Value.Dispose();
+            }
+
+            // dispose keithley2400s
+            foreach(var k2400 in this.Keithley2400Collection)
+            {
+                k2400.Dispose();
             }
         }
         #endregion
@@ -877,6 +894,15 @@ namespace Irixi_Aligner_Common.Classes
         /// the UI components are binded to this property
         /// </summary>
         public ObservableCollectionEx<LogicalMotionComponent> LogicalMotionComponentCollection
+        {
+            private set;
+            get;
+        }
+
+        /// <summary>
+        /// Get the collection of keithley 2400
+        /// </summary>
+        public ObservableCollectionEx<Keithley2400> Keithley2400Collection
         {
             private set;
             get;

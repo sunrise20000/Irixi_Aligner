@@ -126,6 +126,9 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="AlignmentArithmetic\AdjustRollBy1DScan.cs" />
+    <Compile Include="AlignmentArithmetic\Alignment2D.cs" />
+    <Compile Include="AlignmentArithmetic\SpiralScan.cs" />
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
@@ -133,14 +136,21 @@
     <Compile Include="Classes\BaseClass\RealworldPositionManager.cs" />
     <Compile Include="Classes\BaseClass\PresetPosition.cs" />
     <Compile Include="Classes\Converters\BooleanToVisibility.cs" />
+    <Compile Include="Classes\Converters\VisibilityToBoolean.cs" />
+    <Compile Include="Classes\Converters\EnumToBoolean.cs" />
     <Compile Include="Classes\Converters\OutputStateToBoolean.cs" />
     <Compile Include="Classes\SqliteDb.cs" />
+    <Compile Include="Configuration\Common\ConfigurationBase.cs" />
     <Compile Include="Configuration\Common\ConfigurationCylinder.cs" />
+    <Compile Include="Configuration\Common\ConfigurationKeithley2400.cs" />
     <Compile Include="Configuration\Layout\Layout.cs" />
     <Compile Include="Configuration\Layout\LayoutManager.cs" />
     <Compile Include="Configuration\Common\MotorizedStagesProfileManager.cs" />
     <Compile Include="Equipments\CylinderController.cs" />
-    <Compile Include="Interfaces\IBaseEquipment.cs" />
+    <Compile Include="Equipments\EquipmentBase.cs" />
+    <Compile Include="Equipments\Keithley2400.cs" />
+    <Compile Include="Interfaces\IEquipmentBase.cs" />
+    <Compile Include="Interfaces\IMeasurementDevice.cs" />
     <Compile Include="MotionControllerEntities\BaseClass\AxisBase.cs" />
     <Compile Include="MotionControllerEntities\BaseClass\LogicalMotionComponent.cs" />
     <Compile Include="MotionControllerEntities\BaseClass\LogicalAxis.cs" />
@@ -175,9 +185,13 @@
     <Compile Include="UserControls\Axis4MassMove.xaml.cs">
       <DependentUpon>Axis4MassMove.xaml</DependentUpon>
     </Compile>
+    <Compile Include="UserControls\Keithley2400ControlPanel.xaml.cs">
+      <DependentUpon>Keithley2400ControlPanel.xaml</DependentUpon>
+    </Compile>
     <Compile Include="UserControls\MotionComponentPanel.xaml.cs">
       <DependentUpon>MotionComponentPanel.xaml</DependentUpon>
     </Compile>
+    <Compile Include="ViewModel\ViewKeithley2400.cs" />
     <Compile Include="ViewModel\ViewMassMove.cs" />
     <Compile Include="ViewModel\ViewModelLocator.cs" />
     <Compile Include="Windows\InputBox.xaml.cs">
@@ -254,6 +268,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="UserControls\Axis4MassMove.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="UserControls\Keithley2400ControlPanel.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

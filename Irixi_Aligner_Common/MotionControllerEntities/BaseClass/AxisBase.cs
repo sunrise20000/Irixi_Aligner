@@ -357,12 +357,12 @@ namespace Irixi_Aligner_Common.MotionControllerEntities
 
         public override string ToString()
         {
-            return string.Format("*{0}@{1}*", this.AxisName, this.ParentController.DevClass);
+            return string.Format("*{0}@{1}*", this.AxisName, this.ParentController.DeviceClass);
         }
 
         public override int GetHashCode()
         {
-            return ParentController.DevClass.GetHashCode() ^ this.AxisName.GetHashCode() ^ this.AxisIndex;
+            return ParentController.GetHashCode() ^ this.AxisName.GetHashCode();
         }
 
         #endregion

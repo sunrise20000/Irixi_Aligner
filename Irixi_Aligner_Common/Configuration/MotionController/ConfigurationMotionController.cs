@@ -14,8 +14,9 @@ namespace Irixi_Aligner_Common.Configuration
         /// </summary>
         public bool LogEnabled { get; set; }
 
-
         public ConfigurationCylinder Cylinder { get; set; }
+
+        public ConfigurationKeithley2400[] Keithley2400s { get; set; }
 
         /// <summary>
         /// Layout of physical motion controllers
