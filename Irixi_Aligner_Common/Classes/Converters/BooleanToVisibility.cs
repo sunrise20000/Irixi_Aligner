@@ -9,11 +9,27 @@ namespace Irixi_Aligner_Common.Classes.Converters
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
+            bool reverse = false;
+
+            if(parameter != null)
+                bool.TryParse(parameter.ToString(), out reverse);
+
+
             bool? v = (bool?)value;
             if (v.HasValue && v.Value == true)
-                return Visibility.Visible;
+            {
+                if (reverse)
+                    return Visibility.Hidden;
+                else
+                    return Visibility.Visible;
+            }
             else
-                return Visibility.Hidden;
+            {
+                if (reverse)
+                    return Visibility.Visible;
+                else
+                    return Visibility.Hidden;
+            }
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)

@@ -175,11 +175,11 @@ namespace Irixi_Aligner_Common.ViewModel
                     {
                         if (K2400.SourceMode == Keithley2400.EnumSourceMode.CURR)
                         {
-                            K2400.SetComplianceCurrent(Keithley2400.EnumComplianceLIMIT.REAL, target);
+                            K2400.SetComplianceVoltage(Keithley2400.EnumComplianceLIMIT.REAL, target);
                         }
                         else if (K2400.SourceMode == Keithley2400.EnumSourceMode.VOLT)
                         {
-                            K2400.SetComplianceVoltage(Keithley2400.EnumComplianceLIMIT.REAL, target);
+                            K2400.SetComplianceCurrent(Keithley2400.EnumComplianceLIMIT.REAL, target);
                         }
                     }
                     catch(Exception ex)
@@ -189,11 +189,49 @@ namespace Irixi_Aligner_Common.ViewModel
                 });
             }
         }
+        
+        public RelayCommand<Keithley2400.EnumMeasRangeAmps> SetCurrentMeasurementRange
+        {
+            get
+            {
+                return new RelayCommand<Keithley2400.EnumMeasRangeAmps>(target =>
+                {
+                    try
+                    {
+
+                        K2400.SetMeasRangeOfAmps(target);
+                    }
+                    catch (Exception ex)
+                    {
+                        Messenger.Default.Send(new NotificationMessage<string>(string.Format("unable to set measurement range, {0}", ex.Message), "ERROR"));
+                    }
+                });
+            }
+        }
+
+        public RelayCommand<Keithley2400.EnumMeasRangeVolts> SetVoltageMeasurementRange
+        {
+            get
+            {
+                return new RelayCommand<Keithley2400.EnumMeasRangeVolts>(target =>
+                {
+                    try
+                    {
+
+                        K2400.SetMeasRangeOfVolts(target);
+                    }
+                    catch (Exception ex)
+                    {
+                        Messenger.Default.Send(new NotificationMessage<string>(string.Format("unable to set measurement range, {0}", ex.Message), "ERROR"));
+                    }
+                });
+            }
+        }
 
         /// <summary>
-        /// Set measurement range per current measurement function
+        /// Set SourceMeter output level per source mode
         /// </summary>
-        public RelayCommand<double> SetMeasurementRange
+        public RelayCommand<double> SetOutputLevel
         {
             get
             {
@@ -201,18 +239,18 @@ namespace Irixi_Aligner_Common.ViewModel
                 {
                     try
                     {
-                        if (K2400.MeasurementFunc == Keithley2400.EnumMeasFunc.ONCURR)
+                        if (K2400.SourceMode == Keithley2400.EnumSourceMode.CURR)
                         {
-                            K2400.SetMeasRangeOfAmps(Keithley2400.EnumMeasRange.REAL, target);
+                            K2400.SetCurrentSourceLevel(target);
                         }
-                        else if (K2400.MeasurementFunc == Keithley2400.EnumMeasFunc.ONVOLT)
+                        else if (K2400.SourceMode == Keithley2400.EnumSourceMode.VOLT)
                         {
-                            K2400.SetMeasRangeOfVolts(Keithley2400.EnumMeasRange.REAL, target);
+                            K2400.SetVoltageSourceLevel(target);
                         }
                     }
-                    catch(Exception ex)
+                    catch (Exception ex)
                     {
-                        Messenger.Default.Send(new NotificationMessage<string>(string.Format("unable to set measurement range, {0}", ex.Message), "ERROR"));
+                        Messenger.Default.Send(new NotificationMessage<string>(string.Format("unable to set compliance, {0}", ex.Message), "ERROR"));
                     }
                 });
             }

@@ -7,7 +7,7 @@
       "Desc": "KEITHLEY 2400",
       "Port": "COM17",
       "BaudRate": 57600,
-      "Caption": "DEMUX CH1",
+      "Caption": "ROSA CH1",
       "Icon": "IconViewWsPanels",
       "Comment": "Chanel 1 of PD array"
     },
@@ -17,7 +17,7 @@
       "Desc": "KEITHLEY 2400",
       "Port": "COM3",
       "BaudRate": 57600,
-      "Caption": "DEMUX CH4",
+      "Caption": "ROSA CH4",
       "Icon": "IconViewWsPanels",
       "Comment": "Chanel 4 of PD array"
     }

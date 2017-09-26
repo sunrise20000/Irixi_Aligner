@@ -136,6 +136,8 @@
     <Compile Include="Classes\BaseClass\RealworldPositionManager.cs" />
     <Compile Include="Classes\BaseClass\PresetPosition.cs" />
     <Compile Include="Classes\Converters\BooleanToVisibility.cs" />
+    <Compile Include="Classes\Converters\EnumToInt.cs" />
+    <Compile Include="Classes\Converters\TextToDouble.cs" />
     <Compile Include="Classes\Converters\VisibilityToBoolean.cs" />
     <Compile Include="Classes\Converters\EnumToBoolean.cs" />
     <Compile Include="Classes\Converters\OutputStateToBoolean.cs" />

@@ -18,12 +18,12 @@ namespace Irixi_Aligner_Common.Equipments
     {
         #region Definition
         const double PROT_AMPS_DEF = 0.000105; // default compliance current is set to 105uA
-        const double PROT_AMPS_MIN = 1.05; // maximum compliance current is set to 1.05A
+        const double PROT_AMPS_MIN = 0.00000105; // maximum compliance current is set to 1.05uA
         const double PROT_AMPS_MAX = 1.05; // minimum compliance current is set to 1.05A
 
         const double PROT_VOLT_DEF = 21; // default compliance voltage is set to 21V
-        const double PROT_VOLT_MIN = 210; // maximum compliance voltage is set to 21V
-        const double PROT_VOLT_MAX = 210; // minmum compliance voltage is set to 21V
+        const double PROT_VOLT_MIN = 0.21; // maximum compliance voltage is set to 210mV
+        const double PROT_VOLT_MAX = 210; // minmum compliance voltage is set to 210V
 
         const double MEAS_SPEED_DEF = 1; // default measurement speed is set to 1 for 60Hz power line cycling
         SerialPort serialport;
@@ -39,13 +39,6 @@ namespace Irixi_Aligner_Common.Equipments
         public enum EnumMeasFunc
         {
             OFFALL, ONVOLT, ONCURR, ONRES
-        }
-        /// <summary>
-        /// 分析Range
-        /// </summary>
-        public enum EnumMeasRange
-        {
-            REAL, UP, DOWN, MAX, MIN, DEFAULT
         }
 
         /// <summary>
@@ -73,6 +66,29 @@ namespace Irixi_Aligner_Common.Equipments
         /// </summary>
         public enum EnumReadCategory { VOLT = 0, CURR }
         
+        /// <summary>
+        /// Valid current measurement range
+        /// </summary>
+        public enum EnumMeasRangeAmps
+        {
+            AUTO = 0,
+            R1UA,
+            R10UA,
+            R100UA,
+            R1MA,
+            R10MA,
+            R100MA,
+            R1A
+        }
+
+        public enum EnumMeasRangeVolts
+        {
+            AUTO = 0,
+            R200MV,
+            R2V,
+            R21V
+        }
+
         /// <summary>
         /// Elements contained in the data string for commands :FETCh/:READ/:MEAS/:TRAC:DATA
         /// </summary>
@@ -126,15 +142,15 @@ namespace Irixi_Aligner_Common.Equipments
 
         EnumSourceMode source_mode = EnumSourceMode.VOLT;
         EnumInOutTerminal inout_terminal = EnumInOutTerminal.FRONT;
-        EnumMeasFunc measurement_func = EnumMeasFunc.OFFALL;
+        EnumMeasFunc measurement_func = EnumMeasFunc.ONVOLT;
         EnumDataStringElements data_string_elements = EnumDataStringElements.ALL;
         double meas_speed = MEAS_SPEED_DEF;
         bool is_output_enabled = false;
         double voltage_level = 0, current_level = 0;
         double measured_val = 0;
         double cmpl_voltage = PROT_VOLT_DEF, cmpl_current = PROT_AMPS_DEF;
-        private double range_amps = 0, range_volts = 0, range_ohms = 0;
-        bool is_auto_range_amps = true, is_auto_range_volts = true, is_auto_range_ohms = true;
+        EnumMeasRangeAmps range_amps = EnumMeasRangeAmps.AUTO;
+        EnumMeasRangeVolts range_volts = EnumMeasRangeVolts.AUTO;
         bool is_in_range_cmpl = false, is_meas_over_range = false;
         #endregion
 
@@ -239,54 +255,9 @@ namespace Irixi_Aligner_Common.Equipments
         }
 
         /// <summary>
-        /// Get whether the auto range of amps is enabled
-        /// </summary>
-        public bool IsAutoRangeOfAmps
-        {
-            private set
-            {
-                UpdateProperty(ref is_auto_range_amps, value);
-            }
-            get
-            {
-                return is_auto_range_amps;
-            }
-        }
-
-        /// <summary>
-        /// Get whether the auto range of volts is enabled
-        /// </summary>
-        public bool IsAutoRangeOfVolts
-        {
-            private set
-            {
-                UpdateProperty(ref is_auto_range_volts, value);
-            }
-            get
-            {
-                return is_auto_range_volts;
-            }
-        }
-
-        /// <summary>
-        /// Get whether the auto range of ohms is enabled
-        /// </summary>
-        public bool IsAutoRangeOfOhms
-        {
-            private set
-            {
-                UpdateProperty(ref is_auto_range_ohms, value);
-            }
-            get
-            {
-                return is_auto_range_ohms;
-            }
-        }
-
-        /// <summary>
         /// Get the range of current measurement, unit A
         /// </summary>
-        public double MeasRangeOfAmps
+        public EnumMeasRangeAmps MeasRangeOfAmps
         {
             private set
             {
@@ -301,7 +272,7 @@ namespace Irixi_Aligner_Common.Equipments
         /// <summary>
         /// Get the range of voltage measurement, unit V
         /// </summary>
-        public double MeasRangeOfVolts
+        public EnumMeasRangeVolts MeasRangeOfVolts
         {
             private set
             {
@@ -310,21 +281,6 @@ namespace Irixi_Aligner_Common.Equipments
             get
             {
                 return range_volts;
-            }
-        }
-
-        /// <summary>
-        /// Get the range of resister measurement, unit ohm
-        /// </summary>
-        public double MeasRangeOfOhms
-        {
-            private set
-            {
-                UpdateProperty(ref range_ohms, value);
-            }
-            get
-            {
-                return range_ohms;
             }
         }
 
@@ -448,9 +404,9 @@ namespace Irixi_Aligner_Common.Equipments
         public void SetToVoltageSource()
         {
             SetOutputState(false);
-            SetMeasurementFunc(Keithley2400.EnumMeasFunc.ONCURR);
-            SetSourceMode(Keithley2400.EnumSourceMode.VOLT);
-            SetRangeOfVoltageSource(Keithley2400.EnumSourceRange.AUTO);
+            SetMeasurementFunc(EnumMeasFunc.ONCURR);
+            SetSourceMode(EnumSourceMode.VOLT);
+            SetRangeOfVoltageSource(EnumSourceRange.AUTO);
 
             // only return current measurement value under V-Source
             SetDataElement(EnumDataStringElements.CURR | EnumDataStringElements.STAT);
@@ -648,151 +604,73 @@ namespace Irixi_Aligner_Common.Equipments
 
         }
         
-        public void SetAutoRangeOfAmps(bool IsAutoRange)
-        {
-            if(IsAutoRange)
-            {
-                Send(":SENS:CURR:RANG:AUTO 1");
-            }
-            else
-            {
-                Send(":SENS:CURR:RANG:AUTO 0");
-            }
-
-            this.IsAutoRangeOfAmps = IsAutoRange;
-            GetMeasRangeOfAmps();
-        }
-
-        public void GetAutoRangeOfAmps()
-        {
-            var ret = Read(":SENS:CURR:RANG:AUTO?");
-
-            if (int.TryParse(ret, out int r))
-            {
-                if (r == 1)
-                    this.IsAutoRangeOfAmps = true;
-                else
-                    this.IsAutoRangeOfAmps = false;
-            }
-            else
-            {
-                throw new InvalidCastException(string.Format("unknown value {0} returned, {1}", ret, new StackTrace().GetFrame(0).ToString()));
-            }
-        }
-
-        public void SetMeasRangeOfAmps(EnumMeasRange Range, double Real = -1)
+        public void SetMeasRangeOfAmps(EnumMeasRangeAmps Range)
         {
             switch (Range)
             {
-                case EnumMeasRange.MAX:
-                    Send(":SENS:CURR:RANG MAX");
+                case EnumMeasRangeAmps.AUTO:
+                    Send(":SENS:CURR:RANG:AUTO ON");
                     break;
 
-                case EnumMeasRange.MIN:
-                    Send(":SENS:CURR:RANG MIN");
-                    break;
-
-                case EnumMeasRange.UP:
-                    Send(":SENS:CURR:RANG UP");
-                    break;
-
-                case EnumMeasRange.DOWN:
-                    Send(":SENS:CURR:RANG DOWN");
-                    break;
-
-                case EnumMeasRange.DEFAULT:
-                    Send(":SENS:CURR:RANG DEF");
-                    break;
-
-                case EnumMeasRange.REAL:
-                    Send(":SENS:CURR:RANG " + Real.ToString());
+                default:
+                    Send(string.Format(":SENS:CURR:RANG {0}", this.ConvertMeasRangeAmpsToDouble(Range)));
                     break;
             }
-
-            this.IsAutoRangeOfAmps = false;
+            
             GetMeasRangeOfAmps();
         }
 
         public void GetMeasRangeOfAmps()
         {
-            var ret = Read(":SENS:CURR:RANG?");
-
-            if (double.TryParse(ret, out double r))
-                this.MeasRangeOfAmps = r;
-            else
-                throw new InvalidCastException(string.Format("unknown value {0} returned, {1}", ret, new StackTrace().GetFrame(0).ToString()));
-        }
-
-        public void SetAutoRangeOfVolts(bool IsAutoRange)
-        {
-            if (IsAutoRange)
+            var ret = Read("SENS:CURR:RANGE:AUTO?");
+            if (ret.Contains("1"))
             {
-                Send(":SENS:VOLT:RANG:AUTO 1");
+                this.MeasRangeOfAmps = EnumMeasRangeAmps.AUTO;
             }
             else
             {
-                Send(":SENS:VOLT:RANG:AUTO 0");
-            }
 
-            this.IsAutoRangeOfVolts = IsAutoRange;
-            GetMeasRangeOfVolts();
-        }
+                ret = Read(":SENS:CURR:RANG?");
 
-        public void GetAutoRangeOfVolts()
-        {
-            var ret = Read(":SENS:VOLT:RANG:AUTO?");
-            if (int.TryParse(ret, out int r))
-            {
-                if (r == 1)
-                    this.IsAutoRangeOfVolts = true;
+                if (double.TryParse(ret, out double r))
+                    this.MeasRangeOfAmps = this.ConvertDoubleToMeasRangeAmps(r);
                 else
-                    this.IsAutoRangeOfVolts = false;
+                    throw new InvalidCastException(string.Format("unknown value {0} returned, {1}", ret, new StackTrace().GetFrame(0).ToString()));
             }
-            else
-                throw new InvalidCastException(string.Format("unknown value {0} returned, {1}", ret, new StackTrace().GetFrame(0).ToString()));
         }
 
-        public void SetMeasRangeOfVolts(EnumMeasRange Range, double Real = -1)
+        public void SetMeasRangeOfVolts(EnumMeasRangeVolts Range)
         {
             switch (Range)
             {
-                case EnumMeasRange.MAX:
-                    Send(":SENS:VOLT:RANG MAX:");
+                case EnumMeasRangeVolts.AUTO:
+                    Send(":SENS:VOLT:RANG:AUTO ON");
                     break;
 
-                case EnumMeasRange.MIN:
-                    Send(":SENS:VOLT:RANG MIN:");
-                    break;
-
-                case EnumMeasRange.UP:
-                    Send(":SENS:VOLT:RANG UP:");
-                    break;
-
-                case EnumMeasRange.DOWN:
-                    Send(":SENS:VOLT:RANG DOWN:");
-                    break;
-
-                case EnumMeasRange.DEFAULT:
-                    Send(":SENS:VOLT:RANG DEF:");
-                    break;
-
-                case EnumMeasRange.REAL:
-                    Send(":SENS:VOLT:RANG " + Real);
+                default:
+                    Send(string.Format(":SENS:VOLT:RANG {0}", this.ConvertMeasRangeVoltToDouble(Range)));
                     break;
             }
-
-            this.IsAutoRangeOfVolts = false;
+            
             GetMeasRangeOfVolts();
         }
 
         public void GetMeasRangeOfVolts()
         {
-            var ret = Read(":SENS:VOLT:RANG?");
-
-            if (double.TryParse(ret, out double r))
-                this.MeasRangeOfVolts = r;
+            var ret = Read("SENS:VOLT:RANGE:AUTO?");
+            if (ret.Contains("1"))
+            {
+                this.MeasRangeOfVolts = EnumMeasRangeVolts.AUTO;
+            }
             else
-                throw new InvalidCastException(string.Format("unknown value {0} returned, {1}", ret, new StackTrace().GetFrame(0).ToString()));
+            {
+                ret = Read(":SENS:VOLT:RANG?");
+
+                if (double.TryParse(ret, out double r))
+                    this.MeasRangeOfVolts = this.ConvertDoubleToMeasRangeVolt(r);
+                else
+                    throw new InvalidCastException(string.Format("unknown value {0} returned, {1}", ret, new StackTrace().GetFrame(0).ToString()));
+            }
         }
 
         #endregion
@@ -898,7 +776,7 @@ namespace Irixi_Aligner_Common.Equipments
                     break;
 
                 case EnumSourceRange.REAL:
-                    Send(":SOUR:CURR:RANG " + Real.ToString());
+                    Send(":SOUR:CURR:RANG " + ((decimal)Real).ToString());
                     break;
             }
         }
@@ -932,7 +810,7 @@ namespace Irixi_Aligner_Common.Equipments
                     break;
 
                 case EnumSourceRange.REAL:
-                    Send(":SOUR:VOLT:RANG " + Real.ToString());
+                    Send(":SOUR:VOLT:RANG " + ((decimal)Real).ToString());
                     break;
             }
         }
@@ -943,22 +821,18 @@ namespace Irixi_Aligner_Common.Equipments
             {
                 case EnumComplianceLIMIT.DEFAULT:
                     Send(":SENS:CURR:PROT DEF");
-                    this.ComplianceCurrent = PROT_AMPS_DEF;
                     break;
 
                 case EnumComplianceLIMIT.MIN:
                     Send(":SENS:CURR:PROT MIN");
-                    this.ComplianceCurrent = PROT_AMPS_MIN;
                     break;
 
                 case EnumComplianceLIMIT.MAX:
                     Send(":SENS:CURR:PROT MAX");
-                    this.ComplianceCurrent = PROT_AMPS_MAX;
                     break;
 
                 case EnumComplianceLIMIT.REAL:
-                    Send(":SENS:CURR:PROT " + Real.ToString());
-                    this.ComplianceCurrent = Real;
+                    Send(":SENS:CURR:PROT " + Real.ToString("F7"));
                     break;
             }
 
@@ -981,22 +855,18 @@ namespace Irixi_Aligner_Common.Equipments
             {
                 case EnumComplianceLIMIT.DEFAULT:
                     Send(":SENS:VOLT:PROT DEF");
-                    this.ComplianceVoltage = PROT_VOLT_DEF;
                     break;
 
                 case EnumComplianceLIMIT.MIN:
                     Send(":SENS:VOLT:PROT MIN");
-                    this.ComplianceVoltage = PROT_VOLT_MIN;
                     break;
 
                 case EnumComplianceLIMIT.MAX:
                     Send(":SENS:VOLT:PROT MAX");
-                    this.ComplianceVoltage = PROT_VOLT_MAX;
                     break;
 
                 case EnumComplianceLIMIT.REAL:
-                    Send(":SENS:VOLT:PROT " + Real.ToString());
-                    this.ComplianceVoltage = Real;
+                    Send(":SENS:VOLT:PROT " + ((decimal)Real).ToString());
                     break;
             }
 
@@ -1048,6 +918,7 @@ namespace Irixi_Aligner_Common.Equipments
         #endregion
 
         #region System Subsystem
+
         /// <summary>
         /// Remove the SourceMeter from the remote state and enables the operation of front panel keys
         /// </summary>
@@ -1180,6 +1051,18 @@ namespace Irixi_Aligner_Common.Equipments
                         // switch the source mode to v-source
                         SetToVoltageSource();
 
+                        // Set measurement range
+                        SetMeasRangeOfAmps(EnumMeasRangeAmps.AUTO);
+                        SetMeasRangeOfVolts(EnumMeasRangeVolts.AUTO);
+
+                        // Set default compliance
+                        SetComplianceCurrent(EnumComplianceLIMIT.DEFAULT);
+                        SetComplianceVoltage(EnumComplianceLIMIT.DEFAULT);
+
+                        // Set Output level to zero
+                        SetVoltageSourceLevel(0);
+                        SetCurrentSourceLevel(0);
+
                         // disable original display
                         SetDisplayCircuitry(true);
 
@@ -1276,7 +1159,7 @@ namespace Irixi_Aligner_Common.Equipments
                     while (!token.IsCancellationRequested)
                     {
                         this.MeasurementValue = Fetch();
-                        Task.Delay(10);
+                        Thread.Sleep(20);
                     }
 
                     // resume display
@@ -1359,23 +1242,22 @@ namespace Irixi_Aligner_Common.Equipments
                     Thread.Sleep(10);
 
                     // check if error occured
-                    serialport.WriteLine(":SYST:ERR:CODE?");
+                    serialport.WriteLine(":SYST:ERR:COUN?");
                     var ret = serialport.ReadLine();
 
-                    if (int.TryParse(ret, out int err_code))
+                    if (int.TryParse(ret, out int err_count))
                     {
-                        if (err_code != 0) // error occured
+                        if (err_count != 0) // error occured
                         {
                             // read all errors occured
                             serialport.WriteLine(":SYST:ERR:ALL?");
-                            this.LastError = serialport.ReadLine();
-                            throw new InvalidOperationException(this.LastError);
+                            var err = serialport.ReadLine();
+                            throw new InvalidOperationException(err);
                         }
                     }
                     else
                     {
-                        this.LastError = string.Format("unable to convert error code {0} to number", err_code);
-                        throw new InvalidCastException(this.LastError);
+                        throw new InvalidCastException(string.Format("unable to convert error count {0} to number", err_count));
                     }
                 }
             }
@@ -1411,6 +1293,31 @@ namespace Irixi_Aligner_Common.Equipments
             }
         }
 
+        private double ConvertMeasRangeAmpsToDouble(EnumMeasRangeAmps Range)
+        {
+            double real = 1.05 * Math.Pow(10, ((int)Range) - 7);
+            return real;
+        }
+
+        private EnumMeasRangeAmps ConvertDoubleToMeasRangeAmps(double Range)
+        {
+            var digital = Range / 1.05;
+            digital = Math.Log10(digital);
+            return (EnumMeasRangeAmps)(digital + 7);
+        }
+
+        private double ConvertMeasRangeVoltToDouble(EnumMeasRangeVolts Range)
+        {
+            double real = 2.1 * Math.Pow(10, ((int)Range - 2));
+            return real;
+        }
+
+        private EnumMeasRangeVolts ConvertDoubleToMeasRangeVolt(double Range)
+        {
+            var digital = Range / 2.1;
+            digital = Math.Log10(digital);
+            return (EnumMeasRangeVolts)(digital + 2);
+        }
         #endregion
     }
 }
