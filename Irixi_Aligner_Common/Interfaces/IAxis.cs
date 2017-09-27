@@ -110,7 +110,7 @@ namespace Irixi_Aligner_Common.Interfaces
         /// Start a task to home the axis
         /// </summary>
         /// <returns></returns>
-        Task<bool> Home();
+        bool Home();
 
         /// <summary>
         /// Start to move the axis by steps
@@ -119,7 +119,7 @@ namespace Irixi_Aligner_Common.Interfaces
         /// <param name="Speed">1 ~ 100</param>
         /// <param name="Steps">The steps to move</param>
         /// <returns></returns>
-        Task<bool> Move(MoveMode Mode, int Speed, int Steps);
+        bool Move(MoveMode Mode, int Speed, int Steps);
 
         /// <summary>
         /// Start to move the axis by real world distance
@@ -128,7 +128,7 @@ namespace Irixi_Aligner_Common.Interfaces
         /// <param name="Speed">1 ~ 100</param>
         /// <param name="Distance">The real world distance to move</param>
         /// <returns></returns>
-        Task<bool> Move(MoveMode Mode, int Speed, double Distance);
+        bool Move(MoveMode Mode, int Speed, double Distance);
 
         /// <summary>
         /// Start a task to move the axis and output a series of trigger pulses on the specified channel(I/O)
@@ -139,7 +139,7 @@ namespace Irixi_Aligner_Common.Interfaces
         /// <param name="Interval">The steps between adjacent trigger pulse, in steps</param>
         /// <param name="Channel">The trigger channel</param>
         /// <returns></returns>
-        Task<bool> MoveWithTrigger(MoveMode Mode, int Speed, int Steps, int Interval, int Channel);
+        bool MoveWithTrigger(MoveMode Mode, int Speed, int Steps, int Interval, int Channel);
 
         /// <summary>
         /// Start a task to move the axis and output a series of trigger pulses on the specified channel(I/O)
@@ -150,7 +150,7 @@ namespace Irixi_Aligner_Common.Interfaces
         /// <param name="Interval">The distance between adjacent trigger pulse</param>
         /// <param name="Channel">The trigger channel</param>
         /// <returns></returns>
-        Task<bool> MoveWithTrigger(MoveMode Mode, int Speed, double Distance, double Interval, int Channel);
+        bool MoveWithTrigger(MoveMode Mode, int Speed, double Distance, double Interval, int Channel);
 
         /// <summary>
         /// Start a task to move the axis and activate a series of conversion with the specified adc
@@ -161,7 +161,7 @@ namespace Irixi_Aligner_Common.Interfaces
         /// <param name="Interval">The steps between adjacent ADC conversion</param>
         /// <param name="AdcIndex">The channle of ADC</param>
         /// <returns></returns>
-        Task<bool> MoveWithInnerADC(MoveMode Mode, int Speed, int Steps, int Interval, int Channel);
+        bool MoveWithInnerADC(MoveMode Mode, int Speed, int Steps, int Interval, int Channel);
 
         /// <summary>
         /// Start a task to move the axis and activate a series of conversion with the specified adc
@@ -172,7 +172,7 @@ namespace Irixi_Aligner_Common.Interfaces
         /// <param name="Interval">The distance between adjacent ADC conversion</param>
         /// <param name="AdcIndex">The channle of ADC</param>
         /// <returns></returns>
-        Task<bool> MoveWithInnerADC(MoveMode Mode, int Speed, double Distance, double Interval, int Channel);
+        bool MoveWithInnerADC(MoveMode Mode, int Speed, double Distance, double Interval, int Channel);
 
         /// <summary>
         /// Stop the current activity immediately 

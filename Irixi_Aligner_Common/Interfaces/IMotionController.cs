@@ -45,12 +45,12 @@ namespace Irixi_Aligner_Common.Interfaces
         /// <see cref="IAxis.Home"/> for more infomation
         /// </summary>
         /// <param name="Axis"></param>
-        Task<bool> Home(IAxis Axis);
+        bool Home(IAxis Axis);
 
         /// <summary>
         ///  Home all axes
         /// </summary>
-        Task<bool> HomeAll();
+        bool HomeAll();
 
         /// <summary>
         /// <see cref="IAxis.Move(MoveMode, int, int)"/> for more infomation
@@ -60,7 +60,7 @@ namespace Irixi_Aligner_Common.Interfaces
         /// <param name="Speed"></param>
         /// <param name="distance"></param>
         /// <returns></returns>
-        Task<bool> Move(IAxis Axis, MoveMode Mode, int Speed, int Distance);
+        bool Move(IAxis Axis, MoveMode Mode, int Speed, int Distance);
 
         /// <summary>
         /// <see cref="IAxis.MoveWithTrigger(MoveMode, int, int, int, int)"/> for more infomation
@@ -72,7 +72,7 @@ namespace Irixi_Aligner_Common.Interfaces
         /// <param name="Interval"></param>
         /// <param name="Channel"></param>
         /// <returns></returns>
-        Task<bool> MoveWithTrigger(IAxis Axis, MoveMode Mode, int Speed, int Distance, int Interval, int Channel);
+        bool MoveWithTrigger(IAxis Axis, MoveMode Mode, int Speed, int Distance, int Interval, int Channel);
 
         /// <summary>
         /// <see cref="IAxis.MoveWithInnerADC(MoveMode, int, int, int, int)"/> for more infomation
@@ -84,7 +84,7 @@ namespace Irixi_Aligner_Common.Interfaces
         /// <param name="Interval"></param>
         /// <param name="AdcIndex"></param>
         /// <returns></returns>
-        Task<bool> MoveWithInnerADC(IAxis Axis, MoveMode Mode, int Speed, int Distance, int Interval, int Channel);
+        bool MoveWithInnerADC(IAxis Axis, MoveMode Mode, int Speed, int Distance, int Interval, int Channel);
 
         /// <summary>
         /// <see cref="IAxis.Stop"/> for more infomation

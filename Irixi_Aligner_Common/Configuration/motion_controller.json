@@ -5,7 +5,7 @@
       "Enabled": true,
       "DeviceClass": "371EEBD8-4C57-4EB2-A830-CBD5AEC89D8E",
       "Desc": "KEITHLEY 2400",
-      "Port": "COM17",
+      "Port": "COM19",
       "BaudRate": 57600,
       "Caption": "ROSA CH1",
       "Icon": "IconViewWsPanels",
@@ -38,8 +38,8 @@
     {
       "DeviceClass": "5013d013-f167-4dcb-86d9-599a325744b8",
       "Model": "LUMINOS_P6A",
-      "Port": "COM5",
-      "Enabled": false,
+      "Port": "COM18",
+      "Enabled": true,
       "Comment": "For VGroove Aligner",
       "AxisCollection": [
         {

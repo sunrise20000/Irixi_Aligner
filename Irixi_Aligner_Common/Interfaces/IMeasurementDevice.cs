@@ -2,7 +2,7 @@
 
 namespace Irixi_Aligner_Common.Interfaces
 {
-    interface IMeasurementDevice : IEquipmentBase
+    public interface IMeasurementDevice : IEquipmentBase
     {
         double Fetch();
 

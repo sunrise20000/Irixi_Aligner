@@ -176,29 +176,26 @@ namespace Irixi_Aligner_Common.Equipments
         #endregion
 
         #region Methods
-        public override Task<bool> Init()
+        public override bool Init()
         {
-            return new Task<bool>(() =>
+            if (this.IsEnabled) // the controller is configured to be disabled in the config file 
             {
-                if (this.IsEnabled) // the controller is configured to be disabled in the config file 
+                if (this.Controller.IsInitialized)
                 {
-                    if (this.Controller.IsInitialized)
-                    {
-                        this.IsInitialized = true;
-                        return true;
-                    }
-                    else
-                    {
-                        this.LastError = "the corresponding motion controller is not available";
-                        return false;
-                    }
+                    this.IsInitialized = true;
+                    return true;
                 }
                 else
                 {
-                    this.LastError = "it is configured to be disabled";
+                    this.LastError = "the corresponding motion controller is not available";
                     return false;
                 }
-            });
+            }
+            else
+            {
+                this.LastError = "it is configured to be disabled";
+                return false;
+            }
         }
         #endregion
     }

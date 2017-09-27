@@ -271,22 +271,22 @@ namespace Irixi_Aligner_Common.MotionControllerEntities
                 return true;
         }
 
-        public virtual Task<bool> Home()
+        public virtual bool Home()
         {
             return this.ParentController.Home(this);
         }
 
-        public virtual Task<bool> Move(MoveMode Mode, int Speed, int Steps)
+        public virtual bool Move(MoveMode Mode, int Speed, int Steps)
         {
             return this.ParentController.Move(this, Mode, Speed, Steps);
         }
 
-        public virtual Task<bool> Move(MoveMode Mode, int Speed, double Distance)
+        public virtual bool Move(MoveMode Mode, int Speed, double Distance)
         {
             return this.ParentController.Move(this, Mode, Speed, this.UnitHelper.ConvertPositionToSteps(Distance));
         }
 
-        public virtual Task<bool> MoveWithTrigger(MoveMode Mode, int Speed, int Steps, int Interval, int Channel)
+        public virtual bool MoveWithTrigger(MoveMode Mode, int Speed, int Steps, int Interval, int Channel)
         {
             return this.ParentController.MoveWithTrigger(
                 this, 
@@ -297,7 +297,7 @@ namespace Irixi_Aligner_Common.MotionControllerEntities
                 Channel);
         }
 
-        public virtual Task<bool> MoveWithTrigger(MoveMode Mode, int Speed, double Distance, double Interval, int Channel)
+        public virtual bool MoveWithTrigger(MoveMode Mode, int Speed, double Distance, double Interval, int Channel)
         {
             return this.ParentController.MoveWithTrigger(
                 this, 
@@ -308,7 +308,7 @@ namespace Irixi_Aligner_Common.MotionControllerEntities
                 Channel);
         }
 
-        public virtual Task<bool> MoveWithInnerADC(MoveMode Mode, int Speed, int Steps, int Interval, int Channel)
+        public virtual bool MoveWithInnerADC(MoveMode Mode, int Speed, int Steps, int Interval, int Channel)
         {
             return this.ParentController.MoveWithInnerADC(
                 this, 
@@ -319,7 +319,7 @@ namespace Irixi_Aligner_Common.MotionControllerEntities
                 Channel);
         }
 
-        public virtual Task<bool> MoveWithInnerADC(MoveMode Mode, int Speed, double Distance, double Interval, int Channel)
+        public virtual bool MoveWithInnerADC(MoveMode Mode, int Speed, double Distance, double Interval, int Channel)
         {
             return this.ParentController.MoveWithInnerADC(this,
                 Mode,

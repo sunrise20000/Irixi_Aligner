@@ -258,7 +258,6 @@ namespace Irixi_Aligner_Common.Classes
         /// </summary>
         public async void Init()
         {
-
             bool[] ret;
             List<Task<bool>> _tasks = new List<Task<bool>>();
             List<IEquipmentBase> _equipments = new List<IEquipmentBase>();
@@ -274,10 +273,10 @@ namespace Irixi_Aligner_Common.Classes
             {
                 if (_mc.IsEnabled)
                 {
-                    var task = _mc.Init();
-                    task.Start();
-                    _tasks.Add(task);
                     _equipments.Add(_mc);
+                    // _tasks.Add(Task.Factory.StartNew(_mc.Init));
+                    _tasks.Add(Task.Run<bool>(() => { return _mc.Init(); }));
+                    
                     this.LastMessage = new MessageItem(MessageType.Normal, "{0} Initializing ...", _mc);
 
                     // update UI immediately
@@ -291,8 +290,7 @@ namespace Irixi_Aligner_Common.Classes
                 Task<bool> t = await Task.WhenAny(_tasks);
 
                 int id = _tasks.IndexOf(t);
-
-
+                
                 if (t.Result)
                     this.LastMessage = new MessageItem(MessageType.Good, "{0} Initialization is completed.", _equipments[id]);
                 else
@@ -326,9 +324,7 @@ namespace Irixi_Aligner_Common.Classes
             // initialize the cylinder controller
             if (CylinderController.IsEnabled)
             {
-                var _t = this.CylinderController.Init();
-                _t.Start();
-                _tasks.Add(_t);
+                _tasks.Add(Task.Factory.StartNew(this.CylinderController.Init));
                 _equipments.Add(this.CylinderController);
             }
 
@@ -337,9 +333,7 @@ namespace Irixi_Aligner_Common.Classes
             {
                 if (k2400.IsEnabled)
                 {
-                    var _t = k2400.Init();
-                    _t.Start();
-                    _tasks.Add(_t);
+                    _tasks.Add(Task.Factory.StartNew(k2400.Init));
                     _equipments.Add(k2400);
                 }
             }
@@ -382,7 +376,10 @@ namespace Irixi_Aligner_Common.Classes
                     Args, 
                     Axis.PhysicalAxisInst.UnitHelper.Unit);
 
-                var t = Axis.PhysicalAxisInst.Move(Args.Mode, Args.Speed, Args.Distance);
+                var t = new Task<bool>(() =>
+                {
+                    return Axis.PhysicalAxisInst.Move(Args.Mode, Args.Speed, Args.Distance);
+                });
                 t.Start();
                 bool ret = await t;
                 if (ret == false)
@@ -458,7 +455,10 @@ namespace Irixi_Aligner_Common.Classes
 
                         if (_order == _present_order)
                         {
-                            var t = _axis.PhysicalAxisInst.Move(_arg.Mode, _arg.Speed, _arg.Distance);
+                            var t = new Task<bool>(() =>
+                            {
+                                return _axis.PhysicalAxisInst.Move(_arg.Mode, _arg.Speed, _arg.Distance);
+                            });
                             t.Start();
                             _move_tasks.Add(t);
                             _axis_moving.Add(_axis);
@@ -509,7 +509,7 @@ namespace Irixi_Aligner_Common.Classes
             if(GetSystemState() == SystemState.IDLE)
             {
                 SetSystemState(SystemState.BUSY);
-                bool ret = await Axis.Home();
+                bool ret = await Task.Run<bool>(() => Axis.Home());
                 SetSystemState(SystemState.IDLE);
             }
         }
@@ -546,7 +546,10 @@ namespace Irixi_Aligner_Common.Classes
                         {
                             this.LastMessage = new MessageItem(MessageType.Normal, "{0} Start to home ...", axis);
 
-                            var t = axis.PhysicalAxisInst.Home();
+                            var t = new Task<bool>(() =>
+                            {
+                                return axis.PhysicalAxisInst.Home();
+                            });
                             t.Start();
                             _tasks.Add(t);
                             _axis_homing.Add(axis);

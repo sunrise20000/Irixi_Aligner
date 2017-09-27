@@ -1029,69 +1029,66 @@ namespace Irixi_Aligner_Common.Equipments
 
         #region Override Methods
 
-        public override Task<bool> Init()
+        public override bool Init()
         {
-            return new Task<bool>(() =>
+            try
             {
-                try
+                serialport.Open();
+
+                // wait for the K2400 to ready to receive commands
+                //e.g. Grandfather stayed up to wait for them to come to our house
+                Task.Delay(100);
+
+                // reset to default setting and clear the error query
+                Reset();
+
+                string desc = this.GetDescription();
+                if (desc.IndexOf("MODEL 2400") > -1)
                 {
-                    serialport.Open();
 
-                    // wait for the K2400 to ready to receive commands
-                    //e.g. Grandfather stayed up to wait for them to come to our house
-                    Task.Delay(100);
+                    // switch the source mode to v-source
+                    SetToVoltageSource();
 
-                    // reset to default setting and clear the error query
-                    Reset();
- 
-                    string desc = this.GetDescription();
-                    if (desc.IndexOf("MODEL 2400") > -1)
-                    {
+                    // Set measurement range
+                    SetMeasRangeOfAmps(EnumMeasRangeAmps.AUTO);
+                    SetMeasRangeOfVolts(EnumMeasRangeVolts.AUTO);
 
-                        // switch the source mode to v-source
-                        SetToVoltageSource();
+                    // Set default compliance
+                    SetComplianceCurrent(EnumComplianceLIMIT.DEFAULT);
+                    SetComplianceVoltage(EnumComplianceLIMIT.DEFAULT);
 
-                        // Set measurement range
-                        SetMeasRangeOfAmps(EnumMeasRangeAmps.AUTO);
-                        SetMeasRangeOfVolts(EnumMeasRangeVolts.AUTO);
+                    // Set Output level to zero
+                    SetVoltageSourceLevel(0);
+                    SetCurrentSourceLevel(0);
 
-                        // Set default compliance
-                        SetComplianceCurrent(EnumComplianceLIMIT.DEFAULT);
-                        SetComplianceVoltage(EnumComplianceLIMIT.DEFAULT);
+                    // disable original display
+                    SetDisplayCircuitry(true);
 
-                        // Set Output level to zero
-                        SetVoltageSourceLevel(0);
-                        SetCurrentSourceLevel(0);
+                    // enable user message display
+                    SetDisplayTextState(1, true);
+                    SetDisplayTextState(2, true);
 
-                        // disable original display
-                        SetDisplayCircuitry(true);
+                    // show user messages
+                    SetDisplayTextMessage(1, this.Config.Caption);
+                    SetDisplayTextMessage(2, "powered by IRIXI ALIGNER");
 
-                        // enable user message display
-                        SetDisplayTextState(1, true);
-                        SetDisplayTextState(2, true);
+                    // enable beeper
+                    SetBeeperState(true);
 
-                        // show user messages
-                        SetDisplayTextMessage(1, this.Config.Caption);
-                        SetDisplayTextMessage(2, "powered by IRIXI ALIGNER");
-
-                        // enable beeper
-                        SetBeeperState(true);
-                        
-                        this.IsInitialized = true;
-                        return true;
-                    }
-                    else
-                    {
-                        this.LastError = string.Format("the device connected to the port {0} might not be Keithley 2400", this.Port);
-                        return false;
-                    }
+                    this.IsInitialized = true;
+                    return true;
                 }
-                catch (Exception ex)
+                else
                 {
-                    this.LastError = ex.Message;
+                    this.LastError = string.Format("the device connected to the port {0} might not be Keithley 2400", this.Port);
                     return false;
                 }
-            });
+            }
+            catch (Exception ex)
+            {
+                this.LastError = ex.Message;
+                return false;
+            }
         }
 
         /// <summary>

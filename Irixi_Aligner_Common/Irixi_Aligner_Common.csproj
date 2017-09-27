@@ -127,7 +127,9 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="AlignmentArithmetic\AdjustRollBy1DScan.cs" />
-    <Compile Include="AlignmentArithmetic\Alignment2D.cs" />
+    <Compile Include="AlignmentArithmetic\Align1DArgs.cs" />
+    <Compile Include="AlignmentArithmetic\AlignmentBase.cs" />
+    <Compile Include="AlignmentArithmetic\AlignmentXD.cs" />
     <Compile Include="AlignmentArithmetic\SpiralScan.cs" />
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
@@ -201,6 +203,9 @@
     </Compile>
     <Compile Include="Windows\MassMoveWindow.xaml.cs">
       <DependentUpon>MassMoveWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Windows\Window1.xaml.cs">
+      <DependentUpon>Window1.xaml</DependentUpon>
     </Compile>
   </ItemGroup>
   <ItemGroup>
@@ -286,6 +291,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Windows\MassMoveWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Windows\Window1.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

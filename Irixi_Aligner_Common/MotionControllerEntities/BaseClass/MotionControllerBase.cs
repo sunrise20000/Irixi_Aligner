@@ -83,24 +83,19 @@ namespace Irixi_Aligner_Common.MotionControllerEntities
 
         #region Methods
 
-        public virtual Task<bool> Init()
+        public virtual bool Init()
         {
-            return new Task<bool>(() =>
+            if (this.IsEnabled) // the controller is configured to be disabled in the config file 
+                return true;
+            else
             {
-                if (this.IsEnabled) // the controller is configured to be disabled in the config file 
-                    return true;
-                else
-                {
-                    this.LastError = "the controller is disabled";
-                    return false;
-                }
-            });
+                this.LastError = "the controller is disabled";
+                return false;
+            }
         }
 
-        public virtual Task<bool> Home(IAxis Axis)
+        public virtual bool Home(IAxis Axis)
         {
-            return new Task<bool>(() =>
-            {
                 bool ret = false;
 
                 if (!this.IsEnabled) // the controller is configured to be disabled in the config file
@@ -119,18 +114,15 @@ namespace Irixi_Aligner_Common.MotionControllerEntities
                     ret = true;
 
                 return ret;
-            });
         }
 
-        public virtual Task<bool> HomeAll()
+        public virtual bool HomeAll()
         {
             throw new NotImplementedException();
         }
 
-        public virtual Task<bool> Move(IAxis Axis, MoveMode Mode, int Speed, int Distance)
+        public virtual bool Move(IAxis Axis, MoveMode Mode, int Speed, int Distance)
         {
-            return new Task<bool>(() =>
-            {
                 bool ret = false;
 
                 if (!this.IsEnabled)
@@ -152,16 +144,15 @@ namespace Irixi_Aligner_Common.MotionControllerEntities
                 else
                     ret = true;
 
-                return ret;
-            });
+            return ret;
         }
 
-        public virtual Task<bool> MoveWithTrigger(IAxis Axis, MoveMode Mode, int Speed, int Distance, int Interval, int Channel)
+        public virtual bool MoveWithTrigger(IAxis Axis, MoveMode Mode, int Speed, int Distance, int Interval, int Channel)
         {
             throw new NotImplementedException();
         }
 
-        public virtual Task<bool> MoveWithInnerADC(IAxis Axis, MoveMode Mode, int Speed, int Distance, int Interval, int Channel)
+        public virtual bool MoveWithInnerADC(IAxis Axis, MoveMode Mode, int Speed, int Distance, int Interval, int Channel)
         {
             throw new NotImplementedException();
         }

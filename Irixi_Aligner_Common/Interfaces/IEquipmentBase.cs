@@ -40,7 +40,6 @@ namespace Irixi_Aligner_Common.Interfaces
         /// Initialize the controller
         /// </summary>
         /// <returns></returns>
-        Task<bool> Init();
-
+        bool Init();
     }
 }

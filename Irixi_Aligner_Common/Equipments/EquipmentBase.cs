@@ -10,8 +10,7 @@ namespace Irixi_Aligner_Common.Equipments
     public class EquipmentBase : IDisposable, IMeasurementDevice, INotifyPropertyChanged
     {
         #region Variables
-        public delegate void MeasurementUpdateHandle(object sender, EventArgs args);
-        public event MeasurementUpdateHandle OnMeasurementUpdated;
+
         #endregion  
 
         public EquipmentBase(ConfigurationBase Config)
@@ -91,7 +90,7 @@ namespace Irixi_Aligner_Common.Equipments
         #endregion
 
         #region Methods
-        public virtual Task<bool> Init()
+        public virtual bool Init()
         {
             throw new NotImplementedException();
         }

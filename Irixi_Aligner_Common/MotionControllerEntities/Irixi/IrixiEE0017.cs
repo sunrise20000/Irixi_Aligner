@@ -72,7 +72,7 @@ namespace Irixi_Aligner_Common.MotionControllerEntities
                     this.IsInitialized = false;
 
                     // Start to connect the controller repeatly
-                    Init().Start();
+                    // Init();
                     break;
 
             }
@@ -101,68 +101,51 @@ namespace Irixi_Aligner_Common.MotionControllerEntities
         /// Initialize the motion controller
         /// </summary>
         /// <returns></returns>
-        public override Task<bool> Init()
+        public override bool Init()
         {
-            // implement the common process
-            using (var t = base.Init())
+            if (base.Init() == false)
+                return false;
+            
+            _controller.OpenDevice();
+            if (_controller.IsConnected)
             {
-                t.Start();
-                t.Wait();
-                if (t.Result == false)
+                if (_controller.ReadFWInfo())
                 {
-                    return new Task<bool>(() =>
+                    LogHelper.WriteLine("{0}, firmware version {1}", this, _controller.FirmwareInfo);
+
+                    // pass the configurations to the instance of irixi motion controller class
+                    for (int i = 0; i < this.AxisCollection.Count; i++)
                     {
-                        return false;
-                    });
-                }
-            }
+                        var axis = this.AxisCollection[i.ToString()] as IrixiAxis;
+                        var axis_of_sdk = _controller.AxisCollection[i];
 
-            // The OpenDeviceAsync process will be always running until the device was found
-            return new Task<bool>(() =>
-            {
-                _controller.OpenDevice();
-                if (_controller.IsConnected)
-                {
-                    if (_controller.ReadFWInfo())
-                    {
-                        LogHelper.WriteLine("{0}, firmware version {1}", this, _controller.FirmwareInfo);
+                        axis_of_sdk.SoftCCWLS = 0;
+                        axis_of_sdk.SoftCWLS = axis.UnitHelper.MaxSteps;
+                        axis_of_sdk.MaxSteps = axis.UnitHelper.MaxSteps;
+                        axis_of_sdk.MaxSpeed = axis.MaxSpeed;
+                        axis_of_sdk.AccelerationSteps = axis.AccelerationSteps;
 
-                        // pass the configurations to the instance of irixi motion controller class
-                        for (int i = 0; i < this.AxisCollection.Count; i++)
-                        {
-                            var axis = this.AxisCollection[i.ToString()] as IrixiAxis;
-                            var axis_of_sdk = _controller.AxisCollection[i];
-
-                            axis_of_sdk.SoftCCWLS = 0;
-                            axis_of_sdk.SoftCWLS = axis.UnitHelper.MaxSteps;
-                            axis_of_sdk.MaxSteps = axis.UnitHelper.MaxSteps;
-                            axis_of_sdk.MaxSpeed = axis.MaxSpeed;
-                            axis_of_sdk.AccelerationSteps = axis.AccelerationSteps;
-
-                            // reverse the drive directoin
-                            if (axis.ReverseDriveDirecton)
-                                _controller.ReverseMoveDirection(i, true);
-                        }
-
-                        return true;
-                    }
-                    else
-                    {
-
-                        LogHelper.WriteLine("{0}, unable to read the firmware info, {1}", this, _controller.LastError);
-                        return false;
+                        // reverse the drive directoin
+                        if (axis.ReverseDriveDirecton)
+                            _controller.ReverseMoveDirection(i, true);
                     }
 
-                    
+                    return true;
                 }
                 else
                 {
-                    this.LastError = _controller.LastError;
+
+                    LogHelper.WriteLine("{0}, unable to read the firmware info, {1}", this, _controller.LastError);
                     return false;
                 }
- 
-            });
-            
+
+
+            }
+            else
+            {
+                this.LastError = _controller.LastError;
+                return false;
+            }
         }
 
         /// <summary>
@@ -170,20 +153,12 @@ namespace Irixi_Aligner_Common.MotionControllerEntities
         /// </summary>
         /// <param name="Axis">The instance of the IrixiAxis class</param>
         /// <returns></returns>
-        public override Task<bool> Home(IAxis Axis)
+        public override bool Home(IAxis Axis)
         {
-            return new Task<bool>(() =>
-            {
                 bool ret = false;
 
-                // implement the common process
-                using (var t = base.Home(Axis))
-                {
-                    t.Start();
-                    t.Wait();
-                    if (t.Result == false)
-                        return false;
-                }
+                if (base.Home(Axis) == false)
+                    return false;
 
                 IrixiAxis _axis = Axis as IrixiAxis;
 
@@ -230,8 +205,7 @@ namespace Irixi_Aligner_Common.MotionControllerEntities
                 }
 
                 return ret;
-            });
-        }
+            }
 
         /// <summary>
         /// Move the specified axis with specified parameters
@@ -241,93 +215,85 @@ namespace Irixi_Aligner_Common.MotionControllerEntities
         /// <param name="Speed">The velocity to move</param>
         /// <param name="Distance">The distance to move</param>
         /// <returns></returns>
-        public override Task<bool> Move(IAxis Axis, MoveMode Mode, int Speed, int Distance)
+        public override bool Move(IAxis Axis, MoveMode Mode, int Speed, int Distance)
         {
-            return new Task<bool>(() =>
+            bool ret = false;
+
+           if(base.Move(Axis, Mode, Speed, Distance) == false)
+                return false;
+
+            IrixiAxis _axis = Axis as IrixiAxis;
+
+
+            int target_pos = 0;
+
+            if (_axis.IsHomed == false)
             {
-                // implement the common process
-                using (var t = base.Move(Axis, Mode, Speed, Distance))
+                _axis.LastError = "the axis is not homed";
+                return false;
+            }
+
+            // lock the axis
+            if (_axis.Lock())
+            {
+                this.IncreaseRunningAxes();
+
+                try
                 {
-                    t.Start();
-                    t.Wait();
-                    if (t.Result == false)
-                        return false;
-                }
 
-                IrixiAxis _axis = Axis as IrixiAxis;
-
-                bool ret = false;
-                int target_pos = 0;
-
-                if (_axis.IsHomed == false)
-                {
-                    _axis.LastError = "the axis is not homed";
-                    return false;
-                }
-
-                // lock the axis
-                if (_axis.Lock())
-                {
-                    this.IncreaseRunningAxes();
-
-                    try
+                    // Set the move speed
+                    if (Mode == MoveMode.ABS)
                     {
+                        target_pos = Math.Abs(Distance);
+                    }
+                    else
+                    {
+                        target_pos = _axis.AbsPosition + Distance;
+                    }
 
-                        // Set the move speed
-                        if (Mode == MoveMode.ABS)
-                        {
-                            target_pos = Math.Abs(Distance);
-                        }
-                        else
-                        {
-                            target_pos = _axis.AbsPosition + Distance;
-                        }
+                    // Move the the target position
+                    if (_axis.CheckSoftLimitation(target_pos))
+                    {
+                        ret = _controller.Move(_axis.AxisIndex, Speed, target_pos, IrixiStepperControllerHelper.MoveMode.ABS);
 
-                        // Move the the target position
-                        if (_axis.CheckSoftLimitation(target_pos))
+                        if (!ret)
                         {
-                            ret = _controller.Move(_axis.AxisIndex, Speed, target_pos, IrixiStepperControllerHelper.MoveMode.ABS);
-
-                            if (!ret)
+                            if (_controller.LastError.EndsWith("31"))
                             {
-                                if (_controller.LastError.EndsWith("31"))
-                                {
-                                    // ignore the error 31 which indicates that uesr interrupted the movement
-                                    ret = true;
-                                }
-                                else
-                                {
-                                    _axis.LastError = string.Format("sdk reported error code {0}", _controller.LastError);
-                                    ret = false;
-                                }
+                                // ignore the error 31 which indicates that uesr interrupted the movement
+                                ret = true;
+                            }
+                            else
+                            {
+                                _axis.LastError = string.Format("sdk reported error code {0}", _controller.LastError);
+                                ret = false;
                             }
                         }
-                        else
-                        {
-                            _axis.LastError = "target position exceeds the limitation.";
-
-                            ret = false;
-                        }
-
                     }
-                    catch (Exception ex)
+                    else
                     {
-                        _axis.LastError = ex.Message;
+                        _axis.LastError = "target position exceeds the limitation.";
+
                         ret = false;
                     }
 
-                    finally
-                    {
-                        this.DecreaseRunningAxes();
-
-                        // release the axis
-                        _axis.Unlock();
-                    }
-
                 }
-                return ret;
+                catch (Exception ex)
+                {
+                    _axis.LastError = ex.Message;
+                    ret = false;
+                }
 
-            });
+                finally
+                {
+                    this.DecreaseRunningAxes();
+
+                    // release the axis
+                    _axis.Unlock();
+                }
+
+            }
+            return ret;
         }
 
         public override void Stop()
