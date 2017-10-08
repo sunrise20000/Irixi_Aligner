@@ -6,6 +6,7 @@ using GalaSoft.MvvmLight.Messaging;
 using Irixi_Aligner_Common.Classes;
 using Irixi_Aligner_Common.Classes.Converters;
 using Irixi_Aligner_Common.Configuration;
+using Irixi_Aligner_Common.Equipments;
 using Irixi_Aligner_Common.UserControls;
 using Irixi_Aligner_Common.ViewModel;
 using Irixi_Aligner_Common.Windows;
@@ -114,10 +115,10 @@ namespace Irixi_Aligner_Common
             #region Create Keithley 2400 control panels
 
             ViewKeithley2400 view_k2400;
-            foreach (var k2400 in service.Keithley2400Collection)
+            foreach (var k2400 in service.MeasurementInstrumentCollection)
             {
                 // create the user control for k2400
-                view_k2400 = new ViewKeithley2400(k2400);
+                view_k2400 = new ViewKeithley2400(k2400 as Keithley2400);
                 Keithley2400ControlPanel uc = new Keithley2400ControlPanel()
                 { 
                     DataContext = view_k2400
@@ -127,7 +128,7 @@ namespace Irixi_Aligner_Common
                 DocumentPanel panel = new DocumentPanel()
                 {
                     Name = string.Format("dp{0}", k2400.DeviceClass.ToString("N")),
-                    Caption = k2400.Config.Caption,
+                    Caption = k2400,
                     AllowMaximize = false,
                     AllowSizing = false,
                     ClosingBehavior = ClosingBehavior.HideToClosedPanelsCollection,
@@ -289,6 +290,12 @@ namespace Irixi_Aligner_Common
                 if(e.Item.Visibility == Visibility.Visible)
                     dockLayoutManager.MDIController.Activate(e.Item);
             }
+        }
+
+        private void btnAlignmentXD_ItemClick(object sender, ItemClickEventArgs e)
+        {
+            var win = new WinAlignmentXD();
+            win.ShowDialog();
         }
     }
 

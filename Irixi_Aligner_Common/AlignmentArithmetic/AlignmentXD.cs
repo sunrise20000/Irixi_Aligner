@@ -1,7 +1,8 @@
-﻿using Irixi_Aligner_Common.Classes.BaseClass;
-using Irixi_Aligner_Common.Interfaces;
+﻿using Irixi_Aligner_Common.MotionControllerEntities.BaseClass;
 using System;
+using System.Linq;
 using System.Windows;
+using System.Windows.Media;
 
 namespace Irixi_Aligner_Common.AlignmentArithmetic
 {
@@ -9,96 +10,76 @@ namespace Irixi_Aligner_Common.AlignmentArithmetic
     {
 
         #region Constructors
-        public AlignmentXD(Align1DArgs Arg0, IMeasurementDevice Instrument)
+
+        public AlignmentXD(AlignmentXDArgs Args)
         {
-            AxisCount = 1;
-
-            ScanCurveCollection = new ObservableCollectionEx<Point>[1];
-            ArgsCollection = new Align1DArgs[1];
-            ArgsCollection[0] = Arg0;
-
-            this.Instrument = Instrument;
+            this.Args = Args;
         }
 
-        public AlignmentXD(Align1DArgs Arg0, Align1DArgs Arg1, IMeasurementDevice Instrument)
-        {
-            AxisCount = 2;
-
-            ScanCurveCollection = new ObservableCollectionEx<Point>[2];
-            ArgsCollection = new Align1DArgs[2];
-            ArgsCollection[0] = Arg0;
-            ArgsCollection[1] = Arg1;
-
-            this.Instrument = Instrument;
-        }
-
-        public AlignmentXD(Align1DArgs Arg0, Align1DArgs Arg1, Align1DArgs Arg2, IMeasurementDevice Instrument)
-        {
-            AxisCount = 3;
-
-            ScanCurveCollection = new ObservableCollectionEx<Point>[3];
-            ArgsCollection = new Align1DArgs[3];
-            ArgsCollection[0] = Arg0;
-            ArgsCollection[1] = Arg1;
-            ArgsCollection[2] = Arg2;
-
-            this.Instrument = Instrument;
-        }
         #endregion
 
         #region Properties
-        public int AxisCount
-        {
-            private set;
-            get;
-        }
 
-        public int CurrentAxisAligning { private set; get; }
+        public LogicalAxis AxisAligning { private set; get; }
 
-        public IMeasurementDevice Instrument { private set; get; }
-
-        public Align1DArgs[] ArgsCollection
-        {
-            private set;
-            get;
-        }
+        public AlignmentXDArgs Args { private set; get; }
         
-        public ObservableCollectionEx<Point>[] ScanCurveCollection { private set; get; }
         #endregion
 
-        public override void StartAlign()
+        public override void StartAlign(IProgress<Tuple<Alignment1DArgs, Point>> ProgressReport)
         {
-            for (int i = 0; i < ArgsCollection.Length; i++)
-            {
-                CurrentAxisAligning = i;
+            // validate the parameters
+            // an argumentexception will be throw if it's failed
+            Args.Validate();
 
-                var arg = ArgsCollection[i];
+            // select enabled axes
+            var arg_enabled = Args.AxisParamCollection.Where(a => a.IsEnabled == true);
+
+            // sort by Axis-ID and AlignOrder
+            arg_enabled.OrderBy(a => a.AlignOrder).ThenBy(a=>a.Axis.ID);
+
+            
+            foreach (var arg1d in arg_enabled)
+            {
+                var points_origin = new PointCollection();
+
+                // save the axis aligning to stopping it
+                AxisAligning = arg1d.Axis;
 
                 double dist_moved = 0;
-                double halfrange = arg.ScanRange / 2;
+                double halfrange = arg1d.ScanRange / 2;
 
                 try
                 {
                     // move to start position
-                    if (arg.Axis.PhysicalAxisInst.Move(MoveMode.REL, arg.MoveSpeed, -halfrange) == false)
-                        throw new InvalidOperationException(arg.Axis.PhysicalAxisInst.LastError);
+                    if (arg1d.Axis.PhysicalAxisInst.Move(MoveMode.REL, arg1d.MoveSpeed, -halfrange) == false)
+                        throw new InvalidOperationException(arg1d.Axis.PhysicalAxisInst.LastError);
 
                     // start to scan
-                    while (dist_moved < arg.ScanRange)
+                    while (dist_moved <= arg1d.ScanRange)
                     {
-                        // move one step
-                        if (arg.Axis.PhysicalAxisInst.Move(MoveMode.REL, arg.MoveSpeed, arg.Interval) == false)
-                            throw new InvalidOperationException(arg.Axis.PhysicalAxisInst.LastError);
-
                         // read measurement value
-                        var ret = this.Instrument.Fetch();
+                        var ret = Args.Instrument.Fetch();
+                        var p = new Point(dist_moved, ret);
+                        points_origin.Add(p); // this list is used to return to the maximum point
+                        ProgressReport.Report(new Tuple<Alignment1DArgs, Point>(arg1d, p)); // this list is used to draw the curve on the window
 
                         // record distance moved
-                        dist_moved += arg.Interval;
+                        dist_moved += arg1d.Interval;
 
-                        //progressHandler.Report(new Point(dist_moved, ret));
-                        this.ScanCurveCollection[i].Add(new Point(dist_moved, ret));
+                        // move to the next point
+                        if (arg1d.Axis.PhysicalAxisInst.Move(MoveMode.REL, arg1d.MoveSpeed, arg1d.Interval) == false)
+                            throw new InvalidOperationException(arg1d.Axis.PhysicalAxisInst.LastError);
                     }
+
+                    // return to the position with the maximnm measurement data
+                    points_origin.OrderByDescending(a => a.Y);
+                    var max_pos = points_origin[0].X;
+
+                    // Note: The distance to move is minus
+                    if (arg1d.Axis.PhysicalAxisInst.Move(MoveMode.REL, arg1d.MoveSpeed, -(dist_moved - max_pos)) == false)
+                        throw new InvalidOperationException(arg1d.Axis.PhysicalAxisInst.LastError);
+
                 }
                 catch (Exception ex)
                 {
@@ -108,10 +89,11 @@ namespace Irixi_Aligner_Common.AlignmentArithmetic
             
         }
 
+
         public override void StopAlign()
         {
             // stop the moving axis
-            this.ArgsCollection[this.CurrentAxisAligning].Axis.PhysicalAxisInst.Stop();
+            this.AxisAligning.PhysicalAxisInst.Stop();
         }
     }
 }

@@ -5,12 +5,7 @@ namespace Irixi_Aligner_Common.AlignmentArithmetic
 {
     public class AlignmentBase
     {
-        public delegate void PointUpdatedEventHandler(object send, Point EventArgs);
-        public event PointUpdatedEventHandler OnPointUpdated;
-
-        protected IProgress<Point> progressHandler;
-        
-        public virtual void StartAlign()
+        public virtual void StartAlign(IProgress<Tuple<Alignment1DArgs, Point>> ProgressReport)
         {
             throw new NotImplementedException();
         }

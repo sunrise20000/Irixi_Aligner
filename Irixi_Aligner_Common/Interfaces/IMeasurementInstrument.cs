@@ -2,10 +2,16 @@
 
 namespace Irixi_Aligner_Common.Interfaces
 {
-    public interface IMeasurementDevice : IEquipmentBase
+    public interface IMeasurementInstrument : IEquipmentBase
     {
         double Fetch();
 
         Task<double> FetchAsync();
+
+        void StartAutoFetching();
+
+        void StopAutoFetching();
+
+
     }
 }

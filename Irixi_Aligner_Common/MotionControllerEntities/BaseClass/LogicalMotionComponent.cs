@@ -40,7 +40,13 @@ namespace Irixi_Aligner_Common.MotionControllerEntities.BaseClass
                 _hashcode ^= axis.GetHashCode();
             }
 
+            _hashcode ^= this.LogicalAxisCollection.Count.GetHashCode();
             return _hashcode;
+        }
+
+        public override string ToString()
+        {
+            return this.Caption;
         }
     }
 }

@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Irixi_Aligner_Common.Equipments
 {
-    public class EquipmentBase : IDisposable, IMeasurementDevice, INotifyPropertyChanged
+    public class EquipmentBase : IDisposable, IEquipmentBase, INotifyPropertyChanged
     {
         #region Variables
 
@@ -15,6 +15,7 @@ namespace Irixi_Aligner_Common.Equipments
 
         public EquipmentBase(ConfigurationBase Config)
         {
+            this.Config = Config;
             this.DeviceClass = Config.DeviceClass;
             this.Description = Config.Desc;
             this.Port = Config.Port;
@@ -23,6 +24,8 @@ namespace Irixi_Aligner_Common.Equipments
         }
 
         #region Properties
+        public ConfigurationBase Config { private set; get; }
+
         Guid _devclass;
         public Guid DeviceClass
         {
@@ -80,7 +83,7 @@ namespace Irixi_Aligner_Common.Equipments
                 return _is_init;
             }
         }
-
+        
         public string LastError
         {
             protected set;
@@ -91,26 +94,6 @@ namespace Irixi_Aligner_Common.Equipments
 
         #region Methods
         public virtual bool Init()
-        {
-            throw new NotImplementedException();
-        }
-
-        public virtual double Fetch()
-        {
-            throw new NotImplementedException();
-        }
-
-        public virtual Task<double> FetchAsync()
-        {
-            throw new NotImplementedException();
-        }
-
-        public virtual void StartAutoFetching()
-        {
-            throw new NotImplementedException();
-        }
-
-        public virtual void StopAutoFetching()
         {
             throw new NotImplementedException();
         }

@@ -2,6 +2,7 @@
 using GalaSoft.MvvmLight.Command;
 using GalaSoft.MvvmLight.Ioc;
 using GalaSoft.MvvmLight.Messaging;
+using Irixi_Aligner_Common.AlignmentArithmetic;
 using Irixi_Aligner_Common.Classes.BaseClass;
 using Irixi_Aligner_Common.Configuration;
 using Irixi_Aligner_Common.Equipments;
@@ -13,6 +14,7 @@ using IrixiStepperControllerHelper;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Text;
@@ -80,6 +82,7 @@ namespace Irixi_Aligner_Common.Classes
             this.PhysicalMotionControllerCollection = new Dictionary<Guid, IMotionController>();
             this.LogicalAxisCollection = new ObservableCollectionEx<LogicalAxis>();
             this.LogicalMotionComponentCollection = new ObservableCollectionEx<LogicalMotionComponent>();
+            this.MeasurementInstrumentCollection = new ObservableCollectionEx<MeasurementInstrumentBase>();
             this.State = SystemState.BUSY;
 
 
@@ -163,10 +166,9 @@ namespace Irixi_Aligner_Common.Classes
             }
 
             // create instance of the keithley 2400
-            this.Keithley2400Collection = new ObservableCollectionEx<Keithley2400>();
             foreach(var cfg_item in conf_manager.ConfMotionController.Keithley2400s)
             {
-                this.Keithley2400Collection.Add(new Keithley2400(cfg_item));
+                this.MeasurementInstrumentCollection.Add(new Keithley2400(cfg_item));
             }
         }
         
@@ -326,20 +328,21 @@ namespace Irixi_Aligner_Common.Classes
             {
                 _tasks.Add(Task.Factory.StartNew(this.CylinderController.Init));
                 _equipments.Add(this.CylinderController);
+
+                this.LastMessage = new MessageItem(MessageType.Normal, "{0} Initializing ...", this.CylinderController);
             }
 
             // initizlize the keithley 2400
-            foreach (var k2400 in this.Keithley2400Collection)
+            foreach (var k2400 in this.MeasurementInstrumentCollection)
             {
                 if (k2400.IsEnabled)
                 {
                     _tasks.Add(Task.Factory.StartNew(k2400.Init));
                     _equipments.Add(k2400);
+
+                    this.LastMessage = new MessageItem(MessageType.Normal, "{0} Initializing ...", k2400);
                 }
             }
-
-
-            this.LastMessage = new MessageItem(MessageType.Normal, "{0} Initializing ...", this.CylinderController);
 
             ret = await Task.WhenAll(_tasks);
 
@@ -386,10 +389,7 @@ namespace Irixi_Aligner_Common.Classes
                 {
                     this.LastMessage = new MessageItem(MessageType.Error, "{0} Unable to move, {1}", Axis, Axis.PhysicalAxisInst.LastError);
 
-                    Messenger.Default.Send<NotificationMessage<string>>(new NotificationMessage<string>(
-                        this,
-                        this.LastMessage.Message, 
-                        "ERROR"));
+                    PostErrorMessageToFrontEnd(this.LastMessage.Message);
                 }
                 else
                 {
@@ -600,6 +600,57 @@ namespace Irixi_Aligner_Common.Classes
             }
         }
 
+        /// <summary>
+        /// Toggle the move mode between ABS and REL
+        /// </summary>
+        /// <param name="Axis">The instance of physical axis</param>
+        public void ToggleAxisMoveMode(IAxis Axis)
+        {
+            if (GetSystemState() == SystemState.IDLE)
+            {
+                SetSystemState(SystemState.BUSY);
+                Axis.ToggleMoveMode();
+                SetSystemState(SystemState.IDLE);
+            }
+        }
+
+        public async void DoAlignmentXD(AlignmentXDArgs Args)
+        {
+            if (GetSystemState() == SystemState.IDLE)
+            {
+                SetSystemState(SystemState.BUSY);
+
+                try
+                {
+                    IProgress<Tuple<Alignment1DArgs, Point>> progresshandler = 
+                        new Progress<Tuple<Alignment1DArgs, Point>> (arg =>
+                    {
+                        arg.Item1.ScanCurve.Add(arg.Item2);
+                    });
+
+                    Args.Instrument.StopAutoFetching();
+
+                    await Task.Factory.StartNew(() =>
+                    {
+                        var agent = new AlignmentXD(Args);
+                        agent.StartAlign(progresshandler);
+
+                    });
+                }
+                catch(Exception ex)
+                {
+                    this.LastMessage = new MessageItem(MessageType.Error, string.Format("Unable to complete Alignment-xD process, {0}.", ex.Message));
+                    PostErrorMessageToFrontEnd(this.LastMessage.Message);
+                }
+                finally
+                {
+                    Args.Instrument.StartAutoFetching();
+                }
+                
+                SetSystemState(SystemState.IDLE);
+            }
+        }
+
         #region Cylinder Control
         #region Fiber Clamp Control
         public void FiberClampON()
@@ -775,6 +826,21 @@ namespace Irixi_Aligner_Common.Classes
         #endregion
         #endregion
 
+        public void Dispose()
+        {
+            // dispose motion controllers
+            foreach (var ctrl in this.PhysicalMotionControllerCollection)
+            {
+                ctrl.Value.Dispose();
+            }
+
+            // dispose keithley2400s
+            foreach(var k2400 in this.MeasurementInstrumentCollection)
+            {
+                k2400.Dispose();
+            }
+        }
+
         /// <summary>
         /// Start running user program
         /// </summary>
@@ -794,38 +860,9 @@ namespace Irixi_Aligner_Common.Classes
             // if the auto-program is running, stop it;
             // otherwise, stop all moving axis
 
-            foreach(var controller in this.PhysicalMotionControllerCollection.Values)
+            foreach (var controller in this.PhysicalMotionControllerCollection.Values)
             {
                 controller.Stop();
-            }
-        }
-
-        /// <summary>
-        /// Toggle the move mode between ABS and REL
-        /// </summary>
-        /// <param name="Axis">The instance of physical axis</param>
-        public void ToggleAxisMoveMode(IAxis Axis)
-        {
-            if (GetSystemState() == SystemState.IDLE)
-            {
-                SetSystemState(SystemState.BUSY);
-                Axis.ToggleMoveMode();
-                SetSystemState(SystemState.IDLE);
-            }
-        }
-
-        public void Dispose()
-        {
-            // dispose motion controllers
-            foreach (var ctrl in this.PhysicalMotionControllerCollection)
-            {
-                ctrl.Value.Dispose();
-            }
-
-            // dispose keithley2400s
-            foreach(var k2400 in this.Keithley2400Collection)
-            {
-                k2400.Dispose();
             }
         }
         #endregion
@@ -905,7 +942,7 @@ namespace Irixi_Aligner_Common.Classes
         /// <summary>
         /// Get the collection of keithley 2400
         /// </summary>
-        public ObservableCollectionEx<Keithley2400> Keithley2400Collection
+        public ObservableCollectionEx<MeasurementInstrumentBase> MeasurementInstrumentCollection
         {
             private set;
             get;
@@ -1009,6 +1046,17 @@ namespace Irixi_Aligner_Common.Classes
             }
         }
 
+        public RelayCommand<AlignmentXDArgs> CommandDoAlignmentXD
+        {
+            get
+            {
+                return new RelayCommand<AlignmentXDArgs>(args =>
+                {
+                    DoAlignmentXD(args);
+                });
+            }
+        }
+
         public RelayCommand CommandStart
         {
             get
@@ -1059,6 +1107,20 @@ namespace Irixi_Aligner_Common.Classes
 
         }
 
+        #endregion
+
+        #region Private Methods
+        /// <summary>
+        /// Post the error message by Mvvmlight.Messenger class
+        /// </summary>
+        /// <param name="Message"></param>
+        void PostErrorMessageToFrontEnd(string Message)
+        {
+            Messenger.Default.Send<NotificationMessage<string>>(new NotificationMessage<string>(
+                        this,
+                        Message,
+                        "ERROR"));
+        }
         #endregion
 
     }

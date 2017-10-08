@@ -57,7 +57,7 @@
                     <dxr:RibbonPageGroup Caption="Alignment">
                         <dxb:BarButtonItem Content="Blind Search" Glyph="{dx:DXImageOffice2013 Image=Solution_16x16.png}" LargeGlyph="{dx:DXImageOffice2013 Image=Solution_32x32.png}" />
                         <dxb:BarButtonItem Content="Fast Alignment" Glyph="{dx:DXImageOffice2013 Image=Solution_16x16.png}" LargeGlyph="{dx:DXImageOffice2013 Image=Solution_32x32.png}" />
-                        <dxb:BarButtonItem Content="Alignment 2D" Glyph="{dx:DXImageOffice2013 Image=Solution_16x16.png}" LargeGlyph="{dx:DXImageOffice2013 Image=Solution_32x32.png}" />
+                        <dxb:BarButtonItem x:Name="btnAlignmentXD" Content="Alignment 2D" Glyph="{dx:DXImageOffice2013 Image=Solution_16x16.png}" LargeGlyph="{dx:DXImageOffice2013 Image=Solution_32x32.png}" ItemClick="btnAlignmentXD_ItemClick" />
                     </dxr:RibbonPageGroup>
                 </dxr:RibbonPage>
                 <dxr:RibbonPage x:Name="rpgView" Caption="View">
@@ -70,7 +70,7 @@
                 </dxr:RibbonPage>
             </dxr:RibbonDefaultPageCategory>
         </dxr:RibbonControl>
-        <dxr:RibbonStatusBarControl dxbh:BlendHelperForBarsAndRibbon.IsDesignControl="true" DockPanel.Dock="Bottom"/>
+        <dxr:RibbonStatusBarControl  DockPanel.Dock="Bottom"/>
 
         <dxd:DockLayoutManager x:Name="dockLayoutManager" 
                                ClosingBehavior="HideToClosedPanelsCollection"

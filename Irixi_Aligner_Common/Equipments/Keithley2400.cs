@@ -14,7 +14,7 @@ namespace Irixi_Aligner_Common.Equipments
     /// Contains the low-level operation functions in this class, and it's ready to bind to the view
     /// The default unit in this class is A/V/Ohm
     /// </summary>
-    public class Keithley2400 : EquipmentBase
+    public class Keithley2400 : MeasurementInstrumentBase
     {
         #region Definition
         const double PROT_AMPS_DEF = 0.000105; // default compliance current is set to 105uA
@@ -1240,7 +1240,7 @@ namespace Irixi_Aligner_Common.Equipments
 
                     // check if error occured
                     serialport.WriteLine(":SYST:ERR:COUN?");
-                    var ret = serialport.ReadLine();
+                    var ret = serialport.ReadLine().Replace("\r", "").Replace("\n", "");
 
                     if (int.TryParse(ret, out int err_count))
                     {
@@ -1280,7 +1280,7 @@ namespace Irixi_Aligner_Common.Equipments
             {
                 // read all errors occured
                 serialport.WriteLine(":SYST:ERR:ALL?");
-                this.LastError = serialport.ReadLine();
+                this.LastError = serialport.ReadLine().Replace("\r", "").Replace("\n", "");
                 throw new InvalidOperationException(this.LastError);
             }
             catch(Exception ex)

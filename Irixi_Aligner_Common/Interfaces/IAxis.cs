@@ -73,6 +73,9 @@ namespace Irixi_Aligner_Common.Interfaces
         /// </summary>
         object Tag { set; get; }
 
+        /// <summary>
+        /// Get the unithelper to convert position in step to position to real-world unit
+        /// </summary>
         RealworldPositionManager UnitHelper { get; }
 
         /// <summary>
