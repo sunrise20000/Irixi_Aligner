@@ -2,10 +2,8 @@
 using Irixi_Aligner_Common.Message;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO.Ports;
 using System.Threading;
-using System.Threading.Tasks;
 using Zaber;
 
 namespace Irixi_Aligner_Common.MotionControllerEntities
@@ -13,18 +11,8 @@ namespace Irixi_Aligner_Common.MotionControllerEntities
     public class LuminosP6A : MotionControllerBase<LuminosAxis>
     {
         #region Variables
-        //Positioner pos = new Positioner();
         ZaberPortFacade _zaber_port_facade = null;
         ConversationCollection _zaber_conversation_collection = null;
-
-        //int _axes_registered = 0;
-
-        /// <summary>
-        /// Wait until all axes were registered.
-        /// After a axis is found, the SDK raises the 'OnAxisCreated' event; If there are 6 axes,
-        /// this event should be raised 6 times.
-        /// </summary>
-        //SemaphoreSlim _wait_axis_register;
         #endregion
 
         #region Constructor
@@ -56,7 +44,7 @@ namespace Irixi_Aligner_Common.MotionControllerEntities
 
         private void AllDevices_MessageSent(object sender, DeviceMessageEventArgs e)
         {
-            
+
         }
 
         private void AllDevices_MessageReceived(object sender, DeviceMessageEventArgs e)
@@ -88,11 +76,8 @@ namespace Irixi_Aligner_Common.MotionControllerEntities
         #endregion
 
         #region Methods
-        public override bool Init()
+        protected override bool CustomInitProcess()
         {
-            if (base.Init() == false)
-                return false;
-
             bool _init_ret = true;
 
             try
@@ -149,23 +134,15 @@ namespace Irixi_Aligner_Common.MotionControllerEntities
                 return false;
             }
         }
-
-        public override bool Home(Interfaces.IAxis Axis)
+        
+        protected override bool CustomHomeProcess(Interfaces.IAxis Axis)
         {
-            if (base.Home(Axis) == false)
-                return false;
-
-
-            LuminosAxis _axis = Axis as LuminosAxis;
             bool ret = false;
-
-            //PositionerLib.ResultEnum luminos_ret;
+            LuminosAxis _axis = Axis as LuminosAxis;
 
             // lock the axis
             if (_axis.Lock())
             {
-                this.IncreaseRunningAxes();
-
                 try
                 {
                     _axis.IsHomed = false;
@@ -191,8 +168,6 @@ namespace Irixi_Aligner_Common.MotionControllerEntities
                 }
                 finally
                 {
-                    this.DecreaseRunningAxes();
-
                     // release the axis
                     _axis.Unlock();
                 }
@@ -204,14 +179,10 @@ namespace Irixi_Aligner_Common.MotionControllerEntities
             }
 
             return ret;
-
         }
 
-        public override bool Move(Interfaces.IAxis Axis, MoveMode Mode, int Speed, int Distance)
+        protected override bool CustomMoveProcess(Interfaces.IAxis Axis, MoveMode Mode, int Speed, int Distance)
         {
-            if (base.Move(Axis, Mode, Speed, Distance) == false)
-                return false;
-
             LuminosAxis axis = Axis as LuminosAxis;
 
             bool ret = false;
@@ -226,71 +197,73 @@ namespace Irixi_Aligner_Common.MotionControllerEntities
             // lock the axis
             if (axis.Lock())
             {
-                this.IncreaseRunningAxes();
-
-                try
+                // Set the move speed
+                if (Mode == MoveMode.ABS)
                 {
+                    target_pos = Math.Abs(Distance);
+                }
+                else
+                {
+                    target_pos = axis.AbsPosition + Distance;
+                }
 
-                    // Set the move speed
-                    if (Mode == MoveMode.ABS)
-                    {
-                        target_pos = Math.Abs(Distance);
-                    }
-                    else
-                    {
-                        target_pos = axis.AbsPosition + Distance;
-                    }
-
-                    // Move the the target position
-                    if (axis.CheckSoftLimitation(target_pos))
+                // Move the the target position
+                if (axis.CheckSoftLimitation(target_pos))
+                {
+                    try
                     {
                         DeviceMessage zaber_msg = axis.ZaberConversation.Request(Command.MoveAbsolute, target_pos);
-                        //luminos_ret = _axis.LuminosAxisInstance.SetPosition(target_pos, true, out object lastpos);
 
                         if (zaber_msg.HasFault == false)
                         {
-                            //axis.AbsPosition = zaber_msg.Data;
-                            //Debug.WriteLine(string.Format("Final Position in STEPS: {0}, in um {1}", axis.AbsPosition, axis.UnitHelper.AbsPosition));
-                            //Task.Delay(10);
-
                             ret = true;
                         }
                         else
                         {
-                            axis.LastError = string.Format("sdk reported error code {0}", "null");
+                            axis.LastError = string.Format("sdk reported error code {0}", zaber_msg.Text);
 
                             ret = false;
                         }
                     }
-                    else
+                    catch(RequestReplacedException ex)
                     {
-                        axis.LastError = "target position exceeds the limitation.";
+                        DeviceMessage actualResp = ex.ReplacementResponse;
+                        if (actualResp.Command == Command.Stop)
+                        {
+                            // if STOP was send while moving
+                            axis.AbsPosition = (int)actualResp.Data;
+                            ret = true;
+                        }
+                        else
+                        {
+                            axis.LastError = ex.Message;
+                            ret = false;
+                        }
+                    }
+                    catch (Exception ex)
+                    {
 
+                        axis.LastError = ex.Message;
                         ret = false;
                     }
-
                 }
-                catch (Exception ex)
+                else
                 {
-                    axis.LastError = ex.Message;
+                    axis.LastError = "target position exceeds the limitation.";
+
                     ret = false;
                 }
-
-                finally
-                {
-                    this.DecreaseRunningAxes();
-
-                    // release the axis
-                    axis.Unlock();
-                }
-
+                
+                axis.Unlock();
+                
             }
+
             return ret;
         }
-
+        
         public override void Stop()
         {
-            if(this.IsInitialized)
+            if (this.IsInitialized)
                 _zaber_conversation_collection.Request(Command.Stop);
         }
 

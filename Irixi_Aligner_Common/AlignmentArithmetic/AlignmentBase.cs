@@ -1,18 +1,39 @@
-﻿using System;
-using System.Windows;
+﻿using Irixi_Aligner_Common.Interfaces;
+using System.Diagnostics;
+using System.Threading;
 
 namespace Irixi_Aligner_Common.AlignmentArithmetic
 {
-    public class AlignmentBase
+    public class AlignmentBase : IServiceSystem
     {
-        public virtual void StartAlign(IProgress<Tuple<Alignment1DArgs, Point>> ProgressReport)
+
+        protected CancellationTokenSource cts;
+        protected CancellationToken cts_token;
+
+        public AlignmentBase(AlignmentArgsBase Args)
         {
-            throw new NotImplementedException();
+            this.Args = Args;
+        }
+       
+        public AlignmentArgsBase Args
+        {
+            protected set; get;
         }
 
-        public virtual void StopAlign()
+        public virtual void Start()
         {
-            throw new NotImplementedException();
+            cts = new CancellationTokenSource();
+            cts_token = cts.Token;
+
+            Args.Validate();
+
+            Args.ClearScanCurve();
         }
+
+        public virtual void Stop()
+        {
+            cts.Cancel();
+        }
+        
     }
 }

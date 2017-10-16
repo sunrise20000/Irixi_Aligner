@@ -10,7 +10,7 @@
             xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
             xmlns:ViewModel="clr-namespace:Irixi_Aligner_Common.ViewModel"
              mc:Ignorable="d" 
-             d:DesignHeight="270" d:DesignWidth="250">
+             d:DesignHeight="250" d:DesignWidth="250">
     <UserControl.Resources>
 
         <!-- Converter Definition -->
@@ -36,6 +36,7 @@
             <Setter Property="Margin" Value="0,0,10,0"/>
         </Style>
         <Style TargetType="ComboBox">
+            <Setter Property="VerticalAlignment" Value="Center"/>
             <Setter Property="IsEditable" Value="False"/>
             <Setter Property="SelectedIndex" Value="0"/>
         </Style>
@@ -56,18 +57,17 @@
                      VerticalContentAlignment="Center" 
                      HorizontalContentAlignment="Right" 
                      Margin="0" 
-                     FontSize="24" FontFamily="mononoki" FontWeight="Bold">
+                     FontSize="24" FontFamily="Microsoft Sans Serif" FontWeight="Bold">
                 <TextBox.Text>
                     <MultiBinding Converter="{StaticResource FormatMeasValue}" Mode="OneWay">
                         <Binding Path="K2400.MeasurementValue"/>
                         <Binding Path="K2400.MeasurementFunc" />
-                        <Binding Path="DisplayUnitforCurrent" />
-                        <Binding Path="DisplayUnitforVoltage" />
+                        <Binding Path="K2400.IsOutputEnabled" />
                     </MultiBinding>
                 </TextBox.Text>
             </TextBox>
-            <TextBlock Text="CMPL" Grid.Row="1" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="5,5,0,0" FontSize="10" FontWeight="Bold" Foreground="Red" Visibility="{Binding K2400.IsInRangeCompliance, Mode=OneWay, Converter={StaticResource BooleanToVisibility}}"/>
-            <TextBlock Text="OFLO" Grid.Row="1" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="5,20,0,0" FontSize="10" FontWeight="Bold" Foreground="#FFFF8B00" Visibility="{Binding K2400.IsMeasOverRange, Mode=OneWay, Converter={StaticResource BooleanToVisibility}}"/>
+            <TextBlock Text="CMPL" Grid.Row="1" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="5,5,0,0" FontSize="10" FontWeight="Bold" Foreground="#3EE100" Visibility="{Binding K2400.IsInRangeCompliance, Mode=OneWay, Converter={StaticResource BooleanToVisibility}}"/>
+            <TextBlock Text="OL" Grid.Row="1" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="5,20,0,0" FontSize="10" FontWeight="Bold" Foreground="Red" Visibility="{Binding K2400.IsMeasOverRange, Mode=OneWay, Converter={StaticResource BooleanToVisibility}}"/>
         </Grid>
         <Grid Grid.Row="1">
             <Grid RenderTransformOrigin="0.5,0.5">
@@ -84,7 +84,6 @@
                 <dx:GroupFrame x:Name="grpVoltageSourceSetting" Grid.Row="1" Header="Setting" Grid.ColumnSpan="2" Visibility="{Binding IsChecked, Converter={StaticResource BooleanToVisibility}, ElementName=rbVoltageSource, Mode=OneWay}">
                     <Grid>
                         <Grid.RowDefinitions>
-                            <RowDefinition/>
                             <RowDefinition/>
                             <RowDefinition/>
                             <RowDefinition/>
@@ -130,12 +129,6 @@
                                 Command="{Binding SetMeasurementRange}"
                                 CommandParameter="{Binding ElementName=txtCurrMeasRange, Path=Text, Converter={StaticResource TextToDouble}}"/>
                         </dxe:ButtonEdit>
-                        <TextBlock Text="Meas Unit" Grid.Row="3"/>
-                        <StackPanel Orientation="Horizontal" Grid.Row="3" Grid.Column="1">
-                            <RadioButton Content="A" IsChecked="{Binding DisplayUnitforCurrent, Converter={StaticResource EnumToBoolean}, ConverterParameter=A, Mode=TwoWay}"/>
-                            <RadioButton Content="mA" IsChecked="{Binding DisplayUnitforCurrent, Converter={StaticResource EnumToBoolean}, ConverterParameter=mA, Mode=TwoWay}"/>
-                            <RadioButton Content="uA" IsChecked="{Binding DisplayUnitforCurrent, Converter={StaticResource EnumToBoolean}, ConverterParameter=uA, Mode=TwoWay}"/>
-                        </StackPanel>
                     </Grid>
                 </dx:GroupFrame>
                 <dx:GroupFrame x:Name="grpCurrentSourceSetting" Grid.Row="1" Header="Setting" Grid.ColumnSpan="2" Visibility="{Binding IsChecked, Converter={StaticResource BooleanToVisibility}, ElementName=rbCurrentSource, Mode=OneWay}">
@@ -178,12 +171,6 @@
                                 </i:EventTrigger>
                             </i:Interaction.Triggers>
                         </ComboBox>
-                        <TextBlock Text="Meas Unit" Grid.Row="3"/>
-                        <StackPanel Orientation="Horizontal" x:Name="cbxVoltMeasUnit" Grid.Row="3" Grid.Column="1">
-                            <RadioButton Content="V" IsChecked="{Binding DisplayUnitforVoltage, Converter={StaticResource EnumToBoolean}, ConverterParameter=V, Mode=TwoWay}"/>
-                            <RadioButton Content="mV" IsChecked="{Binding DisplayUnitforVoltage, Converter={StaticResource EnumToBoolean}, ConverterParameter=mV, Mode=TwoWay}"/>
-                            <RadioButton Content="uV" IsChecked="{Binding DisplayUnitforVoltage, Converter={StaticResource EnumToBoolean}, ConverterParameter=uV, Mode=TwoWay}"/>
-                        </StackPanel>
                     </Grid>
                 </dx:GroupFrame>
             </Grid>

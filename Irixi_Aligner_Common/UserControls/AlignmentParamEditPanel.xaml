@@ -5,8 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:Irixi_Aligner_Common.UserControls"
              mc:Ignorable="d" 
-             d:DesignHeight="300" d:DesignWidth="300"
-             DataContext="{Binding RelativeSource={RelativeSource Self}}">
+             d:DesignHeight="300" d:DesignWidth="300">
             <!-- ↑ Bind DataContext to self to easily binding the properties of myself -->
     <UserControl.Resources>
         <Style x:Key="AxisStyle" TargetType="{x:Type local:Axis}">
@@ -45,13 +44,11 @@
         </Grid.RowDefinitions>
         <ContentControl ContentTemplate="{StaticResource PanelTitleLayout}"/>
         <StackPanel x:Name="stpAxisCollection" Grid.Row="1">
-            <ItemsControl ItemsSource="{Binding ArgsCollection}">
+            <ItemsControl ItemsSource="{Binding}">
                 <ItemsControl.ItemTemplate>
                     <DataTemplate>
                         <!-- Bind datacontext to the collection of Alignment1DArgs class -->
-                        <local:AlignmentParamEditor 
-                            MaxAxesCount="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorLevel=1, AncestorType=UserControl}, Path=MaxLogicalAxis}"
-                            DataContext="{Binding}" />
+                        <local:AlignmentParamEditor DataContext="{Binding}" MaxAxesCount="{Binding MaxOrder}" />
                     </DataTemplate>
                 </ItemsControl.ItemTemplate>
             </ItemsControl>

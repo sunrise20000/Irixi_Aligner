@@ -21,7 +21,7 @@ using System.Windows.Media.Imaging;
 
 namespace Irixi_Aligner_Common
 {
-    public partial class MainWindow : DXRibbonWindow
+    public partial class MainWindow : DevExpress.Xpf.Ribbon.DXRibbonWindow
     {
         Splash splashscreen;
 
@@ -57,6 +57,8 @@ namespace Irixi_Aligner_Common
                     Caption = aligner.Caption,
                     AllowMaximize = false,
                     AllowSizing = false,
+                    AllowFloat = false,
+                    AllowDock = false,
                     //AllowClose = false,
                     ClosingBehavior = ClosingBehavior.HideToClosedPanelsCollection,
 
@@ -131,6 +133,8 @@ namespace Irixi_Aligner_Common
                     Caption = k2400,
                     AllowMaximize = false,
                     AllowSizing = false,
+                    AllowDock = false,
+                    AllowFloat = false,
                     ClosingBehavior = ClosingBehavior.HideToClosedPanelsCollection,
 
                     // put the user control into the panel
@@ -294,8 +298,14 @@ namespace Irixi_Aligner_Common
 
         private void btnAlignmentXD_ItemClick(object sender, ItemClickEventArgs e)
         {
-            var win = new WinAlignmentXD();
-            win.ShowDialog();
+            panelAlignmentXD.Visibility = Visibility.Visible;
+            dockLayoutManager.MDIController.Activate(panelAlignmentXD);
+        }
+
+        private void btnBlindSearch_ItemClick(object sender, ItemClickEventArgs e)
+        {
+            panelBlindSearch.Visibility = Visibility.Visible;
+            dockLayoutManager.MDIController.Activate(panelBlindSearch);
         }
     }
 

@@ -15,7 +15,7 @@
             <Setter Property="VerticalAlignment" Value="Center"/>
             <Setter Property="IsEditable" Value="False"/>
         </Style>
-        <Style TargetType="TextBox">
+        <Style TargetType="dxe:TextEdit">
             <Setter Property="VerticalAlignment" Value="Center"/>
             <Setter Property="MaxLength" Value="5" />
         </Style>
@@ -34,11 +34,11 @@
         </Grid.ColumnDefinitions>
         <dxe:CheckEdit IsChecked="{Binding IsEnabled}"/>
         <TextBlock Grid.Column="1" Text="{Binding Axis.AxisName}"/>
-        <dxe:TextEdit Grid.Column="2" Text="{Binding ScanRange}" VerticalAlignment="Center" HorizontalContentAlignment="Right" MaskType="Numeric" MaskUseAsDisplayFormat="True" MaskSaveLiteral="False" MaskShowPlaceHolders="False" Mask="n"/>
+        <dxe:TextEdit Grid.Column="2" Text="{Binding ScanRange}" HorizontalContentAlignment="Right" MaskType="Numeric" MaskUseAsDisplayFormat="True" MaskSaveLiteral="False" MaskShowPlaceHolders="False" Mask="n"/>
         <TextBlock Text="{Binding Axis.PhysicalAxisInst.UnitHelper.Unit}" Grid.Column="3" Margin="5,0,0,0" />
         <dxe:TextEdit Grid.Column="4" Text="{Binding Interval}" HorizontalContentAlignment="Right" MaskType="Numeric" MaskSaveLiteral="False" MaskShowPlaceHolders="False" MaskUseAsDisplayFormat="True" Mask="###.##"/>
         <TextBlock Text="{Binding Axis.PhysicalAxisInst.UnitHelper.Unit}" Grid.Column="5" Margin="5,0,0,0" />
         <dxe:TextEdit Text="{Binding MoveSpeed}" Grid.Column="6" Margin="0,0,5,0" Mask="###" MaskType="Numeric" MaskSaveLiteral="False" MaskShowPlaceHolders="False" MaskUseAsDisplayFormat="True" />
-        <ComboBox x:Name="edtAlignOrderSel" Grid.Column="7" SelectedIndex="{Binding AlignOrder}"/>
+        <ComboBox x:Name="cbxScanOrder" Grid.Column="7" SelectedIndex="{Binding ScanOrder}"/>
     </Grid>
 </UserControl>

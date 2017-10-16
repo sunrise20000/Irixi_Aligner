@@ -33,7 +33,7 @@ namespace Irixi_Aligner_Common.UserControls
             var owner = d as AlignmentParamEditor;
 
             for(int i = 1; i <= (int)e.NewValue; i++)
-                owner.edtAlignOrderSel.Items.Add(i);
+                owner.cbxScanOrder.Items.Add(i);
         }
 
     }

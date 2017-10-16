@@ -1,25 +1,24 @@
 ﻿using GalaSoft.MvvmLight;
+using Irixi_Aligner_Common.Classes.BaseClass;
 using Irixi_Aligner_Common.MotionControllerEntities.BaseClass;
-using System;
 using System.Collections.ObjectModel;
 using System.Windows;
+using System.Windows.Data;
 
 namespace Irixi_Aligner_Common.AlignmentArithmetic
 {
     public class Alignment1DArgs : ViewModelBase
     {
+        static object list_lock = new object();
+
         public Alignment1DArgs()
         {
-            ScanCurve = new ObservableCollection<Point>();
-            //var r = new Random((int)DateTime.Now.Ticks);
-            //for(int i = 0; i < 100; i++)
-            //{
-            //    ScanCurve.Add(new Point(i, r.NextDouble() * 10));
-            //}
+            ScanCurve = new ObservableCollectionThreadSafe<Point>();
+
+            BindingOperations.EnableCollectionSynchronization(ScanCurve, list_lock);
         }
 
         public LogicalAxis Axis { set; get; }
-
         private bool isEnabled;
         public bool IsEnabled
         {
@@ -36,8 +35,15 @@ namespace Irixi_Aligner_Common.AlignmentArithmetic
         public int MoveSpeed { set; get; }
         public double Interval { set; get; }
         public double ScanRange { set; get; }
-        public int AlignOrder { set; get; }
-        public ObservableCollection<Point> ScanCurve { set; get; }
+        public int ScanOrder { set; get; }
+        public int MaxOrder { set; get; }
+        public ObservableCollectionThreadSafe<Point> ScanCurve { set; get; }
+
+        public void ClearScanCurve()
+        {
+            if (ScanCurve != null)
+                ScanCurve.Clear();
+        }
        
     }
 }

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Threading.Tasks;
 
 namespace Irixi_Aligner_Common.Interfaces
 {
@@ -12,10 +11,17 @@ namespace Irixi_Aligner_Common.Interfaces
         IRIXI_EE0017
     }
 
-    public interface IMotionController : IEquipmentBase
+    public interface IMotionController : IEquipmentBase, IServiceSystem
     {
-        event EventHandler<string> OnErrorOccurred;
-        event EventHandler<object> OnHomeCompleted;
+        /// <summary>
+        /// Raise the event after the Home/Move/etc. action begins
+        /// </summary>
+        event EventHandler OnMoveBegin;
+
+        /// <summary>
+        /// Raise the event after the Home/Move/etc. action ends
+        /// </summary>
+        event EventHandler OnMoveEnd;
 
         #region Properties
 
@@ -27,10 +33,9 @@ namespace Irixi_Aligner_Common.Interfaces
         MotionControllerModel Model { get; }
 
         /// <summary>
-        /// Get how many axes are moving.
-        /// 0 indicates the motion controller is idle
+        /// See <see cref="MotionControllerEntities.MotionControllerBase{T}"/> for the detail of the usage
         /// </summary>
-        int RunningAxesSum { get; }
+        int BusyAxesCount { get; }
 
         /// <summary>
         /// Get or set the collection of axes
@@ -89,17 +94,8 @@ namespace Irixi_Aligner_Common.Interfaces
         /// <summary>
         /// <see cref="IAxis.Stop"/> for more infomation
         /// </summary>
-        void Stop();
-
-        /// <summary>
-        /// Increase the property of RunningAxesSum
-        /// </summary>
-        void IncreaseRunningAxes();
-
-        /// <summary>
-        /// Decrease the property of RunningAxesSum
-        /// </summary>
-        void DecreaseRunningAxes();
+        //void Stop();
+        
 
         /// <summary>
         /// Find the axis with the specified name

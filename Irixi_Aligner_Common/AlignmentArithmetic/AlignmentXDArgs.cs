@@ -2,22 +2,108 @@
 using Irixi_Aligner_Common.MotionControllerEntities.BaseClass;
 using System;
 using System.Collections.Generic;
-using System.Linq;
+using System.Collections.ObjectModel;
+using System.Windows.Data;
 
 namespace Irixi_Aligner_Common.AlignmentArithmetic
 {
-    public class AlignmentXDArgs
+    public class AlignmentXDArgs : AlignmentArgsBase
     {
-        public IMeasurementInstrument Instrument { set; get; }
-        public LogicalMotionComponent MotionComponent { set; get; }
-        public double Target { set; get; }
-        public int MaxCycles { set; get; }
-        public List<Alignment1DArgs> AxisParamCollection { set; get; }
+        #region Variables
+        private IMeasurementInstrument instrument;
+        private LogicalMotionComponent motionComponent;
+        private double target;
+        private int maxCycles;
+        private ObservableCollection<Alignment1DArgs> axisParamCollection;
+        #endregion
 
-        /// <summary>
-        /// Check if the parameters are following the rule
-        /// </summary>
-        public void Validate()
+        #region Constructors
+
+        public AlignmentXDArgs()
+        {
+            this.target = 0;
+            this.maxCycles = 1;
+
+            AxisParamCollection = new ObservableCollection<Alignment1DArgs>();
+        }
+
+        #endregion
+
+        #region Properties
+
+        public IMeasurementInstrument Instrument
+        {
+            get => instrument;
+            set
+            {
+                instrument = value;
+                RaisePropertyChanged();
+            }
+        }
+
+        public LogicalMotionComponent MotionComponent
+        {
+            get => motionComponent;
+            set
+            {
+                motionComponent = value;
+                RaisePropertyChanged();
+
+                // add new editors
+                AxisParamCollection.Clear();
+                foreach (var axis in value.LogicalAxisCollection)
+                {
+                    var arg = new Alignment1DArgs()
+                    {
+                        Axis = axis,
+                        IsEnabled = false,
+                        MoveSpeed = 100,
+                        Interval = 10,
+                        ScanRange = 100,
+                        ScanOrder = 0,
+                        MaxOrder = value.LogicalAxisCollection.Count
+                    };
+
+                    AxisParamCollection.Add(arg);
+                }
+            }
+        }
+
+        public double Target
+        {
+            get => target;
+            set
+            {
+                target = value;
+                RaisePropertyChanged();
+            }
+        }
+
+        public int MaxCycles
+        {
+            get => maxCycles;
+            set
+            {
+                maxCycles = value;
+                RaisePropertyChanged();
+            }
+        }
+
+        public ObservableCollection<Alignment1DArgs> AxisParamCollection
+        {
+            get => axisParamCollection;
+
+            set
+            {
+                axisParamCollection = value;
+            }
+        }
+
+        #endregion
+
+        #region Methods
+        
+        public override void Validate()
         {
 
             if (Instrument == null)
@@ -53,9 +139,26 @@ namespace Irixi_Aligner_Common.AlignmentArithmetic
                         throw new ArgumentException(string.Format("the speed is out of range"));
                 }
             }
-
-
         }
 
+        public override void ClearScanCurve()
+        {
+            foreach (var arg in AxisParamCollection)
+            {
+                arg.ClearScanCurve();
+            }
+        }
+
+        public override void PauseInstruments()
+        {
+            Instrument.PauseAutoFetching();
+        }
+
+        public override void ResumeInstruments()
+        {
+            Instrument.ResumeAutoFetching();
+        }
+
+        #endregion
     }
 }

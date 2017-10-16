@@ -12,6 +12,9 @@ namespace Irixi_Aligner_Common.Interfaces
 
         void StopAutoFetching();
 
+        void PauseAutoFetching();
+
+        void ResumeAutoFetching();
 
     }
 }

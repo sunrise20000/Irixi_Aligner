@@ -24,26 +24,21 @@ using System.Windows;
 
 namespace Irixi_Aligner_Common.Classes
 {
-    public class SystemService : ViewModelBase, IDisposable
+    sealed public class SystemService : ViewModelBase, IDisposable
     {
         #region Variables
-        
-        SystemState _state = SystemState.IDLE;
 
+        SystemState _state = SystemState.IDLE;
         MessageItem _lastmsg = null;
         MessageHelper _msg_helper = new MessageHelper();
-        
-        /// <summary>
-        /// lock while increase/decrease the home counter
-        /// </summary>
-        readonly object _home_counter_lock = new object();
-        readonly object _move_counter_lock = new object();
-
+      
         /// <summary>
         /// lock while set or get this.State
         /// </summary>
-        readonly object _sys_state_lock = new object();
+        readonly object lockSystemStatus = new object();
 
+
+        bool isInitialized = false;
         #endregion
 
         #region Constructor
@@ -79,11 +74,16 @@ namespace Irixi_Aligner_Common.Classes
             LogHelper.LogEnabled = conf_manager.ConfMotionController.LogEnabled;
 
             // initialize the properties
-            this.PhysicalMotionControllerCollection = new Dictionary<Guid, IMotionController>();
-            this.LogicalAxisCollection = new ObservableCollectionEx<LogicalAxis>();
-            this.LogicalMotionComponentCollection = new ObservableCollectionEx<LogicalMotionComponent>();
-            this.MeasurementInstrumentCollection = new ObservableCollectionEx<MeasurementInstrumentBase>();
-            this.State = SystemState.BUSY;
+            BusyComponents = new List<IServiceSystem>();
+
+            PhysicalMotionControllerCollection = new Dictionary<Guid, IMotionController>();
+            LogicalAxisCollection = new ObservableCollection<LogicalAxis>();
+            LogicalMotionComponentCollection = new ObservableCollection<LogicalMotionComponent>();
+            MeasurementInstrumentCollection = new ObservableCollection<MeasurementInstrumentBase>();
+            State = SystemState.BUSY;
+
+            SpiralScanArgs = new SpiralScanArgs();
+            AlignmentXDArgs = new AlignmentXDArgs();
 
 
             /*
@@ -98,6 +98,8 @@ namespace Irixi_Aligner_Common.Classes
                 {
                     case MotionControllerModel.LUMINOS_P6A:
                         motion_controller = new LuminosP6A(conf);
+                        motion_controller.OnMoveBegin += PhysicalMotionController_OnMoveBegin;
+                        motion_controller.OnMoveEnd += PhysicalMotionController_OnMoveEnd;
                         break;
 
                     case MotionControllerModel.THORLABS_TDC001:
@@ -106,6 +108,8 @@ namespace Irixi_Aligner_Common.Classes
 
                     case MotionControllerModel.IRIXI_EE0017:
                         motion_controller = new IrixiEE0017(conf);
+                        motion_controller.OnMoveBegin += PhysicalMotionController_OnMoveBegin;
+                        motion_controller.OnMoveEnd += PhysicalMotionController_OnMoveEnd;
                         ((IrixiEE0017)motion_controller).OnMessageReported += ((sender, message) =>
                         {
                             Application.Current.Dispatcher.Invoke(() =>
@@ -140,7 +144,7 @@ namespace Irixi_Aligner_Common.Classes
 
                     axis.OnHomeRequsted += LogicalAxis_OnHomeRequsted;
                     axis.OnMoveRequsted += LogicalAxis_OnMoveRequsted;
-                    axis.OnStopRequsted += LigicalAxis_OnStopRequsted;
+                    axis.OnStopRequsted += LogicalAxis_OnStopRequsted;
 
                     // bind the physical axis instance to logical axis object
                     BindPhysicalAxis(axis);
@@ -175,54 +179,89 @@ namespace Irixi_Aligner_Common.Classes
         #endregion
 
         #region Events
-        private void LogicalAxis_OnHomeRequsted(object sender, EventArgs args)
+
+        void LogicalAxis_OnHomeRequsted(object sender, EventArgs args)
         {
             var s = sender as LogicalAxis;
             Home(s.PhysicalAxisInst);
         }
 
-        private void LogicalAxis_OnMoveRequsted(object sender, MoveByDistanceArgs args)
+        void LogicalAxis_OnMoveRequsted(object sender, MoveByDistanceArgs args)
         {
             var s = sender as LogicalAxis;
             MoveLogicalAxis(s, args);
         }
 
-        private void LigicalAxis_OnStopRequsted(object sender, EventArgs args)
+        void LogicalAxis_OnStopRequsted(object sender, EventArgs args)
         {
             var s = sender as LogicalAxis;
             s.PhysicalAxisInst.Stop();
         }
 
+        void PhysicalMotionController_OnMoveBegin(object sender, EventArgs args)
+        {
+            var obj = (IServiceSystem)sender;
+            RegisterBusyComponent(obj);
+        }
+
+        void PhysicalMotionController_OnMoveEnd(object sender, EventArgs args)
+        {
+            var obj = (IServiceSystem)sender;
+            DeregisterBusyComponent(obj);
+        }
+
         #endregion
 
-        #region Methods
+        #region Private Methods
+        
+        /// <summary>
+        /// Add the busy object to the list to stop it
+        /// </summary>
+        /// <param name="Obj"></param>
+        void RegisterBusyComponent(IServiceSystem Obj)
+        {
+            if (!BusyComponents.Contains(Obj))
+                BusyComponents.Add(Obj);
+        }
+
+        /// <summary>
+        /// Remove the busy object from the list which has been stopped
+        /// </summary>
+        /// <param name="Obj"></param>
+        void DeregisterBusyComponent(IServiceSystem Obj)
+        {
+            if (BusyComponents.Contains(Obj))
+                BusyComponents.Remove(Obj);
+        }
+
+
         /// <summary>
         /// Bind the physical axis to the logical aligner
         /// </summary>
         /// <param name="ParentAligner">which logical aligner belongs to</param>
         /// <param name="Axis"></param>
         /// <returns></returns>
-        private bool BindPhysicalAxis(LogicalAxis Axis)
+        bool BindPhysicalAxis(LogicalAxis Axis)
         {
             bool ret = false;
 
             // find the physical motion controller by the device class
-            if (this.PhysicalMotionControllerCollection.ContainsKey(Axis.Config.DeviceClass)) 
+            if (this.PhysicalMotionControllerCollection.ContainsKey(Axis.Config.DeviceClass))
             {
                 // find the axis in the specified controller by the axis name
                 // and bind the physical axis to the logical axis
                 Axis.PhysicalAxisInst = this.PhysicalMotionControllerCollection[Axis.Config.DeviceClass].FindAxisByName(Axis.Config.AxisName);
-                
+
                 if (Axis.PhysicalAxisInst == null) // if the physical axis was not found
                 {
                     // Create a fake physical axis instance to tell UI this axis is disabled
                     Axis.PhysicalAxisInst = new AxisBase(-1, null, null);
-                    
+
                     this.LastMessage = new MessageItem(MessageType.Error, "{0} bind physical axis error, unable to find the axis", Axis);
 
                     ret = false;
                 }
-                else 
+                else
                 {
                     ret = true;
                 }
@@ -239,21 +278,119 @@ namespace Irixi_Aligner_Common.Classes
             return ret;
         }
 
-        private void SetSystemState(SystemState State)
+        void SetSystemState(SystemState State)
         {
-            lock(_sys_state_lock)
+            lock (lockSystemStatus)
             {
                 this.State = State;
             }
         }
 
-        private SystemState GetSystemState()
+        SystemState GetSystemState()
         {
-            lock (_sys_state_lock)
+            lock (lockSystemStatus)
             {
                 return this.State;
             }
         }
+
+        /// <summary>
+        /// Start running user program
+        /// </summary>
+        void Start()
+        {
+            //TODO here we should judge whether the auto-program is paused or not
+            // if the auto-program is not worked and an auto-program has been selected, run it;
+            // otherwise, continue to run the last paused auto-program
+        }
+
+        /// <summary>
+        /// Stop the moving axes or stop running the user program
+        /// </summary>
+        void Stop()
+        {
+            List<Task> tasks = new List<Task>();
+
+            foreach (var item in BusyComponents)
+            {
+                tasks.Add(Task.Run(() =>
+                {
+                    item.Stop();
+                }));
+            }
+
+            try
+            {
+                Task.WaitAll(tasks.ToArray());
+            }
+            catch (AggregateException ex)
+            {
+                this.LastMessage = new MessageItem(MessageType.Error, "Error(s) occurred while stopping objects: ");
+                foreach (var item in ex.InnerExceptions)
+                {
+                    this.LastMessage = new MessageItem(MessageType.Error, string.Format("*{0}* >>> {1}", item.Source, ex.Message));
+                }
+            }
+        }
+
+        /// <summary>
+        /// Start a specified alignment process asynchronously
+        /// </summary>
+        /// <param name="AlignHandler"></param>
+        async void StartAlignmentProc(AlignmentBase AlignHandler)
+        {
+            if (GetSystemState() == SystemState.IDLE)
+            {
+                SetSystemState(SystemState.BUSY);
+
+                try
+                {
+                    BusyComponents.Add(AlignHandler);
+
+                    AlignHandler.Args.PauseInstruments();
+
+                    await Task.Run(() =>
+                    {
+                        AlignHandler.Start();
+                    });
+                }
+                catch (Exception ex)
+                {
+                    this.LastMessage = new MessageItem(MessageType.Error, string.Format("Unable to complete {0}, {1}.", AlignHandler, ex.Message));
+                    PostErrorMessageToFrontEnd(this.LastMessage.Message);
+                }
+                finally
+                {
+                    try
+                    {
+                        AlignHandler.Args.ResumeInstruments();
+                    }
+                    finally
+                    {
+                        BusyComponents.Remove(AlignHandler);
+                    }
+                }
+
+                SetSystemState(SystemState.IDLE);
+            }
+        }
+
+
+        /// <summary>
+        /// Post the error message by Mvvmlight.Messenger class
+        /// </summary>
+        /// <param name="Message"></param>
+        void PostErrorMessageToFrontEnd(string Message)
+        {
+            Messenger.Default.Send<NotificationMessage<string>>(new NotificationMessage<string>(
+                        this,
+                        Message,
+                        "ERROR"));
+        }
+
+        #endregion
+
+        #region Public Methods
 
         /// <summary>
         /// Initialize all devices in the system
@@ -614,44 +751,18 @@ namespace Irixi_Aligner_Common.Classes
             }
         }
 
-        public async void DoAlignmentXD(AlignmentXDArgs Args)
+        public void DoAlignmentXD(AlignmentXDArgs Args)
         {
-            if (GetSystemState() == SystemState.IDLE)
-            {
-                SetSystemState(SystemState.BUSY);
+            StartAlignmentProc(new AlignmentXD(Args));
+        }
 
-                try
-                {
-                    IProgress<Tuple<Alignment1DArgs, Point>> progresshandler = 
-                        new Progress<Tuple<Alignment1DArgs, Point>> (arg =>
-                    {
-                        arg.Item1.ScanCurve.Add(arg.Item2);
-                    });
-
-                    Args.Instrument.StopAutoFetching();
-
-                    await Task.Factory.StartNew(() =>
-                    {
-                        var agent = new AlignmentXD(Args);
-                        agent.StartAlign(progresshandler);
-
-                    });
-                }
-                catch(Exception ex)
-                {
-                    this.LastMessage = new MessageItem(MessageType.Error, string.Format("Unable to complete Alignment-xD process, {0}.", ex.Message));
-                    PostErrorMessageToFrontEnd(this.LastMessage.Message);
-                }
-                finally
-                {
-                    Args.Instrument.StartAutoFetching();
-                }
-                
-                SetSystemState(SystemState.IDLE);
-            }
+        public void DoBlindSearch(SpiralScanArgs Args)
+        {
+            StartAlignmentProc(new SpiralScan(Args));
         }
 
         #region Cylinder Control
+
         #region Fiber Clamp Control
         public void FiberClampON()
         {
@@ -824,6 +935,7 @@ namespace Irixi_Aligner_Common.Classes
             }
         }
         #endregion
+
         #endregion
 
         public void Dispose()
@@ -840,36 +952,20 @@ namespace Irixi_Aligner_Common.Classes
                 k2400.Dispose();
             }
         }
-
-        /// <summary>
-        /// Start running user program
-        /// </summary>
-        private void Start()
-        {
-            //TODO here we should judge whether the auto-program is paused or not
-            // if the auto-program is not worked and an auto-program has been selected, run it;
-            // otherwise, continue to run the last paused auto-program
-        }
-
-        /// <summary>
-        /// Stop the moving axes or stop running the user program
-        /// </summary>
-        private void Stop()
-        {
-            //TODO here we should judge whether the auto-program is running or not 
-            // if the auto-program is running, stop it;
-            // otherwise, stop all moving axis
-
-            foreach (var controller in this.PhysicalMotionControllerCollection.Values)
-            {
-                controller.Stop();
-            }
-        }
+        
         #endregion
 
         #region Properties
 
-        bool _is_inited = false;
+        /// <summary>
+        /// Get or set the list of the busy devices/processes, this list is used to stop the busy devices or processes such as alignment process, user-process, etc.
+        /// </summary>
+        List<IServiceSystem> BusyComponents
+        {
+            set;
+            get;
+        }
+    
         /// <summary>
         /// Does the system service have been initialized ?
         /// it's mainly used to set the enabled property of UI elements.
@@ -878,11 +974,12 @@ namespace Irixi_Aligner_Common.Classes
         {
             private set
             {
-                UpdateProperty<bool>(ref _is_inited, value);
+                isInitialized = value;
+                RaisePropertyChanged();
             }
             get
             {
-                return _is_inited;
+                return isInitialized;
             }
         }
 
@@ -893,7 +990,8 @@ namespace Irixi_Aligner_Common.Classes
         {
             private set
             {
-                UpdateProperty<SystemState>(ref _state, value);
+                _state = value;
+                RaisePropertyChanged();
             }
             get
             {
@@ -923,7 +1021,7 @@ namespace Irixi_Aligner_Common.Classes
         /// Create a collection that contains all logical axes defined in the config file.
         /// this list enable users to operate each axis independently without knowing which physical motion controller it belongs to
         /// </summary>
-        public ObservableCollectionEx<LogicalAxis> LogicalAxisCollection
+        public ObservableCollection<LogicalAxis> LogicalAxisCollection
         {
             private set;
             get;
@@ -933,7 +1031,7 @@ namespace Irixi_Aligner_Common.Classes
         /// Get the layout of logical aligner.
         /// the UI components are binded to this property
         /// </summary>
-        public ObservableCollectionEx<LogicalMotionComponent> LogicalMotionComponentCollection
+        public ObservableCollection<LogicalMotionComponent> LogicalMotionComponentCollection
         {
             private set;
             get;
@@ -942,7 +1040,7 @@ namespace Irixi_Aligner_Common.Classes
         /// <summary>
         /// Get the collection of keithley 2400
         /// </summary>
-        public ObservableCollectionEx<MeasurementInstrumentBase> MeasurementInstrumentCollection
+        public ObservableCollection<MeasurementInstrumentBase> MeasurementInstrumentCollection
         {
             private set;
             get;
@@ -956,7 +1054,7 @@ namespace Irixi_Aligner_Common.Classes
         {
             private set
             {
-                UpdateProperty<MessageItem>(ref _lastmsg, value);
+                _lastmsg = value;
                 MessageCollection.Add(_lastmsg);
             }
             get
@@ -974,6 +1072,16 @@ namespace Irixi_Aligner_Common.Classes
             {
                 return _msg_helper;
             }
+        }
+
+        public SpiralScanArgs SpiralScanArgs
+        {
+            get;
+        }
+
+        public AlignmentXDArgs AlignmentXDArgs
+        {
+            get;
         }
  
         #endregion
@@ -1057,6 +1165,16 @@ namespace Irixi_Aligner_Common.Classes
             }
         }
 
+        public RelayCommand<SpiralScanArgs> CommandDoBlindSearch
+        {
+            get
+            {
+                return new RelayCommand<SpiralScanArgs>(args => { 
+                    DoBlindSearch(args);
+                });
+            }
+        }
+
         public RelayCommand CommandStart
         {
             get
@@ -1079,48 +1197,6 @@ namespace Irixi_Aligner_Common.Classes
             }
         }
 
-        #endregion
-
-        #region RaisePropertyChangedEvent
-        ////public event PropertyChangedEventHandler PropertyChanged;
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="OldValue"></param>
-        /// <param name="NewValue"></param>
-        /// <param name="PropertyName"></param>
-        protected void UpdateProperty<T>(ref T OldValue, T NewValue, [CallerMemberName]string PropertyName = "")
-        {
-            if (object.Equals(OldValue, NewValue))  // To save resource, if the value is not changed, do not raise the notify event
-                return;
-
-            OldValue = NewValue;                // Set the property value to the new value
-            OnPropertyChanged(PropertyName);    // Raise the notify event
-        }
-
-        protected void OnPropertyChanged([CallerMemberName]string PropertyName = "")
-        {
-            ////PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(PropertyName));
-            RaisePropertyChanged(PropertyName);
-
-        }
-
-        #endregion
-
-        #region Private Methods
-        /// <summary>
-        /// Post the error message by Mvvmlight.Messenger class
-        /// </summary>
-        /// <param name="Message"></param>
-        void PostErrorMessageToFrontEnd(string Message)
-        {
-            Messenger.Default.Send<NotificationMessage<string>>(new NotificationMessage<string>(
-                        this,
-                        Message,
-                        "ERROR"));
-        }
         #endregion
 
     }

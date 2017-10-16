@@ -11,17 +11,15 @@ namespace Irixi_Aligner_Common.MotionControllerEntities
     {
 
         #region Variables
-        public event EventHandler<string> OnErrorOccurred;
-        public event EventHandler<object> OnHomeCompleted;
 
-        string _lasterr = "";
+        public event EventHandler OnMoveBegin;
+        public event EventHandler OnMoveEnd;
+        
+        string lastError = "";
         protected ConfigPhysicalMotionController _config;
-
-        /// <summary>
-        /// lock while operating the property of RunningAxesSum
-        /// </summary>
-        object _lock_runingaxessum = new object();
-
+        
+        readonly object lockBusyAxesCount = new object();
+        
         #endregion
 
         #region Constructor
@@ -29,13 +27,13 @@ namespace Irixi_Aligner_Common.MotionControllerEntities
         public MotionControllerBase(ConfigPhysicalMotionController Config)
         {
             _config = Config;
-            this.DeviceClass = _config.DeviceClass;
-            this.Model = _config.Model;
-            this.Port = _config.Port;
-            this.IsEnabled = Config.Enabled;
-            this.IsInitialized = false;
-            this.AxisCollection = new Dictionary<string, IAxis>();
-            this.RunningAxesSum = 0;
+            DeviceClass = _config.DeviceClass;
+            Model = _config.Model;
+            Port = _config.Port;
+            IsEnabled = Config.Enabled;
+            IsInitialized = false;
+            AxisCollection = new Dictionary<string, IAxis>();
+            BusyAxesCount = 0;
 
             //
             // Generate the items of AxisCollection according the config of the physical motion controller
@@ -67,26 +65,34 @@ namespace Irixi_Aligner_Common.MotionControllerEntities
         {
             get
             {
-                return _lasterr;
+                return lastError;
             }
             internal set
             {
-                _lasterr = value;
+                lastError = value;
             }
         }
 
         public Dictionary<string, IAxis>AxisCollection { private set; get; }
 
-        public int RunningAxesSum { private set; get; }
-
+        /// <summary>
+        /// The property indicates that how many axes are moving. 
+        /// If it is 0, raise the event #OnMoveBegin before moving, 
+        /// If it is 0, raise the event #OnMoveEnd after moving, 
+        /// This feature is especially used to tell #SystemService whether I(Motion Controller) am busy or not, 
+        /// I'll be added to #BusyComponent list once the first axis was moving and be removed once the last axis was stopped. 
+        /// In order to execute #Stop command ASAP, #SystemService only stops the components which are in the #BusyComponent list.
+        /// </summary>
+        public int BusyAxesCount { private set; get; }
+        
         #endregion
 
         #region Methods
 
-        public virtual bool Init()
+        public bool Init()
         {
-            if (this.IsEnabled) // the controller is configured to be disabled in the config file 
-                return true;
+            if (this.IsEnabled)
+                return CustomInitProcess();
             else
             {
                 this.LastError = "the controller is disabled";
@@ -94,65 +100,90 @@ namespace Irixi_Aligner_Common.MotionControllerEntities
             }
         }
 
-        public virtual bool Home(IAxis Axis)
+        public bool Home(IAxis Axis)
         {
-                bool ret = false;
+            bool ret = false;
 
-                if (!this.IsEnabled) // the controller is configured to be disabled in the config file
-                {
-                    Axis.LastError = "the controller is disabled";
-                }
-                else if (!this.IsInitialized)   // the controller is not initialized
-                    {
-                    Axis.LastError =  "the controller is not initialized";
-                }
-                else if (!Axis.IsEnabled)   // the axis moved is disabled in the config file
-                {
-                    Axis.LastError = "the axis is disabled";
-                }
-                else
-                    ret = true;
+            if (!this.IsEnabled) // the controller is configured to be disabled in the config file
+            {
+                Axis.LastError = "the controller is disabled";
+            }
+            else if (!this.IsInitialized)   // the controller is not initialized
+            {
+                Axis.LastError = "the controller is not initialized";
+            }
+            else if (!Axis.IsEnabled)   // the axis moved is disabled in the config file
+            {
+                Axis.LastError = "the axis is disabled";
+            }
+            else
+            {
+                if (BusyAxesCount <= 0)
+                    OnMoveBegin?.Invoke(this, new EventArgs());
 
-                return ret;
-        }
+                IncreaceBusyAxesCount();
+                ret = CustomHomeProcess(Axis);
+                DecreaceBusyAxesCount();
 
-        public virtual bool HomeAll()
-        {
-            throw new NotImplementedException();
-        }
+                if(BusyAxesCount <= 0)
+                    OnMoveEnd?.Invoke(this, new EventArgs());
+            }
 
-        public virtual bool Move(IAxis Axis, MoveMode Mode, int Speed, int Distance)
-        {
-                bool ret = false;
 
-                if (!this.IsEnabled)
-                {
-                    Axis.LastError = "the controller is disabled";
-                }
-                if(!this.IsInitialized)
-                {
-                    Axis.LastError = "the controller has not been initialized";
-                }
-                else if (!Axis.IsEnabled)
-                {
-                    Axis.LastError = "the axis is disabled";
-                }
-                else if(!Axis.IsHomed)
-                {
-                    Axis.LastError = "the axis is not homed";
-                }
-                else
-                    ret = true;
 
             return ret;
         }
 
-        public virtual bool MoveWithTrigger(IAxis Axis, MoveMode Mode, int Speed, int Distance, int Interval, int Channel)
+        public bool HomeAll()
         {
             throw new NotImplementedException();
         }
 
-        public virtual bool MoveWithInnerADC(IAxis Axis, MoveMode Mode, int Speed, int Distance, int Interval, int Channel)
+        public bool Move(IAxis Axis, MoveMode Mode, int Speed, int Distance)
+        {
+            bool ret = false;
+
+            if (!this.IsEnabled)
+            {
+                Axis.LastError = "the controller is disabled";
+            }
+            if (!this.IsInitialized)
+            {
+                Axis.LastError = "the controller has not been initialized";
+            }
+            else if (!Axis.IsEnabled)
+            {
+                Axis.LastError = "the axis is disabled";
+            }
+            else if (!Axis.IsHomed)
+            {
+                Axis.LastError = "the axis is not homed";
+            }
+            else
+            {
+
+                if(BusyAxesCount <= 0)
+                    OnMoveBegin?.Invoke(this, new EventArgs());
+
+                IncreaceBusyAxesCount();
+
+                ret = CustomMoveProcess(Axis, Mode, Speed, Distance);
+
+                DecreaceBusyAxesCount();
+
+                if(BusyAxesCount <= 0)
+                    OnMoveEnd?.Invoke(this, new EventArgs());
+            }
+
+            return ret;
+        }
+
+        public bool MoveWithTrigger(IAxis Axis, MoveMode Mode, int Speed, int Distance, int Interval, int Channel)
+        {
+            throw new NotImplementedException();
+        }
+
+        public bool MoveWithInnerADC(IAxis Axis, MoveMode Mode, int Speed, int Distance, int Interval, int Channel)
         {
             throw new NotImplementedException();
         }
@@ -161,36 +192,27 @@ namespace Irixi_Aligner_Common.MotionControllerEntities
         {
             throw new NotImplementedException();
         }
-
-        public void IncreaseRunningAxes()
-        {
-            lock(_lock_runingaxessum)
-            {
-                this.RunningAxesSum++;
-            }
-        }
-
-        public void DecreaseRunningAxes()
-        {
-            lock (_lock_runingaxessum)
-            {
-                this.RunningAxesSum--;
-            }
-        }
-
-        public override string ToString()
-        {
-            return string.Format("*{0}@{1}*", this.Model.ToString(), this.Port);
-        }
-
+        
         public override int GetHashCode()
         {
             return this.DeviceClass.GetHashCode();
         }
 
-        #endregion
+        protected virtual bool CustomInitProcess()
+        {
+            throw new NotImplementedException();
+        }
 
-        #region Internal Methods
+        protected virtual bool CustomHomeProcess(IAxis Axis)
+        {
+            throw new NotImplementedException();
+        }
+
+        protected virtual bool CustomMoveProcess(IAxis Axis, MoveMode Mode, int Speed, int Distance)
+        {
+            throw new NotImplementedException();
+        }
+
         /// <summary>
         /// Find the axis by name property
         /// </summary>
@@ -215,27 +237,34 @@ namespace Irixi_Aligner_Common.MotionControllerEntities
             }
         }
 
-        /// <summary>
-        /// Pass error to system service class
-        /// </summary>
-        public void RaiseOnErrorOccurredEvent()
+        sealed public override string ToString()
         {
-            OnErrorOccurred?.Invoke(this, this.LastError);
+            return string.Format("*{0}@{1}*", this.Model.ToString(), this.Port);
         }
-
-        /// <summary>
-        /// Report home completion to system service class
-        /// </summary>
-        public void RasiseOnHomeCompletedEvent()
-        {
-            OnHomeCompleted?.Invoke(this, new EventArgs());
-        }
-
+        
         public virtual void Dispose()
         {
             throw new NotImplementedException();
         }
 
+        #endregion
+
+        #region Private Methods
+        void IncreaceBusyAxesCount()
+        {
+            lock(lockBusyAxesCount)
+            {
+                BusyAxesCount++;
+            }
+        }
+
+        void DecreaceBusyAxesCount()
+        {
+            lock (lockBusyAxesCount)
+            {
+                BusyAxesCount--;
+            }
+        }
         #endregion
     }
 }

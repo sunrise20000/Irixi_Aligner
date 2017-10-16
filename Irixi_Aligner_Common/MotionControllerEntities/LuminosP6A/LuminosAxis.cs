@@ -1,8 +1,4 @@
-﻿using Irixi_Aligner_Common.Classes.BaseClass;
-using Irixi_Aligner_Common.Configuration;
-using Irixi_Aligner_Common.Interfaces;
-using Irixi_Aligner_Common.Message;
-using System.Threading.Tasks;
+﻿using Irixi_Aligner_Common.Message;
 using Zaber;
 
 namespace Irixi_Aligner_Common.MotionControllerEntities
@@ -64,12 +60,25 @@ namespace Irixi_Aligner_Common.MotionControllerEntities
                 // var prev = this.UnitHelper.Clone() as RealworldDistanceUnitHelper;
                 // this.UnitHelper = new RealworldDistanceUnitHelper(max_steps, prev.MaxStroke, prev.Unit, prev.Digits);
 
-                LogHelper.WriteLine("{0} MaxSteps was read from flash, the new value is {1}", this, max_steps, LogHelper.LogType.NORMAL);
+                LogHelper.WriteLine("{0} Max Steps was read from flash, the new value is {1}", this, max_steps, LogHelper.LogType.NORMAL);
             }
             else
             {
                 // keep the value set in the config file
             }
+
+
+            // read maximum speed
+            if (int.TryParse(ZaberConversation.Request(Command.ReturnSetting, (int)Command.SetTargetSpeed).Data.ToString(), out int target_speed))
+            {
+                this.MaxSpeed = target_speed;
+                LogHelper.WriteLine("{0} Max Speed was read from flash, the new value is {1}", this, target_speed, LogHelper.LogType.NORMAL);
+            }
+            else
+            {
+                // keep the value set in the config file
+            }
+
         }
 
         #endregion

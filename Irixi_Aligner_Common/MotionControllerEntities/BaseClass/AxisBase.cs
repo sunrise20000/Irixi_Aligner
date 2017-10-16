@@ -11,7 +11,7 @@ namespace Irixi_Aligner_Common.MotionControllerEntities
 {
     /*
      * NOTE: 
-     * All parameters in this class that related position are arranged in 'STEPS' except UnitHelper
+     * All parameters in this class that related position are in 'steps' except UnitHelper
      */
     public class AxisBase : IAxis, INotifyPropertyChanged
     {
@@ -24,10 +24,7 @@ namespace Irixi_Aligner_Common.MotionControllerEntities
             _is_manual_enabled = false,
             _is_abs_mode = false,
             _is_busy = false;
-
-        /// <summary>
-        /// determine whether the axis is not used by another thread
-        /// </summary>
+        
         SemaphoreSlim _axis_lock;
 
         #endregion
@@ -113,9 +110,6 @@ namespace Irixi_Aligner_Common.MotionControllerEntities
 
         public int InitPosition { get; private set; }
 
-        /// <summary>
-        /// Absolute position in STEPS
-        /// </summary>
         public int AbsPosition
         {
             get
@@ -134,9 +128,6 @@ namespace Irixi_Aligner_Common.MotionControllerEntities
             }
         }
 
-        /// <summary>
-        /// Relevant position in STEPS
-        /// </summary>
         public int RelPosition
         {
             get
@@ -154,49 +145,34 @@ namespace Irixi_Aligner_Common.MotionControllerEntities
 
         public object Tag { get; set; }
 
-        /// <summary>
-        /// Maximum drive velocity in STEPS/s
-        /// </summary>
-        public int MaxSpeed { get; private set; }
+        public int MaxSpeed { get; protected set; }
 
-        /// <summary>
-        /// Acceleration and deceleration in STEPS/ss
-        /// </summary>
         public int AccelerationSteps { private set; get; }
         
-        /// <summary>
-        /// Software limitation of CCW (close to the home point) in STEPS
-        /// </summary>
         public int SCCWL
         {
             get
             {
                 return _ccwl;
             }
-            set
+            protected set
             {
                 UpdateProperty<int>(ref _ccwl, value);
             }
         }
 
-        /// <summary>
-        /// Software limitation of CW (far from the home point) in STEPS
-        /// </summary>
         public int SCWL
         {
             get
             {
                 return _cwl;
             }
-            set
+            protected set
             {
                 UpdateProperty<int>(ref _cwl, value);
             }
         }
 
-        /// <summary>
-        /// The helper used to convert steps to real-world position
-        /// </summary>
         public RealworldPositionManager UnitHelper { protected set; get; }
         
         public string LastError { set; get; }
@@ -206,29 +182,16 @@ namespace Irixi_Aligner_Common.MotionControllerEntities
         #endregion
 
         #region Methods
-        /// <summary>
-        /// the axis must be locked before using it.
-        /// </summary>
-        /// <returns></returns>
         public bool Lock()
         {
             return _axis_lock.Wait(100);
         }
-
-        /// <summary>
-        /// the axis must be released after using it.
-        /// </summary>
+        
         public void Unlock()
         {
             _axis_lock.Release();
         }
-
-        /// <summary>
-        /// Set configurations at the startup of the application
-        /// </summary>
-        /// <param name="AxisIndex"></param>
-        /// <param name="Config"></param>
-        /// <param name="Controller"></param>
+        
         public virtual void SetParameters(int AxisIndex, ConfigPhysicalAxis Config, IMotionController Controller)
         {
             this.AxisIndex = AxisIndex;
@@ -258,11 +221,6 @@ namespace Irixi_Aligner_Common.MotionControllerEntities
             }
         }
         
-        /// <summary>
-        /// Check whether the targe position is out of range, note that the postion (in STEPS)
-        /// </summary>
-        /// <param name="TargetPosition"></param>
-        /// <returns></returns>
         public bool CheckSoftLimitation(int TargetPosition)
         {
             if (TargetPosition < this.SCCWL || TargetPosition > this.SCWL)
@@ -370,13 +328,6 @@ namespace Irixi_Aligner_Common.MotionControllerEntities
         #region RaisePropertyChangedEvent
         public event PropertyChangedEventHandler PropertyChanged;
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="OldValue"></param>
-        /// <param name="NewValue"></param>
-        /// <param name="PropertyName"></param>
         protected void UpdateProperty<T>(ref T OldValue, T NewValue, [CallerMemberName]string PropertyName = "")
         {
             if (object.Equals(OldValue, NewValue))  // To save resource, if the value is not changed, do not raise the notify event

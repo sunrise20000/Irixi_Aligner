@@ -12,7 +12,6 @@
         mc:Ignorable="d"
         Title="Alignment xD" Height="650" Width="900" WindowStartupLocation="CenterScreen">
     <Window.Resources>
-        <local:ConvertToAlignmentXDArgs x:Key="ToAlignmentXDArgs"/>
         <convert:BooleanToVisibility x:Key="BoolToVisibility"/>
     </Window.Resources>
     <Grid DataContext="{Binding Source={StaticResource Locator}}" Margin="5">
@@ -38,18 +37,18 @@
                     <ColumnDefinition/>
                 </Grid.ColumnDefinitions>
                 <TextBlock Text="Motion Components" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="0"/>
-                <ComboBox x:Name="comboBox" VerticalAlignment="Center" VerticalContentAlignment="Center" ItemsSource="{Binding Service.LogicalMotionComponentCollection}" Grid.Row="1" Margin="0,0,5,0"/>
+                <ComboBox x:Name="comboBox" VerticalAlignment="Center" VerticalContentAlignment="Center" ItemsSource="{Binding Service.LogicalMotionComponentCollection}" SelectedItem="{Binding Service.AlignmentXDArgs.MotionComponent}" Grid.Row="1" Margin="0,0,5,0"/>
                 <TextBlock Text="Instrument" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="5,0,0,0" Grid.Column="1"/>
-                <ComboBox x:Name="comboBox1" VerticalAlignment="Center" VerticalContentAlignment="Center" ItemsSource="{Binding Service.MeasurementInstrumentCollection}" Grid.Row="1" Grid.Column="1" Margin="5,0,0,0"/>
+                <ComboBox x:Name="comboBox1" VerticalAlignment="Center" VerticalContentAlignment="Center" ItemsSource="{Binding Service.MeasurementInstrumentCollection}" SelectedItem="{Binding Service.AlignmentXDArgs.Instrument}" Grid.Row="1" Grid.Column="1" Margin="5,0,0,0"/>
                 <TextBlock Text="Measurement Target" Grid.Row="2" VerticalAlignment="Center"/>
-                <dxe:TextEdit x:Name="txtTarget" Grid.Row="3" Text="0" VerticalAlignment="Center" Margin="0,0,5,0" MaskSaveLiteral="False" MaskShowPlaceHolders="False" MaskType="Numeric" Mask="######.######"/>
+                <dxe:TextEdit x:Name="txtTarget" Grid.Row="3" Text="{Binding Service.AlignmentXDArgs.Target}" VerticalAlignment="Center" Margin="0,0,5,0" MaskSaveLiteral="False" MaskShowPlaceHolders="False" MaskType="Numeric" Mask="######.######"/>
                 <TextBlock Text="Max Cycles" Grid.Row="2" VerticalAlignment="Center" Grid.Column="1" Margin="5,0,0,0"/>
-                <dxe:TextEdit x:Name="txtMaxCycles" Grid.Row="3" Text="1" VerticalAlignment="Center" Grid.Column="1" Margin="5,0,0,0" MaskShowPlaceHolders="False" MaskSaveLiteral="False" MaskType="Numeric" Mask="##"/>
+                <dxe:TextEdit x:Name="txtMaxCycles" Grid.Row="3" Text="{Binding Service.AlignmentXDArgs.MaxCycles}" VerticalAlignment="Center" Grid.Column="1" Margin="5,0,0,0" MaskShowPlaceHolders="False" MaskSaveLiteral="False" MaskType="Numeric" Mask="##"/>
             </Grid>
         </dx:GroupFrame>
         <dx:GroupFrame Grid.Row="1" Header="Axis Params">
             <Grid>
-                <UserControls:AlignmentParamEditPanel x:Name="plParamEdit" Grid.Row="1" MotionComponent="{Binding SelectedItem, ElementName=comboBox}"/>
+                <UserControls:AlignmentParamEditPanel x:Name="plParamEdit" Grid.Row="1" DataContext="{Binding Service.AlignmentXDArgs.AxisParamCollection}"/>
             </Grid>
         </dx:GroupFrame>
         <Grid Grid.Row="2">
@@ -57,33 +56,21 @@
                 <ColumnDefinition/>
                 <ColumnDefinition/>
             </Grid.ColumnDefinitions>
-            <Button Content="Start" Margin="8" Command="{Binding Service.CommandDoAlignmentXD, Mode=OneWay}">
-                <Button.CommandParameter>
-                    <MultiBinding Converter="{StaticResource ToAlignmentXDArgs}">
-                        <!-- Logical Motion Component used to align -->
-                        <Binding Path="MotionComponent" ElementName="plParamEdit" Mode="OneWay"/>
-                        <!-- Measurement instrument -->
-                        <Binding Path="SelectedItem" ElementName="comboBox1" Mode="OneWay"/>
-                        <!-- Target measurement value -->
-                        <Binding Path="Text" ElementName="txtTarget" Mode="OneWay"/>
-                        <!-- maximum cycyles to align -->
-                        <Binding Path="Text" ElementName="txtMaxCycles" Mode="OneWay"/>
-                        <!-- Arguments of each activity axis -->
-                        <Binding Path="ArgsCollection" ElementName="plParamEdit" Mode="OneWay"/>
-                    </MultiBinding>
-                </Button.CommandParameter>
-            </Button>
-            <Button Content="Stop" Grid.Column="1" Margin="8"/>
+            <Button Content="Start" Margin="8" Command="{Binding Service.CommandDoAlignmentXD, Mode=OneWay}" CommandParameter="{Binding Service.AlignmentXDArgs}"/>
+            <Button Content="Stop" Grid.Column="1" Margin="8" Command="{Binding Service.CommandStop}"/>
         </Grid>
         <dxc:ChartControl Grid.Column="1" Grid.RowSpan="4" Margin="5" >
+            <dxc:ChartControl.Legend>
+                <dxc:Legend BorderBrush="{x:Null}" BorderThickness="0" IndentFromDiagram="5" VerticalPosition="BottomOutside" HorizontalPosition="Right" Visible="True" Orientation="Horizontal"/>
+            </dxc:ChartControl.Legend>
             <dxc:ChartControl.Legends>
-                <dxc:Legend HorizontalPosition="Left" VerticalPosition="Top" Orientation="Horizontal"/>
+                <dxc:Legend HorizontalPosition="Left" VerticalPosition="Top" Orientation="Horizontal" ItemVisibilityMode="AutoGeneratedAndCustom"/>
             </dxc:ChartControl.Legends>
-            <dxc:XYDiagram2D SeriesItemsSource="{Binding ElementName=plParamEdit, Path=ArgsCollection, Mode=OneWay}">
+            <dxc:XYDiagram2D SeriesItemsSource="{Binding Service.AlignmentXDArgs.AxisParamCollection, Mode=OneWay}">
                 <dxc:XYDiagram2D.SeriesItemTemplate>
                     <DataTemplate>
                         <!--Visibility="{Binding IsEnabled, Converter={StaticResource BoolToVisibility}}"-->
-                        <dxc:LineSeries2D Visibility="Hidden"  DataSource="{Binding ScanCurve}" ValueDataMember="Y" ArgumentDataMember="X" DisplayName="{Binding Axis.AxisName}"/>
+                        <dxc:LineSeries2D Visibility="Hidden" DataSource="{Binding ScanCurve}" ValueDataMember="Y" ArgumentDataMember="X" DisplayName="{Binding Axis.AxisName}"/>
                     </DataTemplate>
                 </dxc:XYDiagram2D.SeriesItemTemplate>
             </dxc:XYDiagram2D>

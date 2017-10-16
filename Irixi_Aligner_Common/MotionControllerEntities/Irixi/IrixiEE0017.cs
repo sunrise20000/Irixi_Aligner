@@ -101,11 +101,8 @@ namespace Irixi_Aligner_Common.MotionControllerEntities
         /// Initialize the motion controller
         /// </summary>
         /// <returns></returns>
-        public override bool Init()
+        protected override bool CustomInitProcess()
         {
-            if (base.Init() == false)
-                return false;
-            
             _controller.OpenDevice();
             if (_controller.IsConnected)
             {
@@ -148,25 +145,14 @@ namespace Irixi_Aligner_Common.MotionControllerEntities
             }
         }
 
-        /// <summary>
-        /// Home the specified axis
-        /// </summary>
-        /// <param name="Axis">The instance of the IrixiAxis class</param>
-        /// <returns></returns>
-        public override bool Home(IAxis Axis)
+        protected override bool CustomHomeProcess(IAxis Axis)
         {
                 bool ret = false;
-
-                if (base.Home(Axis) == false)
-                    return false;
-
                 IrixiAxis _axis = Axis as IrixiAxis;
 
                 // lock the axis
                 if (_axis.Lock())
                 {
-                    this.IncreaseRunningAxes();
-
                     try
                     {
                         // start homing
@@ -192,8 +178,6 @@ namespace Irixi_Aligner_Common.MotionControllerEntities
                     }
                     finally
                     {
-                        this.DecreaseRunningAxes();
-
                         // release the axis
                         _axis.Unlock();
                     }
@@ -215,16 +199,11 @@ namespace Irixi_Aligner_Common.MotionControllerEntities
         /// <param name="Speed">The velocity to move</param>
         /// <param name="Distance">The distance to move</param>
         /// <returns></returns>
-        public override bool Move(IAxis Axis, MoveMode Mode, int Speed, int Distance)
+        protected override bool CustomMoveProcess(IAxis Axis, MoveMode Mode, int Speed, int Distance)
         {
             bool ret = false;
-
-           if(base.Move(Axis, Mode, Speed, Distance) == false)
-                return false;
-
             IrixiAxis _axis = Axis as IrixiAxis;
-
-
+            
             int target_pos = 0;
 
             if (_axis.IsHomed == false)
@@ -236,8 +215,6 @@ namespace Irixi_Aligner_Common.MotionControllerEntities
             // lock the axis
             if (_axis.Lock())
             {
-                this.IncreaseRunningAxes();
-
                 try
                 {
 
@@ -286,8 +263,6 @@ namespace Irixi_Aligner_Common.MotionControllerEntities
 
                 finally
                 {
-                    this.DecreaseRunningAxes();
-
                     // release the axis
                     _axis.Unlock();
                 }

@@ -25,6 +25,16 @@ namespace Irixi_Aligner_Common.Equipments
             throw new NotImplementedException();
         }
 
+        public virtual void PauseAutoFetching()
+        {
+            throw new NotImplementedException();
+        }
+
+        public virtual void ResumeAutoFetching()
+        {
+            throw new NotImplementedException();
+        }
+
         public virtual void StartAutoFetching()
         {
             throw new NotImplementedException();

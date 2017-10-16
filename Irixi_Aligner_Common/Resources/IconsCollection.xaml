@@ -6,4 +6,6 @@
     <BitmapImage x:Key="IconViewWsPanels">Images/Icons/show_view.png</BitmapImage>
     <BitmapImage x:Key="IconLampON_64x64">Images/Icons/lamp_on_64x64.png</BitmapImage>
     <BitmapImage x:Key="IconLampOFF_64x64">Images/Icons/lamp_off_64x64.png</BitmapImage>
+    <BitmapImage x:Key="IconSpiral_512x512">Images/Icons/spiral_512x512.png</BitmapImage>
+    <BitmapImage x:Key="IconXY_512x512">Images/Icons/xy_512x512.png</BitmapImage>
 </ResourceDictionary>

@@ -10,15 +10,6 @@ namespace Irixi_Aligner_Common.ViewModel
 {
     public class ViewKeithley2400 : ViewModelBase
     {
-        public enum EnumCurrDisplayUnit
-        {
-            A, mA, uA
-        }
-
-        public enum EnumVoltDisplayUnit
-        {
-            V, mV, uV
-        }
 
         public ViewKeithley2400(Keithley2400 DeviceInstance)
         {
@@ -26,6 +17,7 @@ namespace Irixi_Aligner_Common.ViewModel
         }
 
         #region Properties
+
         /// <summary>
         /// Get the instance of K2400
         /// </summary>
@@ -35,36 +27,10 @@ namespace Irixi_Aligner_Common.ViewModel
             get;
         }
 
-        EnumCurrDisplayUnit curr_unit = EnumCurrDisplayUnit.mA;
-        public EnumCurrDisplayUnit DisplayUnitforCurrent
-        {
-            set
-            {
-                curr_unit = value;
-                RaisePropertyChanged();
-            }
-            get
-            {
-                return curr_unit;
-            }
-        }
-
-        EnumVoltDisplayUnit volt_unit = EnumVoltDisplayUnit.V;
-        public EnumVoltDisplayUnit DisplayUnitforVoltage
-        {
-            set
-            {
-                volt_unit = value;
-                RaisePropertyChanged();
-            }
-            get
-            {
-                return volt_unit;
-            }
-        }
         #endregion
 
         #region Commands
+
         /// <summary>
         /// Get the command to switch on/off the output
         /// </summary>
@@ -259,62 +225,79 @@ namespace Irixi_Aligner_Common.ViewModel
         #endregion
     }
 
+    /// <summary>
+    /// Auto tuning the unit of the measurement value in this class
+    /// </summary>
     public class FormatMeasurementValue : IMultiValueConverter
     {
         public object Convert(object[] value, Type targetType, object parameter, CultureInfo culture)
         {
             string ret = "";
-
+            Keithley2400.AmpsUnit unit_curr;
+            Keithley2400.VoltsUnit unit_volt;
+            
             if(double.TryParse(value[0].ToString(), out double measval))
             {
                 var func = (Keithley2400.EnumMeasFunc)value[1];
-                var unit_curr = (ViewKeithley2400.EnumCurrDisplayUnit)value[2];
-                var unit_volt = (ViewKeithley2400.EnumVoltDisplayUnit)value[3];
+                bool output = (bool)value[2];
 
-                if (func == Keithley2400.EnumMeasFunc.ONCURR)
+                if (output)
                 {
-                    switch(unit_curr)
+                    if (func == Keithley2400.EnumMeasFunc.ONCURR)
                     {
-                        case ViewKeithley2400.EnumCurrDisplayUnit.A:
-                            ret = string.Format("{0:F6} {1}", measval, unit_curr);
-                            break;
+                        // assuming the incoming value is in A
+                        if (measval < 0.00105) // convert to uA     
+                        {
+                            measval *= 1000000;
+                            unit_curr = Keithley2400.AmpsUnit.uA;
+                        }
+                        else if (measval < 1.05) // convert to mA
+                        {
+                            measval *= 1000;
+                            unit_curr = Keithley2400.AmpsUnit.mA;
+                        }
+                        else // stay in A
+                        {
+                            unit_curr = Keithley2400.AmpsUnit.A;
+                        }
 
-                        case ViewKeithley2400.EnumCurrDisplayUnit.mA:
-                            ret = string.Format("{0:F6} {1}", measval * 1000, unit_curr);
-                            break;
-
-                        case ViewKeithley2400.EnumCurrDisplayUnit.uA:
-                            ret = string.Format("{0:F6} {1}", measval * 1000000, unit_curr);
-                            break;
+                        ret = string.Format("{0:F6} {1}", measval, unit_curr);
                     }
-                }
-                else if (func == Keithley2400.EnumMeasFunc.ONVOLT)
-                {
-                    switch (unit_volt)
+                    else if (func == Keithley2400.EnumMeasFunc.ONVOLT)
                     {
-                        case ViewKeithley2400.EnumVoltDisplayUnit.V:
-                            ret = string.Format("{0:F6} {1}", measval, unit_volt);
-                            break;
+                        // assuming the incoming value is in V
+                        if (measval < 0.00105) // convert to uV
+                        {
+                            measval *= 1000;
+                            unit_volt = Keithley2400.VoltsUnit.uV;
+                        }
+                        else if (measval < 1.05) // convert to mV
+                        {
+                            measval *= 1000;
+                            unit_volt = Keithley2400.VoltsUnit.mV;
+                        }
+                        else // stay in A
+                        {
+                            unit_volt = Keithley2400.VoltsUnit.V;
+                        }
 
-                        case ViewKeithley2400.EnumVoltDisplayUnit.mV:
-                            ret = string.Format("{0:F6} {1}", measval * 1000, unit_volt);
-                            break;
-
-                        case ViewKeithley2400.EnumVoltDisplayUnit.uV:
-                            ret = string.Format("{0:F6} {1}", measval * 1000000, unit_volt);
-                            break;
+                        ret = string.Format("{0:F6} {1}", measval, unit_volt);
+                    }
+                    else
+                    {
+                        ret = "FUNC ERR";
                     }
                 }
                 else
                 {
-                    ret = "Unknown Func";
+                    ret = "OFF";
                 }
 
                 return ret;
             }
             else
             {
-                return "ERROR";
+                return "MEAS ERR";
             }
         }
 

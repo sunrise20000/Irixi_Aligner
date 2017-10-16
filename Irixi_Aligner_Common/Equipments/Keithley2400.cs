@@ -26,8 +26,7 @@ namespace Irixi_Aligner_Common.Equipments
         const double PROT_VOLT_MAX = 210; // minmum compliance voltage is set to 210V
 
         const double MEAS_SPEED_DEF = 1; // default measurement speed is set to 1 for 60Hz power line cycling
-        SerialPort serialport;
-
+        
         public enum EnumInOutTerminal
         {
             FRONT, REAR
@@ -38,7 +37,10 @@ namespace Irixi_Aligner_Common.Equipments
         /// </summary>
         public enum EnumMeasFunc
         {
-            OFFALL, ONVOLT, ONCURR, ONRES
+            OFFALL,
+            ONVOLT,
+            ONCURR,
+            ONRES
         }
 
         /// <summary>
@@ -134,23 +136,41 @@ namespace Irixi_Aligner_Common.Equipments
             RMTSENSE = 0x400000,
             PULSEMODE = 0x800000
         }
+
+        public enum AmpsUnit
+        {
+            uA,
+            mA,
+            A
+        }
+
+        public enum VoltsUnit
+        {
+            uV,
+            mV,
+            V
+        }
         #endregion
 
         #region Variables
         CancellationTokenSource cts_fetching;
         Task task_fetch_loop = null;
 
+        SerialPort serialport;
+
         EnumSourceMode source_mode = EnumSourceMode.VOLT;
         EnumInOutTerminal inout_terminal = EnumInOutTerminal.FRONT;
         EnumMeasFunc measurement_func = EnumMeasFunc.ONVOLT;
         EnumDataStringElements data_string_elements = EnumDataStringElements.ALL;
+        EnumMeasRangeAmps range_amps = EnumMeasRangeAmps.AUTO;
+        AmpsUnit ampsMeasUnit;
+        VoltsUnit voltsMeasUnit;
+        EnumMeasRangeVolts range_volts = EnumMeasRangeVolts.AUTO;
         double meas_speed = MEAS_SPEED_DEF;
         bool is_output_enabled = false;
         double voltage_level = 0, current_level = 0;
         double measured_val = 0;
         double cmpl_voltage = PROT_VOLT_DEF, cmpl_current = PROT_AMPS_DEF;
-        EnumMeasRangeAmps range_amps = EnumMeasRangeAmps.AUTO;
-        EnumMeasRangeVolts range_volts = EnumMeasRangeVolts.AUTO;
         bool is_in_range_cmpl = false, is_meas_over_range = false;
         #endregion
 
@@ -160,7 +180,7 @@ namespace Irixi_Aligner_Common.Equipments
             this.Config = Config;
             serialport = new SerialPort(Config.Port, Config.BaudRate, Parity.None, 8, StopBits.One)
             {
-                ReadTimeout = 5000
+                ReadTimeout = 2000
             };
         }
         #endregion
@@ -251,6 +271,32 @@ namespace Irixi_Aligner_Common.Equipments
             get
             {
                 return measured_val;
+            }
+        }
+        
+        /// <summary>
+        /// Get the unit of the amps measurement value displayed
+        /// </summary>
+        public AmpsUnit AmpsMeasUnit
+        {
+            get => ampsMeasUnit;
+
+            private set
+            {
+                UpdateProperty(ref ampsMeasUnit, value);
+            }
+
+        }
+
+        /// <summary>
+        /// Get the unit of the volts measurement value displayed
+        /// </summary>
+        public VoltsUnit VoltsMeasUnit
+        {
+            get => voltsMeasUnit;
+            private set
+            {
+                UpdateProperty(ref voltsMeasUnit, value);
             }
         }
 
@@ -344,7 +390,7 @@ namespace Irixi_Aligner_Common.Equipments
             }
         }
 
-        public ConfigurationKeithley2400 Config
+        public new ConfigurationKeithley2400 Config
         {
             private set;
             get;
@@ -394,6 +440,7 @@ namespace Irixi_Aligner_Common.Equipments
                 return is_in_range_cmpl;
             }
         }
+        
 
         #endregion
 
@@ -461,7 +508,7 @@ namespace Irixi_Aligner_Common.Equipments
                 StopAutoFetching();
 
                 Send("OUTP OFF");
-                SetBeep(700, 0.2);
+                // SetBeep(700, 0.2);
                 this.MeasurementValue = 0;
             }
 
@@ -1090,12 +1137,7 @@ namespace Irixi_Aligner_Common.Equipments
                 return false;
             }
         }
-
-        /// <summary>
-        /// 读取数据
-        /// </summary>
-        /// <param name="index"></param>
-        /// <returns></returns>
+        
         public override double Fetch()
         {
             var ret = Read(":READ?");
@@ -1111,13 +1153,13 @@ namespace Irixi_Aligner_Common.Equipments
                         var status = (EnumOperationStatus)stat_tmp;
                         
                         // check flag of over-range
-                        if (status.HasFlag(EnumOperationStatus.OFLO))
+                        if (status.HasFlag(EnumOperationStatus.RANGECMPL))
                             this.IsMeasOverRange = true;
                         else
                             this.IsMeasOverRange = false;
 
                         // check flag of range compliance
-                        if (status.HasFlag(EnumOperationStatus.RANGECMPL))
+                        if (status.HasFlag(EnumOperationStatus.CMPL))
                             this.IsInRangeCompliance = true;
                         else
                             this.IsInRangeCompliance = false;
@@ -1148,42 +1190,44 @@ namespace Irixi_Aligner_Common.Equipments
                 var token = cts_fetching.Token;
 
                 // start the loop task
-                task_fetch_loop = Task.Run(() =>
+                task_fetch_loop = Task.Run(()=>
                 {
-                    // disable display to speed up instrument operation
-                    SetDisplayCircuitry(false);
-
-                    while (!token.IsCancellationRequested)
-                    {
-                        this.MeasurementValue = Fetch();
-                        Thread.Sleep(20);
-                    }
-
-                    // resume display
-                    SetDisplayCircuitry(true);
+                    DoAutoFetching(token);
                 });
             }
         }
-
-        /// <summary>
-        /// Stop the fetching loop task
-        /// </summary>
+        
         public override void StopAutoFetching()
         {
-            if (task_fetch_loop != null && task_fetch_loop.IsCompleted == false)
+            if (task_fetch_loop != null)
+            {
+                if (task_fetch_loop.IsCompleted == false)
+                {
+                    PauseAutoFetching();
+                }
+
+                // destory the objects
+                task_fetch_loop = null;
+                cts_fetching = null;
+            }
+        }
+
+        public override void PauseAutoFetching()
+        {
+            if (task_fetch_loop != null)
             {
                 // cancel the task of fetching loop
                 cts_fetching.Cancel();
                 TimeSpan ts = TimeSpan.FromMilliseconds(3000);
                 if (!task_fetch_loop.Wait(ts))
                     throw new TimeoutException("unable to stop the fetching loop task");
-                else
-                {
-                    // destory the objects
-                    task_fetch_loop = null;
-                    cts_fetching = null;
-                }
             }
+        }
+
+        public override void ResumeAutoFetching()
+        {
+            if (task_fetch_loop != null)
+                StartAutoFetching();
         }
 
         protected override void Dispose(bool disposing)
@@ -1223,12 +1267,22 @@ namespace Irixi_Aligner_Common.Equipments
         #endregion
 
         #region Private Methods
-        /// <summary>
-        /// Send command to 2400 and check if any errors occured
-        /// </summary>
-        /// <param name="Command"></param>
-        /// <returns></returns>
-        private void Send(string Command)
+        void DoAutoFetching(CancellationToken token)
+        {
+            // disable display to speed up instrument operation
+            SetDisplayCircuitry(false);
+
+            while (!token.IsCancellationRequested)
+            {
+                this.MeasurementValue = Fetch();
+                Thread.Sleep(20);
+            }
+
+            // resume display
+            SetDisplayCircuitry(true);
+        }
+        
+        void Send(string Command)
         {
             try
             {
@@ -1265,7 +1319,7 @@ namespace Irixi_Aligner_Common.Equipments
             }
         }
 
-        private string Read(string Command)
+        string Read(string Command)
         {
 
             try
@@ -1290,31 +1344,33 @@ namespace Irixi_Aligner_Common.Equipments
             }
         }
 
-        private double ConvertMeasRangeAmpsToDouble(EnumMeasRangeAmps Range)
+        double ConvertMeasRangeAmpsToDouble(EnumMeasRangeAmps Range)
         {
             double real = 1.05 * Math.Pow(10, ((int)Range) - 7);
             return real;
         }
 
-        private EnumMeasRangeAmps ConvertDoubleToMeasRangeAmps(double Range)
+        EnumMeasRangeAmps ConvertDoubleToMeasRangeAmps(double Range)
         {
             var digital = Range / 1.05;
             digital = Math.Log10(digital);
             return (EnumMeasRangeAmps)(digital + 7);
         }
 
-        private double ConvertMeasRangeVoltToDouble(EnumMeasRangeVolts Range)
+        double ConvertMeasRangeVoltToDouble(EnumMeasRangeVolts Range)
         {
             double real = 2.1 * Math.Pow(10, ((int)Range - 2));
             return real;
         }
 
-        private EnumMeasRangeVolts ConvertDoubleToMeasRangeVolt(double Range)
+        EnumMeasRangeVolts ConvertDoubleToMeasRangeVolt(double Range)
         {
             var digital = Range / 2.1;
             digital = Math.Log10(digital);
             return (EnumMeasRangeVolts)(digital + 2);
         }
+
+
         #endregion
     }
 }
