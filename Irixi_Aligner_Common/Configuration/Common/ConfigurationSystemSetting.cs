@@ -1,13 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Irixi_Aligner_Common.Configuration
+﻿namespace Irixi_Aligner_Common.Configuration
 {
-    
-    public class ConfigurationMotionController
+
+    public class ConfigurationSystemSetting
     {
         /// <summary>
         /// Get wether record the log or not
@@ -17,6 +11,8 @@ namespace Irixi_Aligner_Common.Configuration
         public ConfigurationCylinder Cylinder { get; set; }
 
         public ConfigurationKeithley2400[] Keithley2400s { get; set; }
+
+        public ConfigurationNewport2832C[] Newport2832Cs { get; set; }
 
         /// <summary>
         /// Layout of physical motion controllers

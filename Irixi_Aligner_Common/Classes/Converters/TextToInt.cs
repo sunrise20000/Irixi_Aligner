@@ -8,11 +8,11 @@ using System.Windows.Data;
 
 namespace Irixi_Aligner_Common.Classes.Converters
 {
-    public class TextToDouble : IValueConverter
+    public class TextToInt : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            if (double.TryParse(value.ToString(), out double r))
+            if (int.TryParse(value.ToString(), out int r))
             {
                 return r;
             }

@@ -1,6 +1,6 @@
 ﻿using DevExpress.Xpf.Bars;
 using DevExpress.Xpf.Docking;
-using DevExpress.Xpf.Ribbon;
+using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Ioc;
 using GalaSoft.MvvmLight.Messaging;
 using Irixi_Aligner_Common.Classes;
@@ -16,6 +16,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Media.Imaging;
 
@@ -102,35 +103,50 @@ namespace Irixi_Aligner_Common
                 // raise the click event
                 btn.ItemClick += (s, e) =>
                 {
-                    ViewMassMove view = new ViewMassMove(service, aligner);
-                    MassMoveWindow w = new MassMoveWindow
+                    var view = new ViewMassMove(service, aligner);
+                    var win = new MassMoveWindow
                     {
                         DataContext = view
                     };
-                    w.ShowDialog();
+                    win.ShowDialog();
                 };
 
                 rpgPresetPositionButtonsHost.Items.Add(btn);
             }
             #endregion
 
-            #region Create Keithley 2400 control panels
+            #region Create control panels for instruments
 
-            ViewKeithley2400 view_k2400;
-            foreach (var k2400 in service.MeasurementInstrumentCollection)
+            ViewModelBase viewInstr;
+            foreach (var instr in service.MeasurementInstrumentCollection)
             {
-                // create the user control for k2400
-                view_k2400 = new ViewKeithley2400(k2400 as Keithley2400);
-                Keithley2400ControlPanel uc = new Keithley2400ControlPanel()
-                { 
-                    DataContext = view_k2400
-                };
+                UserControl uctrl = null;
+
+                //TODO The following codes is not elegant, the code must be expanded if new type of instrument added into the system
+                if (instr is Keithley2400)
+                {
+                    // create the user control for k2400
+                    viewInstr = new ViewKeithley2400(instr as Keithley2400);
+                    uctrl = new Keithley2400ControlPanel()
+                    {
+                        DataContext = viewInstr
+                    };
+                }
+                else if(instr is Newport2832C)
+                {
+                    // create the user control for k2400
+                    viewInstr = new ViewNewport2832C(instr as Newport2832C);
+                    uctrl = new Newport2832cControlPanel()
+                    {
+                        DataContext = viewInstr
+                    };
+                }
 
                 // create document panel in the window
                 DocumentPanel panel = new DocumentPanel()
                 {
-                    Name = string.Format("dp{0}", k2400.DeviceClass.ToString("N")),
-                    Caption = k2400,
+                    Name = string.Format("dp{0}", instr.DeviceClass.ToString("N")),
+                    Caption = instr.Config.Caption,
                     AllowMaximize = false,
                     AllowSizing = false,
                     AllowDock = false,
@@ -138,19 +154,19 @@ namespace Irixi_Aligner_Common
                     ClosingBehavior = ClosingBehavior.HideToClosedPanelsCollection,
 
                     // put the user control into the panel
-                    Content = uc
+                    Content = uctrl
                 };
 
                 // add the documentpanel to the documentgroup
                 MotionComponentPanelHost.Items.Add(panel);
 
                 // find the icon shown in the button
-                var image = (BitmapFrame)TryFindResource(k2400.Config.Icon);
+                var image = (BitmapFrame)TryFindResource(instr.Config.Icon);
 
                 // add view buttons to Ribbon toolbar
                 BarCheckItem chk = new BarCheckItem()
                 {
-                    Content = k2400.Config.Caption,
+                    Content = instr.Config.Caption,
                     LargeGlyph = image
                 };
 
@@ -166,6 +182,7 @@ namespace Irixi_Aligner_Common
 
                 rpgView_Equipments.Items.Add(chk);
             }
+
             #endregion
 
             #region Restore workspace layout

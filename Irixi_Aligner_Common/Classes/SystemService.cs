@@ -71,7 +71,7 @@ namespace Irixi_Aligner_Common.Classes
             ConfigManager conf_manager = SimpleIoc.Default.GetInstance<ConfigManager>();
 
             // whether output the log
-            LogHelper.LogEnabled = conf_manager.ConfMotionController.LogEnabled;
+            LogHelper.LogEnabled = conf_manager.ConfSystemSetting.LogEnabled;
 
             // initialize the properties
             BusyComponents = new List<IServiceSystem>();
@@ -90,7 +90,7 @@ namespace Irixi_Aligner_Common.Classes
              * enumerate all physical motion controllers defined in the config file,
              * and create the instance of the motion controller class.
              */
-            foreach (var conf in conf_manager.ConfMotionController.PhysicalMotionControllers)
+            foreach (var conf in conf_manager.ConfSystemSetting.PhysicalMotionControllers)
             {
                 IMotionController motion_controller = null;
 
@@ -132,7 +132,7 @@ namespace Irixi_Aligner_Common.Classes
             }
 
             // create the instance of the Logical Motion Components
-            foreach (var cfg_motion_comp in conf_manager.ConfMotionController.LogicalMotionComponents)
+            foreach (var cfg_motion_comp in conf_manager.ConfSystemSetting.LogicalMotionComponents)
             {
                 LogicalMotionComponent comp = new LogicalMotionComponent(cfg_motion_comp.Caption, cfg_motion_comp.Icon);
 
@@ -161,8 +161,8 @@ namespace Irixi_Aligner_Common.Classes
             // create the instance of the cylinder
             try
             {
-                IrixiEE0017 ctrl = PhysicalMotionControllerCollection[Guid.Parse(conf_manager.ConfMotionController.Cylinder.Port)] as IrixiEE0017;
-                CylinderController = new CylinderController(conf_manager.ConfMotionController.Cylinder, ctrl);
+                IrixiEE0017 ctrl = PhysicalMotionControllerCollection[Guid.Parse(conf_manager.ConfSystemSetting.Cylinder.Port)] as IrixiEE0017;
+                CylinderController = new CylinderController(conf_manager.ConfSystemSetting.Cylinder, ctrl);
             }
             catch (Exception e)
             {
@@ -170,9 +170,15 @@ namespace Irixi_Aligner_Common.Classes
             }
 
             // create instance of the keithley 2400
-            foreach(var cfg_item in conf_manager.ConfMotionController.Keithley2400s)
+            foreach(var cfg in conf_manager.ConfSystemSetting.Keithley2400s)
             {
-                this.MeasurementInstrumentCollection.Add(new Keithley2400(cfg_item));
+                this.MeasurementInstrumentCollection.Add(new Keithley2400(cfg));
+            }
+
+            // create instance of the newport 2832C
+            foreach (var cfg in conf_manager.ConfSystemSetting.Newport2832Cs)
+            {
+                this.MeasurementInstrumentCollection.Add(new Newport2832C(cfg));
             }
         }
         

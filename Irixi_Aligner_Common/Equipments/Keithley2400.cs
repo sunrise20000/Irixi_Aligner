@@ -26,7 +26,7 @@ namespace Irixi_Aligner_Common.Equipments
         const double PROT_VOLT_MAX = 210; // minmum compliance voltage is set to 210V
 
         const double MEAS_SPEED_DEF = 1; // default measurement speed is set to 1 for 60Hz power line cycling
-        
+
         public enum EnumInOutTerminal
         {
             FRONT, REAR
@@ -61,13 +61,13 @@ namespace Irixi_Aligner_Common.Equipments
         /// <summary>
         /// Options of compliance setting
         /// </summary>
-        public enum EnumComplianceLIMIT {DEFAULT, MAX, MIN, REAL }
+        public enum EnumComplianceLIMIT { DEFAULT, MAX, MIN, REAL }
 
         /// <summary>
         /// Options of which measurement result to be read
         /// </summary>
         public enum EnumReadCategory { VOLT = 0, CURR }
-        
+
         /// <summary>
         /// Valid current measurement range
         /// </summary>
@@ -153,10 +153,6 @@ namespace Irixi_Aligner_Common.Equipments
         #endregion
 
         #region Variables
-        CancellationTokenSource cts_fetching;
-        Task task_fetch_loop = null;
-
-        SerialPort serialport;
 
         EnumSourceMode source_mode = EnumSourceMode.VOLT;
         EnumInOutTerminal inout_terminal = EnumInOutTerminal.FRONT;
@@ -175,7 +171,8 @@ namespace Irixi_Aligner_Common.Equipments
         #endregion
 
         #region Constructor
-        public Keithley2400(ConfigurationKeithley2400 Config):base(Config)
+
+        public Keithley2400(ConfigurationKeithley2400 Config) : base(Config)
         {
             this.Config = Config;
             serialport = new SerialPort(Config.Port, Config.BaudRate, Parity.None, 8, StopBits.One)
@@ -183,6 +180,7 @@ namespace Irixi_Aligner_Common.Equipments
                 ReadTimeout = 2000
             };
         }
+
         #endregion
 
         #region Properties
@@ -220,7 +218,7 @@ namespace Irixi_Aligner_Common.Equipments
         public double MeasurementSpeed
         {
             private set
-            { 
+            {
                 UpdateProperty(ref meas_speed, value);
             }
             get
@@ -273,7 +271,7 @@ namespace Irixi_Aligner_Common.Equipments
                 return measured_val;
             }
         }
-        
+
         /// <summary>
         /// Get the unit of the amps measurement value displayed
         /// </summary>
@@ -440,11 +438,12 @@ namespace Irixi_Aligner_Common.Equipments
                 return is_in_range_cmpl;
             }
         }
-        
+
 
         #endregion
 
-        #region General Methods
+        #region Pulblic Methods
+
         /// <summary>
         /// Set the SourceMeter to V-Source Mode
         /// </summary>
@@ -470,32 +469,15 @@ namespace Irixi_Aligner_Common.Equipments
             SetRangeOfCurrentSource(Keithley2400.EnumSourceRange.AUTO);
 
             // only return voltage measurement value under I-Source
-            SetDataElement(EnumDataStringElements.VOLT | EnumDataStringElements.STAT); 
+            SetDataElement(EnumDataStringElements.VOLT | EnumDataStringElements.STAT);
         }
+
         #endregion
 
-        #region Keithley 2400 Low-level Operating Methods
+        #region Appropriative Methods of Keithley 2400
 
         #region Common
-
-        /// <summary>
-        /// Reset the device to default setting and clear the error query
-        /// </summary>
-        public void Reset()
-        {
-            Send(":SYST:CLE");
-            Thread.Sleep(50);
-
-            Send("*RST"); // reset device to default setting
-            Thread.Sleep(200);
-        }
-
-        public string GetDescription()
-        {
-            return Read("*IDN?");
-            
-        }
-
+        
         public void SetOutputState(bool IsEnabled)
         {
             if (IsEnabled)
@@ -523,14 +505,14 @@ namespace Irixi_Aligner_Common.Equipments
             else
                 throw new InvalidCastException(string.Format("unknown value {0} returned, {1}", ret, new StackTrace().GetFrame(0).ToString()));
         }
-        
+
         /// <summary>
         /// Set which In/Out terminal is valid
         /// </summary>
         /// <param name="Terminal">Front panel / Rear panel</param>
         public void SetInOutTerminal(EnumInOutTerminal Terminal)
         {
-            switch(Terminal)
+            switch (Terminal)
             {
                 case EnumInOutTerminal.FRONT:
                     Send(":ROUT:TERM FRON");
@@ -565,10 +547,10 @@ namespace Irixi_Aligner_Common.Equipments
         {
             List<string> elemlsit = new List<string>();
 
-            if(Elements.HasFlag(EnumDataStringElements.VOLT))
+            if (Elements.HasFlag(EnumDataStringElements.VOLT))
                 elemlsit.Add(EnumDataStringElements.VOLT.ToString());
 
-            if(Elements.HasFlag(EnumDataStringElements.CURR))
+            if (Elements.HasFlag(EnumDataStringElements.CURR))
                 elemlsit.Add(EnumDataStringElements.CURR.ToString());
 
             if (Elements.HasFlag(EnumDataStringElements.RES))
@@ -598,7 +580,7 @@ namespace Irixi_Aligner_Common.Equipments
         {
             Send(string.Format(":SENS:CURR:NPLC {0}", Nplc));
         }
-        
+
         public void GetMeasurementSpeed()
         {
             var ret = Read(":SENS:CURR:NPLC?");
@@ -608,7 +590,7 @@ namespace Irixi_Aligner_Common.Equipments
                 throw new InvalidCastException(string.Format("unknown value {0} returned, {1}", ret, new StackTrace().GetFrame(0).ToString()));
 
         }
-        
+
         public void SetMeasurementFunc(EnumMeasFunc MeasFunc)
         {
             switch (MeasFunc)
@@ -632,7 +614,7 @@ namespace Irixi_Aligner_Common.Equipments
 
             this.MeasurementFunc = MeasFunc;
         }
-        
+
         public void GetMeasurementFunc()
         {
             //CURR:DC
@@ -650,7 +632,7 @@ namespace Irixi_Aligner_Common.Equipments
                 throw new InvalidCastException(string.Format("unknown value {0} returned, {1}", ret, new StackTrace().GetFrame(0).ToString()));
 
         }
-        
+
         public void SetMeasRangeOfAmps(EnumMeasRangeAmps Range)
         {
             switch (Range)
@@ -663,7 +645,7 @@ namespace Irixi_Aligner_Common.Equipments
                     Send(string.Format(":SENS:CURR:RANG {0}", this.ConvertMeasRangeAmpsToDouble(Range)));
                     break;
             }
-            
+
             GetMeasRangeOfAmps();
         }
 
@@ -698,7 +680,7 @@ namespace Irixi_Aligner_Common.Equipments
                     Send(string.Format(":SENS:VOLT:RANG {0}", this.ConvertMeasRangeVoltToDouble(Range)));
                     break;
             }
-            
+
             GetMeasRangeOfVolts();
         }
 
@@ -721,9 +703,9 @@ namespace Irixi_Aligner_Common.Equipments
         }
 
         #endregion
-        
+
         #region Source Subsystem
-        
+
         public void SetSourceMode(EnumSourceMode Mode)
         {
             switch (Mode)
@@ -747,7 +729,7 @@ namespace Irixi_Aligner_Common.Equipments
         public void GetSourceMode()
         {
             var ret = Read(":SOUR:FUNC?");
-            
+
             if (ret.Contains("CURR"))
                 this.SourceMode = EnumSourceMode.CURR;
             else if (ret.Contains("VOLT"))
@@ -757,7 +739,7 @@ namespace Irixi_Aligner_Common.Equipments
             else
                 throw new InvalidCastException(string.Format("unknown value {0} returned, {1}", ret, new StackTrace().GetFrame(0).ToString()));
         }
-        
+
         public void SetSourcingModeOfCurrentSource(EnumSourceWorkMode Mode)
         {
             switch (Mode)
@@ -775,7 +757,7 @@ namespace Irixi_Aligner_Common.Equipments
                     break;
             }
         }
-        
+
         public void SetSourcingModeOfVoltageSource(EnumSourceWorkMode Mode)
         {
             switch (Mode)
@@ -793,7 +775,7 @@ namespace Irixi_Aligner_Common.Equipments
                     break;
             }
         }
-        
+
         public void SetRangeOfCurrentSource(EnumSourceRange Range, double Real = -1)
         {
             switch (Range)
@@ -827,7 +809,7 @@ namespace Irixi_Aligner_Common.Equipments
                     break;
             }
         }
-        
+
         public void SetRangeOfVoltageSource(EnumSourceRange Range, double Real = -1)
         {
             switch (Range)
@@ -861,7 +843,7 @@ namespace Irixi_Aligner_Common.Equipments
                     break;
             }
         }
-        
+
         public void SetComplianceCurrent(EnumComplianceLIMIT Cmpl, double Real = -1)
         {
             switch (Cmpl)
@@ -895,7 +877,7 @@ namespace Irixi_Aligner_Common.Equipments
             else
                 throw new InvalidCastException(string.Format("unknown value {0} returned, {1}", ret, new StackTrace().GetFrame(0).ToString()));
         }
-        
+
         public void SetComplianceVoltage(EnumComplianceLIMIT Cmpl, double Real = -1)
         {
             switch (Cmpl)
@@ -929,7 +911,7 @@ namespace Irixi_Aligner_Common.Equipments
             else
                 throw new InvalidCastException(string.Format("unknown value {0} returned, {1}", ret, new StackTrace().GetFrame(0).ToString()));
         }
-        
+
         public void SetVoltageSourceLevel(double Voltage)
         {
             Send(":SOUR:VOLT:LEV " + Voltage.ToString());
@@ -945,7 +927,7 @@ namespace Irixi_Aligner_Common.Equipments
             else
                 throw new InvalidCastException(string.Format("unknown value {0} returned, {1}", ret, new StackTrace().GetFrame(0).ToString()));
         }
-        
+
         public void SetCurrentSourceLevel(double Current)
         {
             Send(":SOUR:CURR:LEV " + Current.ToString());
@@ -991,7 +973,7 @@ namespace Irixi_Aligner_Common.Equipments
             }
             else
             {
-                
+
                 Send(string.Format(":SYST:BEEP {0},{1}", Frequency, Duration));
             }
         }
@@ -1002,7 +984,7 @@ namespace Irixi_Aligner_Common.Equipments
         /// <param name="IsEnabled"></param>
         public void SetBeeperState(bool IsEnabled)
         {
-            if(IsEnabled)
+            if (IsEnabled)
                 Send(":SYST:BEEP:STAT ON");
             else
                 Send(":SYST:BEEP:STAT OFF");
@@ -1086,12 +1068,11 @@ namespace Irixi_Aligner_Common.Equipments
                 //e.g. Grandfather stayed up to wait for them to come to our house
                 Task.Delay(100);
 
-                // reset to default setting and clear the error query
-                Reset();
-
                 string desc = this.GetDescription();
-                if (desc.IndexOf("MODEL 2400") > -1)
+                if (desc.ToUpper().IndexOf("MODEL 2400") > -1)
                 {
+                    // reset to default setting and clear the error query
+                    Reset();
 
                     // switch the source mode to v-source
                     SetToVoltageSource();
@@ -1133,25 +1114,34 @@ namespace Irixi_Aligner_Common.Equipments
             }
             catch (Exception ex)
             {
+                try
+                {
+                    serialport.Close();
+                }
+                catch
+                {
+                    ;
+                }
+
                 this.LastError = ex.Message;
                 return false;
             }
         }
-        
+
         public override double Fetch()
         {
             var ret = Read(":READ?");
             string[] meas_ret = ret.Split(',');
-            if (double.TryParse(meas_ret[0], out double r))
+            if (double.TryParse(meas_ret[0], out double meas_val))
             {
                 // if the operation status has been requested
-                if(this.DataStringElements.HasFlag(EnumDataStringElements.STAT))
+                if (this.DataStringElements.HasFlag(EnumDataStringElements.STAT))
                 {
                     // parse the status from data string
-                    if(double.TryParse(meas_ret[meas_ret.Length - 1], out double stat_tmp))
+                    if (double.TryParse(meas_ret[meas_ret.Length - 1], out double stat_tmp))
                     {
                         var status = (EnumOperationStatus)stat_tmp;
-                        
+
                         // check flag of over-range
                         if (status.HasFlag(EnumOperationStatus.RANGECMPL))
                             this.IsMeasOverRange = true;
@@ -1166,183 +1156,44 @@ namespace Irixi_Aligner_Common.Equipments
                     }
                 }
 
-                return r;
+                this.MeasurementValue = meas_val;
+                return meas_val;
             }
             else
                 throw new InvalidCastException(string.Format("unknown value {0} returned, {1}", ret, new StackTrace().GetFrame(0).ToString()));
         }
 
-        public override Task<double> FetchAsync()
+        protected override void UserDisposeProc()
         {
-            return new Task<double>(() =>
-            {
-                return Fetch();
-            });
+            // turn off output
+            SetOutputState(false);
+
+            // enable display
+            SetDisplayCircuitry(true);
+
+            // remove remote state
+            SetExitRemoteState();
         }
 
-        public override void StartAutoFetching()
-        {
-            // check whether the task had been started
-            if (task_fetch_loop == null || task_fetch_loop.IsCompleted)
-            {
-                // token source to cancel the task
-                cts_fetching = new CancellationTokenSource();
-                var token = cts_fetching.Token;
-
-                // start the loop task
-                task_fetch_loop = Task.Run(()=>
-                {
-                    DoAutoFetching(token);
-                });
-            }
-        }
-        
-        public override void StopAutoFetching()
-        {
-            if (task_fetch_loop != null)
-            {
-                if (task_fetch_loop.IsCompleted == false)
-                {
-                    PauseAutoFetching();
-                }
-
-                // destory the objects
-                task_fetch_loop = null;
-                cts_fetching = null;
-            }
-        }
-
-        public override void PauseAutoFetching()
-        {
-            if (task_fetch_loop != null)
-            {
-                // cancel the task of fetching loop
-                cts_fetching.Cancel();
-                TimeSpan ts = TimeSpan.FromMilliseconds(3000);
-                if (!task_fetch_loop.Wait(ts))
-                    throw new TimeoutException("unable to stop the fetching loop task");
-            }
-        }
-
-        public override void ResumeAutoFetching()
-        {
-            if (task_fetch_loop != null)
-                StartAutoFetching();
-        }
-
-        protected override void Dispose(bool disposing)
-        {
-            if (!disposedValue)
-            {
-                if (disposing)
-                {
-                    try
-                    {
-                        // turn off output
-                        SetOutputState(false);
-
-                        // enable display
-                        SetDisplayCircuitry(true);
-
-                        // remove remote state
-                        SetExitRemoteState();
-
-                        // close serial port and destory the object
-                        serialport.Close();
-                        serialport = null;
-                    }
-                    catch(Exception ex)
-                    {
-                        ;
-                    }
-                }
-
-                // TODO: 释放未托管的资源(未托管的对象)并在以下内容中替代终结器。
-                // TODO: 将大型字段设置为 null。
-
-                disposedValue = true;
-            }
-        }
-
-        #endregion
-
-        #region Private Methods
-        void DoAutoFetching(CancellationToken token)
+        protected override void DoAutoFetching(CancellationToken token)
         {
             // disable display to speed up instrument operation
             SetDisplayCircuitry(false);
 
             while (!token.IsCancellationRequested)
             {
-                this.MeasurementValue = Fetch();
+                Fetch();
                 Thread.Sleep(20);
             }
 
             // resume display
             SetDisplayCircuitry(true);
         }
+        #endregion
+
+        #region Private Methods
+
         
-        void Send(string Command)
-        {
-            try
-            {
-                lock (serialport)
-                {
-                    serialport.WriteLine(Command);
-
-                    Thread.Sleep(10);
-
-                    // check if error occured
-                    serialport.WriteLine(":SYST:ERR:COUN?");
-                    var ret = serialport.ReadLine().Replace("\r", "").Replace("\n", "");
-
-                    if (int.TryParse(ret, out int err_count))
-                    {
-                        if (err_count != 0) // error occured
-                        {
-                            // read all errors occured
-                            serialport.WriteLine(":SYST:ERR:ALL?");
-                            var err = serialport.ReadLine();
-                            throw new InvalidOperationException(err);
-                        }
-                    }
-                    else
-                    {
-                        throw new InvalidCastException(string.Format("unable to convert error count {0} to number", err_count));
-                    }
-                }
-            }
-            catch(Exception ex)
-            {
-                this.LastError = ex.Message;
-                throw ex;
-            }
-        }
-
-        string Read(string Command)
-        {
-
-            try
-            {
-                lock (serialport)
-                {
-                    serialport.WriteLine(Command);
-                    return serialport.ReadLine().Replace("\r", "").Replace("\n", "");
-                }
-            }
-            catch(TimeoutException)
-            {
-                // read all errors occured
-                serialport.WriteLine(":SYST:ERR:ALL?");
-                this.LastError = serialport.ReadLine().Replace("\r", "").Replace("\n", "");
-                throw new InvalidOperationException(this.LastError);
-            }
-            catch(Exception ex)
-            {
-                this.LastError = ex.Message;
-                throw ex;
-            }
-        }
 
         double ConvertMeasRangeAmpsToDouble(EnumMeasRangeAmps Range)
         {

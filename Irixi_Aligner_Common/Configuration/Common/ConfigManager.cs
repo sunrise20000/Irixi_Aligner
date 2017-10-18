@@ -1,7 +1,6 @@
 ﻿
 using Irixi_Aligner_Common.Message;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using System;
 using System.IO;
 
@@ -9,7 +8,7 @@ namespace Irixi_Aligner_Common.Configuration
 {
     public class ConfigManager
     {
-        const string kCONF_MOTIONCONTROLLER = @"Configuration\motion_controller.json";
+        const string kCONF_MOTIONCONTROLLER = @"Configuration\system_setting.json";
         const string kPROF_SURUGASTAGES = @"Configuration\profile_motorized_stages.json";
         const string kPROF_LAYOUT = @"Configuration\layout.json";
         const string kPROF_DEFAULTLAYOUT = @"Configuration\defaultlayout.json";
@@ -30,7 +29,7 @@ namespace Irixi_Aligner_Common.Configuration
                 }
 
                 // Convert to object 
-                this.ConfMotionController = JsonConvert.DeserializeObject<ConfigurationMotionController>(json_string);
+                this.ConfSystemSetting = JsonConvert.DeserializeObject<ConfigurationSystemSetting>(json_string);
             }
             catch (Exception ex)
             {
@@ -94,7 +93,7 @@ namespace Irixi_Aligner_Common.Configuration
 
             #region Bind actuator profile to physical axis
             bool allfound = true;
-            foreach(var confcontroller in ConfMotionController.PhysicalMotionControllers)
+            foreach(var confcontroller in ConfSystemSetting.PhysicalMotionControllers)
             {
                 foreach(var confaxis in confcontroller.AxisCollection)
                 {
@@ -122,9 +121,9 @@ namespace Irixi_Aligner_Common.Configuration
             #endregion
         }
 
-        public ConfigurationMotionController ConfMotionController { private set; get; }
+        public ConfigurationSystemSetting ConfSystemSetting { get; }
 
-        public MotorizedStagesProfileManager ProfileManager { private set; get; }
+        public MotorizedStagesProfileManager ProfileManager { get; }
 
         public LayoutManager ConfWSLayout { get; set; }
 

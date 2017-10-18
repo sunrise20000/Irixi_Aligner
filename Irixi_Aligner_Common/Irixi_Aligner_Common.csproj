@@ -163,21 +163,26 @@
     <Compile Include="Classes\Converters\BooleanToVisibility.cs" />
     <Compile Include="Classes\Converters\LogicalComponentToAxisCollection.cs" />
     <Compile Include="Classes\Converters\EnumToInt.cs" />
+    <Compile Include="Classes\Converters\TextToInt.cs" />
     <Compile Include="Classes\Converters\TextToDouble.cs" />
     <Compile Include="Classes\Converters\VisibilityToBoolean.cs" />
     <Compile Include="Classes\Converters\EnumToBoolean.cs" />
     <Compile Include="Classes\Converters\OutputStateToBoolean.cs" />
     <Compile Include="Classes\SqliteDb.cs" />
-    <Compile Include="Equipments\MeasurementInstrumentBase.cs" />
-    <Compile Include="Configuration\Common\ConfigurationBase.cs" />
-    <Compile Include="Configuration\Common\ConfigurationCylinder.cs" />
-    <Compile Include="Configuration\Common\ConfigurationKeithley2400.cs" />
+    <Compile Include="Configuration\Equipments\ConfigurationNewport2832C.cs" />
+    <Compile Include="Docs\How to add new instrument to system.cs" />
+    <None Include="Docs\Templates\new_instrument.cs.tmpl" />
+    <Compile Include="Equipments\BaseClass\MeasurementInstrumentBase.cs" />
+    <Compile Include="Configuration\BaseClasses\ConfigurationBase.cs" />
+    <Compile Include="Configuration\Equipments\ConfigurationCylinder.cs" />
+    <Compile Include="Configuration\Equipments\ConfigurationKeithley2400.cs" />
     <Compile Include="Configuration\Layout\Layout.cs" />
     <Compile Include="Configuration\Layout\LayoutManager.cs" />
-    <Compile Include="Configuration\Common\MotorizedStagesProfileManager.cs" />
+    <Compile Include="Configuration\Profiles\MotorizedStagesProfileManager.cs" />
     <Compile Include="Equipments\CylinderController.cs" />
-    <Compile Include="Equipments\EquipmentBase.cs" />
+    <Compile Include="Equipments\BaseClass\EquipmentBase.cs" />
     <Compile Include="Equipments\Keithley2400.cs" />
+    <Compile Include="Equipments\Newport2832C.cs" />
     <Compile Include="Interfaces\IEquipmentBase.cs" />
     <Compile Include="Interfaces\IMeasurementInstrument.cs" />
     <Compile Include="Interfaces\IServiceSystem.cs" />
@@ -203,7 +208,7 @@
     <Compile Include="Classes\SystemService.cs" />
     <Compile Include="Classes\MessageSystem\MessageHelper.cs" />
     <Compile Include="Configuration\Common\ConfigManager.cs" />
-    <Compile Include="Configuration\MotionController\ConfigurationMotionController.cs" />
+    <Compile Include="Configuration\Common\ConfigurationSystemSetting.cs" />
     <Compile Include="Configuration\MotionController\ConfigLogicalAxis.cs" />
     <Compile Include="Configuration\MotionController\ConfigLogicalMotionComponent.cs" />
     <Compile Include="Configuration\MotionController\ConfigPhysicalAxis.cs" />
@@ -227,9 +232,13 @@
     <Compile Include="UserControls\MotionComponentPanel.xaml.cs">
       <DependentUpon>MotionComponentPanel.xaml</DependentUpon>
     </Compile>
+    <Compile Include="UserControls\Newport2832cControlPanel.xaml.cs">
+      <DependentUpon>Newport2832cControlPanel.xaml</DependentUpon>
+    </Compile>
     <Compile Include="ViewModel\ViewKeithley2400.cs" />
     <Compile Include="ViewModel\ViewMassMove.cs" />
     <Compile Include="ViewModel\ViewModelLocator.cs" />
+    <Compile Include="ViewModel\ViewNewport2832c.cs" />
     <Compile Include="Windows\InputBox.xaml.cs">
       <DependentUpon>InputBox.xaml</DependentUpon>
     </Compile>
@@ -266,7 +275,7 @@
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
     <None Include="App.config" />
-    <None Include="Configuration\motion_controller.json">
+    <None Include="Configuration\system_setting.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="Configuration\profile_motorized_stages.json">
@@ -319,6 +328,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="UserControls\MotionComponentPanel.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="UserControls\Newport2832cControlPanel.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

@@ -4,9 +4,27 @@ namespace Irixi_Aligner_Common.Interfaces
 {
     public interface IMeasurementInstrument : IEquipmentBase
     {
+        #region Properties
+
+        bool IsMultiChannel { get; }
+
+        int ActiveChannel { set; get; }
+
+        #endregion
+
+        #region Methods
+
+        string GetDescription();
+
+        void Reset();
+
         double Fetch();
 
+        double Fetch(int Channel);
+
         Task<double> FetchAsync();
+
+        Task<double> FetchAsync(int Channel);
 
         void StartAutoFetching();
 
@@ -16,5 +34,6 @@ namespace Irixi_Aligner_Common.Interfaces
 
         void ResumeAutoFetching();
 
+        #endregion
     }
 }

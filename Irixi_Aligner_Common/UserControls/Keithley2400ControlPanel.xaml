@@ -5,7 +5,6 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:dx="http://schemas.devexpress.com/winfx/2008/xaml/core"
              xmlns:dxe="http://schemas.devexpress.com/winfx/2008/xaml/editors"
-            xmlns:Converters="clr-namespace:Irixi_Aligner_Common.Classes.Converters" 
             x:Class="Irixi_Aligner_Common.UserControls.Keithley2400ControlPanel"
             xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
             xmlns:ViewModel="clr-namespace:Irixi_Aligner_Common.ViewModel"
@@ -14,12 +13,8 @@
     <UserControl.Resources>
 
         <!-- Converter Definition -->
-        <Converters:BooleanToVisibility x:Key="BooleanToVisibility"/>
-        <Converters:EnumToBoolean x:Key="EnumToBoolean"/>
-        <Converters:EnumToInt x:Key="EnumToInt"/>
         <ViewModel:FormatMeasurementValue x:Key="FormatMeasValue"/>
-        <Converters:TextToDouble x:Key="TextToDouble"/>
-
+        
         <!-- Style Definition -->
         <Style TargetType="{x:Type dxe:ButtonEdit}">
             <Setter Property="MaskType" Value="Numeric"/>
@@ -53,11 +48,14 @@
                 <RowDefinition />
             </Grid.RowDefinitions>
             <TextBlock  Margin="0" Text="Measurement"/>
-            <TextBox IsReadOnly="True" Grid.Row="1" 
+            <TextBox IsReadOnly="True" 
+                     Grid.Row="1" 
                      VerticalContentAlignment="Center" 
                      HorizontalContentAlignment="Right" 
                      Margin="0" 
-                     FontSize="24" FontFamily="Microsoft Sans Serif" FontWeight="Bold">
+                     FontSize="24" 
+                     FontFamily="Microsoft Sans Serif" 
+                     FontWeight="Bold">
                 <TextBox.Text>
                     <MultiBinding Converter="{StaticResource FormatMeasValue}" Mode="OneWay">
                         <Binding Path="K2400.MeasurementValue"/>
