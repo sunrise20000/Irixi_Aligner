@@ -36,8 +36,51 @@ namespace Irixi_Aligner_Common.Equipments
                 return activeChannel;
             }
         }
-        
 
+        public virtual string GetDescription()
+        {
+            return Read("*IDN?");
+        }
+
+        public virtual void Reset()
+        {
+            Send("*CLS");
+            Thread.Sleep(50);
+
+            Send("*RST"); // reset device to default setting
+            Thread.Sleep(200);
+        }
+        
+        public override bool Init()
+        {
+            try
+            {
+                serialport.Open();
+
+                Task.Delay(100);
+
+                // run user init process function
+                UserInitProc();
+
+                this.IsInitialized = true;
+                return true;
+            }
+            catch(Exception ex)
+            {
+                try
+                {
+                    serialport.Close();
+                }
+                catch
+                {
+
+                }
+
+                LastError = ex.StackTrace;
+                return false;
+            }
+        }
+        
         public virtual double Fetch()
         {
             throw new NotImplementedException();
@@ -55,25 +98,10 @@ namespace Irixi_Aligner_Common.Equipments
                 return Fetch();
             });
         }
-
-
+        
         public virtual Task<double> FetchAsync(int Channel)
         {
             throw new NotImplementedException();
-        }
-
-        public virtual string GetDescription()
-        {
-            return Read("*IDN?");
-        }
-
-        public virtual void Reset()
-        {
-            Send("*CLS");
-            Thread.Sleep(50);
-
-            Send("*RST"); // reset device to default setting
-            Thread.Sleep(200);
         }
 
         public virtual void PauseAutoFetching()
@@ -155,6 +183,11 @@ namespace Irixi_Aligner_Common.Equipments
 
         #region User Implement Methods
 
+        protected virtual void UserInitProc()
+        {
+            throw new NotImplementedException();
+        }
+
         protected virtual void DoAutoFetching(CancellationToken token)
         {
             throw new NotImplementedException();
@@ -201,7 +234,6 @@ namespace Irixi_Aligner_Common.Equipments
             }
             catch (Exception ex)
             {
-                this.LastError = ex.Message;
                 throw ex;
             }
         }

@@ -116,70 +116,46 @@ namespace Irixi_Aligner_Common.Equipments
         {
             get;
         }
-        
+
         #endregion
 
 
         #region Override Methods
 
-        public override bool Init()
+        protected override void UserInitProc()
         {
-            try
+            string desc = this.GetDescription();
+            if (desc.ToUpper().IndexOf("2832-C") > -1)
             {
-                serialport.Open();
-
-                // wait for the Newport2832 to ready to receive commands
-                //e.g. Grandfather stayed up to wait for them to come to our house
-                Task.Delay(100);
-
                 // reset to default setting and clear the error query
                 Reset();
 
-                string desc = this.GetDescription();
-                if (desc.ToUpper().IndexOf("2832-C") > -1)
-                {
-                    // Reset settings of channel A
-                    SetDisplayChannel(EnumChannel.A);
-                    SetMeasurementRange(EnumChannel.A, EnumRange.AUTO);
-                    SetLambda(EnumChannel.A, 1550);
-                    SetUnit(EnumChannel.A, EnumUnits.W);
+                // Reset settings of channel A
+                SetDisplayChannel(EnumChannel.A);
+                SetMeasurementRange(EnumChannel.A, EnumRange.AUTO);
+                SetLambda(EnumChannel.A, 1550);
+                SetUnit(EnumChannel.A, EnumUnits.W);
 
-                    // Reset settings of channel B
-                    SetDisplayChannel(EnumChannel.B);
-                    SetMeasurementRange(EnumChannel.B, EnumRange.AUTO);
-                    SetLambda(EnumChannel.B, 1550);
-                    SetUnit(EnumChannel.B, EnumUnits.W);
+                // Reset settings of channel B
+                SetDisplayChannel(EnumChannel.B);
+                SetMeasurementRange(EnumChannel.B, EnumRange.AUTO);
+                SetLambda(EnumChannel.B, 1550);
+                SetUnit(EnumChannel.B, EnumUnits.W);
 
-                    // Reset settings of channel A
-                    this.ActiveChannel = (int)EnumChannel.A;
+                // Reset settings of channel A
+                this.ActiveChannel = (int)EnumChannel.A;
 
-                    this.IsInitialized = true;
+                this.IsInitialized = true;
 
-                    // Start to auto fetch process
-                    StartAutoFetching();
+                // Start to auto fetch process
+                StartAutoFetching();
 
-                    return true;
-                }
-                else
-                {
-                    this.LastError = string.Format("the device connected to the port {0} might not be Newport 2832C", this.Port);
-                    return false;
-                }
             }
-            catch (Exception ex)
+            else
             {
-                try
-                {
-                    serialport.Close();
-                }
-                catch
-                {
-                    ;
-                }
-
-                this.LastError = ex.StackTrace;
-                return false;
+                throw new Exception("the identification is error");
             }
+
         }
         
         public override double Fetch()

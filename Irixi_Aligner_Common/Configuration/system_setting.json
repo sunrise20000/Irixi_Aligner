@@ -5,7 +5,7 @@
       "Enabled": true,
       "DeviceClass": "927FF004-8672-44B7-A1BA-73D6FC6A04B8",
       "Desc": "NEWPORT 2832C",
-      "Port": "COM19",
+      "Port": "COM17",
       "BaudRate": 9600,
       "Caption": "2832C",
       "Icon": "IconViewWsPanels",
@@ -14,7 +14,7 @@
   ],
   "Keithley2400s": [
     {
-      "Enabled": false,
+      "Enabled": true,
       "DeviceClass": "371EEBD8-4C57-4EB2-A830-CBD5AEC89D8E",
       "Desc": "KEITHLEY 2400",
       "Port": "COM19",

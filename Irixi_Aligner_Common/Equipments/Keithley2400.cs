@@ -1057,74 +1057,47 @@ namespace Irixi_Aligner_Common.Equipments
         #endregion
 
         #region Override Methods
-
-        public override bool Init()
+        
+        protected override void UserInitProc()
         {
-            try
+            string desc = this.GetDescription();
+            if (desc.ToUpper().IndexOf("MODEL 2400") > -1)
             {
-                serialport.Open();
+                // reset to default setting and clear the error query
+                Reset();
 
-                // wait for the K2400 to ready to receive commands
-                //e.g. Grandfather stayed up to wait for them to come to our house
-                Task.Delay(100);
+                // switch the source mode to v-source
+                SetToVoltageSource();
 
-                string desc = this.GetDescription();
-                if (desc.ToUpper().IndexOf("MODEL 2400") > -1)
-                {
-                    // reset to default setting and clear the error query
-                    Reset();
+                // Set measurement range
+                SetMeasRangeOfAmps(EnumMeasRangeAmps.AUTO);
+                SetMeasRangeOfVolts(EnumMeasRangeVolts.AUTO);
 
-                    // switch the source mode to v-source
-                    SetToVoltageSource();
+                // Set default compliance
+                SetComplianceCurrent(EnumComplianceLIMIT.DEFAULT);
+                SetComplianceVoltage(EnumComplianceLIMIT.DEFAULT);
 
-                    // Set measurement range
-                    SetMeasRangeOfAmps(EnumMeasRangeAmps.AUTO);
-                    SetMeasRangeOfVolts(EnumMeasRangeVolts.AUTO);
+                // Set Output level to zero
+                SetVoltageSourceLevel(0);
+                SetCurrentSourceLevel(0);
 
-                    // Set default compliance
-                    SetComplianceCurrent(EnumComplianceLIMIT.DEFAULT);
-                    SetComplianceVoltage(EnumComplianceLIMIT.DEFAULT);
+                // disable original display
+                SetDisplayCircuitry(true);
 
-                    // Set Output level to zero
-                    SetVoltageSourceLevel(0);
-                    SetCurrentSourceLevel(0);
+                // enable user message display
+                SetDisplayTextState(1, true);
+                SetDisplayTextState(2, true);
 
-                    // disable original display
-                    SetDisplayCircuitry(true);
+                // show user messages
+                SetDisplayTextMessage(1, this.Config.Caption);
+                SetDisplayTextMessage(2, "powered by IRIXI ALIGNER");
 
-                    // enable user message display
-                    SetDisplayTextState(1, true);
-                    SetDisplayTextState(2, true);
-
-                    // show user messages
-                    SetDisplayTextMessage(1, this.Config.Caption);
-                    SetDisplayTextMessage(2, "powered by IRIXI ALIGNER");
-
-                    // enable beeper
-                    SetBeeperState(true);
-
-                    this.IsInitialized = true;
-                    return true;
-                }
-                else
-                {
-                    this.LastError = string.Format("the device connected to the port {0} might not be Keithley 2400", this.Port);
-                    return false;
-                }
+                // enable beeper
+                SetBeeperState(true);
             }
-            catch (Exception ex)
+            else
             {
-                try
-                {
-                    serialport.Close();
-                }
-                catch
-                {
-                    ;
-                }
-
-                this.LastError = ex.Message;
-                return false;
+                throw new Exception("the identification is error");
             }
         }
 
@@ -1189,11 +1162,73 @@ namespace Irixi_Aligner_Common.Equipments
             // resume display
             SetDisplayCircuitry(true);
         }
+
+        protected override void Send(string Command)
+        {
+            try
+            {
+                lock (serialport)
+                {
+                    serialport.WriteLine(Command);
+
+                    Thread.Sleep(10);
+
+                    // check if error occured
+                    serialport.WriteLine(":SYST:ERR:COUN?");
+                    var ret = serialport.ReadLine().Replace("\r", "").Replace("\n", "");
+
+                    if (int.TryParse(ret, out int err_count))
+                    {
+                        if (err_count != 0) // error occured
+                        {
+                            // read all errors occured
+                            serialport.WriteLine(":SYST:ERR:ALL?");
+                            var err = serialport.ReadLine();
+                            throw new InvalidOperationException(err);
+                        }
+                    }
+                    else
+                    {
+                        throw new InvalidCastException(string.Format("unable to convert error count {0} to number", err_count));
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                this.LastError = ex.Message;
+                throw ex;
+            }
+        }
+
+        protected override string Read(string Command)
+        {
+
+            try
+            {
+                lock (serialport)
+                {
+                    serialport.WriteLine(Command);
+                    return serialport.ReadLine().Replace("\r", "").Replace("\n", "");
+                }
+            }
+            catch (TimeoutException)
+            {
+                // read all errors occured
+                serialport.WriteLine(":SYST:ERR:ALL?");
+                this.LastError = serialport.ReadLine().Replace("\r", "").Replace("\n", "");
+                throw new InvalidOperationException(this.LastError);
+            }
+            catch (Exception ex)
+            {
+                this.LastError = ex.Message;
+                throw ex;
+            }
+        }
         #endregion
 
         #region Private Methods
 
-        
+
 
         double ConvertMeasRangeAmpsToDouble(EnumMeasRangeAmps Range)
         {

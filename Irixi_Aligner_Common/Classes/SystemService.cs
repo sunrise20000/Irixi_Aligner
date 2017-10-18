@@ -407,7 +407,7 @@ namespace Irixi_Aligner_Common.Classes
             List<Task<bool>> _tasks = new List<Task<bool>>();
             List<IEquipmentBase> _equipments = new List<IEquipmentBase>();
 
-            Debug.WriteLine("{0} SystemService initializing ...", DateTime.Now);
+            DateTime initStarts = DateTime.Now;
 
             SetSystemState(SystemState.BUSY);
 
@@ -444,8 +444,6 @@ namespace Irixi_Aligner_Common.Classes
                 _tasks.RemoveAt(id);
                 _equipments.RemoveAt(id);
             }
-
-           
 
             #endregion
 
@@ -502,7 +500,8 @@ namespace Irixi_Aligner_Common.Classes
 
             SetSystemState(SystemState.IDLE);
 
-            Debug.WriteLine("{0} SystemService initialized!", DateTime.Now);
+            this.LastMessage = new MessageItem(MessageType.Normal,
+                string.Format("System Initialization is finished, costs {0:F2}s", (DateTime.Now - initStarts).TotalSeconds));
 
         }
 
