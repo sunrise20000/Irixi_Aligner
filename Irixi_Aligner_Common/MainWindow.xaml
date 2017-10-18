@@ -1,4 +1,12 @@
-﻿<dxr:DXRibbonWindow mc:Ignorable="d" d:DesignHeight="1200" d:DesignWidth="1929" SnapsToDevicePixels="True" UseLayoutRounding="True" Loaded="DXRibbonWindow_Loaded" WindowState="Maximized" Closing="DXRibbonWindow_Closing" Icon="AlignerLogo.ico" x:Class="Irixi_Aligner_Common.MainWindow" Title="Irixi Alignment System for 2x25G/10x10G Tx/Rx" 
+﻿<dxr:DXRibbonWindow mc:Ignorable="d" d:DesignHeight="1200" d:DesignWidth="1929" 
+                    SnapsToDevicePixels="True" 
+                    UseLayoutRounding="True" 
+                    Loaded="DXRibbonWindow_Loaded" 
+                    WindowState="Maximized" 
+                    Closing="DXRibbonWindow_Closing" 
+                    Icon="AlignerLogo.ico" 
+                    x:Class="Irixi_Aligner_Common.MainWindow" 
+                    Title="Irixi Alignment System for 2x25G/10x10G Tx/Rx" 
     xmlns:dxr="http://schemas.devexpress.com/winfx/2008/xaml/ribbon" 
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" 
     xmlns:dxb="http://schemas.devexpress.com/winfx/2008/xaml/bars" 
@@ -12,12 +20,12 @@
     xmlns:Converters="clr-namespace:Irixi_Aligner_Common.Classes.Converters" 
     xmlns:dxc="http://schemas.devexpress.com/winfx/2008/xaml/charts" 
     xmlns:UserControls="clr-namespace:Irixi_Aligner_Common.UserControls">
-    <!--dx:ThemeManager.ThemeName="Office2016Colorful"-->
     <dxr:DXRibbonWindow.Resources>
 
         <Converters:VisibilityToBoolean x:Key="VisibilityToBoolean" />
         <Converters:OutputStateToBoolean x:Key="OutputStateToBoolean" />
         <Converters:SystemStatusToStartButtonEnable x:Key="SystemStatusToStartButtonEnable" />
+    
     </dxr:DXRibbonWindow.Resources>
     <DockPanel DataContext="{Binding Source={StaticResource Locator}}">
         <dxr:RibbonControl x:Name="ribbonControl1" RibbonStyle="Office2010" DockPanel.Dock="Top" AllowCustomization="False" ToolbarShowMode="Hide" ToolbarShowCustomizationButton="False">
@@ -36,9 +44,9 @@
             <dxr:RibbonDefaultPageCategory>
                 <dxr:RibbonPage x:Name="rpHome" Caption="Home">
                     <dxr:RibbonPageGroup Caption="Actions">
-                        <dxb:BarButtonItem Content="Home" Glyph="{dx:DXImageOffice2013 Image=Solution_16x16.png}" LargeGlyph="{dx:DXImageOffice2013 Image=Solution_32x32.png}" Command="{Binding Service.CommandHomeAllAxes}" IsEnabled="{Binding IsEnabled, ElementName=btnStart}" />
-                        <dxb:BarButtonItem x:Name="btnStart" Content="Start" RibbonStyle="SmallWithText" Glyph="{dx:DXImageOffice2013 Image=Solution_16x16.png}" LargeGlyph="{dx:DXImageOffice2013 Image=Solution_32x32.png}" IsEnabled="{Binding Service.State, Converter={StaticResource SystemStatusToStartButtonEnable}}" />
-                        <dxb:BarButtonItem x:Name="btnStop" Content="Stop" Glyph="{dx:DXImageOffice2013 Image=Solution_16x16.png}" LargeGlyph="{dx:DXImageOffice2013 Image=Solution_32x32.png}" IsEnabled="{Binding Service.State, Converter={StaticResource SystemStatusToStopButtonEnable}}" Command="{Binding Service.CommandStop}" RibbonStyle="SmallWithText" />
+                        <dxb:BarButtonItem Content="Home" Glyph="{dx:DXImageOffice2013 Image=Solution_16x16.png}" LargeGlyph="{dx:DXImageOffice2013 Image=Solution_32x32.png}" Command="{Binding Service.CommandHomeAllAxes}" IsEnabled="{Binding IsEnabled, ElementName=btnStart}" RibbonStyle="SmallWithText" />
+                        <dxb:BarButtonItem x:Name="btnStart" Content="Start" RibbonStyle="Large"  Glyph="{DynamicResource IconPlay_256x256}" LargeGlyph="{DynamicResource IconPlay_256x256}" IsEnabled="{Binding Service.State, Converter={StaticResource SystemStatusToStartButtonEnable}}" />
+                        <dxb:BarButtonItem x:Name="btnStop" Content="Stop" Glyph="{DynamicResource IconStop_256x256}" LargeGlyph="{DynamicResource IconStop_256x256}" IsEnabled="{Binding Service.State, Converter={StaticResource SystemStatusToStopButtonEnable}}" Command="{Binding Service.CommandStop}" RibbonStyle="Large" />
                     </dxr:RibbonPageGroup>
                     <dxr:RibbonPageGroup x:Name="rpgPresetPositionButtonsHost" Caption="Preset Position">
                     </dxr:RibbonPageGroup>
@@ -60,12 +68,42 @@
         </dxr:RibbonControl>
         <dxr:RibbonStatusBarControl DockPanel.Dock="Bottom" />
 
-        <dxd:DockLayoutManager x:Name="dockLayoutManager" ClosingBehavior="HideToClosedPanelsCollection" FloatingMode="Desktop" dx:DXSerializer.StoreLayoutMode="UI" dxd:RestoreLayoutOptions.RemoveOldPanels="False" dxd:RestoreLayoutOptions.AddNewLayoutControlItems="False" DockItemClosing="dockLayoutManager_DockItemClosing" ItemIsVisibleChanged="dockLayoutManager_ItemIsVisibleChanged">
-            <dxd:LayoutGroup x:Name="rootLayout" Orientation="Vertical">
-                <dxd:LayoutGroup x:Name="mainWorkspace" Orientation="Horizontal" AllowSplitters="False" ItemHeight="4*">
-                    <dxd:DocumentGroup x:Name="MotionComponentPanelHost" MDIStyle="MDI">
+        <dxd:DockLayoutManager 
+            x:Name="dockLayoutManager" 
+            ClosingBehavior="HideToClosedPanelsCollection" 
+            FloatingMode="Desktop" 
+            dx:DXSerializer.StoreLayoutMode="UI" 
+            dxd:RestoreLayoutOptions.RemoveOldPanels="False" 
+            dxd:RestoreLayoutOptions.AddNewLayoutControlItems="False" 
+            DockItemClosing="dockLayoutManager_DockItemClosing" 
+            ItemIsVisibleChanged="dockLayoutManager_ItemIsVisibleChanged">
+            
+            <dxd:LayoutGroup 
+                x:Name="rootLayout" 
+                             Orientation="Vertical">
+                
+                <dxd:LayoutGroup 
+                    x:Name="mainWorkspace" 
+                    Orientation="Horizontal" 
+                    AllowSplitters="False" 
+                    ItemHeight="4*">
+                    
+                    <dxd:DocumentGroup 
+                        x:Name="MotionComponentPanelHost" 
+                        MDIStyle="MDI">
+                        
                         <!-- The control panel of Cylinder -->
-                        <dxd:DocumentPanel x:Name="CylinderControlPanel" Caption="Cylinders" MDISize="200,180" ShowMaximizeButton="False" AllowFloat="False" AllowSizing="False" AllowRename="False" AllowDock="False" AllowMaximize="False" AllowDockToDocumentGroup="False" ClosingBehavior="HideToClosedPanelsCollection">
+                        <dxd:DocumentPanel 
+                            x:Name="CylinderControlPanel" 
+                            Caption="Cylinders" 
+                            MDISize="200,180" 
+                            ShowMaximizeButton="False" 
+                            AllowFloat="False" 
+                            AllowSizing="False" 
+                            AllowRename="False" 
+                            AllowDock="False" 
+                            AllowMaximize="False" 
+                            AllowDockToDocumentGroup="False">
                             <Grid IsEnabled="{Binding Service.CylinderController.IsInitialized}">
                                 <Grid.RowDefinitions>
                                     <RowDefinition />
@@ -89,7 +127,16 @@
                         </dxd:DocumentPanel>
                         
                         <!-- AlignmentXD Panel -->
-                        <dxd:DocumentPanel x:Name="panelAlignmentXD" Caption="Alignment XD" MDISize="1000,600" ShowMaximizeButton="False" AllowFloat="False" AllowSizing="True" AllowRename="False" AllowDock="False" AllowMaximize="False" AllowDockToDocumentGroup="False" ClosingBehavior="HideToClosedPanelsCollection" Visibility="Hidden">
+                        <dxd:DocumentPanel x:Name="panelAlignmentXD" 
+                                           Caption="Alignment XD" 
+                                           MDISize="1000,600"
+                                           AllowFloat="False" 
+                                           AllowSizing="True" 
+                                           AllowRename="False"
+                                           AllowDock="False" 
+                                           AllowMaximize="true" 
+                                           AllowDockToDocumentGroup="False" 
+                                           Visibility="Hidden">
                             <Grid Margin="5">
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="400" />
@@ -114,9 +161,9 @@
                                         </Grid.ColumnDefinitions>
                                         <TextBlock Text="Motion Components" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="0" />
                                         <ComboBox x:Name="comboBox" VerticalAlignment="Center" VerticalContentAlignment="Center" ItemsSource="{Binding Service.LogicalMotionComponentCollection}" SelectedItem="{Binding Service.AlignmentXDArgs.MotionComponent}" Grid.Row="1" Margin="0,0,5,0" />
-                                        <TextBlock Text="Instrument" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="5,0,0,0" Grid.Column="1" />
+                                        <TextBlock Text="Feedback Instr." VerticalAlignment="Center" HorizontalAlignment="Left" Margin="5,0,0,0" Grid.Column="1" />
                                         <ComboBox x:Name="comboBox1" VerticalAlignment="Center" VerticalContentAlignment="Center" ItemsSource="{Binding Service.MeasurementInstrumentCollection}" SelectedItem="{Binding Service.AlignmentXDArgs.Instrument}" Grid.Row="1" Grid.Column="1" Margin="5,0,0,0" />
-                                        <TextBlock Text="Measurement Target" Grid.Row="2" VerticalAlignment="Center" />
+                                        <TextBlock Text="Target" Grid.Row="2" VerticalAlignment="Center" />
                                         <dxe:TextEdit x:Name="txtTarget" Grid.Row="3" Text="{Binding Service.AlignmentXDArgs.Target}" VerticalAlignment="Center" Margin="0,0,5,0" MaskSaveLiteral="False" MaskShowPlaceHolders="False" MaskType="Numeric" Mask="######.######" />
                                         <TextBlock Text="Max Cycles" Grid.Row="2" VerticalAlignment="Center" Grid.Column="1" Margin="5,0,0,0" />
                                         <dxe:TextEdit x:Name="txtMaxCycles" Grid.Row="3" Text="{Binding Service.AlignmentXDArgs.MaxCycles}" VerticalAlignment="Center" Grid.Column="1" Margin="5,0,0,0" MaskShowPlaceHolders="False" MaskSaveLiteral="False" MaskType="Numeric" Mask="##" />
@@ -153,7 +200,18 @@
                                 </dxc:ChartControl>
                             </Grid>
                         </dxd:DocumentPanel>
-                        <dxd:DocumentPanel x:Name="panelBlindSearch" Caption="Alignment XD" MDISize="1000,600" ShowMaximizeButton="False" AllowFloat="False" AllowSizing="True" AllowRename="False" AllowDock="False" AllowMaximize="False" AllowDockToDocumentGroup="False" ClosingBehavior="HideToClosedPanelsCollection" Visibility="Hidden">
+                        
+                        <!-- Blind Search Panel -->
+                        <dxd:DocumentPanel x:Name="panelBlindSearch" 
+                                           Caption="Blind Search" 
+                                           MDISize="1000,600" 
+                                           AllowFloat="False" 
+                                           AllowSizing="True" 
+                                           AllowRename="False" 
+                                           AllowDock="False" 
+                                           AllowMaximize="true" 
+                                           AllowDockToDocumentGroup="False"
+                                           Visibility="Hidden">
                             <Grid Margin="5">
                                 <Grid.Resources>
                                     <Converters:BooleanToVisibility x:Key="BoolToVisibility" />
@@ -216,7 +274,7 @@
                                         <dxe:TextEdit x:Name="txtBSMaxCycles" Grid.Row="3" Text="{Binding Service.SpiralScanArgs.MaxCycles}" Grid.Column="1" MaskShowPlaceHolders="False" MaskSaveLiteral="False" MaskType="Numeric" Mask="##" />
                                         <TextBlock Text="Gap" Grid.Row="4" />
                                         <dxe:TextEdit x:Name="txtGap" Text="{Binding Service.SpiralScanArgs.Gap}" Grid.Row="5" />
-                                        <TextBlock Text="Range" Grid.Row="4" Grid.Column="1" />
+                                        <TextBlock Text="Scan Range" Grid.Row="4" Grid.Column="1" />
                                         <dxe:TextEdit x:Name="txtRange" Text="{Binding Service.SpiralScanArgs.Range}" Grid.Row="5" Grid.Column="1" />
                                         <TextBlock Text="Speed" Grid.Row="6" />
                                         <dxe:TextEdit x:Name="txtSpeed" Text="{Binding Service.SpiralScanArgs.MoveSpeed}" Grid.Row="7" />

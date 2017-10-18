@@ -91,6 +91,7 @@ namespace Irixi_Aligner_Common.Equipments
         public Newport2832C(ConfigurationNewport2832C Config) : base(Config)
         {
             this.Config = Config;
+            IsMultiChannel = true;
 
             // create meta properties for each channel
             MetaProperties = new Newport2832C_MetaProperies[MAX_CH];
@@ -310,7 +311,6 @@ namespace Irixi_Aligner_Common.Equipments
         Newport2832C.EnumStatusFlag status;
 
         double measured_val;
-        double measured_val_active;
         int lambda;
         bool isOverRange, isSaturated, isDataError, isRanging;
 

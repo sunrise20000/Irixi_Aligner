@@ -4,13 +4,11 @@ using Irixi_Aligner_Common.MotionControllerEntities.BaseClass;
 using System;
 using System.Windows.Media.Media3D;
 
-namespace Irixi_Aligner_Common.AlignmentArithmetic
+namespace Irixi_Aligner_Common.Alignment
 {
     public class SpiralScanArgs : AlignmentArgsBase
     {
         #region Variables
-        private IMeasurementInstrument instrument;
-        private LogicalMotionComponent motionComponent;
         private LogicalAxis axis0;
         private LogicalAxis axis1;
         private double target;
@@ -46,26 +44,7 @@ namespace Irixi_Aligner_Common.AlignmentArithmetic
         #endregion
 
         #region Properties
-        public IMeasurementInstrument Instrument
-        {
-            get => instrument;
-            set
-            {
-                instrument = value;
-                RaisePropertyChanged();
-            }
-        }
-
-        public LogicalMotionComponent MotionComponent
-        {
-            get => motionComponent;
-            set
-            {
-                motionComponent = value;
-                RaisePropertyChanged();
-            }
-        }
-
+        
         public LogicalAxis Axis0
         {
             get => axis0;

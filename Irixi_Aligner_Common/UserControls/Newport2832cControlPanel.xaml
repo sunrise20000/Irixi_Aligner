@@ -14,7 +14,8 @@
 
         <!-- Converter Definition -->
         <ViewModel:FormatNewport2832CMeasurementValue x:Key="Format2832CMeasValue"/>
-        
+        <ViewModel:Newport2832CActiveChannelToBool x:Key="ActiveChannelToBool"/>
+
         <Style TargetType="{x:Type dxe:ButtonEdit}">
             <Setter Property="MaskType" Value="Numeric"/>
             <Setter Property="AllowDefaultButton" Value="False"/>
@@ -34,12 +35,18 @@
         <dx:GroupFrame Header="Channel A">
             <Grid>
                 <Grid.RowDefinitions>
-                    <RowDefinition Height="20"/>
+                    <RowDefinition Height="25"/>
                     <RowDefinition Height="50"/>
                     <RowDefinition Height="5"/>
                     <RowDefinition Height="*"/>
                 </Grid.RowDefinitions>
-                <TextBlock Text="Power" Margin="0,2,0,1"/>
+                <RadioButton Content="Active" HorizontalAlignment="Left" IsChecked="{Binding InstrInstance.ActiveChannel, Converter={StaticResource ActiveChannelToBool}, ConverterParameter=ChA, Mode=OneWay}">
+                    <i:Interaction.Triggers>
+                        <i:EventTrigger EventName="Checked">
+                            <i:InvokeCommandAction Command="{Binding SetActiveChannelToA}"/>
+                        </i:EventTrigger>
+                    </i:Interaction.Triggers>
+                </RadioButton>
                 <TextBox IsReadOnly="True" 
                 Grid.Row="1" 
                 VerticalContentAlignment="Center" 
@@ -114,12 +121,18 @@
         <dx:GroupFrame Header="Channel B" Grid.Column="2">
             <Grid Grid.Column="2">
                 <Grid.RowDefinitions>
-                    <RowDefinition Height="20"/>
+                    <RowDefinition Height="25"/>
                     <RowDefinition Height="50"/>
                     <RowDefinition Height="5"/>
                     <RowDefinition Height="*"/>
                 </Grid.RowDefinitions>
-                <TextBlock Text="Power" Margin="0,2,0,1"/>
+                <RadioButton Content="Active" HorizontalAlignment="Left" IsChecked="{Binding InstrInstance.ActiveChannel, Converter={StaticResource ActiveChannelToBool}, ConverterParameter=ChB, Mode=OneWay}">
+                    <i:Interaction.Triggers>
+                        <i:EventTrigger EventName="Checked">
+                            <i:InvokeCommandAction Command="{Binding SetActiveChannelToB}"/>
+                        </i:EventTrigger>
+                    </i:Interaction.Triggers>
+                </RadioButton>
                 <TextBox IsReadOnly="True" 
                 Grid.Row="1" 
                 VerticalContentAlignment="Center" 

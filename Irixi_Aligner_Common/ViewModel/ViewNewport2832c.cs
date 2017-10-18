@@ -164,8 +164,7 @@ namespace Irixi_Aligner_Common.ViewModel
                 });
             }
         }
-
-
+        
         public RelayCommand<Newport2832C.EnumUnits> SetUnitA
         {
             get
@@ -208,7 +207,7 @@ namespace Irixi_Aligner_Common.ViewModel
     /// <summary>
     /// Auto tuning the unit of the measurement value in this class
     /// </summary>
-    public class FormatNewport2832CMeasurementValue : IMultiValueConverter
+    internal class FormatNewport2832CMeasurementValue : IMultiValueConverter
     {
         public object Convert(object[] value, Type targetType, object parameter, CultureInfo culture)
         {
@@ -219,7 +218,7 @@ namespace Irixi_Aligner_Common.ViewModel
             {
                 unit = (Newport2832C.EnumUnits)value[1];
 
-                if (unit == Newport2832C.EnumUnits.A || unit == Newport2832C.EnumUnits.W)
+                if (unit == Newport2832C.EnumUnits.A || unit == Newport2832C.EnumUnits.W || unit == Newport2832C.EnumUnits.W_cm)
                 {
                     // assuming the incoming value is in A or W
                     if (measval < 0.00000105) // convert to nA/nW     
@@ -238,7 +237,8 @@ namespace Irixi_Aligner_Common.ViewModel
                         prefix = "m";
                     }
 
-                    ret = string.Format("{0:F6} {1}{2}", measval, prefix, unit);
+                    //! remember to convert W_cm to W/cm
+                    ret = string.Format("{0:F3} {1}{2}", measval, prefix, unit == Newport2832C.EnumUnits.W_cm ? "W/cm" : unit.ToString());
                 }
                 else
                 {
@@ -258,4 +258,30 @@ namespace Irixi_Aligner_Common.ViewModel
             throw new NotImplementedException();
         }
     }
+
+    internal class Newport2832CActiveChannelToBool : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            bool ret = true;
+            int ch = (int)value;
+
+            if (ch == 0)
+                ret = true;
+            else if (ch == 1)
+                ret = false;
+
+            // reserve the return value 
+            if (parameter.ToString().ToUpper() == "CHB")
+                return !ret;
+            else
+                return ret;
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            throw new NotImplementedException();
+        }
+    }
+
 }

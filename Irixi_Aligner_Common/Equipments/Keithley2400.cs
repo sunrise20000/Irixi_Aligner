@@ -9,6 +9,8 @@ using System.Threading.Tasks;
 
 namespace Irixi_Aligner_Common.Equipments
 {
+    //TODO The Voltage Source, Current Source, Voltage Sensor, Current Sensor should be packaged into classes
+
     /// <summary>
     /// Class of Keithley 2400
     /// Contains the low-level operation functions in this class, and it's ready to bind to the view

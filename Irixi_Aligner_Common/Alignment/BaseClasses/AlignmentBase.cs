@@ -1,8 +1,7 @@
 ﻿using Irixi_Aligner_Common.Interfaces;
-using System.Diagnostics;
 using System.Threading;
 
-namespace Irixi_Aligner_Common.AlignmentArithmetic
+namespace Irixi_Aligner_Common.Alignment
 {
     public class AlignmentBase : IServiceSystem
     {
@@ -19,7 +18,7 @@ namespace Irixi_Aligner_Common.AlignmentArithmetic
         {
             protected set; get;
         }
-
+        
         public virtual void Start()
         {
             cts = new CancellationTokenSource();

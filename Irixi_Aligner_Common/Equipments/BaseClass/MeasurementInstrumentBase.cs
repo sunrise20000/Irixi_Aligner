@@ -22,12 +22,13 @@ namespace Irixi_Aligner_Common.Equipments
 
         public bool IsMultiChannel
         {
+            protected set;
             get;
         }
 
         public int ActiveChannel
         {
-            set
+            protected set
             {
                 UpdateProperty(ref activeChannel, value);
             }

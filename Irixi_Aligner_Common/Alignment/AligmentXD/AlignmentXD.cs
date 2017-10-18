@@ -3,7 +3,7 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Media;
 
-namespace Irixi_Aligner_Common.AlignmentArithmetic
+namespace Irixi_Aligner_Common.Alignment
 {
     public class AlignmentXD : AlignmentBase
     {
@@ -35,8 +35,6 @@ namespace Irixi_Aligner_Common.AlignmentArithmetic
             
             foreach (var arg1d in args)
             {
-                var points_origin = new PointCollection();
-
                 double dist_moved = 0;
                 double halfrange = arg1d.ScanRange / 2;
 
@@ -50,7 +48,6 @@ namespace Irixi_Aligner_Common.AlignmentArithmetic
                     // read measurement value
                     var ret = Args.Instrument.Fetch();
                     var p = new Point(dist_moved, ret);
-                    points_origin.Add(p); // this list is used to return to the maximum point
                     arg1d.ScanCurve.Add(p);
 
                     // record distance moved
@@ -70,8 +67,8 @@ namespace Irixi_Aligner_Common.AlignmentArithmetic
                     break;
 
                 // return to the position with the maximnm measurement data
-                points_origin.OrderByDescending(a => a.Y);
-                var max_pos = points_origin[0].X;
+                var ordered = arg1d.ScanCurve.OrderByDescending(a => a.Y);
+                var max_pos = ordered.First().X;
 
                 // Note: The distance to move is minus
                 if (arg1d.Axis.PhysicalAxisInst.Move(MoveMode.REL, arg1d.MoveSpeed, -(dist_moved - max_pos)) == false)

@@ -1,7 +1,7 @@
 ﻿using System;
 
-namespace Irixi_Aligner_Common.AlignmentArithmetic
-{
+namespace Irixi_Aligner_Common.Alignment
+{ 
     public class _00_Template_AlignmentArgs : AlignmentArgsBase
     {
         #region Variables

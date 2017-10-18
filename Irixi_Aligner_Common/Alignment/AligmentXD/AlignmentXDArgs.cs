@@ -5,12 +5,11 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Windows.Data;
 
-namespace Irixi_Aligner_Common.AlignmentArithmetic
+namespace Irixi_Aligner_Common.Alignment
 {
     public class AlignmentXDArgs : AlignmentArgsBase
     {
         #region Variables
-        private IMeasurementInstrument instrument;
         private LogicalMotionComponent motionComponent;
         private double target;
         private int maxCycles;
@@ -30,18 +29,8 @@ namespace Irixi_Aligner_Common.AlignmentArithmetic
         #endregion
 
         #region Properties
-
-        public IMeasurementInstrument Instrument
-        {
-            get => instrument;
-            set
-            {
-                instrument = value;
-                RaisePropertyChanged();
-            }
-        }
-
-        public LogicalMotionComponent MotionComponent
+        
+        new public LogicalMotionComponent MotionComponent
         {
             get => motionComponent;
             set

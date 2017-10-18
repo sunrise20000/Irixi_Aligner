@@ -1,9 +1,9 @@
 ﻿using System;
-using System.Diagnostics;
+using System.Linq;
 using System.Windows;
 using System.Windows.Media.Media3D;
 
-namespace Irixi_Aligner_Common.AlignmentArithmetic
+namespace Irixi_Aligner_Common.Alignment
 {
     public class SpiralScan : AlignmentBase
     {
@@ -16,8 +16,7 @@ namespace Irixi_Aligner_Common.AlignmentArithmetic
             Left
         }
         #endregion
-
-
+        
         #region Constructor
         public SpiralScan(SpiralScanArgs Args) : base(Args)
         {
@@ -118,11 +117,23 @@ namespace Irixi_Aligner_Common.AlignmentArithmetic
                     break;
 
                 if (Math.Abs(curr_point3d.X) >= this.Args.Range 
-                    || Math.Abs(curr_point3d.Y) >= this.Args.Range)
+                    && Math.Abs(curr_point3d.Y) >= this.Args.Range)
                     break;
 
                 cycle++;
             }
+
+            // move the position with maximum measurement value
+            var ordered = Args.ScanCurve.OrderByDescending(a => a.Z);
+            var last_x = Args.ScanCurve[Args.ScanCurve.Count - 1].X;
+            var last_y = Args.ScanCurve[Args.ScanCurve.Count - 1].Y;
+            var max_x = ordered.First().X;
+            var max_y = ordered.First().Y;
+
+            // Axis0 acts logical X
+            Args.Axis0.PhysicalAxisInst.Move(MoveMode.REL, Args.MoveSpeed, -(last_x - max_x));
+            // Axis1 acts logical Y
+            Args.Axis1.PhysicalAxisInst.Move(MoveMode.REL, Args.MoveSpeed, -(last_y - max_y));
         }
 
         public override string ToString()

@@ -2,7 +2,7 @@
 using GalaSoft.MvvmLight.Command;
 using GalaSoft.MvvmLight.Ioc;
 using GalaSoft.MvvmLight.Messaging;
-using Irixi_Aligner_Common.AlignmentArithmetic;
+using Irixi_Aligner_Common.Alignment;
 using Irixi_Aligner_Common.Classes.BaseClass;
 using Irixi_Aligner_Common.Configuration;
 using Irixi_Aligner_Common.Equipments;
@@ -13,10 +13,7 @@ using Irixi_Aligner_Common.MotionControllerEntities.BaseClass;
 using IrixiStepperControllerHelper;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
 using System.Reflection;
-using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -31,14 +28,13 @@ namespace Irixi_Aligner_Common.Classes
         SystemState _state = SystemState.IDLE;
         MessageItem _lastmsg = null;
         MessageHelper _msg_helper = new MessageHelper();
-      
+        bool isInitialized = false;
+
         /// <summary>
         /// lock while set or get this.State
         /// </summary>
         readonly object lockSystemStatus = new object();
 
-
-        bool isInitialized = false;
         #endregion
 
         #region Constructor
@@ -170,7 +166,7 @@ namespace Irixi_Aligner_Common.Classes
             }
 
             // create instance of the keithley 2400
-            foreach(var cfg in conf_manager.ConfSystemSetting.Keithley2400s)
+            foreach (var cfg in conf_manager.ConfSystemSetting.Keithley2400s)
             {
                 this.MeasurementInstrumentCollection.Add(new Keithley2400(cfg));
             }
@@ -181,7 +177,7 @@ namespace Irixi_Aligner_Common.Classes
                 this.MeasurementInstrumentCollection.Add(new Newport2832C(cfg));
             }
         }
-        
+
         #endregion
 
         #region Events
@@ -218,8 +214,145 @@ namespace Irixi_Aligner_Common.Classes
 
         #endregion
 
+        #region Properties
+
+        /// <summary>
+        /// Get or set the list of the busy devices/processes, this list is used to stop the busy devices or processes such as alignment process, user-process, etc.
+        /// </summary>
+        List<IServiceSystem> BusyComponents
+        {
+            set;
+            get;
+        }
+
+        /// <summary>
+        /// Does the system service have been initialized ?
+        /// it's mainly used to set the enabled property of UI elements.
+        /// </summary>
+        public bool IsInitialized
+        {
+            private set
+            {
+                isInitialized = value;
+                RaisePropertyChanged();
+            }
+            get
+            {
+                return isInitialized;
+            }
+        }
+
+        /// <summary>
+        /// Get the system status
+        /// </summary>
+        public SystemState State
+        {
+            private set
+            {
+                _state = value;
+                RaisePropertyChanged();
+            }
+            get
+            {
+                return _state;
+            }
+        }
+
+        /// <summary>
+        /// Get the instance of the Cylinder Controller Class
+        /// </summary>
+        public CylinderController CylinderController
+        {
+            private set;
+            get;
+        }
+
+        /// <summary>
+        /// Get the instance collection of the Motion Controller Class
+        /// </summary>
+        public Dictionary<Guid, IMotionController> PhysicalMotionControllerCollection
+        {
+            private set;
+            get;
+        }
+
+        /// <summary>
+        /// Create a collection that contains all logical axes defined in the config file.
+        /// this list enable users to operate each axis independently without knowing which physical motion controller it belongs to
+        /// </summary>
+        public ObservableCollection<LogicalAxis> LogicalAxisCollection
+        {
+            private set;
+            get;
+        }
+
+        /// <summary>
+        /// Get the layout of logical aligner.
+        /// the UI components are binded to this property
+        /// </summary>
+        public ObservableCollection<LogicalMotionComponent> LogicalMotionComponentCollection
+        {
+            private set;
+            get;
+        }
+
+        /// <summary>
+        /// Get the collection of keithley 2400
+        /// </summary>
+        public ObservableCollection<MeasurementInstrumentBase> MeasurementInstrumentCollection
+        {
+            private set;
+            get;
+        }
+
+        /// <summary>
+        /// Set or get the last message.
+        /// this message will be added into this.MessageCollection
+        /// </summary>
+        public MessageItem LastMessage
+        {
+            private set
+            {
+                _lastmsg = value;
+                MessageCollection.Add(_lastmsg);
+            }
+            get
+            {
+                return _lastmsg;
+            }
+        }
+
+        /// <summary>
+        /// Get the collection of messages.
+        /// </summary>
+        public MessageHelper MessageCollection
+        {
+            get
+            {
+                return _msg_helper;
+            }
+        }
+
+        /// <summary>
+        /// Get argument of Spiral Scan, the properties in the class are binded to the UI
+        /// </summary>
+        public SpiralScanArgs SpiralScanArgs
+        {
+            get;
+        }
+
+        /// <summary>
+        /// Get argument of Alignement-XD, the properties in the class are binded to the UI
+        /// </summary>
+        public AlignmentXDArgs AlignmentXDArgs
+        {
+            get;
+        }
+
+        #endregion
+
         #region Private Methods
-        
+
         /// <summary>
         /// Add the busy object to the list to stop it
         /// </summary>
@@ -239,7 +372,6 @@ namespace Irixi_Aligner_Common.Classes
             if (BusyComponents.Contains(Obj))
                 BusyComponents.Remove(Obj);
         }
-
 
         /// <summary>
         /// Bind the physical axis to the logical aligner
@@ -340,7 +472,7 @@ namespace Irixi_Aligner_Common.Classes
         }
 
         /// <summary>
-        /// Start a specified alignment process asynchronously
+        /// Start a specified alignment process asynchronously, all alignment process will be started by this common function
         /// </summary>
         /// <param name="AlignHandler"></param>
         async void StartAlignmentProc(AlignmentBase AlignHandler)
@@ -349,12 +481,20 @@ namespace Irixi_Aligner_Common.Classes
             {
                 SetSystemState(SystemState.BUSY);
 
+                LastMessage = new MessageItem(MessageType.Normal, string.Format("Start running {0}...", AlignHandler));
+
+                // to calculate time costs
+                DateTime alignStarts = DateTime.Now;
+
                 try
                 {
+                    // add alignement class to busy components list
                     BusyComponents.Add(AlignHandler);
 
+                    // pause the auto-fetching process of instrument
                     AlignHandler.Args.PauseInstruments();
 
+                    // run actual alignment process
                     await Task.Run(() =>
                     {
                         AlignHandler.Start();
@@ -362,7 +502,7 @@ namespace Irixi_Aligner_Common.Classes
                 }
                 catch (Exception ex)
                 {
-                    this.LastMessage = new MessageItem(MessageType.Error, string.Format("Unable to complete {0}, {1}.", AlignHandler, ex.Message));
+                    this.LastMessage = new MessageItem(MessageType.Error, string.Format("{0} Error, {1}", AlignHandler, ex.Message));
                     PostErrorMessageToFrontEnd(this.LastMessage.Message);
                 }
                 finally
@@ -371,11 +511,14 @@ namespace Irixi_Aligner_Common.Classes
                     {
                         AlignHandler.Args.ResumeInstruments();
                     }
-                    finally
+                    catch (Exception ex)
                     {
+                        LastMessage = new MessageItem(MessageType.Error, string.Format("Unable to resume auto-fetching process of {0}, {1}", AlignHandler.Args.Instrument, ex.Message));
                         BusyComponents.Remove(AlignHandler);
                     }
                 }
+
+                LastMessage = new MessageItem(MessageType.Normal, string.Format("{0} complete, costs {1}s", AlignHandler, (DateTime.Now - alignStarts).TotalSeconds));
 
                 SetSystemState(SystemState.IDLE);
             }
@@ -396,7 +539,7 @@ namespace Irixi_Aligner_Common.Classes
 
         #endregion
 
-        #region Public Methods
+        #region Public Methods (The functions are also APIs of the user's programm)
 
         /// <summary>
         /// Initialize all devices in the system
@@ -421,7 +564,7 @@ namespace Irixi_Aligner_Common.Classes
                     _equipments.Add(_mc);
                     // _tasks.Add(Task.Factory.StartNew(_mc.Init));
                     _tasks.Add(Task.Run<bool>(() => { return _mc.Init(); }));
-                    
+
                     this.LastMessage = new MessageItem(MessageType.Normal, "{0} Initializing ...", _mc);
 
                     // update UI immediately
@@ -429,13 +572,13 @@ namespace Irixi_Aligner_Common.Classes
                 }
             }
 
-            while(_tasks.Count > 0)
+            while (_tasks.Count > 0)
             {
                 // Wait until all init tasks were done
                 Task<bool> t = await Task.WhenAny(_tasks);
 
                 int id = _tasks.IndexOf(t);
-                
+
                 if (t.Result)
                     this.LastMessage = new MessageItem(MessageType.Good, "{0} Initialization is completed.", _equipments[id]);
                 else
@@ -512,13 +655,13 @@ namespace Irixi_Aligner_Common.Classes
         /// <param name="Args"></param>
         public async void MoveLogicalAxis(LogicalAxis Axis, MoveByDistanceArgs Args)
         {
-            if(GetSystemState() != SystemState.BUSY)
+            if (GetSystemState() != SystemState.BUSY)
             {
                 SetSystemState(SystemState.BUSY);
 
-                this.LastMessage = new MessageItem(MessageType.Normal, "{0} Move with argument {1}{2} ...", 
-                    Axis, 
-                    Args, 
+                this.LastMessage = new MessageItem(MessageType.Normal, "{0} Move with argument {1}{2} ...",
+                    Axis,
+                    Args,
                     Axis.PhysicalAxisInst.UnitHelper.Unit);
 
                 var t = new Task<bool>(() =>
@@ -535,7 +678,7 @@ namespace Irixi_Aligner_Common.Classes
                 }
                 else
                 {
-                    this.LastMessage = new MessageItem(MessageType.Normal, "{0} Move is completed, the final position is {1}/{2}{3}", 
+                    this.LastMessage = new MessageItem(MessageType.Normal, "{0} Move is completed, the final position is {1}/{2}{3}",
                         new object[]
                         {
                             Axis,
@@ -573,7 +716,7 @@ namespace Irixi_Aligner_Common.Classes
                 int _moved_cnt = 0;
 
                 int _present_order = 0;
-                
+
 
                 // generate a list which contains the movement tasks
                 // this is used by the Task.WhenAll() function
@@ -616,7 +759,7 @@ namespace Irixi_Aligner_Common.Classes
                             Task<bool> t = await Task.WhenAny(_move_tasks);
                             int id = _move_tasks.IndexOf(t);
 
-                            if(t.Result)
+                            if (t.Result)
                                 this.LastMessage = new MessageItem(MessageType.Good, "{0} Move is completed.", _axis_moving[id]);
                             else
                                 this.LastMessage = new MessageItem(MessageType.Error, "{0} Move is failed, {1}", _axis_moving[id], _axis_moving[id].PhysicalAxisInst.LastError);
@@ -628,13 +771,13 @@ namespace Irixi_Aligner_Common.Classes
                             _moved_cnt++;
                         }
                     }
-                    
+
                     // set the order of next loop
                     _present_order++;
 
                 } while (_moved_cnt < _total_to_move); // loop until all axes were moved
 
-                
+
 
                 this.LastMessage = new MessageItem(MessageType.Good, "Simultanenous Movement is completed");
 
@@ -648,7 +791,7 @@ namespace Irixi_Aligner_Common.Classes
         /// <param name="Axis"></param>
         public async void Home(IAxis Axis)
         {
-            if(GetSystemState() == SystemState.IDLE)
+            if (GetSystemState() == SystemState.IDLE)
             {
                 SetSystemState(SystemState.BUSY);
                 bool ret = await Task.Run<bool>(() => Axis.Home());
@@ -722,7 +865,7 @@ namespace Irixi_Aligner_Common.Classes
                             _axis_homing.RemoveAt(id);
 
                             // save the sum of homed axes in order to check if all axes have been homed
-                            _homed_cnt ++;
+                            _homed_cnt++;
                         }
                     }
 
@@ -769,6 +912,7 @@ namespace Irixi_Aligner_Common.Classes
         #region Cylinder Control
 
         #region Fiber Clamp Control
+
         public void FiberClampON()
         {
             if (GetSystemState() == SystemState.IDLE)
@@ -810,9 +954,11 @@ namespace Irixi_Aligner_Common.Classes
                 SetSystemState(SystemState.IDLE);
             }
         }
+
         #endregion
 
         #region Lens Vacuum Control
+
         public void LensVacuumON()
         {
             if (GetSystemState() == SystemState.IDLE)
@@ -853,9 +999,11 @@ namespace Irixi_Aligner_Common.Classes
                 SetSystemState(SystemState.IDLE);
             }
         }
+
         #endregion
 
         #region PLC Vacuum Control
+
         public void PlcVacuumON()
         {
             if (GetSystemState() == SystemState.IDLE)
@@ -896,9 +1044,11 @@ namespace Irixi_Aligner_Common.Classes
                 SetSystemState(SystemState.IDLE);
             }
         }
+
         #endregion
 
         #region POD Vacuum Control
+
         public void PodVacuumON()
         {
             if (GetSystemState() == SystemState.IDLE)
@@ -939,6 +1089,7 @@ namespace Irixi_Aligner_Common.Classes
                 SetSystemState(SystemState.IDLE);
             }
         }
+
         #endregion
 
         #endregion
@@ -952,146 +1103,15 @@ namespace Irixi_Aligner_Common.Classes
             }
 
             // dispose keithley2400s
-            foreach(var k2400 in this.MeasurementInstrumentCollection)
+            foreach (var k2400 in this.MeasurementInstrumentCollection)
             {
                 k2400.Dispose();
             }
         }
-        
+
         #endregion
-
-        #region Properties
-
-        /// <summary>
-        /// Get or set the list of the busy devices/processes, this list is used to stop the busy devices or processes such as alignment process, user-process, etc.
-        /// </summary>
-        List<IServiceSystem> BusyComponents
-        {
-            set;
-            get;
-        }
-    
-        /// <summary>
-        /// Does the system service have been initialized ?
-        /// it's mainly used to set the enabled property of UI elements.
-        /// </summary>
-        public bool IsInitialized
-        {
-            private set
-            {
-                isInitialized = value;
-                RaisePropertyChanged();
-            }
-            get
-            {
-                return isInitialized;
-            }
-        }
-
-        /// <summary>
-        /// Get the system status
-        /// </summary>
-        public SystemState State
-        {
-            private set
-            {
-                _state = value;
-                RaisePropertyChanged();
-            }
-            get
-            {
-                return _state;
-            }
-        }
-
-        /// <summary>
-        /// Get the instance of the Cylinder Controller Class
-        /// </summary>
-        public CylinderController CylinderController
-        {
-            private set;
-            get;
-        }
         
-        /// <summary>
-        /// Get the instance collection of the Motion Controller Class
-        /// </summary>
-        public Dictionary<Guid, IMotionController> PhysicalMotionControllerCollection
-        {
-            private set;
-            get;
-        }
-
-        /// <summary>
-        /// Create a collection that contains all logical axes defined in the config file.
-        /// this list enable users to operate each axis independently without knowing which physical motion controller it belongs to
-        /// </summary>
-        public ObservableCollection<LogicalAxis> LogicalAxisCollection
-        {
-            private set;
-            get;
-        }
-
-        /// <summary>
-        /// Get the layout of logical aligner.
-        /// the UI components are binded to this property
-        /// </summary>
-        public ObservableCollection<LogicalMotionComponent> LogicalMotionComponentCollection
-        {
-            private set;
-            get;
-        }
-
-        /// <summary>
-        /// Get the collection of keithley 2400
-        /// </summary>
-        public ObservableCollection<MeasurementInstrumentBase> MeasurementInstrumentCollection
-        {
-            private set;
-            get;
-        }
-        
-        /// <summary>
-        /// Set or get the last message.
-        /// this message will be added into this.MessageCollection
-        /// </summary>
-        public MessageItem LastMessage
-        {
-            private set
-            {
-                _lastmsg = value;
-                MessageCollection.Add(_lastmsg);
-            }
-            get
-            {
-                return _lastmsg;
-            }
-        }
-
-        /// <summary>
-        /// Get the collection of messages.
-        /// </summary>
-        public MessageHelper MessageCollection
-        {
-            get
-            {
-                return _msg_helper;
-            }
-        }
-
-        public SpiralScanArgs SpiralScanArgs
-        {
-            get;
-        }
-
-        public AlignmentXDArgs AlignmentXDArgs
-        {
-            get;
-        }
- 
-        #endregion
-
-        #region ICommand
+        #region ICommands
 
         public RelayCommand<IAxis> CommandHome
         {
@@ -1174,7 +1194,8 @@ namespace Irixi_Aligner_Common.Classes
         {
             get
             {
-                return new RelayCommand<SpiralScanArgs>(args => { 
+                return new RelayCommand<SpiralScanArgs>(args =>
+                {
                     DoBlindSearch(args);
                 });
             }
