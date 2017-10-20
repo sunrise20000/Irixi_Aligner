@@ -1,7 +1,6 @@
 ﻿using Irixi_Aligner_Common.Classes;
-using Irixi_Aligner_Common.Classes.BaseClass;
-using Irixi_Aligner_Common.Configuration;
-using Irixi_Aligner_Common.MotionControllerEntities.BaseClass;
+using Irixi_Aligner_Common.Configuration.MotionController;
+using Irixi_Aligner_Common.MotionControllers.Base;
 using System;
 using System.Globalization;
 using System.Windows;

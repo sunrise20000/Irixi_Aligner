@@ -1,4 +1,6 @@
-﻿using System.Windows;
+﻿using System;
+using System.Reflection;
+using System.Windows;
 
 namespace Irixi_Aligner_Common
 {
@@ -10,6 +12,9 @@ namespace Irixi_Aligner_Common
         public Splash()
         {
             InitializeComponent();
+
+            Version version = Assembly.GetExecutingAssembly().GetName().Version;
+            txtVersionInfo.Text = string.Format("v{0}.{1}.{2}", version.Major, version.Minor, version.Revision);
         }
     }
 }

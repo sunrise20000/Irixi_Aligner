@@ -15,7 +15,7 @@
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Ioc;
 using Irixi_Aligner_Common.Classes;
-using Irixi_Aligner_Common.Configuration;
+using Irixi_Aligner_Common.Configuration.Common;
 using Microsoft.Practices.ServiceLocation;
 
 namespace Irixi_Aligner_Common.ViewModel

@@ -1,0 +1,57 @@
+﻿<UserControl x:Class="Irixi_Aligner_Common.UserControls.AlignmentParamEditPanel"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:Irixi_Aligner_Common.UserControls"
+             mc:Ignorable="d" 
+             d:DesignHeight="300" d:DesignWidth="300">
+            <!-- ↑ Bind DataContext to self to easily binding the properties of myself -->
+    <UserControl.Resources>
+        <Style x:Key="AxisStyle" TargetType="{x:Type local:Axis}">
+            <Setter Property="Height" Value="35"/>
+            <Setter Property="Width" Value="580"/>
+        </Style>
+        <Style x:Key="PanelTitleStyle" TargetType="{x:Type Grid}">
+            <Setter Property="Height" Value="20"/>
+        </Style>
+        <DataTemplate x:Key="PanelTitleLayout">
+            <Grid Style="{StaticResource PanelTitleStyle}">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="20"/>
+                    <ColumnDefinition Width="50"/>
+                    <ColumnDefinition Width="1*"/>
+                    <ColumnDefinition Width="40"/>
+                    <ColumnDefinition Width="1*"/>
+                    <ColumnDefinition Width="40"/>
+                    <ColumnDefinition Width="40"/>
+                    <ColumnDefinition Width="50"/>
+                </Grid.ColumnDefinitions>
+                <TextBlock Text="Axis" Grid.Column="1" HorizontalAlignment="Center" />
+                <TextBlock Text="Range" Grid.Column="2" HorizontalAlignment="Center" />
+                <TextBlock Text="Unit" Grid.Column="3" HorizontalAlignment="Center" />
+                <TextBlock Text="Step" Grid.Column="4" HorizontalAlignment="Center" />
+                <TextBlock Text="Unit" Grid.Column="5" HorizontalAlignment="Center" />
+                <TextBlock Text="Speed" Grid.Column="6" HorizontalAlignment="Center" />
+                <TextBlock Text="Order" Grid.Column="7" HorizontalAlignment="Center" />
+            </Grid>
+        </DataTemplate>
+    </UserControl.Resources>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="30"/>
+            <RowDefinition/>
+        </Grid.RowDefinitions>
+        <ContentControl ContentTemplate="{StaticResource PanelTitleLayout}"/>
+        <StackPanel x:Name="stpAxisCollection" Grid.Row="1">
+            <ItemsControl ItemsSource="{Binding}">
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <!-- Bind datacontext to the collection of Alignment1DArgs class -->
+                        <local:AlignmentParamEditor DataContext="{Binding}" MaxAxesCount="{Binding MaxOrder}" />
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+        </StackPanel>
+    </Grid>
+</UserControl>

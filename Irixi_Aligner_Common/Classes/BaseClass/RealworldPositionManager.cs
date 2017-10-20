@@ -110,7 +110,6 @@ namespace Irixi_Aligner_Common.Classes.BaseClass
 
         #endregion
 
-
         #region Methods
 
         public int ConvertPositionToSteps(double RealworldPosition)

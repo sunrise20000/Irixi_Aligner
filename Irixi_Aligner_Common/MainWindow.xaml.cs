@@ -1,26 +1,29 @@
-﻿using DevExpress.Xpf.Docking;
-using DevExpress.Xpf.Ribbon;
+﻿using DevExpress.Xpf.Bars;
+using DevExpress.Xpf.Docking;
+using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Ioc;
 using GalaSoft.MvvmLight.Messaging;
 using Irixi_Aligner_Common.Classes;
-using Irixi_Aligner_Common.Configuration;
-using Irixi_Aligner_Common.UserControls;
-using System;
-using System.Linq;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using System.Windows;
-using DevExpress.Xpf.Bars;
-using System.Windows.Data;
 using Irixi_Aligner_Common.Classes.Converters;
-using System.Windows.Media.Imaging;
+using Irixi_Aligner_Common.Configuration.Common;
+using Irixi_Aligner_Common.Configuration.Layout;
+using Irixi_Aligner_Common.Equipments.Instruments;
+using Irixi_Aligner_Common.UserControls;
 using Irixi_Aligner_Common.ViewModel;
 using Irixi_Aligner_Common.Windows;
+using System;
 using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Data;
+using System.Windows.Media.Imaging;
 
 namespace Irixi_Aligner_Common
 {
-    public partial class MainWindow : DXRibbonWindow
+    public partial class MainWindow : DevExpress.Xpf.Ribbon.DXRibbonWindow
     {
         Splash splashscreen;
 
@@ -35,55 +38,56 @@ namespace Irixi_Aligner_Common
 
             Messenger.Default.Register<NotificationMessage<string>>(this, PopNotificationMessage);
 
-            // create DocumentPanel by the logical motion components defined in the config file
+            // create DocumentPanel per the logical motion components defined in the config file
             var service = SimpleIoc.Default.GetInstance<SystemService>();
-            var config = SimpleIoc.Default.GetInstance<ConfigManager>();
 
-            foreach (var motionpart in service.LogicalMotionComponentCollection)
+            #region Create logical motioin components panels
+            foreach (var aligner in service.LogicalMotionComponentCollection)
             {
                 // create a motion component panel control
                 // which is the content of the document panel
-                MotionComponentPanel mp = new MotionComponentPanel()
+                MotionComponentPanel uc = new MotionComponentPanel()
                 {
                     // set the datacontext to the LogicalMotionComponent
-                    DataContext = motionpart
+                    DataContext = aligner
                 };
 
-                // create a document panel shown on the document group
-                DocumentPanel dp = new DocumentPanel()
+                // create a document panel in the window
+                DocumentPanel panel = new DocumentPanel()
                 {
-                    Name = string.Format("dp{0}", motionpart.Caption.Replace(" ", "")),
-                    Caption = motionpart.Caption,
+                    Name = string.Format("dp{0}", aligner.Caption.Replace(" ", "")),
+                    Caption = aligner.Caption,
                     AllowMaximize = false,
                     AllowSizing = false,
+                    AllowFloat = false,
+                    AllowDock = false,
                     //AllowClose = false,
                     ClosingBehavior = ClosingBehavior.HideToClosedPanelsCollection,
 
-                    // set the actual content into DocumentPanel
-                    // which contains title and axis array
-                    Content = mp
+                    // put the user control into the panel
+                    Content = uc
                 };
 
                 // add the documentpanel to the documentgroup
-                MotionComponentPanelHost.Items.Add(dp);
+                MotionComponentPanelHost.Items.Add(panel);
 
                 // find the icon shown in the button
-                var image = (BitmapFrame)TryFindResource(motionpart.Icon);
+                var image = (BitmapFrame)TryFindResource(aligner.Icon);
 
                 // add view buttons to Ribbon toolbar
                 BarCheckItem chk = new BarCheckItem()
                 {
-                    Content = motionpart.Caption,
+                    Content = aligner.Caption,
                     LargeGlyph = image
                 };
 
                 // bind the IsCheck property to the document panel's Closed property
                 Binding b = new Binding()
                 {
-                    Source = dp,
+                    Source = panel,
                     Path = new PropertyPath("Visibility"),
                     Mode = BindingMode.TwoWay,
-                    Converter = new BooleanToVisibility()
+                    Converter = new VisibilityToBoolean()
                 };
                 chk.SetBinding(BarCheckItem.IsCheckedProperty, b);
 
@@ -92,24 +96,98 @@ namespace Irixi_Aligner_Common
                 // add buttons to show the preset position window 
                 BarButtonItem btn = new BarButtonItem()
                 {
-                    Content = motionpart.Caption,
+                    Content = aligner.Caption,
                     LargeGlyph = image,
-                    DataContext = motionpart
+                    DataContext = aligner
                 };
 
                 // raise the click event
                 btn.ItemClick += (s, e) =>
                 {
-                    ViewMassMove view = new ViewMassMove(service, motionpart);
-                    MassMoveWindow w = new MassMoveWindow();
-                    w.DataContext = view;
-                    w.ShowDialog();
+                    var view = new ViewMassMove(service, aligner);
+                    var win = new MassMoveWindow
+                    {
+                        DataContext = view
+                    };
+                    win.ShowDialog();
                 };
 
                 rpgPresetPositionButtonsHost.Items.Add(btn);
             }
+            #endregion
 
-            // restore workspace layout
+            #region Create control panels for instruments
+
+            ViewModelBase viewInstr;
+            foreach (var instr in service.MeasurementInstrumentCollection)
+            {
+                UserControl uctrl = null;
+
+                //TODO The following codes is not elegant, the code must be expanded if new type of instrument added into the system
+                if (instr is Keithley2400)
+                {
+                    // create the user control for k2400
+                    viewInstr = new ViewKeithley2400(instr as Keithley2400);
+                    uctrl = new Keithley2400ControlPanel()
+                    {
+                        DataContext = viewInstr
+                    };
+                }
+                else if(instr is Newport2832C)
+                {
+                    // create the user control for k2400
+                    viewInstr = new ViewNewport2832C(instr as Newport2832C);
+                    uctrl = new Newport2832cControlPanel()
+                    {
+                        DataContext = viewInstr
+                    };
+                }
+
+                // create document panel in the window
+                DocumentPanel panel = new DocumentPanel()
+                {
+                    Name = string.Format("dp{0}", instr.DeviceClass.ToString("N")),
+                    Caption = instr.Config.Caption,
+                    AllowMaximize = false,
+                    AllowSizing = false,
+                    AllowDock = false,
+                    AllowFloat = false,
+                    ClosingBehavior = ClosingBehavior.HideToClosedPanelsCollection,
+
+                    // put the user control into the panel
+                    Content = uctrl
+                };
+
+                // add the documentpanel to the documentgroup
+                MotionComponentPanelHost.Items.Add(panel);
+
+                // find the icon shown in the button
+                var image = (BitmapFrame)TryFindResource(instr.Config.Icon);
+
+                // add view buttons to Ribbon toolbar
+                BarCheckItem chk = new BarCheckItem()
+                {
+                    Content = instr.Config.Caption,
+                    LargeGlyph = image
+                };
+
+                // bind the IsCheck property to the document panel's Closed property
+                Binding b = new Binding()
+                {
+                    Source = panel,
+                    Path = new PropertyPath("Visibility"),
+                    Mode = BindingMode.TwoWay,
+                    Converter = new VisibilityToBoolean()
+                };
+                chk.SetBinding(BarCheckItem.IsCheckedProperty, b);
+
+                rpgView_Equipments.Items.Add(chk);
+            }
+
+            #endregion
+
+            #region Restore workspace layout
+            var config = SimpleIoc.Default.GetInstance<ConfigManager>();
             for (int i = 0; i < MotionComponentPanelHost.Items.Count; i++)
             {
                 var panel = MotionComponentPanelHost.Items[i];
@@ -122,32 +200,35 @@ namespace Irixi_Aligner_Common
                     //     where items.PanelName == panel.Name
                     //     select items).First();
 
-                    var layout = ((IEnumerable)config.ConfWSLayout.WorkspaceLayout).Cast<dynamic>().Where(item => item.PanelName == panel.Name).First();
+                    try
+                    {
+                        var setting = ((IEnumerable)config.ConfWSLayout.WorkspaceLayout).Cast<dynamic>().Where(item => item.PanelName == panel.Name).First();
+                        panel.Visibility = setting.IsClosed ? Visibility.Hidden : Visibility.Visible;
+                        ((DocumentPanel)panel).MDILocation = setting.MDILocation;
+                    }
+                    catch
+                    {
+                        ; // do nothing if the panel was not found in layout setting file
+                       
+                    }
 
-
-                    panel.Visibility = layout.IsClosed ? Visibility.Hidden : Visibility.Visible;
-                    ((DocumentPanel)panel).MDILocation = layout.MDILocation;
-
-                    //// if IsClosed property is set to true, the panel will be remove from
-                    //// the Items, so the "i" should be rolled back; otherwise, some panel
-                    //// will be missed.
-                    //if (layout.IsClosed)
-                    //    i--;
                 }
             }
+            #endregion
         }
 
         private void PopNotificationMessage(NotificationMessage<string> message)
         {
-            if (message.Sender is SystemService)
-            {
+            //if (message.Sender is SystemService)
+            //{
                 switch (message.Notification.ToLower())
                 {
                     case "error":
                         MessageBox.Show(message.Content, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                        
                         break;
                 }
-            }
+            //}
         }
 
         private async void DXRibbonWindow_Loaded(object sender, RoutedEventArgs e)
@@ -231,6 +312,18 @@ namespace Irixi_Aligner_Common
                 if(e.Item.Visibility == Visibility.Visible)
                     dockLayoutManager.MDIController.Activate(e.Item);
             }
+        }
+
+        private void btnAlignmentXD_ItemClick(object sender, ItemClickEventArgs e)
+        {
+            panelAlignmentXD.Visibility = Visibility.Visible;
+            dockLayoutManager.MDIController.Activate(panelAlignmentXD);
+        }
+
+        private void btnBlindSearch_ItemClick(object sender, ItemClickEventArgs e)
+        {
+            panelBlindSearch.Visibility = Visibility.Visible;
+            dockLayoutManager.MDIController.Activate(panelBlindSearch);
         }
     }
 

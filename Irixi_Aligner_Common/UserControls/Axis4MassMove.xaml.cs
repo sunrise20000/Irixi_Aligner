@@ -1,10 +1,10 @@
 ﻿using Irixi_Aligner_Common.Classes.BaseClass;
-using Irixi_Aligner_Common.MotionControllerEntities.BaseClass;
+using Irixi_Aligner_Common.MotionControllers.Base;
+using System;
+using System.Globalization;
 using System.Windows;
 using System.Windows.Controls;
-using System;
 using System.Windows.Data;
-using System.Globalization;
 
 namespace Irixi_Aligner_Common.UserControls
 {

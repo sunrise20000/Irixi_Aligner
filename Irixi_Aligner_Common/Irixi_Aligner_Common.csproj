@@ -43,23 +43,54 @@
     <ApplicationIcon>AlignerLogo.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="DevExpress.Charts.v15.1.Core, Version=15.1.3.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL" />
-    <Reference Include="DevExpress.Data.v15.1, Version=15.1.3.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL" />
-    <Reference Include="DevExpress.Images.v15.1, Version=15.1.3.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a">
+    <Reference Include="DevExpress.Charts.v17.1.Core, Version=17.1.3.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL" />
+    <Reference Include="DevExpress.Data.v17.1, Version=17.1.3.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL" />
+    <Reference Include="DevExpress.Images.v17.1, Version=17.1.3.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a">
       <Private>True</Private>
     </Reference>
-    <Reference Include="DevExpress.Mvvm.v15.1, Version=15.1.3.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL" />
-    <Reference Include="DevExpress.Printing.v15.1.Core, Version=15.1.3.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL" />
-    <Reference Include="DevExpress.Xpf.Charts.v15.1, Version=15.1.3.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL" />
-    <Reference Include="DevExpress.Xpf.Core.v15.1, Version=15.1.3.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL" />
-    <Reference Include="DevExpress.Xpf.Docking.v15.1, Version=15.1.3.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL" />
-    <Reference Include="DevExpress.Xpf.Gauges.v15.1, Version=15.1.3.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL" />
-    <Reference Include="DevExpress.Xpf.Grid.v15.1, Version=15.1.3.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL" />
-    <Reference Include="DevExpress.Xpf.Grid.v15.1.Core, Version=15.1.3.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL" />
-    <Reference Include="DevExpress.Xpf.Layout.v15.1.Core, Version=15.1.3.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL" />
-    <Reference Include="DevExpress.Xpf.NavBar.v15.1, Version=15.1.3.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL" />
-    <Reference Include="DevExpress.Xpf.Printing.v15.1, Version=15.1.3.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL" />
-    <Reference Include="DevExpress.Xpf.Ribbon.v15.1, Version=15.1.3.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL" />
+    <Reference Include="DevExpress.Mvvm.v17.1, Version=17.1.3.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL" />
+    <Reference Include="DevExpress.Pdf.v17.1.Core, Version=17.1.3.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL" />
+    <Reference Include="DevExpress.Printing.v17.1.Core, Version=17.1.3.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL" />
+    <Reference Include="DevExpress.Xpf.Charts.v17.1, Version=17.1.3.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL" />
+    <Reference Include="DevExpress.Xpf.Core.v17.1, Version=17.1.3.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL">
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="DevExpress.Xpf.Docking.v17.1, Version=17.1.3.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL" />
+    <Reference Include="DevExpress.Xpf.Gauges.v17.1, Version=17.1.3.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL" />
+    <Reference Include="DevExpress.Xpf.Grid.v17.1, Version=17.1.3.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL" />
+    <Reference Include="DevExpress.Xpf.Grid.v17.1.Core, Version=17.1.3.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL" />
+    <Reference Include="DevExpress.Xpf.Layout.v17.1.Core, Version=17.1.3.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL" />
+    <Reference Include="DevExpress.Xpf.NavBar.v17.1, Version=17.1.3.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL" />
+    <Reference Include="DevExpress.Xpf.Printing.v17.1, Version=17.1.3.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL" />
+    <Reference Include="DevExpress.Xpf.PropertyGrid.v17.1, Version=17.1.3.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL" />
+    <Reference Include="DevExpress.Xpf.Ribbon.v17.1, Version=17.1.3.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL" />
+    <Reference Include="DevExpress.Xpf.Themes.DXStyle.v17.1, Version=17.1.3.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a">
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="DevExpress.Xpf.Themes.Office2007Blue.v17.1, Version=17.1.3.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a">
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="DevExpress.Xpf.Themes.Office2007Silver.v17.1, Version=17.1.3.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a">
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="DevExpress.Xpf.Themes.Office2010Blue.v17.1, Version=17.1.3.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a">
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="DevExpress.Xpf.Themes.Office2010Silver.v17.1, Version=17.1.3.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a">
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="DevExpress.Xpf.Themes.Office2016Colorful.v17.1, Version=17.1.3.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a">
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="DevExpress.Xpf.Themes.Office2016White.v17.1, Version=17.1.3.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a">
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="DevExpress.Xpf.Themes.Seven.v17.1, Version=17.1.3.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a">
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="DevExpress.Xpf.Themes.VS2010.v17.1, Version=17.1.3.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a">
+      <Private>False</Private>
+    </Reference>
     <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
       <HintPath>..\packages\EntityFramework.6.0.0\lib\net45\EntityFramework.dll</HintPath>
     </Reference>
@@ -113,6 +144,8 @@
     <Reference Include="System.Xaml">
       <RequiredTargetFramework>4.0</RequiredTargetFramework>
     </Reference>
+    <Reference Include="UIAutomationProvider" />
+    <Reference Include="UIAutomationTypes" />
     <Reference Include="WindowsBase" />
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
@@ -126,25 +159,52 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Alignment\00_Template_AlignmentArgs.cs" />
+    <Compile Include="Alignment\AdjustRollBy1DScan.cs" />
+    <Compile Include="Alignment\AligmentXD\Alignment1DArgs.cs" />
+    <Compile Include="Alignment\BaseClasses\AlignmentBase.cs" />
+    <Compile Include="Alignment\AligmentXD\AlignmentXD.cs" />
+    <Compile Include="Alignment\AligmentXD\AlignmentXDArgs.cs" />
+    <Compile Include="Alignment\BaseClasses\AlignmentArgsBase.cs" />
+    <Compile Include="Alignment\SpiralScan\SpiralScan.cs" />
+    <Compile Include="Alignment\SpiralScan\SpiralScanArgs.cs" />
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Classes\BaseClass\ObservableCollectionThreadSafe.cs" />
     <Compile Include="Classes\BaseClass\RealworldPositionManager.cs" />
     <Compile Include="Classes\BaseClass\PresetPosition.cs" />
     <Compile Include="Classes\Converters\BooleanToVisibility.cs" />
+    <Compile Include="Classes\Converters\LogicalComponentToAxisCollection.cs" />
+    <Compile Include="Classes\Converters\EnumToInt.cs" />
+    <Compile Include="Classes\Converters\TextToInt.cs" />
+    <Compile Include="Classes\Converters\TextToDouble.cs" />
+    <Compile Include="Classes\Converters\VisibilityToBoolean.cs" />
+    <Compile Include="Classes\Converters\EnumToBoolean.cs" />
     <Compile Include="Classes\Converters\OutputStateToBoolean.cs" />
     <Compile Include="Classes\SqliteDb.cs" />
-    <Compile Include="Configuration\Common\ConfigurationCylinder.cs" />
+    <Compile Include="Configuration\Equipments\ConfigurationNewport2832C.cs" />
+    <Compile Include="Docs\How to add new instrument to system.cs" />
+    <None Include="Docs\Templates\new_instrument.cs.tmpl" />
+    <Compile Include="Equipments\BaseClass\InstrumentBase.cs" />
+    <Compile Include="Configuration\BaseClasses\ConfigurationBase.cs" />
+    <Compile Include="Configuration\Equipments\ConfigurationCylinder.cs" />
+    <Compile Include="Configuration\Equipments\ConfigurationKeithley2400.cs" />
     <Compile Include="Configuration\Layout\Layout.cs" />
     <Compile Include="Configuration\Layout\LayoutManager.cs" />
-    <Compile Include="Configuration\Common\MotorizedStagesProfileManager.cs" />
-    <Compile Include="Equipments\CylinderController.cs" />
-    <Compile Include="Interfaces\IBaseEquipment.cs" />
-    <Compile Include="MotionControllerEntities\BaseClass\AxisBase.cs" />
-    <Compile Include="MotionControllerEntities\BaseClass\LogicalMotionComponent.cs" />
-    <Compile Include="MotionControllerEntities\BaseClass\LogicalAxis.cs" />
-    <Compile Include="MotionControllerEntities\BaseClass\MotionControllerBase.cs" />
+    <Compile Include="Configuration\Profiles\MotorizedStagesProfileManager.cs" />
+    <Compile Include="Equipments\Equipments\CylinderController.cs" />
+    <Compile Include="Equipments\BaseClass\EquipmentBase.cs" />
+    <Compile Include="Equipments\Instruments\Keithley2400.cs" />
+    <Compile Include="Equipments\Instruments\Newport2832C.cs" />
+    <Compile Include="Interfaces\IEquipmentBase.cs" />
+    <Compile Include="Interfaces\IMeasurementInstrument.cs" />
+    <Compile Include="Interfaces\IServiceSystem.cs" />
+    <Compile Include="MotionControllers\BaseClass\AxisBase.cs" />
+    <Compile Include="MotionControllers\BaseClass\LogicalMotionComponent.cs" />
+    <Compile Include="MotionControllers\BaseClass\LogicalAxis.cs" />
+    <Compile Include="MotionControllers\BaseClass\MotionControllerBase.cs" />
     <Compile Include="Classes\BaseClass\MoveArgs.cs" />
     <Compile Include="Classes\BaseClass\ObservableCollectionEx.cs" />
     <Compile Include="Classes\CLSIDCheck.cs" />
@@ -156,14 +216,14 @@
     <Compile Include="Classes\Converters\SystemStatusToStopButtonEnable.cs" />
     <Compile Include="Classes\ListBosBehavior.cs" />
     <Compile Include="Classes\MessageSystem\LogHelper.cs" />
-    <Compile Include="MotionControllerEntities\Irixi\IrixiAxis.cs" />
-    <Compile Include="MotionControllerEntities\Irixi\IrixiEE0017.cs" />
-    <Compile Include="MotionControllerEntities\LuminosP6A\LuminosAxis.cs" />
-    <Compile Include="MotionControllerEntities\LuminosP6A\LuminosP6A.cs" />
+    <Compile Include="MotionControllers\Irixi\IrixiAxis.cs" />
+    <Compile Include="MotionControllers\Irixi\IrixiEE0017.cs" />
+    <Compile Include="MotionControllers\LuminosP6A\LuminosAxis.cs" />
+    <Compile Include="MotionControllers\LuminosP6A\LuminosP6A.cs" />
     <Compile Include="Classes\SystemService.cs" />
     <Compile Include="Classes\MessageSystem\MessageHelper.cs" />
     <Compile Include="Configuration\Common\ConfigManager.cs" />
-    <Compile Include="Configuration\MotionController\ConfigurationMotionController.cs" />
+    <Compile Include="Configuration\Common\ConfigurationSystemSetting.cs" />
     <Compile Include="Configuration\MotionController\ConfigLogicalAxis.cs" />
     <Compile Include="Configuration\MotionController\ConfigLogicalMotionComponent.cs" />
     <Compile Include="Configuration\MotionController\ConfigPhysicalAxis.cs" />
@@ -172,14 +232,34 @@
       <DependentUpon>Splash.xaml</DependentUpon>
     </Compile>
     <Compile Include="StaticVariables.cs" />
+    <Compile Include="UserControls\AlignmentPanelAlignmentXD.xaml.cs">
+      <DependentUpon>AlignmentPanelAlignmentXD.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="UserControls\AlignmentPanelBlindSearch.xaml.cs">
+      <DependentUpon>AlignmentPanelBlindSearch.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="UserControls\AlignmentParamEditor.xaml.cs">
+      <DependentUpon>AlignmentParamEditor.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="UserControls\AlignmentParamEditPanel.xaml.cs">
+      <DependentUpon>AlignmentParamEditPanel.xaml</DependentUpon>
+    </Compile>
     <Compile Include="UserControls\Axis4MassMove.xaml.cs">
       <DependentUpon>Axis4MassMove.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="UserControls\Keithley2400ControlPanel.xaml.cs">
+      <DependentUpon>Keithley2400ControlPanel.xaml</DependentUpon>
     </Compile>
     <Compile Include="UserControls\MotionComponentPanel.xaml.cs">
       <DependentUpon>MotionComponentPanel.xaml</DependentUpon>
     </Compile>
+    <Compile Include="UserControls\Newport2832cControlPanel.xaml.cs">
+      <DependentUpon>Newport2832cControlPanel.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="ViewModel\ViewKeithley2400.cs" />
     <Compile Include="ViewModel\ViewMassMove.cs" />
     <Compile Include="ViewModel\ViewModelLocator.cs" />
+    <Compile Include="ViewModel\ViewNewport2832c.cs" />
     <Compile Include="Windows\InputBox.xaml.cs">
       <DependentUpon>InputBox.xaml</DependentUpon>
     </Compile>
@@ -215,9 +295,10 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
-    <None Include="App.config" />
-    <None Include="ClassDiagram1.cd" />
-    <None Include="Configuration\motion_controller.json">
+    <None Include="App.config">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Configuration\system_setting.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="Configuration\profile_motorized_stages.json">
@@ -233,7 +314,7 @@
     <AppDesigner Include="Properties\" />
   </ItemGroup>
   <ItemGroup>
-    <Page Include="ControlThemes.xaml">
+    <Page Include="Resources\ControlThemes.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -249,6 +330,22 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="UserControls\AlignmentPanelAlignmentXD.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="UserControls\AlignmentPanelBlindSearch.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="UserControls\AlignmentParamEditor.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="UserControls\AlignmentParamEditPanel.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="UserControls\Axis.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -257,7 +354,15 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="UserControls\Keithley2400ControlPanel.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="UserControls\MotionComponentPanel.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="UserControls\Newport2832cControlPanel.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -282,7 +387,7 @@
     <Resource Include="Resources\Images\Icons\wrong.png" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="MotionControllerEntities\Thorlabs\" />
+    <Folder Include="MotionControllers\Thorlabs\" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\StepperControllerLib\IrixiStepperControllerHelper.csproj">
@@ -291,6 +396,10 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <Resource Include="Resources\Images\Icons\play_256x256.png" />
+    <Resource Include="Resources\Images\Icons\stop_256x256.png" />
+    <Resource Include="Resources\Images\Icons\spiral_512x512.png" />
+    <Resource Include="Resources\Images\Icons\xy_512x512.png" />
     <Resource Include="Resources\Images\Icons\lamp_off_64x64.png" />
     <Resource Include="Resources\Images\Icons\lamp_on_64x64.png" />
     <Resource Include="AlignerLogo.ico" />

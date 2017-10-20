@@ -5,8 +5,28 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Irixi_Aligner_Common"
         mc:Ignorable="d"
-        Title="Splash" Height="75" Width="300" WindowStartupLocation="CenterScreen" WindowStyle="None" Topmost="True">
-    <Grid>
-        <TextBlock Text="Loading ..." HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="20" FontWeight="Bold"/>
+        Title="Splash" Height="200" Width="551" 
+        WindowStartupLocation="CenterScreen" 
+        WindowStyle="None" 
+        Topmost="True" ResizeMode="NoResize">
+    <Grid Background="{StaticResource Color_IrixiYellow}">
+        <Grid.RowDefinitions>
+            <RowDefinition/>
+            <RowDefinition Height="30"/>
+        </Grid.RowDefinitions>
+        <StackPanel>
+            <TextBlock FontSize="24" FontWeight="Bold" Foreground="White" Text="© IRIXI" Margin="20,4,0,0" HorizontalAlignment="Left"/>
+            <TextBlock HorizontalAlignment="Center" VerticalAlignment="Top" FontSize="100" FontWeight="Bold" Foreground="White" Text="GPAS" Margin="0" FontFamily="Engravers MT" FontStyle="Italic"/>
+        </StackPanel>
+        <Border Background="#FFFFBF61" Grid.Row="1">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="150"/>
+                    <ColumnDefinition/>
+                </Grid.ColumnDefinitions>
+                <TextBlock x:Name="txtVersionInfo" Text="v1.0.0" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="10,0,0,0" Foreground="#7FFFFFFF"/>
+                <TextBlock Text="General Purpose Alignment System" Foreground="#7FFFFFFF" FontSize="18" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,0,10,0" Grid.Column="1"/>
+            </Grid>
+        </Border>
     </Grid>
 </Window>

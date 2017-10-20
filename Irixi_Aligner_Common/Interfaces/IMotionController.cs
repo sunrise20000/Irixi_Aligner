@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Threading.Tasks;
 
 namespace Irixi_Aligner_Common.Interfaces
 {
@@ -12,18 +11,21 @@ namespace Irixi_Aligner_Common.Interfaces
         IRIXI_EE0017
     }
 
-    public interface IMotionController : IBaseEquipment
+    public interface IMotionController : IEquipmentBase, IServiceSystem
     {
-        event EventHandler<string> OnErrorOccurred;
-        event EventHandler<object> OnHomeCompleted;
+        /// <summary>
+        /// Raise the event after the Home/Move/etc. action begins
+        /// </summary>
+        event EventHandler OnMoveBegin;
+
+        /// <summary>
+        /// Raise the event after the Home/Move/etc. action ends
+        /// </summary>
+        event EventHandler OnMoveEnd;
 
         #region Properties
 
-        /// <summary>
-        /// Get the device class which makes this controller exclusively in the system.
-        /// the controller could be located by the device class.
-        /// </summary>
-        Guid DevClass { get; }
+        
 
         /// <summary>
         /// Get the model of this controller.
@@ -31,16 +33,9 @@ namespace Irixi_Aligner_Common.Interfaces
         MotionControllerModel Model { get; }
 
         /// <summary>
-        /// Get the communication port of the controller.
-        /// this might be serial port name, usb hid device serial number, etc.
+        /// See <see cref="MotionControllers.MotionControllerBase{T}"/> for the detail of the usage
         /// </summary>
-        string Port { get;}
-
-        /// <summary>
-        /// Get how many axes are moving.
-        /// 0 indicates the motion controller is idle
-        /// </summary>
-        int RunningAxesSum { get; }
+        int BusyAxesCount { get; }
 
         /// <summary>
         /// Get or set the collection of axes
@@ -55,12 +50,12 @@ namespace Irixi_Aligner_Common.Interfaces
         /// <see cref="IAxis.Home"/> for more infomation
         /// </summary>
         /// <param name="Axis"></param>
-        Task<bool> Home(IAxis Axis);
+        bool Home(IAxis Axis);
 
         /// <summary>
         ///  Home all axes
         /// </summary>
-        Task<bool> HomeAll();
+        bool HomeAll();
 
         /// <summary>
         /// <see cref="IAxis.Move(MoveMode, int, int)"/> for more infomation
@@ -70,7 +65,7 @@ namespace Irixi_Aligner_Common.Interfaces
         /// <param name="Speed"></param>
         /// <param name="distance"></param>
         /// <returns></returns>
-        Task<bool> Move(IAxis Axis, MoveMode Mode, int Speed, int Distance);
+        bool Move(IAxis Axis, MoveMode Mode, int Speed, int Distance);
 
         /// <summary>
         /// <see cref="IAxis.MoveWithTrigger(MoveMode, int, int, int, int)"/> for more infomation
@@ -82,7 +77,7 @@ namespace Irixi_Aligner_Common.Interfaces
         /// <param name="Interval"></param>
         /// <param name="Channel"></param>
         /// <returns></returns>
-        Task<bool> MoveWithTrigger(IAxis Axis, MoveMode Mode, int Speed, int Distance, int Interval, int Channel);
+        bool MoveWithTrigger(IAxis Axis, MoveMode Mode, int Speed, int Distance, int Interval, int Channel);
 
         /// <summary>
         /// <see cref="IAxis.MoveWithInnerADC(MoveMode, int, int, int, int)"/> for more infomation
@@ -94,22 +89,13 @@ namespace Irixi_Aligner_Common.Interfaces
         /// <param name="Interval"></param>
         /// <param name="AdcIndex"></param>
         /// <returns></returns>
-        Task<bool> MoveWithInnerADC(IAxis Axis, MoveMode Mode, int Speed, int Distance, int Interval, int Channel);
+        bool MoveWithInnerADC(IAxis Axis, MoveMode Mode, int Speed, int Distance, int Interval, int Channel);
 
         /// <summary>
         /// <see cref="IAxis.Stop"/> for more infomation
         /// </summary>
-        void Stop();
-
-        /// <summary>
-        /// Increase the property of RunningAxesSum
-        /// </summary>
-        void IncreaseRunningAxes();
-
-        /// <summary>
-        /// Decrease the property of RunningAxesSum
-        /// </summary>
-        void DecreaseRunningAxes();
+        //void Stop();
+        
 
         /// <summary>
         /// Find the axis with the specified name
