@@ -1,7 +1,4 @@
-﻿using System.ComponentModel;
-using System.Runtime.CompilerServices;
-
-namespace Irixi_Aligner_Common.Configuration
+﻿namespace Irixi_Aligner_Common.Configuration.MotionController
 {
     public class ConfigLogicalMotionComponent
     {

@@ -2,7 +2,7 @@
 using System.Runtime.CompilerServices;
 using System.Windows;
 
-namespace Irixi_Aligner_Common.Configuration
+namespace Irixi_Aligner_Common.Configuration.Layout
 {
     public class Layout : INotifyPropertyChanged
     {

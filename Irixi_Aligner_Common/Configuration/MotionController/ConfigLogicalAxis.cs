@@ -1,11 +1,6 @@
-﻿using Irixi_Aligner_Common.Interfaces;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System;
 
-namespace Irixi_Aligner_Common.Configuration
+namespace Irixi_Aligner_Common.Configuration.MotionController
 {
     public class ConfigLogicalAxis
     {
