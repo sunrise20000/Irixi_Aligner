@@ -1,7 +1,9 @@
 ﻿using Irixi_Aligner_Common.Configuration;
+using Irixi_Aligner_Common.Configuration.MotionController;
 using Irixi_Aligner_Common.Interfaces;
+using Irixi_Aligner_Common.MotionControllers.Base;
 
-namespace Irixi_Aligner_Common.MotionControllerEntities
+namespace Irixi_Aligner_Common.MotionControllers.Irixi
 {
     public class IrixiAxis : AxisBase
     {

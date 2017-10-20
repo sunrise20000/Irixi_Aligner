@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Irixi_Aligner_Common.Configuration.Base;
 
-namespace Irixi_Aligner_Common.Configuration
+namespace Irixi_Aligner_Common.Configuration.Equipments
 {
     public class ConfigurationKeithley2400 : ConfigurationBase
     {

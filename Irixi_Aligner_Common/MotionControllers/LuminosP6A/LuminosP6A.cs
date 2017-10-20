@@ -1,12 +1,13 @@
-﻿using Irixi_Aligner_Common.Configuration;
+﻿using Irixi_Aligner_Common.Configuration.MotionController;
 using Irixi_Aligner_Common.Message;
+using Irixi_Aligner_Common.MotionControllers.Base;
 using System;
 using System.Collections.Generic;
 using System.IO.Ports;
 using System.Threading;
 using Zaber;
 
-namespace Irixi_Aligner_Common.MotionControllerEntities
+namespace Irixi_Aligner_Common.MotionControllers.Luminos
 {
     public class LuminosP6A : MotionControllerBase<LuminosAxis>
     {

@@ -1,10 +1,9 @@
-﻿using GalaSoft.MvvmLight;
+﻿using Irixi_Aligner_Common.Alignment.Base;
 using Irixi_Aligner_Common.Classes.BaseClass;
-using Irixi_Aligner_Common.MotionControllerEntities.BaseClass;
+using Irixi_Aligner_Common.MotionControllers.Base;
 using System.Windows;
-using System.Windows.Data;
 
-namespace Irixi_Aligner_Common.Alignment
+namespace Irixi_Aligner_Common.Alignment.AlignmentXD
 {
     public class Alignment1DArgs : AlignmentArgsBase
     {

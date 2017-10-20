@@ -1,6 +1,6 @@
 ﻿using static Irixi_Aligner_Common.Classes.BaseClass.RealworldPositionManager;
 
-namespace Irixi_Aligner_Common.Configuration
+namespace Irixi_Aligner_Common.Configuration.MotionController
 {
     public class ConfigPhysicalAxis
     {

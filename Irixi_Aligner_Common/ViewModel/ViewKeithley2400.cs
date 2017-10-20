@@ -1,10 +1,10 @@
 ﻿using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
 using GalaSoft.MvvmLight.Messaging;
-using Irixi_Aligner_Common.Equipments;
+using Irixi_Aligner_Common.Equipments.Instruments;
 using System;
-using System.Windows.Data;
 using System.Globalization;
+using System.Windows.Data;
 
 namespace Irixi_Aligner_Common.ViewModel
 {

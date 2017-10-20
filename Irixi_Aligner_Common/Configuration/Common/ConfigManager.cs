@@ -1,10 +1,11 @@
 ﻿
+using Irixi_Aligner_Common.Configuration.Layout;
 using Irixi_Aligner_Common.Message;
 using Newtonsoft.Json;
 using System;
 using System.IO;
 
-namespace Irixi_Aligner_Common.Configuration
+namespace Irixi_Aligner_Common.Configuration.Common
 {
     public class ConfigManager
     {

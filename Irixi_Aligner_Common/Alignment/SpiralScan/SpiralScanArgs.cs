@@ -1,10 +1,10 @@
-﻿using Irixi_Aligner_Common.Classes.BaseClass;
-using Irixi_Aligner_Common.Interfaces;
-using Irixi_Aligner_Common.MotionControllerEntities.BaseClass;
+﻿using Irixi_Aligner_Common.Alignment.Base;
+using Irixi_Aligner_Common.Classes.BaseClass;
+using Irixi_Aligner_Common.MotionControllers.Base;
 using System;
 using System.Windows.Media.Media3D;
 
-namespace Irixi_Aligner_Common.Alignment
+namespace Irixi_Aligner_Common.Alignment.SpiralScan
 {
     public class SpiralScanArgs : AlignmentArgsBase
     {

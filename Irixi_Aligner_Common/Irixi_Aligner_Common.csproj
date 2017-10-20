@@ -187,24 +187,24 @@
     <Compile Include="Configuration\Equipments\ConfigurationNewport2832C.cs" />
     <Compile Include="Docs\How to add new instrument to system.cs" />
     <None Include="Docs\Templates\new_instrument.cs.tmpl" />
-    <Compile Include="Equipments\BaseClass\MeasurementInstrumentBase.cs" />
+    <Compile Include="Equipments\BaseClass\InstrumentBase.cs" />
     <Compile Include="Configuration\BaseClasses\ConfigurationBase.cs" />
     <Compile Include="Configuration\Equipments\ConfigurationCylinder.cs" />
     <Compile Include="Configuration\Equipments\ConfigurationKeithley2400.cs" />
     <Compile Include="Configuration\Layout\Layout.cs" />
     <Compile Include="Configuration\Layout\LayoutManager.cs" />
     <Compile Include="Configuration\Profiles\MotorizedStagesProfileManager.cs" />
-    <Compile Include="Equipments\CylinderController.cs" />
+    <Compile Include="Equipments\Equipments\CylinderController.cs" />
     <Compile Include="Equipments\BaseClass\EquipmentBase.cs" />
-    <Compile Include="Equipments\Keithley2400.cs" />
-    <Compile Include="Equipments\Newport2832C.cs" />
+    <Compile Include="Equipments\Instruments\Keithley2400.cs" />
+    <Compile Include="Equipments\Instruments\Newport2832C.cs" />
     <Compile Include="Interfaces\IEquipmentBase.cs" />
     <Compile Include="Interfaces\IMeasurementInstrument.cs" />
     <Compile Include="Interfaces\IServiceSystem.cs" />
-    <Compile Include="MotionControllerEntities\BaseClass\AxisBase.cs" />
-    <Compile Include="MotionControllerEntities\BaseClass\LogicalMotionComponent.cs" />
-    <Compile Include="MotionControllerEntities\BaseClass\LogicalAxis.cs" />
-    <Compile Include="MotionControllerEntities\BaseClass\MotionControllerBase.cs" />
+    <Compile Include="MotionControllers\BaseClass\AxisBase.cs" />
+    <Compile Include="MotionControllers\BaseClass\LogicalMotionComponent.cs" />
+    <Compile Include="MotionControllers\BaseClass\LogicalAxis.cs" />
+    <Compile Include="MotionControllers\BaseClass\MotionControllerBase.cs" />
     <Compile Include="Classes\BaseClass\MoveArgs.cs" />
     <Compile Include="Classes\BaseClass\ObservableCollectionEx.cs" />
     <Compile Include="Classes\CLSIDCheck.cs" />
@@ -216,10 +216,10 @@
     <Compile Include="Classes\Converters\SystemStatusToStopButtonEnable.cs" />
     <Compile Include="Classes\ListBosBehavior.cs" />
     <Compile Include="Classes\MessageSystem\LogHelper.cs" />
-    <Compile Include="MotionControllerEntities\Irixi\IrixiAxis.cs" />
-    <Compile Include="MotionControllerEntities\Irixi\IrixiEE0017.cs" />
-    <Compile Include="MotionControllerEntities\LuminosP6A\LuminosAxis.cs" />
-    <Compile Include="MotionControllerEntities\LuminosP6A\LuminosP6A.cs" />
+    <Compile Include="MotionControllers\Irixi\IrixiAxis.cs" />
+    <Compile Include="MotionControllers\Irixi\IrixiEE0017.cs" />
+    <Compile Include="MotionControllers\LuminosP6A\LuminosAxis.cs" />
+    <Compile Include="MotionControllers\LuminosP6A\LuminosP6A.cs" />
     <Compile Include="Classes\SystemService.cs" />
     <Compile Include="Classes\MessageSystem\MessageHelper.cs" />
     <Compile Include="Configuration\Common\ConfigManager.cs" />
@@ -232,6 +232,12 @@
       <DependentUpon>Splash.xaml</DependentUpon>
     </Compile>
     <Compile Include="StaticVariables.cs" />
+    <Compile Include="UserControls\AlignmentPanelAlignmentXD.xaml.cs">
+      <DependentUpon>AlignmentPanelAlignmentXD.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="UserControls\AlignmentPanelBlindSearch.xaml.cs">
+      <DependentUpon>AlignmentPanelBlindSearch.xaml</DependentUpon>
+    </Compile>
     <Compile Include="UserControls\AlignmentParamEditor.xaml.cs">
       <DependentUpon>AlignmentParamEditor.xaml</DependentUpon>
     </Compile>
@@ -324,6 +330,14 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="UserControls\AlignmentPanelAlignmentXD.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="UserControls\AlignmentPanelBlindSearch.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="UserControls\AlignmentParamEditor.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -373,7 +387,7 @@
     <Resource Include="Resources\Images\Icons\wrong.png" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="MotionControllerEntities\Thorlabs\" />
+    <Folder Include="MotionControllers\Thorlabs\" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\StepperControllerLib\IrixiStepperControllerHelper.csproj">

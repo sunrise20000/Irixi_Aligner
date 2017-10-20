@@ -1,7 +1,7 @@
 ﻿using Irixi_Aligner_Common.Interfaces;
 using System.Threading;
 
-namespace Irixi_Aligner_Common.Alignment
+namespace Irixi_Aligner_Common.Alignment.Base
 {
     public class AlignmentBase : IServiceSystem
     {

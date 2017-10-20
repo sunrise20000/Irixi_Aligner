@@ -1,31 +1,37 @@
-﻿using Irixi_Aligner_Common.Configuration;
+﻿using Irixi_Aligner_Common.Configuration.Base;
 using Irixi_Aligner_Common.Interfaces;
 using System;
 using System.IO.Ports;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Irixi_Aligner_Common.Equipments
+namespace Irixi_Aligner_Common.Equipments.Base
 {
-    public class MeasurementInstrumentBase : EquipmentBase, IMeasurementInstrument
+    public class InstrumentBase : EquipmentBase, IInstrument
     {
         protected SerialPort serialport;
         protected CancellationTokenSource cts_fetching;
         protected Task task_fetch_loop = null;
         int activeChannel;
 
-        public MeasurementInstrumentBase(ConfigurationBase Config) : base(Config)
+        public InstrumentBase(ConfigurationBase Config) : base(Config)
         {
             IsMultiChannel = false;
             ActiveChannel = 0;
         }
 
+        /// <summary>
+        /// Get whether this instrument contains multiple channel
+        /// </summary>
         public bool IsMultiChannel
         {
             protected set;
             get;
         }
 
+        /// <summary>
+        /// Get which channel is the active one that represents the return value of fetch() function
+        /// </summary>
         public int ActiveChannel
         {
             protected set
@@ -37,6 +43,11 @@ namespace Irixi_Aligner_Common.Equipments
                 return activeChannel;
             }
         }
+
+        /// <summary>
+        /// Get what is the unit of the active channel
+        /// </summary>
+        public int ActiveUnit { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
 
         public virtual string GetDescription()
         {

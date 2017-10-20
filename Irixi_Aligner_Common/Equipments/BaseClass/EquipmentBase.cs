@@ -1,15 +1,19 @@
-﻿using Irixi_Aligner_Common.Configuration;
+﻿using Irixi_Aligner_Common.Configuration.Base;
 using Irixi_Aligner_Common.Interfaces;
 using System;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
-using System.Threading.Tasks;
 
-namespace Irixi_Aligner_Common.Equipments
+namespace Irixi_Aligner_Common.Equipments.Base
 {
     public class EquipmentBase : IDisposable, IEquipmentBase, INotifyPropertyChanged
     {
         #region Variables
+
+        Guid _devclass;
+        string _port;
+        bool _enabled;
+        bool _is_init;
 
         #endregion  
 
@@ -24,9 +28,9 @@ namespace Irixi_Aligner_Common.Equipments
         }
 
         #region Properties
+
         public ConfigurationBase Config { private set; get; }
 
-        Guid _devclass;
         public Guid DeviceClass
         {
             protected set
@@ -38,14 +42,13 @@ namespace Irixi_Aligner_Common.Equipments
                 return _devclass;
             }
         }
-        
+
         public string Description
         {
             protected set;
             get;
         }
 
-        string _port;
         public string Port
         {
             protected set
@@ -58,7 +61,6 @@ namespace Irixi_Aligner_Common.Equipments
             }
         }
 
-        bool _enabled;
         public bool IsEnabled
         {
             protected set
@@ -71,7 +73,6 @@ namespace Irixi_Aligner_Common.Equipments
             }
         }
 
-        bool _is_init;
         public bool IsInitialized
         {
             protected set
@@ -83,7 +84,7 @@ namespace Irixi_Aligner_Common.Equipments
                 return _is_init;
             }
         }
-        
+
         public string LastError
         {
             protected set;
@@ -93,11 +94,24 @@ namespace Irixi_Aligner_Common.Equipments
         #endregion
 
         #region Methods
+
         public virtual bool Init()
         {
             throw new NotImplementedException();
         }
+        
+        public override string ToString()
+        {
+            return string.Format("*{0}@{1}*", this.Description, this.Port);
+        }
 
+        public override int GetHashCode()
+        {
+            return this.DeviceClass.GetHashCode();
+        }
+
+        #endregion
+        
         #region RaisePropertyChangedEvent
 
         public event PropertyChangedEventHandler PropertyChanged;
@@ -163,18 +177,6 @@ namespace Irixi_Aligner_Common.Equipments
             // TODO: 如果在以上内容中替代了终结器，则取消注释以下行。
             // GC.SuppressFinalize(this);
         }
-        #endregion
-
-        public override string ToString()
-        {
-            return string.Format("*{0}@{1}*", this.Description, this.Port);
-        }
-
-        public override int GetHashCode()
-        {
-            return this.DeviceClass.GetHashCode();
-        }
-
         #endregion
     }
 }

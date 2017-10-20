@@ -1,13 +1,11 @@
-﻿using System;
-using System.Runtime.CompilerServices;
-using System.Threading.Tasks;
+﻿using Irixi_Aligner_Common.Classes.BaseClass;
+using Irixi_Aligner_Common.Configuration.MotionController;
 using Irixi_Aligner_Common.Interfaces;
-using System.Threading;
 using System.ComponentModel;
-using Irixi_Aligner_Common.Configuration;
-using Irixi_Aligner_Common.Classes.BaseClass;
+using System.Runtime.CompilerServices;
+using System.Threading;
 
-namespace Irixi_Aligner_Common.MotionControllerEntities
+namespace Irixi_Aligner_Common.MotionControllers.Base
 {
     /*
      * NOTE: 

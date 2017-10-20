@@ -1,12 +1,11 @@
 ﻿using Irixi_Aligner_Common.Configuration;
-using Irixi_Aligner_Common.Interfaces;
-using Irixi_Aligner_Common.MotionControllerEntities;
+using Irixi_Aligner_Common.Configuration.Equipments;
+using Irixi_Aligner_Common.Equipments.Base;
+using Irixi_Aligner_Common.MotionControllers;
+using Irixi_Aligner_Common.MotionControllers.Irixi;
 using IrixiStepperControllerHelper;
-using System.ComponentModel;
-using System.Runtime.CompilerServices;
-using System.Threading.Tasks;
 
-namespace Irixi_Aligner_Common.Equipments
+namespace Irixi_Aligner_Common.Equipments.Equipments
 {
     public class CylinderController : EquipmentBase
     {

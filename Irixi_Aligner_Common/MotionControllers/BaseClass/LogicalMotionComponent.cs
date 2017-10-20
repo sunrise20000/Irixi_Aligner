@@ -1,6 +1,6 @@
 ﻿using System.Collections.ObjectModel;
 
-namespace Irixi_Aligner_Common.MotionControllerEntities.BaseClass
+namespace Irixi_Aligner_Common.MotionControllers.Base
 {
 
     public class LogicalMotionComponent

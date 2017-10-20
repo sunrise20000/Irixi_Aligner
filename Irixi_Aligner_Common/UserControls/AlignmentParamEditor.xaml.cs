@@ -1,4 +1,4 @@
-﻿using Irixi_Aligner_Common.MotionControllerEntities.BaseClass;
+﻿using Irixi_Aligner_Common.MotionControllers.Base;
 using System.Windows;
 using System.Windows.Controls;
 

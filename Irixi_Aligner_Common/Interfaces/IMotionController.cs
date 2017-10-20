@@ -33,7 +33,7 @@ namespace Irixi_Aligner_Common.Interfaces
         MotionControllerModel Model { get; }
 
         /// <summary>
-        /// See <see cref="MotionControllerEntities.MotionControllerBase{T}"/> for the detail of the usage
+        /// See <see cref="MotionControllers.MotionControllerBase{T}"/> for the detail of the usage
         /// </summary>
         int BusyAxesCount { get; }
 

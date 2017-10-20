@@ -1,10 +1,6 @@
-﻿using Irixi_Aligner_Common.MotionControllerEntities.BaseClass;
+﻿using Irixi_Aligner_Common.MotionControllers.Base;
 using System;
-using System.Collections.Generic;
 using System.Globalization;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Data;
 
 namespace Irixi_Aligner_Common.Classes.Converters

@@ -1,4 +1,7 @@
-﻿namespace Irixi_Aligner_Common.Configuration
+﻿using Irixi_Aligner_Common.Configuration.Equipments;
+using Irixi_Aligner_Common.Configuration.MotionController;
+
+namespace Irixi_Aligner_Common.Configuration.Common
 {
 
     public class ConfigurationSystemSetting

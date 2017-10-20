@@ -1,8 +1,4 @@
-﻿using System;
-using System.Globalization;
-using System.Windows.Controls;
-using System.Windows.Data;
-using static Irixi_Aligner_Common.Equipments.Keithley2400;
+﻿using System.Windows.Controls;
 
 namespace Irixi_Aligner_Common.UserControls
 {

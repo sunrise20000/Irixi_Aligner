@@ -1,7 +1,8 @@
 ﻿using Irixi_Aligner_Common.Message;
+using Irixi_Aligner_Common.MotionControllers.Base;
 using Zaber;
 
-namespace Irixi_Aligner_Common.MotionControllerEntities
+namespace Irixi_Aligner_Common.MotionControllers.Luminos
 {
     public class LuminosAxis : AxisBase
     {

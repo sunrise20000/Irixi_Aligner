@@ -1,10 +1,9 @@
-﻿using Irixi_Aligner_Common.Configuration;
+﻿using Irixi_Aligner_Common.Configuration.MotionController;
 using Irixi_Aligner_Common.Interfaces;
 using System;
 using System.Collections.Generic;
-using System.Threading.Tasks;
 
-namespace Irixi_Aligner_Common.MotionControllerEntities
+namespace Irixi_Aligner_Common.MotionControllers.Base
 {
     public class MotionControllerBase<T> : IMotionController, IDisposable
         where T : IAxis, new()

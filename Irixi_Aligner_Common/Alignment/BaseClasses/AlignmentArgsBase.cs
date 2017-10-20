@@ -1,16 +1,16 @@
 ﻿using GalaSoft.MvvmLight;
 using Irixi_Aligner_Common.Interfaces;
-using Irixi_Aligner_Common.MotionControllerEntities.BaseClass;
+using Irixi_Aligner_Common.MotionControllers.Base;
 using System;
 
-namespace Irixi_Aligner_Common.Alignment
+namespace Irixi_Aligner_Common.Alignment.Base
 {
     public class AlignmentArgsBase : ViewModelBase
     {
-        IMeasurementInstrument instrument;
+        IInstrument instrument;
         LogicalMotionComponent motionComponent;
 
-        public virtual IMeasurementInstrument Instrument
+        public virtual IInstrument Instrument
         {
             get => instrument;
             set

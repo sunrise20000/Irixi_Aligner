@@ -1,5 +1,6 @@
 ﻿using Irixi_Aligner_Common.Classes.BaseClass;
 using Irixi_Aligner_Common.Configuration;
+using Irixi_Aligner_Common.Configuration.MotionController;
 using System.Threading.Tasks;
 
 namespace Irixi_Aligner_Common.Interfaces

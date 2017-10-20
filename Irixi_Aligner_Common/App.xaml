@@ -16,6 +16,7 @@
 
             <Converters:BooleanToVisibility x:Key="BooleanToVisibility"/>
             <Converters:SystemStatusToStopButtonEnable x:Key="SystemStatusToStopButtonEnable" />
+            <Converters:ConvertToLogicalAxisCollection x:Key="CvtLogicalAxisCollection" />
             <Converters:JogPositionModeToBoolean x:Key="JogPositionModeToBoolean" />
             <Converters:JogPositionModeToText x:Key="JogPositionModeToText" />
             <Converters:MessageTypeToImage x:Key="MessageTypeToImage" />

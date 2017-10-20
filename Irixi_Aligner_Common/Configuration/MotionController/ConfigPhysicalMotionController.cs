@@ -1,7 +1,7 @@
 ﻿using Irixi_Aligner_Common.Interfaces;
 using System;
 
-namespace Irixi_Aligner_Common.Configuration
+namespace Irixi_Aligner_Common.Configuration.MotionController
 {
     public class ConfigPhysicalMotionController
     {

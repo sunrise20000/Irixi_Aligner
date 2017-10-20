@@ -2,7 +2,7 @@
 
 namespace Irixi_Aligner_Common.Interfaces
 {
-    public interface IMeasurementInstrument : IEquipmentBase
+    public interface IInstrument : IEquipmentBase
     {
         #region Properties
 

@@ -1,13 +1,12 @@
-﻿using GalaSoft.MvvmLight.Command;
-using Irixi_Aligner_Common.Configuration;
+﻿using Irixi_Aligner_Common.Configuration.Equipments;
+using Irixi_Aligner_Common.Equipments.Base;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO.Ports;
 using System.Threading;
-using System.Threading.Tasks;
 
-namespace Irixi_Aligner_Common.Equipments
+namespace Irixi_Aligner_Common.Equipments.Instruments
 {
     //TODO The Voltage Source, Current Source, Voltage Sensor, Current Sensor should be packaged into classes
 
@@ -16,9 +15,10 @@ namespace Irixi_Aligner_Common.Equipments
     /// Contains the low-level operation functions in this class, and it's ready to bind to the view
     /// The default unit in this class is A/V/Ohm
     /// </summary>
-    public class Keithley2400 : MeasurementInstrumentBase
+    public class Keithley2400 : InstrumentBase
     {
-        #region Definition
+        #region Definitions
+
         const double PROT_AMPS_DEF = 0.000105; // default compliance current is set to 105uA
         const double PROT_AMPS_MIN = 0.00000105; // maximum compliance current is set to 1.05uA
         const double PROT_AMPS_MAX = 1.05; // minimum compliance current is set to 1.05A
@@ -186,7 +186,7 @@ namespace Irixi_Aligner_Common.Equipments
         #endregion
 
         #region Properties
-
+        
         /// <summary>
         /// Get or set the output source mode
         /// </summary>
@@ -1226,12 +1226,11 @@ namespace Irixi_Aligner_Common.Equipments
                 throw ex;
             }
         }
+
         #endregion
 
         #region Private Methods
-
-
-
+        
         double ConvertMeasRangeAmpsToDouble(EnumMeasRangeAmps Range)
         {
             double real = 1.05 * Math.Pow(10, ((int)Range) - 7);
@@ -1257,8 +1256,7 @@ namespace Irixi_Aligner_Common.Equipments
             digital = Math.Log10(digital);
             return (EnumMeasRangeVolts)(digital + 2);
         }
-
-
+        
         #endregion
     }
 }

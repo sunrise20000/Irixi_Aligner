@@ -2,14 +2,19 @@
 using GalaSoft.MvvmLight.Command;
 using GalaSoft.MvvmLight.Ioc;
 using GalaSoft.MvvmLight.Messaging;
-using Irixi_Aligner_Common.Alignment;
+using Irixi_Aligner_Common.Alignment.AlignmentXD;
+using Irixi_Aligner_Common.Alignment.Base;
+using Irixi_Aligner_Common.Alignment.SpiralScan;
 using Irixi_Aligner_Common.Classes.BaseClass;
-using Irixi_Aligner_Common.Configuration;
-using Irixi_Aligner_Common.Equipments;
+using Irixi_Aligner_Common.Configuration.Common;
+using Irixi_Aligner_Common.Equipments.Base;
+using Irixi_Aligner_Common.Equipments.Equipments;
+using Irixi_Aligner_Common.Equipments.Instruments;
 using Irixi_Aligner_Common.Interfaces;
 using Irixi_Aligner_Common.Message;
-using Irixi_Aligner_Common.MotionControllerEntities;
-using Irixi_Aligner_Common.MotionControllerEntities.BaseClass;
+using Irixi_Aligner_Common.MotionControllers.Base;
+using Irixi_Aligner_Common.MotionControllers.Irixi;
+using Irixi_Aligner_Common.MotionControllers.Luminos;
 using IrixiStepperControllerHelper;
 using System;
 using System.Collections.Generic;
@@ -75,7 +80,8 @@ namespace Irixi_Aligner_Common.Classes
             PhysicalMotionControllerCollection = new Dictionary<Guid, IMotionController>();
             LogicalAxisCollection = new ObservableCollection<LogicalAxis>();
             LogicalMotionComponentCollection = new ObservableCollection<LogicalMotionComponent>();
-            MeasurementInstrumentCollection = new ObservableCollection<MeasurementInstrumentBase>();
+            MeasurementInstrumentCollection = new ObservableCollection<InstrumentBase>();
+            ActiveInstrumentCollection = new ObservableCollection<InstrumentBase>();
             State = SystemState.BUSY;
 
             SpiralScanArgs = new SpiralScanArgs();
@@ -219,11 +225,7 @@ namespace Irixi_Aligner_Common.Classes
         /// <summary>
         /// Get or set the list of the busy devices/processes, this list is used to stop the busy devices or processes such as alignment process, user-process, etc.
         /// </summary>
-        List<IServiceSystem> BusyComponents
-        {
-            set;
-            get;
-        }
+        List<IServiceSystem> BusyComponents { get; }
 
         /// <summary>
         /// Does the system service have been initialized ?
@@ -287,23 +289,19 @@ namespace Irixi_Aligner_Common.Classes
         }
 
         /// <summary>
-        /// Get the layout of logical aligner.
-        /// the UI components are binded to this property
+        /// Get the collection of the logical motion components, this property should be used to generate the motion control panel for each aligner
         /// </summary>
-        public ObservableCollection<LogicalMotionComponent> LogicalMotionComponentCollection
-        {
-            private set;
-            get;
-        }
+        public ObservableCollection<LogicalMotionComponent> LogicalMotionComponentCollection { get; }
 
         /// <summary>
-        /// Get the collection of keithley 2400
+        /// Get the collection of instruments that defined in the configuration file
         /// </summary>
-        public ObservableCollection<MeasurementInstrumentBase> MeasurementInstrumentCollection
-        {
-            private set;
-            get;
-        }
+        public ObservableCollection<InstrumentBase> MeasurementInstrumentCollection { get; }
+
+        /// <summary>
+        /// Get the collection of the active instruments which are initialized successfully, the property should be used to represent the valid instruments in the alignment control panel
+        /// </summary>
+        public ObservableCollection<InstrumentBase> ActiveInstrumentCollection { get; }
 
         /// <summary>
         /// Set or get the last message.
@@ -562,7 +560,6 @@ namespace Irixi_Aligner_Common.Classes
                 if (_mc.IsEnabled)
                 {
                     _equipments.Add(_mc);
-                    // _tasks.Add(Task.Factory.StartNew(_mc.Init));
                     _tasks.Add(Task.Run<bool>(() => { return _mc.Init(); }));
 
                     this.LastMessage = new MessageItem(MessageType.Normal, "{0} Initializing ...", _mc);
@@ -580,7 +577,9 @@ namespace Irixi_Aligner_Common.Classes
                 int id = _tasks.IndexOf(t);
 
                 if (t.Result)
+                {
                     this.LastMessage = new MessageItem(MessageType.Good, "{0} Initialization is completed.", _equipments[id]);
+                }
                 else
                     this.LastMessage = new MessageItem(MessageType.Error, "{0} Initialization is failed, {1}", _equipments[id], _equipments[id].LastError);
 
@@ -617,28 +616,38 @@ namespace Irixi_Aligner_Common.Classes
             }
 
             // initizlize the keithley 2400
-            foreach (var k2400 in this.MeasurementInstrumentCollection)
+            foreach (var instr in this.MeasurementInstrumentCollection)
             {
-                if (k2400.IsEnabled)
+                if (instr.IsEnabled)
                 {
-                    _tasks.Add(Task.Factory.StartNew(k2400.Init));
-                    _equipments.Add(k2400);
+                    _tasks.Add(Task.Factory.StartNew(instr.Init));
+                    _equipments.Add(instr);
 
-                    this.LastMessage = new MessageItem(MessageType.Normal, "{0} Initializing ...", k2400);
+                    this.LastMessage = new MessageItem(MessageType.Normal, "{0} Initializing ...", instr);
                 }
             }
 
-            ret = await Task.WhenAll(_tasks);
-
-            // Output information according the init result
-            for (int i = 0; i < ret.Length; i++)
+            while (_tasks.Count > 0)
             {
-                if (ret[i])
-                    this.LastMessage = new MessageItem(MessageType.Good, "{0} Initialization is completed.", _equipments[i]);
-                else
-                    this.LastMessage = new MessageItem(MessageType.Error, "{0} Initialization is failed, {1}", _equipments[i], _equipments[i].LastError);
-            }
+                Task<bool> t = await Task.WhenAny(_tasks);
+                
+                int ended_id = _tasks.IndexOf(t);
 
+
+                if (t.Result)
+                {
+                    this.LastMessage = new MessageItem(MessageType.Good, "{0} Initialization is completed.", _equipments[ended_id]);
+
+                    // add the instruments which are initialized successfully to the acitve collection
+                    if (_equipments[ended_id] is InstrumentBase)
+                        ActiveInstrumentCollection.Add((InstrumentBase)_equipments[ended_id]);
+                }
+                else
+                    this.LastMessage = new MessageItem(MessageType.Error, "{0} Initialization is failed, {1}", _equipments[ended_id], _equipments[ended_id].LastError);
+
+                _tasks.RemoveAt(ended_id);
+                _equipments.RemoveAt(ended_id);
+            }
             #endregion
 
             SetSystemState(SystemState.IDLE);

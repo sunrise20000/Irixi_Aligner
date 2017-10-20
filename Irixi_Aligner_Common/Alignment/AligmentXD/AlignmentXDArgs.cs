@@ -1,11 +1,9 @@
-﻿using Irixi_Aligner_Common.Interfaces;
-using Irixi_Aligner_Common.MotionControllerEntities.BaseClass;
+﻿using Irixi_Aligner_Common.Alignment.Base;
+using Irixi_Aligner_Common.MotionControllers.Base;
 using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Windows.Data;
 
-namespace Irixi_Aligner_Common.Alignment
+namespace Irixi_Aligner_Common.Alignment.AlignmentXD
 {
     public class AlignmentXDArgs : AlignmentArgsBase
     {
@@ -103,10 +101,7 @@ namespace Irixi_Aligner_Common.Alignment
 
             if (MotionComponent == null)
                 throw new ArgumentException("no motion component selected");
-
-            if(Target <= 0)
-                throw new ArgumentException("the measurement target is not set");
-
+            
             if(MaxCycles <= 0)
                 throw new ArgumentException("the max cycles is not set");
 

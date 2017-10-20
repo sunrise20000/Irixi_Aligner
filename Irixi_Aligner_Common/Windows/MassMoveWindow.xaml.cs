@@ -1,17 +1,16 @@
 ﻿using GalaSoft.MvvmLight.Messaging;
-using Irixi_Aligner_Common.MotionControllerEntities.BaseClass;
+using Irixi_Aligner_Common.MotionControllers.Base;
 using Irixi_Aligner_Common.UserControls;
 using Irixi_Aligner_Common.ViewModel;
 using System.Windows;
 using System.Windows.Controls;
-using System;
 
 namespace Irixi_Aligner_Common.Windows
 {
     /// <summary>
     /// Interaction logic for MassMoveWindow.xaml
     /// </summary>
-    public partial class MassMoveWindow : System.Windows.Window
+    public partial class MassMoveWindow : Window
     {
         public MassMoveWindow()
         {

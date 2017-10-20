@@ -1,11 +1,11 @@
-﻿using Irixi_Aligner_Common.Configuration;
+﻿using Irixi_Aligner_Common.Configuration.MotionController;
 using Irixi_Aligner_Common.Interfaces;
 using Irixi_Aligner_Common.Message;
+using Irixi_Aligner_Common.MotionControllers.Base;
 using IrixiStepperControllerHelper;
 using System;
-using System.Threading.Tasks;
 
-namespace Irixi_Aligner_Common.MotionControllerEntities
+namespace Irixi_Aligner_Common.MotionControllers.Irixi
 {
     public class IrixiEE0017 : MotionControllerBase<IrixiAxis>
     {

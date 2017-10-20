@@ -1,14 +1,15 @@
 ﻿using GalaSoft.MvvmLight;
 using Irixi_Aligner_Common.Configuration;
+using Irixi_Aligner_Common.Configuration.Equipments;
+using Irixi_Aligner_Common.Equipments.Base;
 using System;
 using System.ComponentModel;
 using System.IO.Ports;
 using System.Threading;
-using System.Threading.Tasks;
 
-namespace Irixi_Aligner_Common.Equipments
+namespace Irixi_Aligner_Common.Equipments.Instruments
 {
-    public class Newport2832C : MeasurementInstrumentBase
+    public class Newport2832C : InstrumentBase
     {
         #region Definition
 
