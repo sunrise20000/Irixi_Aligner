@@ -10,28 +10,13 @@ namespace IrixiStepperControllerHelper
     {
         public enum EventType
         {
-            /// <summary>
-            /// The device reported the total axes it supports
-            /// </summary>
-            TotalAxesReturned,
-
-            /// <summary>
-            /// The connection has generated
-            /// </summary>
+            Connecting,
             ConnectionSuccess,
-
-            /// <summary>
-            /// Retried to connect to the device
-            /// </summary>
-            ConnectionRetried,
-
-            /// <summary>
-            /// The device disconnected
-            /// </summary>
+            ConnectionFailure,
             ConnectionLost
         }
 
-        public ConnectionEventArgs(EventType Event, object Content)
+        public ConnectionEventArgs(EventType Event, object Content = null)
         {
             this.Event = Event;
             this.Content = Content;

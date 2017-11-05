@@ -1,5 +1,6 @@
 using System;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading;
@@ -9,35 +10,34 @@ namespace USBHIDDRIVER.USB
     /// <summary>
     /// Summary description
     /// </summary>
-    internal class USBSharp
+    internal class USBSharp : IDisposable
     {
 
-        #region Constant Values
+        #region Constant Variables
 
-        internal const int DIGCF_PRESENT = 0x00000002;
-        internal const int DIGCF_DEVICEINTERFACE = 0x00000010;
-        internal const int DIGCF_INTERFACEDEVICE = 0x00000010;
-        internal const uint GENERIC_READ = 0x80000000;
-        internal const uint GENERIC_WRITE = 0x40000000;
-        internal const int FILE_SHARE_READ = 0x00000001;
-        internal const int FILE_SHARE_WRITE = 0x00000002;
-        internal const int OPEN_EXISTING = 3;
-        internal const int EV_RXFLAG = 0x0002;       // received certain character
+        const int ERROR_IO_PENDING = 997;
 
-        internal const uint FILE_FLAG_OVERLAPPED = 0x40000000;
-        internal const int WAIT_TIMEOUT = 0x102;
-        internal const short WAIT_OBJECT_0 = 0;
-
-        /// <summary>
-        /// specified in DCB
-        /// </summary>
-        internal const int INVALID_HANDLE_VALUE = -1;
-        internal const int ERROR_INVALID_HANDLE = 6;
-        internal const int FILE_FLAG_OVERLAPED = 0x40000000;
+        const int DIGCF_PRESENT = 0x00000002;
+        const int DIGCF_DEVICEINTERFACE = 0x00000010;
+        const int DIGCF_INTERFACEDEVICE = 0x00000010;
+        const uint GENERIC_READ = 0x80000000;
+        const uint GENERIC_WRITE = 0x40000000;
+        const int FILE_SHARE_READ = 0x00000001;
+        const int FILE_SHARE_WRITE = 0x00000002;
+        const int OPEN_EXISTING = 3;
+        const int EV_RXFLAG = 0x0002;       // received certain character
+        
+        const int WAIT_TIMEOUT = 0x102;
+        const short WAIT_OBJECT_0 = 0;
+        const int INVALID_HANDLE_VALUE = -1;
+        const int ERROR_INVALID_HANDLE = 6;
+        const uint FILE_FLAG_OVERLAPPED = 0x40000000;
+        const uint FILE_FLAG_NO_BUFFERING = 0x20000000;
+        const uint FILE_FLAG_WRITE_THROUGH = 0x80000000;
 
         #endregion
 
-        #region Structs and DLL-Imports
+        #region Structures
 
         [StructLayout(LayoutKind.Sequential)]
         internal struct SECURITY_ATTRIBUTES
@@ -158,52 +158,49 @@ namespace USBHIDDRIVER.USB
             internal ushort Reserved4;
         }
 
-
-
         //HIDP_VALUE_CAPS
         [StructLayout(LayoutKind.Explicit, CharSet = CharSet.Ansi)]
         internal struct HIDP_VALUE_CAPS
         {
             //
-            [FieldOffset(0)] internal ushort UsagePage;          // USHORT
-            [FieldOffset(2)] internal Byte ReportID;              // UCHAR  ReportID;
+            [FieldOffset(0)] internal ushort UsagePage;
+            [FieldOffset(2)] internal Byte ReportID;
             [MarshalAs(UnmanagedType.I1)]
             [FieldOffset(3)]
-            internal Boolean IsAlias;         // BOOLEAN  IsAlias;
-            [FieldOffset(4)] internal ushort BitField;            // USHORT  BitField;
-            [FieldOffset(6)] internal ushort LinkCollection;      // USHORT  LinkCollection;
-            [FieldOffset(8)] internal ushort LinkUsage;           // USAGE  LinkUsage;
-            [FieldOffset(10)] internal ushort LinkUsagePage;      // USAGE  LinkUsagePage;
+            internal Boolean IsAlias;
+            [FieldOffset(4)] internal ushort BitField;
+            [FieldOffset(6)] internal ushort LinkCollection;
+            [FieldOffset(8)] internal ushort LinkUsage;
+            [FieldOffset(10)] internal ushort LinkUsagePage;
             [MarshalAs(UnmanagedType.I1)]
             [FieldOffset(12)]
-            internal Boolean IsRange;         // BOOLEAN  IsRange;
+            internal Boolean IsRange;
             [MarshalAs(UnmanagedType.I1)]
             [FieldOffset(13)]
-            internal Boolean IsStringRange;       // BOOLEAN  IsStringRange;
+            internal Boolean IsStringRange;
             [MarshalAs(UnmanagedType.I1)]
             [FieldOffset(14)]
-            internal Boolean IsDesignatorRange;   // BOOLEAN  IsDesignatorRange;
+            internal Boolean IsDesignatorRange;
             [MarshalAs(UnmanagedType.I1)]
             [FieldOffset(15)]
-            internal Boolean IsAbsolute;      // BOOLEAN  IsAbsolute;
+            internal Boolean IsAbsolute;
             [MarshalAs(UnmanagedType.I1)]
             [FieldOffset(16)]
-            internal Boolean HasNull;         // BOOLEAN  HasNull;
-            [FieldOffset(17)] internal Char Reserved;             // UCHAR  Reserved;
-            [FieldOffset(18)] internal ushort BitSize;            // USHORT  BitSize;
-            [FieldOffset(20)] internal ushort ReportCount;        // USHORT  ReportCount;
-            [FieldOffset(22)] internal ushort Reserved2a;     // USHORT  Reserved2[5];		
-            [FieldOffset(24)] internal ushort Reserved2b;     // USHORT  Reserved2[5];
-            [FieldOffset(26)] internal ushort Reserved2c;     // USHORT  Reserved2[5];
-            [FieldOffset(28)] internal ushort Reserved2d;     // USHORT  Reserved2[5];
-            [FieldOffset(30)] internal ushort Reserved2e;     // USHORT  Reserved2[5];
-            [FieldOffset(32)] internal ushort UnitsExp;           // ULONG  UnitsExp;
-            [FieldOffset(34)] internal ushort Units;              // ULONG  Units;
-            [FieldOffset(36)] internal Int16 LogicalMin;          // LONG  LogicalMin;   ;
-            [FieldOffset(38)] internal Int16 LogicalMax;          // LONG  LogicalMax
-            [FieldOffset(40)] internal Int16 PhysicalMin;         // LONG  PhysicalMin, 
-            [FieldOffset(42)] internal Int16 PhysicalMax;         // LONG  PhysicalMax;
-                                                                  // The Structs in the Union			
+            internal Boolean HasNull;
+            [FieldOffset(17)] internal Char Reserved;  
+            [FieldOffset(18)] internal ushort BitSize;    
+            [FieldOffset(20)] internal ushort ReportCount;
+            [FieldOffset(22)] internal ushort Reserved2a; 
+            [FieldOffset(24)] internal ushort Reserved2b; 
+            [FieldOffset(26)] internal ushort Reserved2c; 
+            [FieldOffset(28)] internal ushort Reserved2d; 
+            [FieldOffset(30)] internal ushort Reserved2e; 
+            [FieldOffset(32)] internal ushort UnitsExp;   
+            [FieldOffset(34)] internal ushort Units;      
+            [FieldOffset(36)] internal Int16 LogicalMin;  
+            [FieldOffset(38)] internal Int16 LogicalMax;  
+            [FieldOffset(40)] internal Int16 PhysicalMin; 
+            [FieldOffset(42)] internal Int16 PhysicalMax;                                            	
             [FieldOffset(44)] internal Range Range;
             [FieldOffset(44)] internal Range NotRange;
         }
@@ -211,26 +208,143 @@ namespace USBHIDDRIVER.USB
         #endregion
 
         #region Variables
-        internal IntPtr hHidFile = IntPtr.Zero;              // file handle for a Hid devices
-        internal IntPtr hDevInfoSet = IntPtr.Zero;               // handle for the device infoset
         internal string DevicePathName = "";
-        private Guid hidClass = new Guid();
-        internal SP_DEVINFO_DATA deviceInfoData;
-        internal SP_DEVICE_INTERFACE_DATA deviceInterfaceData;
-        internal HIDD_ATTRIBUTES myHIDD_ATTRIBUTES;
-        internal HIDP_CAPS myHIDP_CAPS;
-        internal HIDP_VALUE_CAPS[] myHIDP_VALUE_CAPS;
+        internal IntPtr hHidFile = IntPtr.Zero;
+        
+        internal IntPtr hDevInfoSet = IntPtr.Zero;
+        
+
+        Guid hidClass = new Guid();
+        HIDP_CAPS myHIDP_CAPS;
+
+        //SP_DEVINFO_DATA deviceInfoData;
+        SP_DEVICE_INTERFACE_DATA deviceInterfaceData;
+        HIDD_ATTRIBUTES myHIDD_ATTRIBUTES;
+        HIDP_VALUE_CAPS[] myHIDP_VALUE_CAPS;
+
+        /// <summary>
+        ///  Unmanaged buffer for input package over USB HID, 
+        ///  The buffer is initialized after HIDP_CAPS returned.
+        /// </summary>
+        IntPtr unmanagedInputBuffer = IntPtr.Zero;
 
         #endregion
 
         #region HID APIs
-
+        
         /// <summary>
         /// Get GUID for the HID Class
         /// </summary>
         /// <param name="lpHidGuid"></param>
         [DllImport("hid.dll", SetLastError = true)]
         static extern void HidD_GetHidGuid(ref Guid lpHidGuid);
+
+        [DllImport("hid.dll", SetLastError = true)]
+        private static extern bool HidD_GetAttributes(
+            IntPtr hidDeviceObject,
+            ref HIDD_ATTRIBUTES Attributes);
+        
+        [DllImport("hid.dll", SetLastError = true)]
+        private static extern bool HidD_GetPreparsedData(
+            IntPtr hidDeviceObject,
+            ref IntPtr PreparsedData);
+        
+        [DllImport("hid.dll", SetLastError = true)]
+        private static extern bool HidP_GetCaps(
+            IntPtr preparsedData,
+            ref HIDP_CAPS capabilities);
+        
+        [DllImport("hid.dll", SetLastError = true)]
+        internal static extern bool HidD_GetSerialNumberString(
+            IntPtr hidDeviceObject,
+            ref byte lpReportBuffer,
+            int reportBufferLength);
+
+        [DllImport("hid.dll")]
+        internal static extern bool HidD_SetOutputReport(
+            IntPtr hidDeviceObject,
+            byte[] lpReportBuffer,
+            int reportBufferLength);
+
+        [DllImport("hid.dll")]
+        internal static extern bool HidD_GetInputReport(
+            IntPtr HidDeviceObject,
+            ref byte lpReportBuffer,
+            int ReportBufferLength);
+        
+        [DllImport("hid.dll", SetLastError = true)]
+        private static extern int HidP_GetValueCaps(
+            short reportType,
+            [In, Out] HIDP_VALUE_CAPS[] valueCaps,
+            ref short valueCapsLength,
+            IntPtr preparsedData);
+        
+        [DllImport("hid.dll", SetLastError = true)]
+        static extern int HidD_FreePreparsedData(
+            IntPtr preparsedData
+            );
+
+        [DllImport("hid", SetLastError = true)]
+        static extern bool HidD_GetNumInputBuffers(
+            IntPtr HidDeviceObject,
+            ref uint NumberBuffers
+            );
+
+        #endregion
+
+        #region WIN32 APIs
+
+        [DllImport("kernel32.dll", SetLastError = true, CharSet = CharSet.Auto)]
+        static internal extern bool CancelIo(
+            IntPtr hFile);
+
+        [DllImport("kernel32.dll", SetLastError = true, ExactSpelling = true, CharSet = CharSet.Auto)]
+        static internal extern bool CancelIoEx(
+            IntPtr hFile, IntPtr
+            lpOverlapped);
+
+        [DllImport("kernel32.dll", SetLastError = true, CharSet = CharSet.Auto)]
+        static internal extern bool CloseHandle(
+            IntPtr hObject);
+
+        [DllImport("kernel32.dll", SetLastError = true)]
+        static public extern int WaitForSingleObject(
+            IntPtr hHandle, 
+            int dwMilliseconds);
+        
+        [DllImport("kernel32.dll", SetLastError = true, CharSet = CharSet.Auto)]
+        static internal extern IntPtr CreateEvent(
+            ref SECURITY_ATTRIBUTES SecurityAttributes,
+            int bManualReset,
+            int bInitialState,
+            string lpName);
+
+        [DllImport("kernel32.dll", SetLastError = true, CharSet = CharSet.Auto)]
+        static internal extern IntPtr CreateFile(
+            string lpFileName,
+            uint dwDesiredAccess,
+            int dwShareMode,
+            ref SECURITY_ATTRIBUTES lpSecurityAttributes,
+            int dwCreationDisposition,
+            uint dwFlagsAndAttributes,
+            int hTemplateFile);
+
+        [DllImport("kernel32.dll")]
+        static internal extern bool ReadFile(
+            IntPtr hFile,
+            IntPtr lpBuffer,
+            uint nNumberOfBytesToRead,
+            out uint lpNumberOfBytesRead,
+            [In] ref NativeOverlapped lpOverlapped);
+        
+        [DllImport("kernel32.dll")]
+        static internal extern bool WriteFile(
+            IntPtr hFile,
+            ref byte lpBuffer,
+            int nNumberOfBytesToWrite,
+            out int lpNumberOfBytesWritten,
+            [In] ref NativeOverlapped lpOverlapped);
+
 
         /// <summary>
         /// Get array of structures with the HID info
@@ -290,7 +404,6 @@ namespace USBHIDDRIVER.USB
             IntPtr deviceInfoData);
 
 
-
         /// <summary>
         /// 
         /// Get device Path name
@@ -313,122 +426,37 @@ namespace USBHIDDRIVER.USB
             ref int requiredSize,
             IntPtr bPtr);
 
-
-        [DllImport("hid.dll", SetLastError = true)]
-        private static extern bool HidD_GetAttributes(
-            IntPtr hidDeviceObject,                                // IN HANDLE  HidDeviceObject,
-            ref HIDD_ATTRIBUTES Attributes);            // OUT PHIDD_ATTRIBUTES  Attributes
-
-
-        [DllImport("hid.dll", SetLastError = true)]
-        private static extern bool HidD_GetPreparsedData(
-            IntPtr hidDeviceObject,                                // IN HANDLE  HidDeviceObject,
-            ref IntPtr PreparsedData);             // OUT PHIDP_PREPARSED_DATA  *PreparsedData
-
-
-        [DllImport("hid.dll", SetLastError = true)]
-        private static extern bool HidP_GetCaps(
-            IntPtr preparsedData,
-            ref HIDP_CAPS capabilities);
-
-
-        [DllImport("hid.dll", SetLastError = true)]
-        internal static extern bool HidD_GetSerialNumberString(
-            IntPtr hidDeviceObject,
-            ref byte lpReportBuffer,
-            int reportBufferLength);
-
-        [DllImport("hid.dll")]
-        internal static extern bool HidD_SetOutputReport(
-            IntPtr hidDeviceObject,
-            byte[] lpReportBuffer,
-            int reportBufferLength);
-
-        [DllImport("hid.dll")]
-        internal static extern bool HidD_GetInputReport(
-            IntPtr HidDeviceObject,
-            ref byte lpReportBuffer,
-            int ReportBufferLength);
-
-
-        [DllImport("hid.dll", SetLastError = true)]
-        private static extern int HidP_GetValueCaps(
-            short reportType,
-            [In, Out] HIDP_VALUE_CAPS[] valueCaps,
-            ref short valueCapsLength,
-            IntPtr preparsedData);
-
-
         [DllImport("setupapi.dll", SetLastError = true)]
         static extern int SetupDiDestroyDeviceInfoList(
             IntPtr deviceInfoSet
             );
 
-        // 13
-        [DllImport("hid.dll", SetLastError = true)]
-        static extern int HidD_FreePreparsedData(
-            IntPtr preparsedData
-            );
+        #endregion
 
+        #region Constructor
+
+        public USBSharp()
+        {
+        }
 
         #endregion
 
-        #region WIN32 APIs
-        [DllImport("kernel32.dll")]
-        static internal extern int GetLastError();
+        #region Properties
 
-        [DllImport("kernel32.dll", SetLastError = true, CharSet = CharSet.Auto)]
-        static internal extern bool CancelIo(IntPtr hFile);
-
-        [DllImport("kernel32.dll", SetLastError = true, CharSet = CharSet.Auto)]
-        static internal extern bool CloseHandle(IntPtr hObject);
-
-        [DllImport("kernel32.dll", SetLastError = true)]
-        static public extern int WaitForSingleObject(IntPtr hHandle, int dwMilliseconds);
-
-
-        [DllImport("kernel32.dll", SetLastError = true, CharSet = CharSet.Auto)]
-        static internal extern IntPtr CreateEvent(
-            ref SECURITY_ATTRIBUTES SecurityAttributes,
-            int bManualReset,
-            int bInitialState,
-            string lpName);
-
-        [DllImport("kernel32.dll", SetLastError = true, CharSet = CharSet.Auto)]
-        static internal extern IntPtr CreateFile(
-            string lpFileName,
-            uint dwDesiredAccess,
-            int dwShareMode,
-            ref SECURITY_ATTRIBUTES lpSecurityAttributes,
-            int dwCreationDisposition,
-            int dwFlagsAndAttributes,
-            int hTemplateFile);
-
-        [DllImport("kernel32.dll", SetLastError = true, ExactSpelling = true, CharSet = CharSet.Auto)]
-        static internal extern bool CancelIoEx(IntPtr hFile, IntPtr lpOverlapped);
-
-
-        [DllImport("kernel32.dll")]
-        static internal extern bool ReadFile(
-            IntPtr hFile,
-            IntPtr lpBuffer,
-            uint nNumberOfBytesToRead,
-            out uint lpNumberOfBytesRead,
-            [In] ref NativeOverlapped lpOverlapped);
-
-
-        [DllImport("kernel32.dll")]
-        static internal extern bool WriteFile(
-            IntPtr hFile,
-            ref byte lpBuffer,
-            int nNumberOfBytesToWrite,
-            ref int lpNumberOfBytesWritten,
-            [In] ref NativeOverlapped lpOverlapped);
-
-
+        /// <summary>
+        /// Get collection capability
+        /// </summary>
+        public HIDP_CAPS HidpCaps
+        {
+            get
+            {
+                return myHIDP_CAPS;
+            }
+        }
 
         #endregion
 
+        #region Methods
 
         /// <summary>
         /// Get class GUID
@@ -437,8 +465,7 @@ namespace USBHIDDRIVER.USB
         {
             HidD_GetHidGuid(ref hidClass);
         }
-
-
+        
         /// <summary>
         /// The functions returns a handle to a device information set that contains requested device(Specified by hidClass) informatioin elements for a local computer
         /// </summary>
@@ -449,15 +476,11 @@ namespace USBHIDDRIVER.USB
                 ref hidClass,
                 null,
                 0,
-                USBSharp.DIGCF_INTERFACEDEVICE | USBSharp.DIGCF_PRESENT);
+                DIGCF_INTERFACEDEVICE | DIGCF_PRESENT);
+
             return hDevInfoSet;
         }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="memberIndex"></param>
-        /// <returns></returns>
+        
         internal bool CT_SetupDiEnumDeviceInterfaces(int memberIndex)
         {
             deviceInterfaceData = new SP_DEVICE_INTERFACE_DATA();
@@ -474,9 +497,8 @@ namespace USBHIDDRIVER.USB
         }
 
         /// <summary>
-        /// DESCRIPTION:
-        ///   results = 0 is OK with the first pass of the routine since we are
-        ///   trying to get the RequiredSize parameter so in the next call we can read the entire detail
+        /// results = 0 is OK with the first pass of the routine since we are
+        /// trying to get the RequiredSize parameter so in the next call we can read the entire detail
         /// </summary>
         /// <param name="RequiredSize"></param>
         /// <param name="DeviceInterfaceDetailDataSize"></param>
@@ -494,10 +516,8 @@ namespace USBHIDDRIVER.USB
                 IntPtr.Zero);
             return results;
         }
-
-
+        
         /// <summary>
-        /// DESCRIPTION:
         /// results = 1 in the second pass of the routine is success
         /// DeviceInterfaceDetailDataSize parameter (RequiredSize) came from the first pass
         /// </summary>
@@ -522,7 +542,7 @@ namespace USBHIDDRIVER.USB
             bool ret;
 
 
-            IntPtr detail = Marshal.AllocHGlobal((int)DeviceInterfaceDetailDataSize);
+            IntPtr detail = Marshal.AllocHGlobal(DeviceInterfaceDetailDataSize);
 
             uint size = (uint)DeviceInterfaceDetailDataSize;
 
@@ -564,87 +584,9 @@ namespace USBHIDDRIVER.USB
                 Marshal.FreeHGlobal(detail);
             }
 
-
-            /*
-
-            var interfaceDetail = new SP_DEVICE_INTERFACE_DETAIL_DATA();
-            if (IntPtr.Size == 8) // for 64 bit operating systems
-                interfaceDetail.cbSize = 8;
-            else
-                interfaceDetail.cbSize = 4 + Marshal.SystemDefaultCharSize; // for 32 bit systems
-
-            ret =
-                SetupDiGetDeviceInterfaceDetail(
-                hDevInfoSet,                                   // IN HDEVINFO  DeviceInfoSet,
-                ref deviceInterfaceData,             // IN PSP_DEVICE_INTERFACE_DATA  DeviceInterfaceData,
-                ref interfaceDetail,     // DeviceInterfaceDetailData,  OPTIONAL
-                DeviceInterfaceDetailDataSize,              // IN DWORD  DeviceInterfaceDetailDataSize,
-                ref RequiredSize,                         // OUT PDWORD  RequiredSize,  OPTIONAL
-                IntPtr.Zero); // 
-
-            if (ret == false)
-            {
-                int err = Marshal.GetLastWin32Error();
-            }
-
-    
-
-            DevicePathName = interfaceDetail.DevicePath;
-       */
-
             return ret;
         }
-
-
-        /// <summary>
-        /// Get a handle (opens file) to the HID device
-        /// returns  0 is no success - Returns 1 if success
-        /// </summary>
-        /// <param name="DeviceName"></param>
-        /// <returns></returns>
-        internal bool CT_CreateFile(string DeviceName)
-        {
-            var security = new SECURITY_ATTRIBUTES();
-            security.lpSecurityDescriptor = IntPtr.Zero;
-            security.bInheritHandle = true;
-            security.nLength = Marshal.SizeOf(security);
-
-            hHidFile = CreateFile(
-                DeviceName,
-                GENERIC_READ | GENERIC_WRITE,
-                FILE_SHARE_READ | FILE_SHARE_WRITE,
-                ref security,
-                OPEN_EXISTING,
-                0,
-                //(int)FILE_FLAG_OVERLAPPED,
-                0);
-
-            if (hHidFile == IntPtr.Zero)
-            {
-                return false;
-            }
-            else
-            {
-                return true;
-            }
-
-        }
-
-        internal void CT_CloseFile()
-        {
-            if (Environment.OSVersion.Version.Major > 5)
-            {
-                CancelIoEx(hHidFile, IntPtr.Zero);
-            }
-
-            CloseHandle(hHidFile);
-        }
-
-        /// <summary>
-        /// Get HID device serial number
-        /// </summary>
-        /// <param name="SerialNumber"></param>
-        /// <returns></returns>
+        
         internal int CT_HidD_GetHIDSerialNumber(out string SerialNumber)
         {
             byte[] data = new byte[254];
@@ -664,6 +606,18 @@ namespace USBHIDDRIVER.USB
             }
         }
 
+        /// <summary>
+        /// The HidD_GetNumInputBuffers routine returns the current size, in number of reports, of the ring buffer that the HID class driver uses to queue input reports from a specified top-level collection.
+        /// <see cref="https://msdn.microsoft.com/library/windows/hardware/ff539675"/>
+        /// </summary>
+        /// <param name="NumberBuffers"></param>
+        /// <returns></returns>
+        internal bool CT_HidD_GetNumInputBuffers(out uint NumberBuffers)
+        {
+            NumberBuffers = 0;
+            return HidD_GetNumInputBuffers(hHidFile, ref NumberBuffers);
+        }
+
         internal bool CT_HidD_GetInputReport(out byte[] Buffer)
         {
             Buffer = new byte[64];
@@ -678,12 +632,7 @@ namespace USBHIDDRIVER.USB
             }
 
         }
-
-        /// <summary>
-        /// Get a handle to the HID device
-        /// </summary>
-        /// <param name="hObject"></param>
-        /// <returns></returns>
+        
         internal bool CT_HidD_GetAttributes(IntPtr hObject)
         {
             // Create an instance of HIDD_ATTRIBUTES
@@ -695,56 +644,38 @@ namespace USBHIDDRIVER.USB
                     hObject,
                     ref myHIDD_ATTRIBUTES);
         }
-
-        /// <summary>
-        /// Gets a pointer to the preparsed data buffer
-        /// </summary>
-        /// <param name="hObject"></param>
-        /// <param name="pPHIDP_PREPARSED_DATA"></param>
-        /// <returns></returns>
+        
         internal bool CT_HidD_GetPreparsedData(IntPtr hObject, ref IntPtr pPHIDP_PREPARSED_DATA)
         {
             return HidD_GetPreparsedData(hObject, ref pPHIDP_PREPARSED_DATA);
         }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="HidDeviceObject"></param>
-        /// <param name="lpReportBuffer"></param>
-        /// <param name="ReportBufferLength"></param>
-        /// <returns></returns>
+        
         internal bool CT_HidD_SetOutputReport(IntPtr HidDeviceObject, ref byte[] lpReportBuffer, int ReportBufferLength)
         {
             return HidD_SetOutputReport(HidDeviceObject, lpReportBuffer, ReportBufferLength);
         }
-
-
-        /// <summary>
-        /// Gets the capabilities report
-        /// </summary>
-        /// <param name="pPreparsedData"></param>
-        /// <returns></returns>
+        
         internal bool CT_HidP_GetCaps(IntPtr pPreparsedData)
         {
             myHIDP_CAPS = new HIDP_CAPS();
-            return HidP_GetCaps(
-             pPreparsedData,
-             ref myHIDP_CAPS);
+            if(HidP_GetCaps(pPreparsedData, ref myHIDP_CAPS))
+            {
+                unmanagedInputBuffer = Marshal.AllocHGlobal(myHIDP_CAPS.InputReportByteLength);
+                return true;
+            }
+            else
+            {
+                int err = Marshal.GetLastWin32Error();
+                return false;
+            }
         }
-
-
-        /// <summary>
-        /// Value Capabilities
-        /// </summary>
-        /// <param name="CalsCapsLength"></param>
-        /// <param name="pPHIDP_PREPARSED_DATA"></param>
-        /// <returns></returns>
+        
         internal int CT_HidP_GetValueCaps(ref short CalsCapsLength, IntPtr pPHIDP_PREPARSED_DATA)
         {
 
             HIDP_REPORT_TYPE myType = 0;
             myHIDP_VALUE_CAPS = new HIDP_VALUE_CAPS[5];
+
             return HidP_GetValueCaps(
                 (short)myType,
                 myHIDP_VALUE_CAPS,
@@ -753,113 +684,151 @@ namespace USBHIDDRIVER.USB
 
         }
 
-        /// <summary>
-        /// Read Port
-        /// </summary>
-        /// <param name="InputReportByteLength"></param>
-        /// <see cref="https://msdn.microsoft.com/en-us/library/windows/desktop/ms687032(v=vs.85).aspx"/>
-        /// <returns></returns>
-        internal byte[] CT_ReadFile(int InputReportByteLength)
+        internal bool CT_CreateFile(string DeviceName)
         {
-            var security = new SECURITY_ATTRIBUTES();
-            IntPtr eventObject = CreateEvent(ref security, 0, 0, "");
+            var security = new SECURITY_ATTRIBUTES
+            {
+                lpSecurityDescriptor = IntPtr.Zero,
+                bInheritHandle = true
+            };
+            security.nLength = Marshal.SizeOf(security);
 
+            hHidFile = CreateFile(
+                DeviceName,
+                GENERIC_READ | GENERIC_WRITE,
+                FILE_SHARE_READ | FILE_SHARE_WRITE,
+                ref security,
+                OPEN_EXISTING,
+                0, //FILE_FLAG_OVERLAPPED | FILE_FLAG_NO_BUFFERING,
+                0);
+
+            if (hHidFile == IntPtr.Zero)
+                return false;
+            else
+                return true;
+            //return fileRW.Open(DeviceName);
+
+        }
+
+        internal byte[] CT_ReadFile()
+        {
+            DateTime start = DateTime.Now;
+
+            byte[] buffer = null;
+            //var security = new SECURITY_ATTRIBUTES();
             var overlapped = new NativeOverlapped()
             {
-                EventHandle = eventObject
+                //EventHandle = CreateEvent(ref security, 0, 0, "")
             };
 
-            uint _byte_read = 0;
-            byte[] buffer = null;
+            Trace.WriteLine(string.Format("{0:mm:ss.ffffff}\tStart to read, takes {1:F6}ms ...", DateTime.Now, (DateTime.Now - start).TotalMilliseconds));
 
-            IntPtr nonManagedBuffer = Marshal.AllocHGlobal(InputReportByteLength);
+            var ret = ReadFile(hHidFile, unmanagedInputBuffer, (uint)myHIDP_CAPS.InputReportByteLength, out uint bytesRead, ref overlapped);
 
-            bool ret = ReadFile(hHidFile, nonManagedBuffer, (uint)InputReportByteLength, out _byte_read, ref overlapped);
+            Trace.WriteLine(string.Format("{0:mm:ss.ffffff}\tData is received, takes {1:F6}ms ...", DateTime.Now, (DateTime.Now - start).TotalMilliseconds));
 
+            /// the err should be 0x3E5 which indicates the overlapped I/O operation is in progress
+            /// <see cref="https://msdn.microsoft.com/en-us/library/ms681388(v=vs.85).aspx"/>
+            int err = Marshal.GetLastWin32Error();
+            //if (err != ERROR_IO_PENDING)
+            //{
+            //    ret = false;
+            //}
+
+            //int evt = WaitForSingleObject(overlapped.EventHandle, 500);
+            //switch (evt)
+            //{
+            //    case 0x0:  // the state of the specified object is signaled
+            //        buffer = new byte[myHIDP_CAPS.InputReportByteLength];
+            //        Marshal.Copy(unmanagedInputBuffer, buffer, 0, buffer.Length);
+            //        break;
+
+            //    case 0x102:  // The time-out interval elapsed, and the object's state is nonsignaled
+            //    default:  // unsolved errors
+            //        buffer = null;
+            //        break;
+            //}
+
+            buffer = new byte[myHIDP_CAPS.InputReportByteLength];
+            Marshal.Copy(unmanagedInputBuffer, buffer, 0, buffer.Length);
+
+            return buffer;
+
+        }
+        
+        internal bool CT_WriteFile(byte[] Buffer)
+        {
+            DateTime start = DateTime.Now;
+
+            //var security = new SECURITY_ATTRIBUTES();
+            var overlapped = new NativeOverlapped()
+            {
+                //EventHandle = CreateEvent(ref security, 0, 0, "")
+            };
+
+            Trace.WriteLine(string.Format("{0:mm:ss.ffffff}\tStart to write, takes {1:F6}ms ...", DateTime.Now, (DateTime.Now - start).TotalMilliseconds));
+
+            bool ret = WriteFile(hHidFile, ref Buffer[0], Buffer.Length, out int lpNumberOfBytesWritten, ref overlapped);
+
+            Trace.WriteLine(string.Format("{0:mm:ss.ffffff}\tData is written, takes {1:F6}ms ...", DateTime.Now, (DateTime.Now - start).TotalMilliseconds));
 
             /// the err should be 0x3E5
             /// which indicates the overlapped I/O operation is in progress
             /// <see cref="https://msdn.microsoft.com/en-us/library/ms681388(v=vs.85).aspx"/>
-            int err = GetLastError();
+            int err = Marshal.GetLastWin32Error();
+            //if (err != ERROR_IO_PENDING)
+            //{
+            //    // error in communications
+            //    ret = false;
+            //}
 
-            int evt = WaitForSingleObject(overlapped.EventHandle, 500); // wait for 500ms
+            //int evt = WaitForSingleObject(overlapped.EventHandle, 500); // wait for 500ms
 
-            switch (evt)
+            //switch (evt)
+            //{
+            //    case 0x0:  // the state of the specified object is signaled
+            //        ret = true;
+            //        break;
+
+            //    case 0x102:  // The time-out interval elapsed, and the object's state is nonsignaled
+            //    default:  // unsolved errors
+            //        ret = false;
+            //        break;
+            //}
+
+            return ret;
+        }
+
+        internal void CT_CloseFile()
+        {
+            if (Environment.OSVersion.Version.Major > 5)
             {
-                case 0x0:  // the state of the specified object is signaled
-                    buffer = new byte[InputReportByteLength];
-                    Marshal.Copy(nonManagedBuffer, buffer, 0, buffer.Length);
-                    break;
-
-                case 0x102:  // The time-out interval elapsed, and the object's state is nonsignaled
-                default:  // unsolved errors
-                    buffer = null;
-                    break;
+                CancelIoEx(hHidFile, IntPtr.Zero);
             }
 
-            Marshal.FreeHGlobal(nonManagedBuffer);
-
-            return buffer;
-
-
-
-            //if (ReadFile(hHidFile, nonManagedBuffer, (uint)buffer.Length, out BytesRead, ref overlapped))
-            //{
-            //    Marshal.Copy(nonManagedBuffer, buffer, 0, buffer.Length);
-            //    Marshal.FreeHGlobal(nonManagedBuffer);
-            //    return buffer;
-            //}
-            //else
-            //{
-            //    Marshal.FreeHGlobal(nonManagedBuffer);
-            //    return null;
-            //}
+            CloseHandle(hHidFile);
 
         }
-
-        /// <summary>
-        /// Write data to HID device
-        /// </summary>
-        /// <param name="hFile">HID device handle</param>
-        /// <param name="lpBuffer">Buffer to write</param>
-        /// <param name="nNumberOfBytesToWrite">How many bytes to write</param>
-        /// <param name="lpNumberOfBytesWritten">How many bytes are written</param>
-        /// <param name="lpOverlapped"></param>
-        /// <returns></returns>
-        internal bool CT_WriteFile(IntPtr hFile, ref byte lpBuffer, int nNumberOfBytesToWrite, ref int lpNumberOfBytesWritten, NativeOverlapped lpOverlapped)
-        {
-            return WriteFile(hFile, ref lpBuffer, nNumberOfBytesToWrite, ref lpNumberOfBytesWritten, ref lpOverlapped);
-        }
-
-        /// <summary>
-        /// DestroyDeviceInfoList
-        /// </summary>
-        /// <returns></returns>
+        
         internal int CT_SetupDiDestroyDeviceInfoList()
         {
             return SetupDiDestroyDeviceInfoList(hDevInfoSet);
 
         }
-
-        /// <summary>
-        /// FreePreparsedData
-        /// </summary>
-        /// <param name="pPHIDP_PREPARSED_DATA"></param>
-        /// <returns></returns>
+        
         internal int CT_HidD_FreePreparsedData(IntPtr pPHIDP_PREPARSED_DATA)
         {
             return SetupDiDestroyDeviceInfoList(pPHIDP_PREPARSED_DATA);
         }
 
-        internal HidApiDeclarations HidApiDeclarations
+        public void Dispose()
         {
-            get
+            if(unmanagedInputBuffer != IntPtr.Zero)
             {
-                throw new NotImplementedException();
-            }
-            set
-            {
+                Marshal.FreeHGlobal(unmanagedInputBuffer);
             }
         }
+
+        #endregion
     }
 }

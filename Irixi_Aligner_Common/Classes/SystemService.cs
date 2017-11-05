@@ -20,7 +20,6 @@ using System;
 using System.Collections.Generic;
 using System.Reflection;
 using System.Text;
-using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 
@@ -29,7 +28,7 @@ namespace Irixi_Aligner_Common.Classes
     sealed public class SystemService : ViewModelBase, IDisposable
     {
         #region Variables
-
+        DateTime initStarts;
         SystemState _state = SystemState.IDLE;
         MessageItem _lastmsg = null;
         MessageHelper _msg_helper = new MessageHelper();
@@ -46,7 +45,10 @@ namespace Irixi_Aligner_Common.Classes
 
         public SystemService()
         {
-            ThreadPool.SetMinThreads(50, 50);
+
+            initStarts = DateTime.Now;
+
+            //ThreadPool.SetMinThreads(50, 50);
 
             // read version from AssemblyInfo.cs
             Version version = Assembly.GetExecutingAssembly().GetName().Version;
@@ -163,8 +165,11 @@ namespace Irixi_Aligner_Common.Classes
             // create the instance of the cylinder
             try
             {
-                IrixiEE0017 ctrl = PhysicalMotionControllerCollection[Guid.Parse(conf_manager.ConfSystemSetting.Cylinder.Port)] as IrixiEE0017;
-                CylinderController = new CylinderController(conf_manager.ConfSystemSetting.Cylinder, ctrl);
+                if (conf_manager.ConfSystemSetting.Cylinder.Enabled)
+                {
+                    IrixiEE0017 ctrl = PhysicalMotionControllerCollection[Guid.Parse(conf_manager.ConfSystemSetting.Cylinder.Port)] as IrixiEE0017;
+                    CylinderController = new CylinderController(conf_manager.ConfSystemSetting.Cylinder, ctrl);
+                }
             }
             catch (Exception e)
             {
@@ -174,13 +179,15 @@ namespace Irixi_Aligner_Common.Classes
             // create instance of the keithley 2400
             foreach (var cfg in conf_manager.ConfSystemSetting.Keithley2400s)
             {
-                this.MeasurementInstrumentCollection.Add(new Keithley2400(cfg));
+                if(cfg.Enabled)
+                    MeasurementInstrumentCollection.Add(new Keithley2400(cfg));
             }
 
             // create instance of the newport 2832C
             foreach (var cfg in conf_manager.ConfSystemSetting.Newport2832Cs)
             {
-                this.MeasurementInstrumentCollection.Add(new Newport2832C(cfg));
+                if (cfg.Enabled)
+                    MeasurementInstrumentCollection.Add(new Newport2832C(cfg));
             }
         }
 
@@ -265,7 +272,6 @@ namespace Irixi_Aligner_Common.Classes
         /// </summary>
         public CylinderController CylinderController
         {
-            private set;
             get;
         }
 
@@ -274,7 +280,6 @@ namespace Irixi_Aligner_Common.Classes
         /// </summary>
         public Dictionary<Guid, IMotionController> PhysicalMotionControllerCollection
         {
-            private set;
             get;
         }
 
@@ -284,7 +289,6 @@ namespace Irixi_Aligner_Common.Classes
         /// </summary>
         public ObservableCollection<LogicalAxis> LogicalAxisCollection
         {
-            private set;
             get;
         }
 
@@ -547,9 +551,7 @@ namespace Irixi_Aligner_Common.Classes
             bool[] ret;
             List<Task<bool>> _tasks = new List<Task<bool>>();
             List<IEquipmentBase> _equipments = new List<IEquipmentBase>();
-
-            DateTime initStarts = DateTime.Now;
-
+            
             SetSystemState(SystemState.BUSY);
 
             #region Initialize motion controllers
@@ -560,7 +562,7 @@ namespace Irixi_Aligner_Common.Classes
                 if (_mc.IsEnabled)
                 {
                     _equipments.Add(_mc);
-                    _tasks.Add(Task.Run<bool>(() => { return _mc.Init(); }));
+                    _tasks.Add(Task.Run(() => { return _mc.Init(); }));
 
                     this.LastMessage = new MessageItem(MessageType.Normal, "{0} Initializing ...", _mc);
 
@@ -578,6 +580,9 @@ namespace Irixi_Aligner_Common.Classes
 
                 if (t.Result)
                 {
+                    if (_equipments[id] is IrixiEE0017)
+                        ((IrixiEE0017)_equipments[id]).StartReadReport();
+
                     this.LastMessage = new MessageItem(MessageType.Good, "{0} Initialization is completed.", _equipments[id]);
                 }
                 else
@@ -673,12 +678,11 @@ namespace Irixi_Aligner_Common.Classes
                     Args,
                     Axis.PhysicalAxisInst.UnitHelper.Unit);
 
-                var t = new Task<bool>(() =>
+                var ret = await Task.Run(() =>
                 {
                     return Axis.PhysicalAxisInst.Move(Args.Mode, Args.Speed, Args.Distance);
                 });
-                t.Start();
-                bool ret = await t;
+
                 if (ret == false)
                 {
                     this.LastMessage = new MessageItem(MessageType.Error, "{0} Unable to move, {1}", Axis, Axis.PhysicalAxisInst.LastError);

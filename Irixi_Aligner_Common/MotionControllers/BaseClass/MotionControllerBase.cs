@@ -124,7 +124,7 @@ namespace Irixi_Aligner_Common.MotionControllers.Base
                 ret = CustomHomeProcess(Axis);
                 DecreaceBusyAxesCount();
 
-                if(BusyAxesCount <= 0)
+                if (BusyAxesCount <= 0)
                     OnMoveEnd?.Invoke(this, new EventArgs());
             }
 
@@ -161,7 +161,7 @@ namespace Irixi_Aligner_Common.MotionControllers.Base
             else
             {
 
-                if(BusyAxesCount <= 0)
+                if (BusyAxesCount <= 0)
                     OnMoveBegin?.Invoke(this, new EventArgs());
 
                 IncreaceBusyAxesCount();
@@ -170,7 +170,7 @@ namespace Irixi_Aligner_Common.MotionControllers.Base
 
                 DecreaceBusyAxesCount();
 
-                if(BusyAxesCount <= 0)
+                if (BusyAxesCount <= 0)
                     OnMoveEnd?.Invoke(this, new EventArgs());
             }
 
@@ -228,11 +228,11 @@ namespace Irixi_Aligner_Common.MotionControllers.Base
             //    return null;
             try
             {
-                return (T)this.AxisCollection[Name];
+                return this.AxisCollection[Name];
             }
             catch
             {
-                return default(T);
+                return null;
             }
         }
 

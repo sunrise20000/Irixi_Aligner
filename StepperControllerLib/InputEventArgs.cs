@@ -1,14 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace IrixiStepperControllerHelper
 {
-    public class InputEventArgs : EventArgs
+    public class InputIOEventArgs : EventArgs
     {
-        public InputEventArgs(int Channel, InputState State)
+        public InputIOEventArgs(int Channel, InputState State)
         {
             this.Channel = Channel;
             this.State = State;

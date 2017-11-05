@@ -7,15 +7,44 @@ using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Data;
-using USBHIDDRIVER;
+using USBHIDDRIVER.USB;
 
 namespace IrixiStepperControllerHelper
 {
     public class IrixiMotionController : INotifyPropertyChanged, IDisposable
     {
-        #region Variables
+        #region Constant Definition
 
-        private static object _lock = new object();
+        const string VID = "vid_0483";
+        const string PID = "pid_574e";
+
+        /// <summary>
+        /// HidReport ID 1: report contains device status
+        /// </summary>
+        const int REPORT_ID_DEVICESTATE = 0x1;
+
+        const int REPORT_ID_AXISSTATE = 0x2;
+
+        /// <summary>
+        /// HidReport ID 10: report contains firmware information
+        /// </summary>
+        const int REPORT_ID_FACTINFO = 0xA;
+        
+
+        /// <summary>
+        /// The total steps which is used to acceleration and deceleration
+        /// </summary>
+        const int ACC_DEC_STEPS = 2000;
+
+        /// <summary>
+        /// The maximum drive veloctiy
+        /// The real velocity is Velocity_Set(%) * MAX_VELOCITY
+        /// </summary>
+        const int MAX_VELOCITY = 20000;
+
+        #endregion
+
+        #region Variables
 
         /// <summary>
         /// Implement INotifyPropertyChanged
@@ -35,65 +64,45 @@ namespace IrixiStepperControllerHelper
         /// <summary>
         /// The event raises while the status of the input IO changed
         /// </summary>
-        public event EventHandler<InputEventArgs> OnInputIOStatusChanged;
+        public event EventHandler<InputIOEventArgs> OnInputIOStatusChanged;
 
-        const string VID = "vid_0483";
-        const string PID = "pid_574e";
-
-        /// <summary>
-        /// Report ID 1: report contains device status
-        /// </summary>
-        const int REPORT_ID_DEVICESTATE = 0x1;
+        //readonly object _lock = new object();
 
         /// <summary>
-        /// Report ID 2: report contains firmware information
+        /// lock the usb port while any thread is transferring the data
         /// </summary>
-        const int REPORT_ID_FACTINFO = 0x2;
+        SemaphoreSlim lockUSBPort = new SemaphoreSlim(1, 1);
 
-        /// <summary>
-        /// The total steps which is used to acceleration and deceleration
-        /// </summary>
-        const int ACC_DEC_STEPS = 1000;
 
-        /// <summary>
-        /// The maximum drive veloctiy
-        /// The real velocity is Velocity_Set * MAX_VELOCITY
-        /// </summary>
-        const int MAX_VELOCITY = 25000;
-
-        USBInterface _hid_device;
+        HIDUSBDevice hidPort;
 
         bool _is_connected = false; // whether the contoller is connected
-        string _last_err = string.Empty, _serial_number = "";
+        string lastError = string.Empty, deviceSN = string.Empty;
+        byte commandOrder = 0;
 
-        List<byte> buf_report_factinfo = new List<byte>();
+        CancellationTokenSource ctsObtainDeviceState;
+        CancellationToken ctObtainDeviceState;
+        ManualResetEvent pauseObtainDeviceStateTask;
+        Task taskObtainDeviceState;
+        
 
         #endregion
 
         #region Constructors
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="DeviceSN">The serial number of the controller to be connected</param>
-        /// <param name="MaxDistance"></param>
-        /// <param name="PosAfterHome"></param>
-        /// <param name="SCCWLS">Soft CCW limitation sensor</param>
-        /// <param name="SCWLS">Soft CW limitation sensor</param>
         public IrixiMotionController(string DeviceSN = "")
         {
             // Generate the instance of the state report object
-            this.Report = new DeviceStateReport();
-            this.FirmwareInfo = new FimwareInfo();
-            this.PCA9534Info = new PCA9534Info();
-            this.TotalAxes = -1;
-            this.SerialNumber = DeviceSN;
-            this.AxisCollection = new ObservableCollection<Axis>();
-            BindingOperations.EnableCollectionSynchronization(this.AxisCollection, _lock);
+            HidReport = new DeviceStateReport();
+            FirmwareInfo = new FimwareInfo();
+            PCA9534Info = new PCA9534Info();
+            TotalAxes = -1;
+            SerialNumber = DeviceSN;
+            AxisCollection = new ObservableCollection<Axis>();
 
-            _hid_device = new USBInterface(VID, PID, DeviceSN);
-            _hid_device.EnableUsbBufferEvent(OnReportReceived);
-            _hid_device.EnableUsbDisconnectEvent(OnDisconnected);
+            //BindingOperations.EnableCollectionSynchronization(AxisCollection, _lock);
+
+            hidPort = new HIDUSBDevice(VID, PID, DeviceSN);
         }
 
         #endregion
@@ -106,11 +115,11 @@ namespace IrixiStepperControllerHelper
         {
             private set
             {
-                UpdateProperty<string>(ref _last_err, value);
+                UpdateProperty<string>(ref lastError, value);
             }
             get
             {
-                return _last_err;
+                return lastError;
             }
         }
 
@@ -130,11 +139,11 @@ namespace IrixiStepperControllerHelper
         {
             private set
             {
-                UpdateProperty<string>(ref _serial_number, value);
+                UpdateProperty<string>(ref deviceSN, value);
             }
             get
             {
-                return _serial_number;
+                return deviceSN;
             }
         }
 
@@ -156,7 +165,7 @@ namespace IrixiStepperControllerHelper
         /// <summary>
         /// Get the state report from the HID Controller
         /// </summary>
-        public DeviceStateReport Report
+        public DeviceStateReport HidReport
         {
             private set;
             get;
@@ -186,83 +195,71 @@ namespace IrixiStepperControllerHelper
             get;
         }
 
+
         #endregion
 
-        #region Methods
+        #region Public Methods
         /// <summary>
         /// Read the controllers' serial number and output as a string list
         /// </summary>
         /// <returns></returns>
-        public static string[] GetDeviceList()
+        public static string[] GetDevicesList()
         {
-            USBInterface hid = new USBInterface(PID, VID);
-            return hid.GetDeviceList();
+            HIDUSBDevice hid = new HIDUSBDevice(PID, VID);
+            return hid.GetDevicesList().ToArray();
         }
 
         /// <summary>
         /// Open the controller
         /// </summary>
-        public bool OpenDevice()
+        public bool Open()
         {
-            int _reconn_counter = 0;
             this.IsConnected = false;
 
-            while (true)
+            try
             {
-                try
+                OnConnectionStatusChanged?.Invoke(this, new ConnectionEventArgs(ConnectionEventArgs.EventType.Connecting));
+
+                if (hidPort.ConnectDevice())
                 {
-                    _reconn_counter++;
+                    // to realize the mechanism of timeout, save the time when the initialization process is started
+                    DateTime _init_start_time = DateTime.Now;
 
-                    if (_hid_device.Connect())
+                    // Wait the first report from HID device in order to get the 'TotalAxes'
+                    do
                     {
-                        // Start the received task on the UI thread
-                        OnConnectionStatusChanged?.Invoke(this, new ConnectionEventArgs(ConnectionEventArgs.EventType.ConnectionSuccess, null));
+                        Request(EnumCommand.REQ_SYSTEM_STATE, out byte[] buff);
 
-                        // start to read hid report from usb device in the background thread
-                        ////_hid_device.StartRead();
-
-                        // to realize the mechanism of timeout, save the time when the initialization process is started
-                        DateTime _init_start_time = DateTime.Now;
-                        
-                        // Wait the first report from HID device in order to get the 'TotalAxes'
-                        do
+                        if (buff != null)
                         {
-                            // read hid report
-                            byte[] report = _hid_device.Read();
-                            if (report != null)
-                            {
-                                this.Report.ParseRawData(report);
+                            HidReport.Parse(buff);
+                            TotalAxes = HidReport.TotalAxes;
+                        }
 
-                                this.TotalAxes = this.Report.TotalAxes;
-                            }
+                        // Don't check it so fast, the interval of two adjacent report is normally 20ms but not certain
+                        Thread.Sleep(100);
 
-                            // Don't check it so fast, the interval of two adjacent report is normally 20ms but not certain
-                            Thread.Sleep(100);
-
-                            // check whether the initialization process is timeout
-                            if((DateTime.Now - _init_start_time).TotalSeconds > 5)
-                            {
-                                this.LastError = "unable to get the total axes";
-                                break;
-                            }
-
-
-                        } while (this.TotalAxes <= 0);
-
-                        // TotalAxes <= 0 indicates that no axis was found within 5 seconds, exit initialization process
-                        if (this.TotalAxes <= 0)
+                        // check whether the initialization process is timeout
+                        if ((DateTime.Now - _init_start_time).TotalSeconds > 5)
                         {
                             break;
                         }
 
+
+                    } while (TotalAxes <= 0);
+
+                    // TotalAxes <= 0 indicates that no axis was found within 5 seconds, exit initialization process
+                    if (this.TotalAxes > 0)
+                    {
+
                         // the total number of axes returned, generate the instance of each axis
-                        this.Report.AxisStateCollection.Clear();
+                        this.HidReport.AxisStateCollection.Clear();
 
                         // create the axis collection according the TotalAxes property in the hid report
                         for (int i = 0; i < this.TotalAxes; i++)
                         {
                             // generate axis state object to the controller report class
-                            this.Report.AxisStateCollection.Add(new AxisState()
+                            this.HidReport.AxisStateCollection.Add(new AxisStateReport()
                             {
                                 AxisIndex = i
                             });
@@ -271,9 +268,9 @@ namespace IrixiStepperControllerHelper
                             this.AxisCollection.Add(new Axis()
                             {
                                 // set the properties to the default value
-                                MaxSteps = 15000,
+                                MaxSteps = 0,
                                 SoftCCWLS = 0,
-                                SoftCWLS = 15000,
+                                SoftCWLS = 0,
                                 PosAfterHome = 0,
                                 MaxSpeed = MAX_VELOCITY,
                                 AccelerationSteps = ACC_DEC_STEPS
@@ -282,61 +279,54 @@ namespace IrixiStepperControllerHelper
                         }
 
                         // start to read the hid report repeatedly
-                        _hid_device.StartRead();
+                        StartObtainHidReport();
 
-                        
                         this.IsConnected = true;
 
-                        // initialize this.Report property on UI thread
-                        OnConnectionStatusChanged?.Invoke(this, new ConnectionEventArgs(ConnectionEventArgs.EventType.TotalAxesReturned, this.TotalAxes));
-                        break;
-
+                        // initialize this.HidReport property on UI thread
+                        OnConnectionStatusChanged?.Invoke(this, new ConnectionEventArgs(ConnectionEventArgs.EventType.ConnectionSuccess));
                     }
                     else
                     {
-                        // pass the try-times to UI thread
-                        OnConnectionStatusChanged?.Invoke(this, new ConnectionEventArgs(ConnectionEventArgs.EventType.ConnectionRetried, _reconn_counter));
-                        Thread.Sleep(500);
-
-                        // check if reaches the max re-connect times
-                        if(_reconn_counter > 10)
-                        {
-                            this.LastError = "the initialization process was timeout";
-                            break;
-                        }
+                        LastError = "cannot obtain the total axes";
+                        OnConnectionStatusChanged?.Invoke(this, new ConnectionEventArgs(ConnectionEventArgs.EventType.ConnectionFailure, LastError));
                     }
                 }
-                catch (Exception ex)
+                else
                 {
-                    this.LastError = ex.Message;
-                    break;
+                    this.LastError = "unable to open the usb port to connect to the controller";
+                    OnConnectionStatusChanged?.Invoke(this, new ConnectionEventArgs(ConnectionEventArgs.EventType.ConnectionFailure, LastError));
                 }
+            }
+            catch (Exception ex)
+            {
+                this.LastError = ex.Message;
             }
 
             return IsConnected;
         }
-        
+
         /// <summary>
         /// Open the controller asynchronously
         /// </summary>
         /// <returns></returns>
-        public Task<bool> OpenDeviceAsync()
+        public Task<bool> OpenAsync()
         {
             return Task.Run<bool>(() =>
             {
-                return OpenDevice();
-               
+                return Open();
+
             });
         }
-        
+
         /// <summary>
         /// Close the controller
         /// </summary>
-        public void CloseDevice()
+        public void Close()
         {
-            _hid_device.StopRead();
+            hidPort.DisconnectDevice();
         }
-
+        
         /// <summary>
         /// Read firmware information
         /// after the information is returned, get the detail from FirmwareInfo property
@@ -344,75 +334,36 @@ namespace IrixiStepperControllerHelper
         /// <returns></returns>
         public bool ReadFWInfo()
         {
-            buf_report_factinfo.Clear();
+            Request(EnumCommand.REQ_FIRMWARE_INFO, out byte[] buff);
 
-            CommandStruct cmd = new CommandStruct()
-            {
-                Command = EnumCommand.FWINFO
-            };
-
-            _hid_device.Write(cmd.ToBytes());
-
-            if(WaitReportFactinfo())
-            {
-                return this.FirmwareInfo.Parse(buf_report_factinfo.ToArray());
-            }
-            else
+            if (buff == null)
             {
                 return false;
             }
-
-        }
-
-        /// <summary>
-        /// Read firmware information asynchronously
-        /// </summary>
-        /// <returns></returns>
-        public Task<bool> ReadFWInfoAsync()
-        {
-            return Task.Run<bool>(()=>
+            else
             {
-                return ReadFWInfo();
-            });
+                return FirmwareInfo.Parse(buff);
+            }
         }
-
+       
         /// <summary>
         /// read the value of PCA9534
         /// </summary>
         /// <returns></returns>
         public bool ReadPCA9534()
         {
-            buf_report_factinfo.Clear();
+            Request(EnumCommand.REQ_READ9534_STA, out byte[] buff);
 
-            CommandStruct cmd = new CommandStruct()
-            {
-                Command = EnumCommand.READ9534
-            };
-
-            _hid_device.Write(cmd.ToBytes());
-
-            if(WaitReportFactinfo())
-            {
-                return this.PCA9534Info.Parse(buf_report_factinfo.ToArray());
-            }
-            else
+            if (buff == null)
             {
                 return false;
             }
-        }
-
-        /// <summary>
-        /// read the value of PCA9534 asynchronously
-        /// </summary>
-        /// <returns></returns>
-        public Task<bool> ReadPCA9534Async()
-        {
-            return Task.Run<bool>(() =>
+            else
             {
-                return ReadPCA9534();
-            });
+                return PCA9534Info.Parse(buff);
+            }
         }
-
+        
         /// <summary>
         /// Home the specified axis synchronously
         /// </summary>
@@ -420,7 +371,9 @@ namespace IrixiStepperControllerHelper
         /// <returns></returns>
         public bool Home(int AxisIndex)
         {
-            if(AxisIndex >= this.Report.TotalAxes)
+            bool ret = false;
+
+            if (AxisIndex >= this.HidReport.TotalAxes)
             {
                 this.LastError = string.Format("The param of axis index if error.");
                 return false;
@@ -433,7 +386,7 @@ namespace IrixiStepperControllerHelper
             }
 
             // If the axis is busy, return.
-            if (this.Report.AxisStateCollection[AxisIndex].IsRunning)
+            if (this.HidReport.AxisStateCollection[AxisIndex].IsRunning)
             {
                 this.LastError = string.Format("Axis {0} is busy.", AxisIndex);
                 return false;
@@ -442,63 +395,39 @@ namespace IrixiStepperControllerHelper
             // start to home process
             try
             {
-                // write the 'home' command to controller
-                CommandStruct cmd = new CommandStruct()
+                if(SendHomeCommand(AxisIndex, out byte commandOrderExpected))
                 {
-                    Command = EnumCommand.HOME,
-                    AxisIndex = AxisIndex
-                };
-                _hid_device.Write(cmd.ToBytes());
-
-                // wait for 10 HID reposts in order to ensure that the home command is actually executed
-                uint _report_counter = this.Report.Counter + 10;
-
-                do
-                {
-                    Thread.Sleep(10);
-                } while (this.Report.Counter <= _report_counter);
-
-                /*
-                 * wait until the command execution is done;
-                 * the timeout is set to 2 minutes.
-                */ 
-                bool _timeout = false;
-                DateTime _start = DateTime.Now;
-                while (this.Report.AxisStateCollection[AxisIndex].IsRunning == true)
-                {
-                    Thread.Sleep(100);
-                    if ((DateTime.Now - _start).TotalSeconds > 120)
+                    if(WaitForLongtimeOperation(AxisIndex, commandOrderExpected, out AxisStateReport axisState))
                     {
-                        _timeout = true;
-                        break;
-                    }
-                }
-
-                if (_timeout)
-                {
-                    this.LastError = "timeout occured while checking the IsHoming flag.";
-                    return false;
-                }
-                else
-                {
-                    Thread.Sleep(50);
-
-                    if (this.Report.AxisStateCollection[AxisIndex].IsHomed)
-                    {
-                        return true;
+                        if(axisState.IsHomed)
+                        {
+                            ret = true;
+                        }
+                        else
+                        {
+                            lastError = string.Format("error code {0:d}", axisState.Error);
+                        }
                     }
                     else
                     {
-                        this.LastError = string.Format("error code {0:d}", Report.AxisStateCollection[AxisIndex].Error);
-                        return false;
+                        lastError = "timeout to home the axis";
                     }
+                }
+                else
+                {
+                    lastError = "unable to send home command";
                 }
             }
             catch (Exception ex)
             {
                 this.LastError = ex.Message;
-                return false;
             }
+            finally
+            {
+                //ResumeObtainHidReport();
+            }
+
+            return ret;
         }
 
         /// <summary>
@@ -524,64 +453,75 @@ namespace IrixiStepperControllerHelper
         /// <returns></returns>
         public bool Move(int AxisIndex, int Velocity, int Position, MoveMode Mode)
         {
-            int _curr_pos = this.Report.AxisStateCollection[AxisIndex].AbsPosition;   // Get current ABS position
+            bool ret = false;
+
+            // check if the axis is running
+            if (AxisCollection[AxisIndex].IsBusy)
+            {
+                LastError = string.Format("axis {0} is busy", AxisIndex);
+                return false;
+            }
+            else
+                AxisCollection[AxisIndex].IsBusy = true;
+
+            int _curr_pos = this.HidReport.AxisStateCollection[AxisIndex].AbsPosition;   // Get current ABS position
             int _pos_aftermove = 0;
 
-            if(AxisIndex >= this.TotalAxes)
+            if (AxisIndex >= this.TotalAxes)
             {
-                this.LastError = string.Format("The param of axis index if error.");
-                return false;
+                this.LastError = string.Format("axis index if error");
+                goto _done;
             }
             // if the controller is not connected, return
             else if (!this.IsConnected)
             {
-                this.LastError = string.Format("The controller is not connected.");
-                return false;
+                this.LastError = string.Format("the controller is not connected");
+                goto _done;
             }
 
             // If the axis is not homed, return.
-            if (this.Report.AxisStateCollection[AxisIndex].IsHomed == false)
+            if (this.HidReport.AxisStateCollection[AxisIndex].IsHomed == false)
             {
-                this.LastError = string.Format("Axis {0} is not homed.", AxisIndex);
-                return false;
+                this.LastError = string.Format("axis {0} is not homed", AxisIndex);
+                goto _done;
             }
 
             // If the axis is busy, return.
-            if (this.Report.AxisStateCollection[AxisIndex].IsRunning)
+            if (this.HidReport.AxisStateCollection[AxisIndex].IsRunning)
             {
-                this.LastError = string.Format("Axis {0} is busy.", AxisIndex);
-                return false;
+                this.LastError = string.Format("axis {0} is busy", AxisIndex);
+                goto _done;
             }
 
             if (Velocity < 1 || Velocity > 100)
             {
-                this.LastError = string.Format("The velocity should be 1 ~ 100.");
-                return false;
+                this.LastError = string.Format("the velocity should be 1 ~ 100");
+                goto _done;
             }
 
             //
             // Validate the parameters restricted in the config file
             //
             // MaxDistance > 0
-            if (this.AxisCollection[AxisIndex].MaxSteps == 0)
+            if (this.AxisCollection[AxisIndex].MaxSteps < 0)
             {
-                this.LastError = string.Format("The value of the Max Distance has not been set.");
-                return false;
+                this.LastError = string.Format("the max steps is error");
+                goto _done;
             }
-            
+
 
             // SoftCWLS > SoftCCWLS
-            if (this.AxisCollection[AxisIndex].SoftCWLS <= this.AxisCollection[AxisIndex].SoftCCWLS)
+            if (this.AxisCollection[AxisIndex].SoftCCWLS > this.AxisCollection[AxisIndex].SoftCWLS)
             {
-                this.LastError = string.Format("The value of the SoftCWLS should be greater than the value of the SoftCCWLS.");
-                return false;
+                this.LastError = string.Format("the soft cw limitation is less then the soft-ccw limitation");
+                goto _done;
             }
 
-            // SoftCWLS >= MaxDistance
-            if (this.AxisCollection[AxisIndex].SoftCWLS < this.AxisCollection[AxisIndex].MaxSteps)
+            // SoftCCWLS <= MaxDistance
+            if (this.AxisCollection[AxisIndex].SoftCWLS > this.AxisCollection[AxisIndex].MaxSteps)
             {
-                this.LastError = string.Format("The value of the SoftCWLS should be greater than the value of the Max Distance.");
-                return false;
+                this.LastError = string.Format("the soft cw limitation is less then the maximum steps");
+                goto _done;
             }
 
             // SoftCCWLS <= PosAfterHome <= SoftCWLS
@@ -589,9 +529,9 @@ namespace IrixiStepperControllerHelper
             (this.AxisCollection[AxisIndex].PosAfterHome > this.AxisCollection[AxisIndex].SoftCWLS))
             {
                 this.LastError = string.Format("The value of the PosAfterHome exceeds the soft limitaion.");
-                return false;
+                goto _done;
             }
-            
+
 
             //
             // Validate the position after moving,
@@ -602,7 +542,7 @@ namespace IrixiStepperControllerHelper
                 if (Position < this.AxisCollection[AxisIndex].SoftCCWLS || Position > this.AxisCollection[AxisIndex].SoftCWLS)
                 {
                     this.LastError = string.Format("The target position is out of range.");
-                    return false;
+                    goto _done;
                 }
                 else
                 {
@@ -613,7 +553,7 @@ namespace IrixiStepperControllerHelper
             }
             else // rel positioning
             {
-                _pos_aftermove = (int)(_curr_pos + Position);
+                _pos_aftermove = _curr_pos + Position;
 
                 if (Position > 0) // CW
                 {
@@ -621,7 +561,7 @@ namespace IrixiStepperControllerHelper
                     if (_pos_aftermove > this.AxisCollection[AxisIndex].MaxSteps)
                     {
                         this.LastError = string.Format("The position you are going to move exceeds the soft CW limitation.");
-                        return false;
+                        goto _done;
                     }
                 }
                 else // CCW
@@ -630,106 +570,82 @@ namespace IrixiStepperControllerHelper
                     if (_pos_aftermove < 0)
                     {
                         this.LastError = string.Format("The position you are going to move exceeds the soft CCW limitation.");
-                        return false;
+                        goto _done;
                     }
                 }
             }
+
+            DateTime moveStart = DateTime.Now;
 
             try
             {
                 // No need to move
                 if (Position == 0)
-                    return true;
-
-                // write the 'move' command to the controller
-                CommandStruct cmd = new CommandStruct()
                 {
-                    Command = EnumCommand.MOVE,
-                    AxisIndex = AxisIndex,
-                    AccSteps = this.AxisCollection[AxisIndex].AccelerationSteps,
-                    DriveVelocity = Velocity * this.AxisCollection[AxisIndex].MaxSpeed / 100,
-                    TotalSteps = Position
-                };
-                _hid_device.Write(cmd.ToBytes());
-
-                // wait for the next hid report
-                uint _report_counter = this.Report.Counter + 1;
-                do
-                {
-                    Thread.Sleep(2);
-                } while (this.Report.Counter <= _report_counter);
-
-                // the TRUE value of the IsRunning property indicates that the axis is running
-                // wait until the running process is done
-                while (this.Report.AxisStateCollection[AxisIndex].IsRunning)
-                {
-                    Thread.Sleep(2);
+                    ret = true;
+                    goto _done;
                 }
 
-                if (Report.AxisStateCollection[AxisIndex].Error != 0)
+                if (SendMoveCommand(AxisIndex, AxisCollection[AxisIndex].AccelerationSteps, Velocity, Position, out byte commandOrderExpected))
                 {
-                    this.LastError = string.Format("error code {0:d}", Report.AxisStateCollection[AxisIndex].Error);
-                    return false;
+                    if (WaitForLongtimeOperation(AxisIndex, commandOrderExpected, out AxisStateReport axisState))
+                    {
+                        if (axisState.Error != 0)
+                        {
+                            LastError = string.Format("error code {0:d}", axisState.Error);
+                            goto _done;
+                        }
+                        else
+                        {
+                            ret = true;
+                        }
+                    }
+                    else
+                    {
+                        lastError = "timeout to wait move operation done.";
+                        goto _done;
+                    }
                 }
                 else
                 {
-                    return true;
+                    lastError = "unable to send move command";
                 }
 
 
+                Trace.WriteLine(string.Format("{0:mm:ss.ffffff}\tMOVE Command took {1}ms !", DateTime.Now, (DateTime.Now - moveStart).TotalMilliseconds));
+
+                
             }
             catch (Exception ex)
             {
-                this.LastError = ex.Message;
-                return false;
+                LastError = ex.Message;
             }
+
+            _done:
+
+            Thread.Sleep(5);
+
+            AxisCollection[AxisIndex].IsBusy = false;
+            return ret;
         }
 
-       /// <summary>
-       /// Move the speified axis asynchronously
-       /// </summary>
-       /// <param name="AxisIndex"></param>
-       /// <param name="Acceleration"></param>
-       /// <param name="Velocity"></param>
-       /// <param name="Distance"></param>
-       /// <param name="Direction"></param>
-       /// <returns></returns>
+        /// <summary>
+        /// Move the speified axis asynchronously
+        /// </summary>
+        /// <param name="AxisIndex"></param>
+        /// <param name="Acceleration"></param>
+        /// <param name="Velocity"></param>
+        /// <param name="Distance"></param>
+        /// <param name="Direction"></param>
+        /// <returns></returns>
         public Task<bool> MoveAsync(int AxisIndex, int Velocity, int Distance, MoveMode Mode)
         {
-            return Task.Run<bool>(() =>
+            return Task.Run(() =>
             {
                 return Move(AxisIndex, Velocity, Distance, Mode);
             });
         }
-
-        public bool ReverseMoveDirection(int AxisIndex, bool IsReverse)
-        {
-            // if the controller is not connected, return
-            if (!this.IsConnected)
-            {
-                this.LastError = string.Format("The controller is not connected.");
-                return false;
-            }
-
-            try
-            {
-                CommandStruct cmd = new CommandStruct()
-                {
-                    Command = EnumCommand.REVERSE,
-                    AxisIndex = AxisIndex,
-                    IsReversed = IsReverse
-                };
-                _hid_device.Write(cmd.ToBytes());
-
-                return true;
-            }
-            catch (Exception ex)
-            {
-                this.LastError = ex.Message;
-                return false;
-            }
-        }
-
+        
         /// <summary>
         /// Stop the movement immediately
         /// </summary>
@@ -751,8 +667,8 @@ namespace IrixiStepperControllerHelper
                     Command = EnumCommand.STOP,
                     AxisIndex = AxisIndex
                 };
-                _hid_device.Write(cmd.ToBytes());
-               
+                hidPort.WriteData(cmd.ToBytes());
+
                 return true;
             }
             catch (Exception ex)
@@ -761,7 +677,41 @@ namespace IrixiStepperControllerHelper
                 return false;
             }
         }
-        
+
+        /// <summary>
+        /// Reverse the CW and CCW position (Mechanical Origin Position)
+        /// </summary>
+        /// <param name="AxisIndex"></param>
+        /// <param name="IsReverse">True to reverse, False to default setting</param>
+        /// <returns></returns>
+        public bool ReverseOriginPosition(int AxisIndex, bool IsReverse)
+        {
+            // if the controller is not connected, return
+            if (!this.IsConnected)
+            {
+                this.LastError = string.Format("The controller is not connected.");
+                return false;
+            }
+
+            try
+            {
+                CommandStruct cmd = new CommandStruct()
+                {
+                    Command = EnumCommand.REVERSE,
+                    AxisIndex = AxisIndex,
+                    IsReversed = IsReverse
+                };
+                hidPort.WriteData(cmd.ToBytes());
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                this.LastError = ex.Message;
+                return false;
+            }
+        }
+
         /// <summary>
         /// Get the state of specified output port
         /// </summary>
@@ -773,15 +723,9 @@ namespace IrixiStepperControllerHelper
             int port = Channel % 2;
 
             if (port == 0)
-                return this.Report.AxisStateCollection[axis_id].OUT_A;
+                return this.HidReport.AxisStateCollection[axis_id].OUT_A;
             else
-                return this.Report.AxisStateCollection[axis_id].OUT_B;
-        }
-
-        public void Dispose()
-        {
-            _hid_device.StopRead();
-            _hid_device.Disconnect();
+                return this.HidReport.AxisStateCollection[axis_id].OUT_B;
         }
 
         /// <summary>
@@ -809,7 +753,7 @@ namespace IrixiStepperControllerHelper
                     GenOutState = State
 
                 };
-                _hid_device.Write(cmd.ToBytes());
+                hidPort.WriteData(cmd.ToBytes());
 
                 return true;
             }
@@ -851,7 +795,7 @@ namespace IrixiStepperControllerHelper
                     GenOutState = state
 
                 };
-                _hid_device.Write(cmd.ToBytes());
+                hidPort.WriteData(cmd.ToBytes());
 
                 return true;
             }
@@ -862,26 +806,333 @@ namespace IrixiStepperControllerHelper
             }
         }
 
+        public void Dispose()
+        {
+            StopObtainHidReport();
+            hidPort.DisconnectDevice();
+        }
+
         #endregion
 
-        #region private methods
-        private bool WaitReportFactinfo()
+        #region Private Methods
+
+        void StartObtainHidReport()
         {
-            bool _timeout = false;
-            DateTime _start = DateTime.Now;
+            if (taskObtainDeviceState == null || taskObtainDeviceState.IsCompleted)
+            {
+                ctsObtainDeviceState = new CancellationTokenSource();
+                ctObtainDeviceState = ctsObtainDeviceState.Token;
+
+                pauseObtainDeviceStateTask = new ManualResetEvent(false);
+
+                var progressHandler = new Progress<byte[]>(value =>
+                {
+                    this.HidReport.Parse(value);
+                    OnReportUpdated?.Invoke(this, HidReport);
+                });
+                var progress = progressHandler as IProgress<byte[]>;
+
+                taskObtainDeviceState = Task.Factory.StartNew(() =>
+                {
+                    while (true)
+                    {
+                        DateTime start = DateTime.Now;
+                        Trace.WriteLine(string.Format("{0:mm:ss.ffffff}\tObtain HID report ...", start));
+
+                        Request(EnumCommand.REQ_SYSTEM_STATE, out byte[] buff);
+
+                        if (buff != null)
+                        {
+                            progress.Report(buff);
+                        }
+
+                        Trace.WriteLine(string.Format("{0:mm:ss.ffffff}\tHID report is received, takes {1:F6}ms", DateTime.Now, (DateTime.Now - start).TotalMilliseconds));
+                        while (pauseObtainDeviceStateTask.WaitOne(10000))
+                            ;
+                        ctObtainDeviceState.ThrowIfCancellationRequested();
+                    }
+                }, TaskCreationOptions.LongRunning);
+
+                //await taskObtainDeviceState;
+            }
+        }
+
+        void PauseObtainHidReport()
+        {
+            // ensure the task is running
+            if (taskObtainDeviceState != null && !taskObtainDeviceState.IsCompleted)
+            {
+                pauseObtainDeviceStateTask.Reset();
+            }
+        }
+
+        void ResumeObtainHidReport()
+        {
+            // ensure the task is running
+            if (taskObtainDeviceState != null && !taskObtainDeviceState.IsCompleted)
+            {
+                pauseObtainDeviceStateTask.Set();
+            }
+        }
+
+        void StopObtainHidReport()
+        {
+            if (taskObtainDeviceState != null && !taskObtainDeviceState.IsCompleted)
+            {
+                ctsObtainDeviceState.Cancel();
+                while (!taskObtainDeviceState.IsCompleted)
+                {
+                    Thread.Sleep(50);
+                }
+            }
+        }
+
+        bool SendCommand(EnumCommand Command, byte CommandOrder = 0)
+        {
+            bool ret = false;
+            lockUSBPort.Wait();
+            try
+            {
+                CommandStruct cmd = new CommandStruct()
+                {
+                    Command = Command,
+
+                };
+
+                ret = hidPort.WriteData(cmd.ToBytes());
+            }
+            catch
+            {
+                ret = false;
+            }
+            finally
+            {
+                lockUSBPort.Release();
+            }
+
+            return ret;
+        }
+
+        bool SendCommand(EnumCommand Command, int AxisIndex, byte CommandOrder = 0)
+        {
+            bool ret = false;
+
+            lockUSBPort.Wait();
+            try
+            {
+                CommandStruct cmd = new CommandStruct()
+                {
+                    Command = Command,
+                    CommandOrder = CommandOrder,
+                    AxisIndex = AxisIndex
+                };
+
+                ret = hidPort.WriteData(cmd.ToBytes());
+            }
+            catch
+            {
+                ret = false;
+            }
+            finally
+            {
+                lockUSBPort.Release();
+            }
+
+            return ret;
+
+        }
+
+        bool SendHomeCommand(int AxisIndex, out byte CommandOrderExpected)
+        {
+            bool ret = false;
+            CommandOrderExpected = 0;
+
+            lockUSBPort.Wait();
+            try
+            {
+                CommandOrderExpected = ++commandOrder;
+
+                CommandStruct cmd = new CommandStruct()
+                {
+                    Command = EnumCommand.HOME,
+                    CommandOrder = CommandOrderExpected,
+                    AxisIndex = AxisIndex
+                };
+
+                ret = hidPort.WriteData(cmd.ToBytes());
+            }
+            catch
+            {
+                ret = false;
+            }
+            finally
+            {
+                lockUSBPort.Release();
+            }
+
+            return ret;
+        }
+
+        bool SendMoveCommand(int AxisIndex, int Acceleration, int DriverVelocityPercent, int TotalSteps, out byte CommandOrderExpected)
+        {
+            bool ret = false;
+            CommandOrderExpected = 0;
+
+            lockUSBPort.Wait();
+            try
+            {
+                CommandOrderExpected = ++commandOrder;
+
+                CommandStruct cmd = new CommandStruct()
+                {
+                    Command = EnumCommand.MOVE,
+                    CommandOrder = (byte)CommandOrderExpected,
+                    AxisIndex = AxisIndex,
+                    AccSteps = Acceleration,
+                    DriveVelocity = DriverVelocityPercent * this.AxisCollection[AxisIndex].MaxSpeed / 100,
+                    TotalSteps = TotalSteps
+                };
+
+                ret = hidPort.WriteData(cmd.ToBytes());
+            }
+            catch
+            {
+                ret = false;
+            }
+            finally
+            {
+                lockUSBPort.Release();
+            }
+
+            return ret;
+        }
+
+        bool Request(EnumCommand Command, out byte[] Buffer)
+        {
+            bool ret = false;
+            Buffer = null;
+
+            lockUSBPort.Wait();
+
+            Trace.WriteLine(string.Format("Thread {0}, Enter request ...", Thread.CurrentThread.ManagedThreadId));
+            try
+            {
+                CommandStruct cmd = new CommandStruct()
+                {
+                    Command = Command,
+                };
+
+                if (hidPort.WriteData(cmd.ToBytes()))
+                {
+                    Buffer = hidPort.ReadData();
+                    if (Buffer != null)
+                    {
+                        ret = true;
+                    }
+                }
+            }
+            catch
+            {
+                ret = false;
+            }
+            finally
+            {
+                lockUSBPort.Release();
+                Trace.WriteLine(string.Format("Thread {0}, Exit request ...", Thread.CurrentThread.ManagedThreadId));
+            }
+
+            return ret;
+        }
+
+        bool RequestAxisState(int AxisIndex, out AxisStateReport AxisState)
+        {
+            bool ret = false;
+            AxisState = new AxisStateReport();
+            lockUSBPort.Wait();
+
+
+            Trace.WriteLine(string.Format("Thread {0}, Enter request axis {1} ...", Thread.CurrentThread.ManagedThreadId, AxisIndex));
+            try
+            {
+                CommandStruct cmd = new CommandStruct()
+                {
+                    Command = EnumCommand.REQ_AXIS_STATE,
+                    AxisIndex = AxisIndex
+                };
+
+                if (hidPort.WriteData(cmd.ToBytes()))
+                {
+                    var buff = hidPort.ReadData();
+                    if (buff != null)
+                    {
+                        if(buff[0] == REPORT_ID_AXISSTATE)
+                        {
+                            var buffAvailable = new byte[buff.Length - 1];
+                            Buffer.BlockCopy(buff, 1, buffAvailable, 0, buffAvailable.Length);
+                            AxisState.Parse(buffAvailable);
+
+                            ret = true;
+                        }
+                    }
+                }
+            }
+            catch
+            {
+                ret = false;
+            }
+            finally
+            {
+                lockUSBPort.Release();
+            }
+            Trace.WriteLine(string.Format("Thread {0}, Exit request ...", Thread.CurrentThread.ManagedThreadId));
+            return ret;
+        }
+
+        bool WaitForLongtimeOperation(int AxisIndex, byte CommandOrderExpected, out AxisStateReport AxisState)
+        {
+            bool timeout = false;
+            int lastPosition = 0;
+            DateTime reqStart = DateTime.Now;
+
             do
             {
-                if ((DateTime.Now - _start).TotalSeconds > 3)
+
+                if (RequestAxisState(AxisIndex, out AxisState))
                 {
-                    _timeout = true;
+                    var axisStateInReport = HidReport.AxisStateCollection[AxisIndex];
+                    axisStateInReport.IsRunning = AxisState.IsRunning;
+                    axisStateInReport.IsHomed = AxisState.IsHomed;
+                    axisStateInReport.AbsPosition = AxisState.AbsPosition;
+                    axisStateInReport.Error = AxisState.Error;
+
+                    // Check whether the home process is alive
+                    if (lastPosition != AxisState.AbsPosition)
+                    {
+                        reqStart = DateTime.Now;
+                        lastPosition = AxisState.AbsPosition;
+                    }
+
+                    Trace.WriteLine(string.Format("{0:mm:ss.ffffff}\tCommandOrder in Report {1}, Desired {2} ...", DateTime.Now, AxisState.CommandOrder, CommandOrderExpected));
+
+                    if (AxisState.CommandOrder == CommandOrderExpected)
+                    {
+                        // the operation is done
+                        break;
+                    }
+                }
+
+                // check if it's timeout
+                if ((DateTime.Now - reqStart).TotalSeconds > 5)
+                {
+                    timeout = true;
                     break;
                 }
 
-                Thread.Sleep(100);
+                Thread.Sleep(20);
 
-            } while (buf_report_factinfo.Count == 0);
+            } while (true);
 
-            if (_timeout)
+            if (timeout)
                 return false;
             else
                 return true;
@@ -890,60 +1141,7 @@ namespace IrixiStepperControllerHelper
         #endregion
 
         #region Events
-        /// <summary>
-        /// The connected hid device was disconnected
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void OnDisconnected(object sender, EventArgs e)
-        {
-            this.IsConnected = false;
-            this.AxisCollection.Clear();
-            this.Report.AxisStateCollection.Clear();
-
-            OnConnectionStatusChanged?.Invoke(this, new ConnectionEventArgs(ConnectionEventArgs.EventType.ConnectionLost, null));
-        }
-
-        /// <summary>
-        /// rasie this event when a data pack containing up-to-date hid report is received
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void OnReportReceived(object sender, byte[] e)
-        {
-            // the first byte is report id
-            int _report_id = (int)e[0];
-
-            // report of device state
-            if (_report_id == REPORT_ID_DEVICESTATE)
-            {
-
-                // copy the previous report before parsing the new report raw data
-                DeviceStateReport _previous_report = this.Report.Clone() as DeviceStateReport;
-
-                // parse the report from the up-to-date raw data 
-                this.Report.ParseRawData(e);
-
-                // raise the event
-                OnReportUpdated?.Invoke(this, this.Report);
-
-                // if the state of input changes, raise the event
-                for (int i = 0; i < this.Report.AxisStateCollection.Count; i++)
-                {
-                    if (this.Report.AxisStateCollection[i].IN_A != _previous_report.AxisStateCollection[i].IN_A)
-                        OnInputIOStatusChanged?.Invoke(this, new InputEventArgs(i * 2, this.Report.AxisStateCollection[i].IN_A));
-
-                    if (this.Report.AxisStateCollection[i].IN_B != _previous_report.AxisStateCollection[i].IN_B)
-                        OnInputIOStatusChanged?.Invoke(this, new InputEventArgs(i * 2 + 1, this.Report.AxisStateCollection[i].IN_B));
-
-                }
-            }
-            // report of firmware information
-            else if (_report_id == REPORT_ID_FACTINFO)
-            {
-                buf_report_factinfo.AddRange(e);
-            }
-        }
+        
         #endregion
 
         #region RaisePropertyChangedEvent
