@@ -2,10 +2,10 @@
   "LogEnabled": true,
   "NewPort2832Cs": [
     {
-      "Enabled": true,
+      "Enabled": false,
       "DeviceClass": "927FF004-8672-44B7-A1BA-73D6FC6A04B8",
       "Desc": "NEWPORT 2832C",
-      "Port": "COM17",
+      "Port": "COM5",
       "BaudRate": 9600,
       "Caption": "2832C",
       "Icon": "IconViewWsPanels",
@@ -14,12 +14,12 @@
   ],
   "Keithley2400s": [
     {
-      "Enabled": true,
+      "Enabled": false,
       "DeviceClass": "371EEBD8-4C57-4EB2-A830-CBD5AEC89D8E",
       "Desc": "KEITHLEY 2400",
       "Port": "COM19",
       "BaudRate": 57600,
-      "Caption": "ROSA CH1",
+      "Caption": "DEVICE 1",
       "Icon": "IconViewWsPanels",
       "Comment": "Chanel 1 of PD array"
     },
@@ -27,18 +27,18 @@
       "Enabled": false,
       "DeviceClass": "D2F48892-340A-41B3-A058-77452AAEAE02",
       "Desc": "KEITHLEY 2400",
-      "Port": "COM3",
+      "Port": "COM18",
       "BaudRate": 57600,
-      "Caption": "ROSA CH4",
+      "Caption": "DEVICE 2",
       "Icon": "IconViewWsPanels",
       "Comment": "Chanel 4 of PD array"
     }
   ],
   "Cylinder": {
-    "Enabled": false,
+    "Enabled": true,
     "DeviceClass": "937E661D-F310-4879-A56F-A0FE61DDE535",
     "Desc": "Cylinder Controller",
-    "Port": "df4d5339-f472-4bee-97f0-a10f8aecbc1a",
+    "Port": "86e3e6c8-0fce-455b-8545-9011cd3fe6a7",
     "BaudRate": 0,
     "PedalInput": 1,
     "FiberClampOutput": 1,
@@ -50,7 +50,7 @@
     {
       "DeviceClass": "5013d013-f167-4dcb-86d9-599a325744b8",
       "Model": "LUMINOS_P6A",
-      "Port": "COM18",
+      "Port": "COM19",
       "Enabled": true,
       "Comment": "For VGroove Aligner",
       "AxisCollection": [
@@ -132,7 +132,7 @@
       "DeviceClass": "412e55e4-ceae-4eb4-8798-e8de7b5b5669",
       "Model": "LUMINOS_P6A",
       "Port": "COM1",
-      "Enabled": false,
+      "Enabled": true,
       "Comment": "Lens Aligner",
       "AxisCollection": [
         {
@@ -294,7 +294,7 @@
       "DeviceClass": "d11d1864-6315-4c01-b07f-3e268834cd10",
       "Model": "IRIXI_EE0017",
       "Port": "313932311251363035003800",
-      "Enabled": false,
+      "Enabled": true,
       "Comment": "TOP CAM, Irixi 3-Axis Motion Controller, PCB Board 3",
       "AxisCollection": [
         {
@@ -345,7 +345,7 @@
       "DeviceClass": "c6af0f93-7e49-4b1a-b08d-0c84f8d812c0",
       "Model": "IRIXI_EE0017",
       "Port": "313932311251363030003800",
-      "Enabled": false,
+      "Enabled": true,
       "Comment": "ANGLE CAM, Irixi 3-Axis Motion Controller, PCB Board 1",
       "AxisCollection": [
         {
@@ -353,8 +353,8 @@
           "Name": 0,
           "Enabled": true,
           "OffsetAfterHome": 0,
-          "MaxSpeed": 10000,
-          "AccelerationSteps": 2000,
+          "MaxSpeed": 20000,
+          "AccelerationSteps": 1000,
           "SubDivision": 2,
           "ScaleDisplayed": 4,
           "Vendor": "Suruga",
@@ -395,8 +395,8 @@
     {
       "DeviceClass": "86e3e6c8-0fce-455b-8545-9011cd3fe6a7",
       "Model": "IRIXI_EE0017",
-      "Port": "313932311251363033005500",
-      "Enabled": false,
+      "Port": "31393231125136302D005500",
+      "Enabled": true,
       "Comment": "Front CAM, Irixi 3-Axis Motion Controller, PCB Board 4",
       "AxisCollection": [
         {
@@ -432,7 +432,7 @@
           "Name": 2,
           "Enabled": true,
           "OffsetAfterHome": 0,
-          "MaxSpeed": 10000,
+          "MaxSpeed": 20000,
           "AccelerationSteps": 2000,
           "SubDivision": 2,
           "ScaleDisplayed": 4,
@@ -447,7 +447,7 @@
       "DeviceClass": "df4d5339-f472-4bee-97f0-a10f8aecbc1a",
       "Model": "IRIXI_EE0017",
       "Port": "31393231125136302E005500",
-      "Enabled": false,
+      "Enabled": true,
       "Comment": "Probe Card Z, Lens Expansion Z, VGroove Expansion X",
       "AxisCollection": [
         {
@@ -498,7 +498,7 @@
       "DeviceClass": "19dcf462-f4b8-4e99-bd5c-9f0bd78726d3",
       "Model": "IRIXI_EE0017",
       "Port": "313932311251363031005500",
-      "Enabled": false,
+      "Enabled": true,
       "Comment": "POD Aligner, Irixi 3-Axis Motion Controller, PCB Board 5",
       "AxisCollection": [
         {
@@ -549,7 +549,7 @@
       "DeviceClass": "e6e06aad-f8f8-405e-9ea3-1c975b5fa99b",
       "Model": "IRIXI_EE0017",
       "Port": "313932311251363031003800",
-      "Enabled": false,
+      "Enabled": true,
       "Comment": "Lens Expansion Y",
       "AxisCollection": [
         {
@@ -567,16 +567,16 @@
           "ReverseDriveDirection": false
         },
         {
-          "Comment": "No Connection",
+          "Comment": "Lens Feed",
           "Name": 1,
-          "Enabled": false,
+          "Enabled": true,
           "OffsetAfterHome": 0,
           "MaxSpeed": 10000,
           "AccelerationSteps": 2000,
           "SubDivision": 2,
           "ScaleDisplayed": 4,
           "Vendor": "Suruga",
-          "Model": "KXL06150-C2-G4",
+          "Model": "KXL06050-C1-G",
           "Unit": "um",
           "ReverseDriveDirection": false
         },

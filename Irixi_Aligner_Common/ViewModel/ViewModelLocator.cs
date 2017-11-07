@@ -43,8 +43,6 @@ namespace Irixi_Aligner_Common.ViewModel
                 SimpleIoc.Default.Register<SystemService>();
                 SimpleIoc.Default.Register<ConfigManager>();
             }
-
-            
         }
 
         public SystemService Service

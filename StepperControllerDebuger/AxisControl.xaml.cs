@@ -16,15 +16,15 @@ namespace StepperControllerDebuger
             InitializeComponent();
         }
         
-        public AxisState AxisState
+        public AxisStateReport AxisState
         {
-            get { return (AxisState)GetValue(AxisStateProperty); }
+            get { return (AxisStateReport)GetValue(AxisStateProperty); }
             set { SetValue(AxisStateProperty, value); }
         }
 
         // Using a DependencyProperty as the backing store for AxisState.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty AxisStateProperty =
-            DependencyProperty.Register("AxisState", typeof(AxisState), typeof(AxisControl), new PropertyMetadata(null));
+            DependencyProperty.Register("AxisState", typeof(AxisStateReport), typeof(AxisControl), new PropertyMetadata(null));
 
         
         public bool IsAbsMode

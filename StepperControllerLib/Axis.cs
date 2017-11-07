@@ -5,6 +5,32 @@ namespace IrixiStepperControllerHelper
 {
     public class Axis : INotifyPropertyChanged
     {
+        #region Variables
+
+        readonly object lockAxis = new object();
+        bool isBusy = false;
+
+        #endregion
+
+
+        public bool IsBusy
+        {
+            get
+            {
+                lock(lockAxis)
+                {
+                    return isBusy;
+                }
+            }
+            set
+            {
+                lock(lockAxis)
+                {
+                    isBusy = value;
+                }
+            }
+        }
+
         /// <summary>
         /// Get the max distance(steps) the axis supports
         /// Typically, this value is set in the application's config files.
@@ -46,6 +72,7 @@ namespace IrixiStepperControllerHelper
         public int AccelerationSteps { set; get; }
 
         #region RaisePropertyChangedEvent
+
         public event PropertyChangedEventHandler PropertyChanged;
 
         /// <summary>
