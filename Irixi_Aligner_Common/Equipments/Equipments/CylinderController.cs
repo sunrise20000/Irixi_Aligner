@@ -1,7 +1,5 @@
-﻿using Irixi_Aligner_Common.Configuration;
-using Irixi_Aligner_Common.Configuration.Equipments;
+﻿using Irixi_Aligner_Common.Configuration.Equipments;
 using Irixi_Aligner_Common.Equipments.Base;
-using Irixi_Aligner_Common.MotionControllers;
 using Irixi_Aligner_Common.MotionControllers.Irixi;
 using IrixiStepperControllerHelper;
 

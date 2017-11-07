@@ -34,7 +34,7 @@ namespace IrixiStepperControllerHelper
         /// <summary>
         /// The total steps which is used to acceleration and deceleration
         /// </summary>
-        const int ACC_DEC_STEPS = 2000;
+        const int ACC_DEC_STEPS = 1000;
 
         /// <summary>
         /// The maximum drive veloctiy
@@ -65,15 +65,12 @@ namespace IrixiStepperControllerHelper
         /// The event raises while the status of the input IO changed
         /// </summary>
         public event EventHandler<InputIOEventArgs> OnInputIOStatusChanged;
-
-        //readonly object _lock = new object();
-
+        
         /// <summary>
         /// lock the usb port while any thread is transferring the data
         /// </summary>
         SemaphoreSlim lockUSBPort = new SemaphoreSlim(1, 1);
-
-
+        
         HIDUSBDevice hidPort;
 
         bool _is_connected = false; // whether the contoller is connected
@@ -84,8 +81,17 @@ namespace IrixiStepperControllerHelper
         CancellationToken ctObtainDeviceState;
         ManualResetEvent pauseObtainDeviceStateTask;
         Task taskObtainDeviceState;
-        
 
+        /// <summary>
+        /// the time of last operation
+        /// </summary>
+        static DateTime timeLastOperation = DateTime.MinValue;
+
+        /// <summary>
+        /// how many axes are busy
+        /// </summary>
+        int busyAxes = 0;
+        
         #endregion
 
         #region Constructors
@@ -101,7 +107,6 @@ namespace IrixiStepperControllerHelper
             AxisCollection = new ObservableCollection<Axis>();
 
             //BindingOperations.EnableCollectionSynchronization(AxisCollection, _lock);
-
             hidPort = new HIDUSBDevice(VID, PID, DeviceSN);
         }
 
@@ -278,13 +283,24 @@ namespace IrixiStepperControllerHelper
                             });
                         }
 
-                        // start to read the hid report repeatedly
-                        StartObtainHidReport();
+                        // read the firmware info
+                        if (ReadFWInfo())
+                        {
+                            // start to read the hid report repeatedly
+                            StartObtainHidReport();
 
-                        this.IsConnected = true;
+                            this.IsConnected = true;
 
-                        // initialize this.HidReport property on UI thread
-                        OnConnectionStatusChanged?.Invoke(this, new ConnectionEventArgs(ConnectionEventArgs.EventType.ConnectionSuccess));
+                            // initialize this.HidReport property on UI thread
+                            OnConnectionStatusChanged?.Invoke(this, new ConnectionEventArgs(ConnectionEventArgs.EventType.ConnectionSuccess));
+                        }
+                        else
+                        {
+                            Close();
+
+                            lastError = "cannot obtain the firmware information";
+                            OnConnectionStatusChanged?.Invoke(this, new ConnectionEventArgs(ConnectionEventArgs.EventType.ConnectionFailure, LastError));
+                        }
                     }
                     else
                     {
@@ -392,6 +408,8 @@ namespace IrixiStepperControllerHelper
                 return false;
             }
 
+            PauseObtainHidReport();
+
             // start to home process
             try
             {
@@ -424,7 +442,7 @@ namespace IrixiStepperControllerHelper
             }
             finally
             {
-                //ResumeObtainHidReport();
+                ResumeObtainHidReport();
             }
 
             return ret;
@@ -577,6 +595,8 @@ namespace IrixiStepperControllerHelper
 
             DateTime moveStart = DateTime.Now;
 
+            PauseObtainHidReport();
+
             try
             {
                 // No need to move
@@ -612,13 +632,17 @@ namespace IrixiStepperControllerHelper
                 }
 
 
-                Trace.WriteLine(string.Format("{0:mm:ss.ffffff}\tMOVE Command took {1}ms !", DateTime.Now, (DateTime.Now - moveStart).TotalMilliseconds));
+                //Trace.WriteLine(string.Format("{0:mm:ss.ffffff}\tMOVE Command took {1}ms !", DateTime.Now, (DateTime.Now - moveStart).TotalMilliseconds));
 
                 
             }
             catch (Exception ex)
             {
                 LastError = ex.Message;
+            }
+            finally
+            {
+                ResumeObtainHidReport();
             }
 
             _done:
@@ -823,12 +847,22 @@ namespace IrixiStepperControllerHelper
                 ctsObtainDeviceState = new CancellationTokenSource();
                 ctObtainDeviceState = ctsObtainDeviceState.Token;
 
-                pauseObtainDeviceStateTask = new ManualResetEvent(false);
+                pauseObtainDeviceStateTask = new ManualResetEvent(true);
 
                 var progressHandler = new Progress<byte[]>(value =>
                 {
+                    var report = HidReport.Clone() as DeviceStateReport;
                     this.HidReport.Parse(value);
                     OnReportUpdated?.Invoke(this, HidReport);
+
+                    for (int i = 0; i < HidReport.AxisStateCollection.Count; i++)
+                    {
+                        if (this.HidReport.AxisStateCollection[i].IN_A != report.AxisStateCollection[i].IN_A)
+                            OnInputIOStatusChanged?.Invoke(this, new InputIOEventArgs(i * 2, HidReport.AxisStateCollection[i].IN_A));
+
+                        if (this.HidReport.AxisStateCollection[i].IN_B != report.AxisStateCollection[i].IN_B)
+                            OnInputIOStatusChanged?.Invoke(this, new InputIOEventArgs(i * 2 + 1, HidReport.AxisStateCollection[i].IN_B));
+                    }
                 });
                 var progress = progressHandler as IProgress<byte[]>;
 
@@ -837,7 +871,7 @@ namespace IrixiStepperControllerHelper
                     while (true)
                     {
                         DateTime start = DateTime.Now;
-                        Trace.WriteLine(string.Format("{0:mm:ss.ffffff}\tObtain HID report ...", start));
+                        //Trace.WriteLine(string.Format("{0:mm:ss.ffffff}\tObtain HID report ...", start));
 
                         Request(EnumCommand.REQ_SYSTEM_STATE, out byte[] buff);
 
@@ -846,9 +880,20 @@ namespace IrixiStepperControllerHelper
                             progress.Report(buff);
                         }
 
-                        Trace.WriteLine(string.Format("{0:mm:ss.ffffff}\tHID report is received, takes {1:F6}ms", DateTime.Now, (DateTime.Now - start).TotalMilliseconds));
-                        while (pauseObtainDeviceStateTask.WaitOne(10000))
+                        //Trace.WriteLine(string.Format("{0:mm:ss.ffffff}\tHID report is received, takes {1:F6}ms", DateTime.Now, (DateTime.Now - start).TotalMilliseconds));
+
+                        /*
+                         * Delay some seconds after the last operation
+                         */
+                        Thread.Sleep(200);
+                        pauseObtainDeviceStateTask.WaitOne();
+
+                        while((DateTime.Now - timeLastOperation).TotalMilliseconds < 500)
+                        {
+                            Thread.Sleep(200);
                             ;
+                        }
+
                         ctObtainDeviceState.ThrowIfCancellationRequested();
                     }
                 }, TaskCreationOptions.LongRunning);
@@ -862,7 +907,8 @@ namespace IrixiStepperControllerHelper
             // ensure the task is running
             if (taskObtainDeviceState != null && !taskObtainDeviceState.IsCompleted)
             {
-                pauseObtainDeviceStateTask.Reset();
+                if(Interlocked.Increment(ref busyAxes) == 1)
+                    pauseObtainDeviceStateTask.Reset();
             }
         }
 
@@ -871,7 +917,11 @@ namespace IrixiStepperControllerHelper
             // ensure the task is running
             if (taskObtainDeviceState != null && !taskObtainDeviceState.IsCompleted)
             {
-                pauseObtainDeviceStateTask.Set();
+                if (Interlocked.Decrement(ref busyAxes) == 0)
+                {
+                    pauseObtainDeviceStateTask.Set();
+                    timeLastOperation = DateTime.Now;
+                }
             }
         }
 
@@ -885,61 +935,6 @@ namespace IrixiStepperControllerHelper
                     Thread.Sleep(50);
                 }
             }
-        }
-
-        bool SendCommand(EnumCommand Command, byte CommandOrder = 0)
-        {
-            bool ret = false;
-            lockUSBPort.Wait();
-            try
-            {
-                CommandStruct cmd = new CommandStruct()
-                {
-                    Command = Command,
-
-                };
-
-                ret = hidPort.WriteData(cmd.ToBytes());
-            }
-            catch
-            {
-                ret = false;
-            }
-            finally
-            {
-                lockUSBPort.Release();
-            }
-
-            return ret;
-        }
-
-        bool SendCommand(EnumCommand Command, int AxisIndex, byte CommandOrder = 0)
-        {
-            bool ret = false;
-
-            lockUSBPort.Wait();
-            try
-            {
-                CommandStruct cmd = new CommandStruct()
-                {
-                    Command = Command,
-                    CommandOrder = CommandOrder,
-                    AxisIndex = AxisIndex
-                };
-
-                ret = hidPort.WriteData(cmd.ToBytes());
-            }
-            catch
-            {
-                ret = false;
-            }
-            finally
-            {
-                lockUSBPort.Release();
-            }
-
-            return ret;
-
         }
 
         bool SendHomeCommand(int AxisIndex, out byte CommandOrderExpected)
@@ -1014,7 +1009,7 @@ namespace IrixiStepperControllerHelper
 
             lockUSBPort.Wait();
 
-            Trace.WriteLine(string.Format("Thread {0}, Enter request ...", Thread.CurrentThread.ManagedThreadId));
+            //Trace.WriteLine(string.Format("Thread {0}, Enter request ...", Thread.CurrentThread.ManagedThreadId));
             try
             {
                 CommandStruct cmd = new CommandStruct()
@@ -1038,7 +1033,7 @@ namespace IrixiStepperControllerHelper
             finally
             {
                 lockUSBPort.Release();
-                Trace.WriteLine(string.Format("Thread {0}, Exit request ...", Thread.CurrentThread.ManagedThreadId));
+                //Trace.WriteLine(string.Format("Thread {0}, Exit request ...", Thread.CurrentThread.ManagedThreadId));
             }
 
             return ret;
@@ -1051,7 +1046,7 @@ namespace IrixiStepperControllerHelper
             lockUSBPort.Wait();
 
 
-            Trace.WriteLine(string.Format("Thread {0}, Enter request axis {1} ...", Thread.CurrentThread.ManagedThreadId, AxisIndex));
+            //Trace.WriteLine(string.Format("Thread {0}, Enter request axis {1} ...", Thread.CurrentThread.ManagedThreadId, AxisIndex));
             try
             {
                 CommandStruct cmd = new CommandStruct()
@@ -1084,7 +1079,7 @@ namespace IrixiStepperControllerHelper
             {
                 lockUSBPort.Release();
             }
-            Trace.WriteLine(string.Format("Thread {0}, Exit request ...", Thread.CurrentThread.ManagedThreadId));
+            //Trace.WriteLine(string.Format("Thread {0}, Exit request ...", Thread.CurrentThread.ManagedThreadId));
             return ret;
         }
 
@@ -1105,6 +1100,8 @@ namespace IrixiStepperControllerHelper
                     axisStateInReport.AbsPosition = AxisState.AbsPosition;
                     axisStateInReport.Error = AxisState.Error;
 
+                    OnReportUpdated?.Invoke(this, HidReport);
+
                     // Check whether the home process is alive
                     if (lastPosition != AxisState.AbsPosition)
                     {
@@ -1112,7 +1109,7 @@ namespace IrixiStepperControllerHelper
                         lastPosition = AxisState.AbsPosition;
                     }
 
-                    Trace.WriteLine(string.Format("{0:mm:ss.ffffff}\tCommandOrder in Report {1}, Desired {2} ...", DateTime.Now, AxisState.CommandOrder, CommandOrderExpected));
+                    //Trace.WriteLine(string.Format("{0:mm:ss.ffffff}\tCommandOrder in Report {1}, Desired {2} ...", DateTime.Now, AxisState.CommandOrder, CommandOrderExpected));
 
                     if (AxisState.CommandOrder == CommandOrderExpected)
                     {

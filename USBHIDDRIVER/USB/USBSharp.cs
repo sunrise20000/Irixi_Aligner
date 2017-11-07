@@ -721,11 +721,11 @@ namespace USBHIDDRIVER.USB
                 //EventHandle = CreateEvent(ref security, 0, 0, "")
             };
 
-            Trace.WriteLine(string.Format("{0:mm:ss.ffffff}\tStart to read, takes {1:F6}ms ...", DateTime.Now, (DateTime.Now - start).TotalMilliseconds));
+            //Trace.WriteLine(string.Format("{0:mm:ss.ffffff}\tStart to read, takes {1:F6}ms ...", DateTime.Now, (DateTime.Now - start).TotalMilliseconds));
 
             var ret = ReadFile(hHidFile, unmanagedInputBuffer, (uint)myHIDP_CAPS.InputReportByteLength, out uint bytesRead, ref overlapped);
 
-            Trace.WriteLine(string.Format("{0:mm:ss.ffffff}\tData is received, takes {1:F6}ms ...", DateTime.Now, (DateTime.Now - start).TotalMilliseconds));
+            //Trace.WriteLine(string.Format("{0:mm:ss.ffffff}\tData is received, takes {1:F6}ms ...", DateTime.Now, (DateTime.Now - start).TotalMilliseconds));
 
             /// the err should be 0x3E5 which indicates the overlapped I/O operation is in progress
             /// <see cref="https://msdn.microsoft.com/en-us/library/ms681388(v=vs.85).aspx"/>
@@ -766,11 +766,11 @@ namespace USBHIDDRIVER.USB
                 //EventHandle = CreateEvent(ref security, 0, 0, "")
             };
 
-            Trace.WriteLine(string.Format("{0:mm:ss.ffffff}\tStart to write, takes {1:F6}ms ...", DateTime.Now, (DateTime.Now - start).TotalMilliseconds));
+            //Trace.WriteLine(string.Format("{0:mm:ss.ffffff}\tStart to write, takes {1:F6}ms ...", DateTime.Now, (DateTime.Now - start).TotalMilliseconds));
 
             bool ret = WriteFile(hHidFile, ref Buffer[0], Buffer.Length, out int lpNumberOfBytesWritten, ref overlapped);
 
-            Trace.WriteLine(string.Format("{0:mm:ss.ffffff}\tData is written, takes {1:F6}ms ...", DateTime.Now, (DateTime.Now - start).TotalMilliseconds));
+            //Trace.WriteLine(string.Format("{0:mm:ss.ffffff}\tData is written, takes {1:F6}ms ...", DateTime.Now, (DateTime.Now - start).TotalMilliseconds));
 
             /// the err should be 0x3E5
             /// which indicates the overlapped I/O operation is in progress
@@ -805,8 +805,10 @@ namespace USBHIDDRIVER.USB
             {
                 CancelIoEx(hHidFile, IntPtr.Zero);
             }
-
-            CloseHandle(hHidFile);
+            else
+            {
+                CloseHandle(hHidFile);
+            }
 
         }
         

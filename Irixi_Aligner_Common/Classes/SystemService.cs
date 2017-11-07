@@ -580,8 +580,8 @@ namespace Irixi_Aligner_Common.Classes
 
                 if (t.Result)
                 {
-                    if (_equipments[id] is IrixiEE0017)
-                        ((IrixiEE0017)_equipments[id]).StartReadReport();
+                    //if (_equipments[id] is IrixiEE0017)
+                    //    ((IrixiEE0017)_equipments[id]).StartReadReport();
 
                     this.LastMessage = new MessageItem(MessageType.Good, "{0} Initialization is completed.", _equipments[id]);
                 }

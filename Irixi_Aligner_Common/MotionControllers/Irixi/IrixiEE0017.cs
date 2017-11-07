@@ -97,38 +97,27 @@ namespace Irixi_Aligner_Common.MotionControllers.Irixi
             _controller.Open();
             if (_controller.IsConnected)
             {
-                //if (_controller.ReadFWInfo())
-                //{
-                    LogHelper.WriteLine("{0}, firmware version {1}", this, _controller.FirmwareInfo);
+                LogHelper.WriteLine("{0}, firmware version {1}", this, _controller.FirmwareInfo);
 
-                    // pass the configurations to the instance of irixi motion controller class
-                    for (int i = 0; i < this.AxisCollection.Count; i++)
-                    {
-                        var axis = this.AxisCollection[i.ToString()] as IrixiAxis;
-                        var sdkAxis = _controller.AxisCollection[i];
+                // pass the configurations to the instance of irixi motion controller class
+                for (int i = 0; i < this.AxisCollection.Count; i++)
+                {
+                    var axis = this.AxisCollection[i.ToString()] as IrixiAxis;
+                    var sdkAxis = _controller.AxisCollection[i];
 
-                        sdkAxis.PosAfterHome = 0;
-                        sdkAxis.SoftCCWLS = 0;
-                        sdkAxis.SoftCWLS = axis.UnitHelper.MaxSteps;
-                        sdkAxis.MaxSteps = axis.UnitHelper.MaxSteps;
-                        sdkAxis.MaxSpeed = axis.MaxSpeed;
-                        sdkAxis.AccelerationSteps = axis.AccelerationSteps;
+                    sdkAxis.PosAfterHome = 0;
+                    sdkAxis.SoftCCWLS = 0;
+                    sdkAxis.SoftCWLS = axis.UnitHelper.MaxSteps;
+                    sdkAxis.MaxSteps = axis.UnitHelper.MaxSteps;
+                    sdkAxis.MaxSpeed = axis.MaxSpeed;
+                    sdkAxis.AccelerationSteps = axis.AccelerationSteps;
 
-                        // reverse the drive directoin
-                        if (axis.ReverseDriveDirecton)
-                            _controller.ReverseOriginPosition(i, true);
-                    }
+                    // reverse the drive directoin
+                    if (axis.ReverseDriveDirecton)
+                        _controller.ReverseOriginPosition(i, true);
+                }
 
-                    return true;
-                //}
-                //else
-                //{
-                //    LastError = string.Format("{0}, unable to read the firmware info", this);
-                //    _controller.CloseDevice();
-                //    return false;
-                //}
-
-
+                return true;
             }
             else
             {
@@ -249,11 +238,6 @@ namespace Irixi_Aligner_Common.MotionControllers.Irixi
             }
 
             return ret;
-        }
-
-        public void StartReadReport()
-        {
-            _controller.StartObtainHidReport();
         }
 
         public override void Stop()
