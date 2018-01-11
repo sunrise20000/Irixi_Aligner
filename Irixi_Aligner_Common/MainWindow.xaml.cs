@@ -325,6 +325,12 @@ namespace Irixi_Aligner_Common
             panelBlindSearch.Visibility = Visibility.Visible;
             dockLayoutManager.MDIController.Activate(panelBlindSearch);
         }
+
+        private void btnRotatingScan_ItemClick(object sender, ItemClickEventArgs e)
+        {
+            panelRotatingScan.Visibility = Visibility.Visible;
+            dockLayoutManager.MDIController.Activate(panelRotatingScan);
+        }
     }
 
 }

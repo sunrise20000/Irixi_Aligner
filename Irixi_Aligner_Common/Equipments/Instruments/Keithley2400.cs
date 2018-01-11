@@ -170,6 +170,7 @@ namespace Irixi_Aligner_Common.Equipments.Instruments
         double measured_val = 0;
         double cmpl_voltage = PROT_VOLT_DEF, cmpl_current = PROT_AMPS_DEF;
         bool is_in_range_cmpl = false, is_meas_over_range = false;
+
         #endregion
 
         #region Constructor
@@ -444,7 +445,7 @@ namespace Irixi_Aligner_Common.Equipments.Instruments
 
         #endregion
 
-        #region Pulblic Methods
+        #region Public Methods
 
         /// <summary>
         /// Set the SourceMeter to V-Source Mode
@@ -1063,7 +1064,7 @@ namespace Irixi_Aligner_Common.Equipments.Instruments
         protected override void UserInitProc()
         {
             string desc = this.GetDescription();
-            if (desc.ToUpper().IndexOf("MODEL 2400") > -1)
+            if (desc.ToUpper().IndexOf("MODEL 2400") > -1 || desc.ToUpper().IndexOf("MODEL 2401") > -1)
             {
                 // reset to default setting and clear the error query
                 Reset();
@@ -1153,7 +1154,7 @@ namespace Irixi_Aligner_Common.Equipments.Instruments
         protected override void DoAutoFetching(CancellationToken token)
         {
             // disable display to speed up instrument operation
-            SetDisplayCircuitry(false);
+            // SetDisplayCircuitry(false);
 
             while (!token.IsCancellationRequested)
             {

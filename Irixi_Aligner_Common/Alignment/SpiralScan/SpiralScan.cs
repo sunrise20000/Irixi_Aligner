@@ -107,7 +107,12 @@ namespace Irixi_Aligner_Common.Alignment.SpiralScan
                     {
                         for (int i = 0; i < move_times; i++)
                         {
-                            // move the axis
+                            /// <summary>
+                            /// move to alignment start position.
+                            /// the move methods of the physical axis MUST BE called because the move methods of logical
+                            /// axis will trigger the changing of system status in SystemService.
+                            /// <see cref="SystemService.MoveLogicalAxis(MotionControllers.Base.LogicalAxis, MoveByDistanceArgs)"/>
+                            /// </summary>
                             MoveBySequence(move_to, this.Args.MoveSpeed, this.Args.Gap, ref curr_pos);
 
                             var fb = this.Args.Instrument.Fetch();

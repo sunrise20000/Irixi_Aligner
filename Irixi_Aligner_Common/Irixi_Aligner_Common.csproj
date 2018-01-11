@@ -177,7 +177,8 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="Alignment\00_Template_AlignmentArgs.cs" />
-    <Compile Include="Alignment\AdjustRollBy1DScan.cs" />
+    <Compile Include="Alignment\Rotating\RotatingScanArgs.cs" />
+    <Compile Include="Alignment\Rotating\RotatingScan.cs" />
     <Compile Include="Alignment\AligmentXD\Alignment1DArgs.cs" />
     <Compile Include="Alignment\BaseClasses\AlignmentBase.cs" />
     <Compile Include="Alignment\AligmentXD\AlignmentXD.cs" />
@@ -254,6 +255,9 @@
     </Compile>
     <Compile Include="UserControls\AlignmentPanelBlindSearch.xaml.cs">
       <DependentUpon>AlignmentPanelBlindSearch.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="UserControls\AlignmentPanelRotatingScan.xaml.cs">
+      <DependentUpon>AlignmentPanelRotatingScan.xaml</DependentUpon>
     </Compile>
     <Compile Include="UserControls\AlignmentParamEditor.xaml.cs">
       <DependentUpon>AlignmentParamEditor.xaml</DependentUpon>
@@ -355,6 +359,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="UserControls\AlignmentPanelRotatingScan.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="UserControls\AlignmentParamEditor.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -403,9 +411,7 @@
     <Resource Include="Resources\Images\Icons\warning_32x32.png" />
     <Resource Include="Resources\Images\Icons\wrong.png" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="MotionControllers\Thorlabs\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <ProjectReference Include="..\StepperControllerLib\IrixiStepperControllerHelper.csproj">
       <Project>{7d9a7b1a-e2e1-4d53-8986-3a4de679551c}</Project>
@@ -413,6 +419,11 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <Resource Include="Resources\Images\Icons\xy_32x32.png" />
+    <Resource Include="Resources\Images\Icons\spiral_32x32.png" />
+    <Resource Include="Resources\Images\Icons\rotating_32x32.png" />
+    <Resource Include="Resources\Images\Icons\rotating_512x512.png" />
+    <Resource Include="Resources\Images\splash_background.png" />
     <Resource Include="Resources\Images\Icons\play_256x256.png" />
     <Resource Include="Resources\Images\Icons\stop_256x256.png" />
     <Resource Include="Resources\Images\Icons\spiral_512x512.png" />

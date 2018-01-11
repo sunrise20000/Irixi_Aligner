@@ -51,8 +51,9 @@
                     <dxr:RibbonPageGroup x:Name="rpgPresetPositionButtonsHost" Caption="Preset Position">
                     </dxr:RibbonPageGroup>
                     <dxr:RibbonPageGroup Caption="Alignment">
-                        <dxb:BarButtonItem x:Name="btnBlindSearch" Content="Blind Search" LargeGlyph="{DynamicResource IconSpiral_512x512}" ItemClick="btnBlindSearch_ItemClick" />
-                        <dxb:BarButtonItem x:Name="btnAlignmentXD" Content="Alignment xD" LargeGlyph="{DynamicResource IconXY_512x512}" ItemClick="btnAlignmentXD_ItemClick" />
+                        <dxb:BarButtonItem x:Name="btnBlindSearch" Content="Blind Search" LargeGlyph="{DynamicResource IconSpiral_32x32}" ItemClick="btnBlindSearch_ItemClick" />
+                        <dxb:BarButtonItem x:Name="btnAlignmentXD" Content="Alignment xD" LargeGlyph="{DynamicResource IconXY_32x32}" ItemClick="btnAlignmentXD_ItemClick" />
+                        <dxb:BarButtonItem x:Name="btnRotatingScan" Content="Rotating Scan" LargeGlyph="{DynamicResource IconRotating_32x32}" ItemClick="btnRotatingScan_ItemClick" />
                         <dxb:BarButtonItem Content="Fast Alignment" Glyph="{dx:DXImageOffice2013 Image=Solution_16x16.png}" LargeGlyph="{dx:DXImageOffice2013 Image=Solution_32x32.png}" />
                     </dxr:RibbonPageGroup>
                 </dxr:RibbonPage>
@@ -152,6 +153,20 @@
                                            AllowDockToDocumentGroup="False"
                                            Visibility="Hidden">
                             <UserControls:AlignmentPanelBlindSearch DataContext="{Binding Service}"/>
+                        </dxd:DocumentPanel>
+                        
+                        <!-- Rotating Scan Panel -->
+                        <dxd:DocumentPanel x:Name="panelRotatingScan" 
+                                           Caption="Rotating Search" 
+                                           MDISize="1000,600" 
+                                           AllowFloat="False" 
+                                           AllowSizing="True" 
+                                           AllowRename="False" 
+                                           AllowDock="False" 
+                                           AllowMaximize="true" 
+                                           AllowDockToDocumentGroup="False"
+                                           Visibility="Hidden">
+                            <UserControls:AlignmentPanelRotatingScan DataContext="{Binding Service}"/>
                         </dxd:DocumentPanel>
                         
                     </dxd:DocumentGroup>

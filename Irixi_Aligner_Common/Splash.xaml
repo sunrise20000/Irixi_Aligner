@@ -9,24 +9,12 @@
         WindowStartupLocation="CenterScreen" 
         WindowStyle="None" 
         Topmost="True" ResizeMode="NoResize">
-    <Grid Background="{StaticResource Color_IrixiYellow}">
+    <Grid>
         <Grid.RowDefinitions>
             <RowDefinition/>
             <RowDefinition Height="30"/>
         </Grid.RowDefinitions>
-        <StackPanel>
-            <TextBlock FontWeight="Bold" Foreground="White" Text="© IRIXI" Margin="15,4,0,0" HorizontalAlignment="Left" FontSize="18"/>
-            <TextBlock HorizontalAlignment="Center" VerticalAlignment="Top" FontSize="70" Foreground="White" Text="GPAS" Margin="0,12,0,0" FontFamily="Wide Latin"/>
-            <TextBlock Text="General Purpose Alignment System" Foreground="#7FFFFFFF" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="16" Margin="4,-7,0,0" FontFamily="MS Reference Sans Serif"/>
-        </StackPanel>
-        <Border Background="#FFFFBF61" Grid.Row="1">
-            <Grid>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="150"/>
-                    <ColumnDefinition/>
-                </Grid.ColumnDefinitions>
-                <TextBlock x:Name="txtVersionInfo" Text="v1.0.0" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="10,0,0,0" Foreground="#7FFFFFFF"/>
-            </Grid>
-        </Border>
+        <Image Source="Resources/Images/splash_background.png" Stretch="Fill" Grid.RowSpan="2"/>
+        <TextBlock x:Name="txtVersionInfo" Text="v1.0.0" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="10,0,0,0" Foreground="#7FFFFFFF" Grid.Row="1"/>
     </Grid>
 </Window>

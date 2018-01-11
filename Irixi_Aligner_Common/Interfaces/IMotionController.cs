@@ -25,8 +25,6 @@ namespace Irixi_Aligner_Common.Interfaces
 
         #region Properties
 
-        
-
         /// <summary>
         /// Get the model of this controller.
         /// </summary>

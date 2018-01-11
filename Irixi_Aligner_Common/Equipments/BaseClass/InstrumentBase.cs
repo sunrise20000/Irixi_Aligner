@@ -118,7 +118,7 @@ namespace Irixi_Aligner_Common.Equipments.Base
 
         public virtual void PauseAutoFetching()
         {
-            if (task_fetch_loop != null)
+            if (task_fetch_loop != null && task_fetch_loop.IsCompleted == false)
             {
                 // cancel the task of fetching loop
                 cts_fetching.Cancel();

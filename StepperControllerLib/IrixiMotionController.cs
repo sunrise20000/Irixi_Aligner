@@ -34,13 +34,13 @@ namespace IrixiStepperControllerHelper
         /// <summary>
         /// The total steps which is used to acceleration and deceleration
         /// </summary>
-        const int ACC_DEC_STEPS = 1000;
+        const int ACC_DEC_STEPS = 2000;
 
         /// <summary>
         /// The maximum drive veloctiy
         /// The real velocity is Velocity_Set(%) * MAX_VELOCITY
         /// </summary>
-        const int MAX_VELOCITY = 20000;
+        const int MAX_VELOCITY = 15000;
 
         #endregion
 

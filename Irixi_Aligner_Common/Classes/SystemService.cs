@@ -4,6 +4,7 @@ using GalaSoft.MvvmLight.Ioc;
 using GalaSoft.MvvmLight.Messaging;
 using Irixi_Aligner_Common.Alignment.AlignmentXD;
 using Irixi_Aligner_Common.Alignment.Base;
+using Irixi_Aligner_Common.Alignment.Rotating;
 using Irixi_Aligner_Common.Alignment.SpiralScan;
 using Irixi_Aligner_Common.Classes.BaseClass;
 using Irixi_Aligner_Common.Configuration.Common;
@@ -88,6 +89,7 @@ namespace Irixi_Aligner_Common.Classes
 
             SpiralScanArgs = new SpiralScanArgs();
             AlignmentXDArgs = new AlignmentXDArgs();
+            RotatingScanArgs = new RotatingScanArgs();
 
 
             /*
@@ -144,7 +146,7 @@ namespace Irixi_Aligner_Common.Classes
                 foreach (var cfg_axis in cfg_motion_comp.LogicalAxisArray)
                 {
                     // new logical axis object will be added to the Logical Motion Component
-                    LogicalAxis axis = new LogicalAxis(this, cfg_axis, cfg_motion_comp.Caption, axis_id);
+                    MotionControllers.Base.LogicalAxis axis = new MotionControllers.Base.LogicalAxis(this, cfg_axis, cfg_motion_comp.Caption, axis_id);
 
                     axis.OnHomeRequsted += LogicalAxis_OnHomeRequsted;
                     axis.OnMoveRequsted += LogicalAxis_OnMoveRequsted;
@@ -197,19 +199,19 @@ namespace Irixi_Aligner_Common.Classes
 
         void LogicalAxis_OnHomeRequsted(object sender, EventArgs args)
         {
-            var s = sender as LogicalAxis;
+            var s = sender as MotionControllers.Base.LogicalAxis;
             Home(s.PhysicalAxisInst);
         }
 
         void LogicalAxis_OnMoveRequsted(object sender, MoveByDistanceArgs args)
         {
-            var s = sender as LogicalAxis;
+            var s = sender as MotionControllers.Base.LogicalAxis;
             MoveLogicalAxis(s, args);
         }
 
         void LogicalAxis_OnStopRequsted(object sender, EventArgs args)
         {
-            var s = sender as LogicalAxis;
+            var s = sender as MotionControllers.Base.LogicalAxis;
             s.PhysicalAxisInst.Stop();
         }
 
@@ -351,6 +353,14 @@ namespace Irixi_Aligner_Common.Classes
             get;
         }
 
+        /// <summary>
+        /// Get argument of rotating alignment
+        /// </summary>
+        public RotatingScanArgs RotatingScanArgs
+        {
+            get;
+        }
+
         #endregion
 
         #region Private Methods
@@ -381,7 +391,7 @@ namespace Irixi_Aligner_Common.Classes
         /// <param name="ParentAligner">which logical aligner belongs to</param>
         /// <param name="Axis"></param>
         /// <returns></returns>
-        bool BindPhysicalAxis(LogicalAxis Axis)
+        bool BindPhysicalAxis(MotionControllers.Base.LogicalAxis Axis)
         {
             bool ret = false;
 
@@ -548,7 +558,6 @@ namespace Irixi_Aligner_Common.Classes
         /// </summary>
         public async void Init()
         {
-            bool[] ret;
             List<Task<bool>> _tasks = new List<Task<bool>>();
             List<IEquipmentBase> _equipments = new List<IEquipmentBase>();
             
@@ -557,34 +566,28 @@ namespace Irixi_Aligner_Common.Classes
             #region Initialize motion controllers
 
             // initialize all motion controllers simultaneously
-            foreach (var _mc in this.PhysicalMotionControllerCollection.Values)
+            foreach (var controller in this.PhysicalMotionControllerCollection.Values)
             {
-                if (_mc.IsEnabled)
+                if (controller.IsEnabled)
                 {
-                    _equipments.Add(_mc);
-                    _tasks.Add(Task.Run(() => { return _mc.Init(); }));
+                    _equipments.Add(controller);
+                    _tasks.Add(Task.Run(() => { return controller.Init(); }));
 
-                    this.LastMessage = new MessageItem(MessageType.Normal, "{0} Initializing ...", _mc);
+                    this.LastMessage = new MessageItem(MessageType.Normal, "{0} Initializing ...", controller);
 
-                    // update UI immediately
-                    await Task.Delay(50);
+                    // prevent UI from halt
+                    await Task.Delay(10);
                 }
             }
 
+            // wait until all axes are initialized
+            // once a task is done, display the message on the screen
             while (_tasks.Count > 0)
             {
-                // Wait until all init tasks were done
                 Task<bool> t = await Task.WhenAny(_tasks);
-
                 int id = _tasks.IndexOf(t);
-
                 if (t.Result)
-                {
-                    //if (_equipments[id] is IrixiEE0017)
-                    //    ((IrixiEE0017)_equipments[id]).StartReadReport();
-
                     this.LastMessage = new MessageItem(MessageType.Good, "{0} Initialization is completed.", _equipments[id]);
-                }
                 else
                     this.LastMessage = new MessageItem(MessageType.Error, "{0} Initialization is failed, {1}", _equipments[id], _equipments[id].LastError);
 
@@ -716,7 +719,7 @@ namespace Irixi_Aligner_Common.Classes
         /// <remarks>
         /// An args is consisted of 3 elements: Move Order, Logical Axis, How to Move
         /// </remarks>
-        public async void MassMoveLogicalAxis(Tuple<int, LogicalAxis, MoveByDistanceArgs>[] AxesGroup)
+        public async void MassMoveLogicalAxis(Tuple<int, MotionControllers.Base.LogicalAxis, MoveByDistanceArgs>[] AxesGroup)
         {
             if (GetSystemState() != SystemState.BUSY)
             {
@@ -734,7 +737,7 @@ namespace Irixi_Aligner_Common.Classes
                 // generate a list which contains the movement tasks
                 // this is used by the Task.WhenAll() function
                 List<Task<bool>> _move_tasks = new List<Task<bool>>();
-                List<LogicalAxis> _axis_moving = new List<LogicalAxis>();
+                List<MotionControllers.Base.LogicalAxis> _axis_moving = new List<MotionControllers.Base.LogicalAxis>();
 
                 this.LastMessage = new MessageItem(MessageType.Normal, "Executing mass move ...");
 
@@ -823,7 +826,7 @@ namespace Irixi_Aligner_Common.Classes
                 int _homed_cnt = 0;
                 int _total_axis = this.LogicalAxisCollection.Count;
                 List<Task<bool>> _tasks = new List<Task<bool>>();
-                List<LogicalAxis> _axis_homing = new List<LogicalAxis>();
+                List<MotionControllers.Base.LogicalAxis> _axis_homing = new List<MotionControllers.Base.LogicalAxis>();
 
                 SetSystemState(SystemState.BUSY);
 
@@ -920,6 +923,11 @@ namespace Irixi_Aligner_Common.Classes
         public void DoBlindSearch(SpiralScanArgs Args)
         {
             StartAlignmentProc(new SpiralScan(Args));
+        }
+
+        public void DoRotatingScan(RotatingScanArgs Args)
+        {
+            StartAlignmentProc(new RotatingScan(Args));
         }
 
         #region Cylinder Control
@@ -1210,6 +1218,17 @@ namespace Irixi_Aligner_Common.Classes
                 return new RelayCommand<SpiralScanArgs>(args =>
                 {
                     DoBlindSearch(args);
+                });
+            }
+        }
+
+        public RelayCommand<RotatingScanArgs> CommandDoRotatingScan
+        {
+            get
+            {
+                return new RelayCommand<RotatingScanArgs>(args =>
+                {
+                    DoRotatingScan(args);
                 });
             }
         }

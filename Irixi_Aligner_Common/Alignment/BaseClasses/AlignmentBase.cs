@@ -1,4 +1,5 @@
-﻿using Irixi_Aligner_Common.Interfaces;
+﻿using Irixi_Aligner_Common.Classes.BaseClass;
+using Irixi_Aligner_Common.Interfaces;
 using System.Threading;
 
 namespace Irixi_Aligner_Common.Alignment.Base
@@ -18,7 +19,7 @@ namespace Irixi_Aligner_Common.Alignment.Base
         {
             protected set; get;
         }
-        
+
         public virtual void Start()
         {
             cts = new CancellationTokenSource();

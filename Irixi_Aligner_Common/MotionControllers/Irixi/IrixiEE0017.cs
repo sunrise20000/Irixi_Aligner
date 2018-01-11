@@ -113,8 +113,7 @@ namespace Irixi_Aligner_Common.MotionControllers.Irixi
                     sdkAxis.AccelerationSteps = axis.AccelerationSteps;
 
                     // reverse the drive directoin
-                    if (axis.ReverseDriveDirecton)
-                        _controller.ReverseOriginPosition(i, true);
+                    _controller.ReverseOriginPosition(i, axis.ReverseDriveDirecton);
                 }
 
                 return true;

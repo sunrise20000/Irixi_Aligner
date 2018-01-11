@@ -19,6 +19,11 @@ namespace Irixi_Aligner_Common.Interfaces
         int AxisIndex { get; }
 
         /// <summary>
+        /// Indicates that whether the axis is used to align the components
+        /// </summary>
+        bool IsAligner { get; }
+
+        /// <summary>
         /// Get whether the axis is busy or not.
         /// if is busy, the operation to the axis is denied.
         /// </summary>

@@ -18,6 +18,7 @@ namespace Irixi_Aligner_Common.MotionControllers.Base
         int _cwl = 0, _ccwl = 0;
         bool
             _is_enabled = false,
+            _is_aligner = true,
             _is_homed = false,
             _is_manual_enabled = false,
             _is_abs_mode = false,
@@ -67,6 +68,18 @@ namespace Irixi_Aligner_Common.MotionControllers.Base
             set
             {
                 UpdateProperty<bool>(ref _is_enabled, value);
+            }
+        }
+
+        public bool IsAligner
+        {
+            get
+            {
+                return _is_aligner;
+            }
+            set
+            {
+                UpdateProperty<bool>(ref _is_aligner, value);
             }
         }
 
@@ -177,6 +190,7 @@ namespace Irixi_Aligner_Common.MotionControllers.Base
 
         public IMotionController ParentController { get; private set; }
 
+
         #endregion
 
         #region Methods
@@ -205,7 +219,7 @@ namespace Irixi_Aligner_Common.MotionControllers.Base
                 this.IsEnabled = Config.Enabled;
                 this.InitPosition = Config.OffsetAfterHome;
                 this.MaxSpeed = Config.MaxSpeed;
-                this.AccelerationSteps = Config.AccelerationSteps;
+                this.AccelerationSteps = Config.Acceleration;
                 this.ParentController = Controller;
                 
                 this.UnitHelper = new RealworldPositionManager(
