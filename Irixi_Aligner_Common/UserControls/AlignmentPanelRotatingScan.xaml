@@ -66,18 +66,18 @@
                 <TextBlock Grid.Row="6" Text="Range Rotating"/>
                 <TextBlock Grid.Row="6" Grid.Column="1" Text="Range Linear"/>
                 <TextBlock Grid.Row="8" Text="Target Pos. Diff"/>
-                <TextBlock Grid.Row="8" Grid.Column="1" Text="Max Cycles"/>
+                <TextBlock Grid.Row="8" Grid.Column="1" Text="Pos. Diff Change Rate(%)"/>
                 <TextBlock Grid.Row="10" Text="Move Speed (%)"/>
                 <ComboBox Grid.Row="1" Grid.Column="0" x:Name="cbxAxisRotating" ItemsSource="{Binding LogicalAxisCollection}" SelectedItem="{Binding RotatingScanArgs.AxisRotating}" />
                 <ComboBox Grid.Row="1" Grid.Column="1" x:Name="cbxAxisLinear" ItemsSource="{Binding LogicalAxisCollection}" SelectedItem="{Binding RotatingScanArgs.AxisLinear}" />
-                <ComboBox Grid.Row="3" Grid.Column="0" x:Name="cbxInstr" ItemsSource="{Binding ActiveInstrumentCollection}" SelectedItem="{Binding RotatingScanArgs.Instrument}" />
-                <ComboBox Grid.Row="3" Grid.Column="1" x:Name="cbxInstr2" ItemsSource="{Binding ActiveInstrumentCollection}" SelectedItem="{Binding RotatingScanArgs.Instrument2}" />
+                <ComboBox Grid.Row="3" Grid.Column="0" x:Name="cbxInstr" ItemsSource="{Binding ActiveInstrumentCollection}" SelectedItem="{Binding RotatingScanArgs.Instrument}" ToolTip="The instrument must correspond with the physical PD" />
+                <ComboBox Grid.Row="3" Grid.Column="1" x:Name="cbxInstr2" ItemsSource="{Binding ActiveInstrumentCollection}" SelectedItem="{Binding RotatingScanArgs.Instrument2}" ToolTip="{Binding ToolTip, ElementName=cbxInstr}" />
                 <dxe:TextEdit Grid.Row="5" Grid.Column="0" x:Name="txtGapRotating" Text="{Binding RotatingScanArgs.GapRotating}"/>
                 <dxe:TextEdit Grid.Row="5" Grid.Column="1" x:Name="txtGapLinear" Text="{Binding RotatingScanArgs.GapLinear}"/>
                 <dxe:TextEdit Grid.Row="7" Grid.Column="0" x:Name="txtRangeRotating" Text="{Binding RotatingScanArgs.RangeRotating}"/>
                 <dxe:TextEdit Grid.Row="7" Grid.Column="1" x:Name="txtRangeLinear" Text="{Binding RotatingScanArgs.RangeLinear}"/>
                 <dxe:TextEdit Grid.Row="9" Grid.Column="0" x:Name="txtTargetPosDiff" Text="{Binding RotatingScanArgs.TargetPositionDifferentialOfMaxPower}"/>
-                <dxe:TextEdit Grid.Row="9" Grid.Column="1" x:Name="txtMaxCycles" Text="{Binding RotatingScanArgs.MaxCycles}"/>
+                <dxe:TextEdit Grid.Row="9" Grid.Column="1" x:Name="txtTargetPosDiffChangeRate" Text="{Binding RotatingScanArgs.TargetPosDiffChangeRate}"/>
                 <dxe:TextEdit Grid.Row="11" Grid.Column="0" x:Name="txtMoveSpeed" Text="{Binding RotatingScanArgs.MoveSpeed}"/>
             </Grid>
         </dx:GroupFrame>
@@ -90,15 +90,46 @@
             <Button Content="Start" Margin="8" Command="{Binding CommandDoRotatingScan, Mode=OneWay}" CommandParameter="{Binding RotatingScanArgs}" />
             <Button Content="Stop" Grid.Column="1" Margin="8" Command="{Binding CommandStop}" />
         </Grid>
-        <dxc:ChartControl Grid.Column="1" Grid.RowSpan="4" Margin="5">
-            <dxc:ChartControl.Legend>
-                <dxc:Legend HorizontalPosition="Right" Background="{x:Null}" BorderBrush="{x:Null}"/>
-            </dxc:ChartControl.Legend>
-            <dxc:XYDiagram2D>
-                <dxc:LineSeries2D DataSource="{Binding RotatingScanArgs.ScanCurve}" ValueDataMember="Y" ArgumentDataMember="X" DisplayName="{Binding RotatingScanArgs.Instrument.Config.Caption}"/>
-                <dxc:LineSeries2D DataSource="{Binding RotatingScanArgs.ScanCurve2}" ValueDataMember="Y" ArgumentDataMember="X" DisplayName="{Binding RotatingScanArgs.Instrument2.Config.Caption}"/>
-            </dxc:XYDiagram2D>
-
-        </dxc:ChartControl>
+        <Grid Grid.Column="1" Grid.RowSpan="3" Margin="5">
+            <Grid.RowDefinitions>
+                <RowDefinition/>
+                <RowDefinition Height="200"/>
+            </Grid.RowDefinitions>
+            <dxc:ChartControl Margin="0,0,0,5">
+                <dxc:ChartControl.Legend>
+                    <dxc:Legend HorizontalPosition="Right" Background="{x:Null}" BorderBrush="{x:Null}"/>
+                </dxc:ChartControl.Legend>
+                <dxc:XYDiagram2D>
+                    <dxc:XYDiagram2D.AxisX>
+                        <dxc:AxisX2D>
+                            <dxc:AxisX2D.Title>
+                                <dxc:AxisTitle Content="Position" FontSize="12"/>
+                            </dxc:AxisX2D.Title>
+                        </dxc:AxisX2D>
+                    </dxc:XYDiagram2D.AxisX>
+                    <dxc:XYDiagram2D.AxisY>
+                        <dxc:AxisY2D>
+                            <dxc:AxisY2D.Title>
+                                <dxc:AxisTitle Content="Power" FontSize="12"/>
+                            </dxc:AxisY2D.Title>
+                        </dxc:AxisY2D>
+                    </dxc:XYDiagram2D.AxisY>
+                    <dxc:LineSeries2D DataSource="{Binding RotatingScanArgs.ScanCurve}" ValueDataMember="Y" ArgumentDataMember="X" DisplayName="{Binding RotatingScanArgs.Instrument.Config.Caption}"/>
+                    <dxc:LineSeries2D DataSource="{Binding RotatingScanArgs.ScanCurve2}" ValueDataMember="Y" ArgumentDataMember="X" DisplayName="{Binding RotatingScanArgs.Instrument2.Config.Caption}"/>
+                </dxc:XYDiagram2D>
+            </dxc:ChartControl>
+            <dxc:ChartControl Grid.Row="1">
+                <dxc:ChartControl.Legend>
+                    <dxc:Legend Visibility="Hidden" HorizontalPosition="Right"/>
+                </dxc:ChartControl.Legend>
+                <dxc:ChartControl.Titles>
+                    <dxc:Title Content="Pos. Differential Trend" FontSize="12" HorizontalAlignment="Center"/>
+                </dxc:ChartControl.Titles>
+                <dxc:XYDiagram2D>
+                    <dxc:SplineSeries2D DataSource="{Binding RotatingScanArgs.PosDiffTrendCurve}" ValueDataMember="Y" ArgumentDataMember="X" DisplayName="Trend"/>
+                </dxc:XYDiagram2D>
+            </dxc:ChartControl>
+        </Grid>
+        
     </Grid>
 </UserControl>

@@ -12,8 +12,10 @@ namespace Irixi_Aligner_Common.Alignment.Rotating
         #region Variables
 
         LogicalAxis axisRotating, axisLinear;
-        double targetPositionDifferentialOfMaxPower = 5, gapRotating = 0.1, gapLinear = 1, rangeRotating = 1, rangeLinear = 10;
-        int maxCycles = 1, moveSpeed = 100;
+        double targetPositionDifferentialOfMaxPower = 5, targetPosDiffChangeRate = 10, 
+            gapRotating = 0.1, gapLinear = 1, 
+            rangeRotating = 1, rangeLinear = 10;
+        int moveSpeed = 100;
 
         //2 channel should be detected at the same time, so we need 2 keithley2400s
         IInstrument instrument2;
@@ -26,6 +28,7 @@ namespace Irixi_Aligner_Common.Alignment.Rotating
         {
             ScanCurve = new ObservableCollectionThreadSafe<Point>();
             ScanCurve2 = new ObservableCollectionThreadSafe<Point>();
+            PosDiffTrendCurve = new ObservableCollectionThreadSafe<Point>();
         }
 
         #endregion
@@ -78,12 +81,16 @@ namespace Irixi_Aligner_Common.Alignment.Rotating
             }
         }
 
-        public int MaxCycles
+        /// <summary>
+        /// If the Pos. Diff. change rate is less than this value, exit alignment loop, 
+        /// the value is in %.
+        /// </summary>
+        public double TargetPosDiffChangeRate
         {
-            get => maxCycles;
+            get => targetPosDiffChangeRate;
             set
             {
-                maxCycles = value;
+                targetPosDiffChangeRate = value;
                 RaisePropertyChanged();
             }
         }
@@ -138,9 +145,11 @@ namespace Irixi_Aligner_Common.Alignment.Rotating
             }
         }
 
-        public ObservableCollectionThreadSafe<Point> ScanCurve { set; get; }
+        public ObservableCollectionThreadSafe<Point> ScanCurve { private set; get; }
 
-        public ObservableCollectionThreadSafe<Point> ScanCurve2 { set; get; }
+        public ObservableCollectionThreadSafe<Point> ScanCurve2 { private set; get; }
+
+        public ObservableCollectionThreadSafe<Point> PosDiffTrendCurve { private set; get; }
 
         #endregion
 
