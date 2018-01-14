@@ -1,4 +1,4 @@
-﻿using Irixi_Aligner_Common.Alignment.Base;
+﻿using Irixi_Aligner_Common.Alignment.BaseClasses;
 using System;
 using System.Linq;
 using System.Windows;
@@ -158,7 +158,7 @@ namespace Irixi_Aligner_Common.Alignment.SpiralScan
 
         public override string ToString()
         {
-            return "Spiral-Scan Process";
+            return "Blind Search Process";
         }
 
         #endregion

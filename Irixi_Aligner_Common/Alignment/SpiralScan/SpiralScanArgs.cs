@@ -1,4 +1,4 @@
-﻿using Irixi_Aligner_Common.Alignment.Base;
+﻿using Irixi_Aligner_Common.Alignment.BaseClasses;
 using Irixi_Aligner_Common.Classes.BaseClass;
 using Irixi_Aligner_Common.MotionControllers.Base;
 using System;

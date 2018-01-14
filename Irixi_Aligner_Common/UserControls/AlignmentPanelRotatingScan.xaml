@@ -6,7 +6,6 @@
              xmlns:dx="http://schemas.devexpress.com/winfx/2008/xaml/core" 
              xmlns:dxe="http://schemas.devexpress.com/winfx/2008/xaml/editors" 
              xmlns:dxc="http://schemas.devexpress.com/winfx/2008/xaml/charts"
-             xmlns:local="clr-namespace:Irixi_Aligner_Common.UserControls"
              xmlns:localAssm="clr-namespace:Irixi_Aligner_Common" 
              mc:Ignorable="d" 
              d:DesignHeight="700" d:DesignWidth="1000">
@@ -61,24 +60,61 @@
                 <TextBlock Grid.Column="1" Text="Axis Linear"/>
                 <TextBlock Grid.Row="2" Text="Instr. Channel 1"/>
                 <TextBlock Grid.Row="2" Grid.Column="1" Text="Instr. Channel 2"/>
-                <TextBlock Grid.Row="4" Text="Gap Rotating"/>
-                <TextBlock Grid.Row="4" Grid.Column="1" Text="Gap Linear"/>
-                <TextBlock Grid.Row="6" Text="Range Rotating"/>
-                <TextBlock Grid.Row="6" Grid.Column="1" Text="Range Linear"/>
-                <TextBlock Grid.Row="8" Text="Target Pos. Diff"/>
-                <TextBlock Grid.Row="8" Grid.Column="1" Text="Pos. Diff Change Rate(%)"/>
-                <TextBlock Grid.Row="10" Text="Move Speed (%)"/>
+                <StackPanel Grid.Row="4" Orientation="Horizontal">
+                    <TextBlock Text="Rotating Interval"/>
+                    <TextBlock Text="{Binding ElementName=cbxAxisRotating, Path=SelectedItem.PhysicalAxisInst.UnitHelper, StringFormat={} ({0})}"/>
+                </StackPanel>
+                <StackPanel Grid.Row="4" Grid.Column="1" Orientation="Horizontal">
+                    <TextBlock Text="Linear Interval"/>
+                    <TextBlock Text="{Binding ElementName=cbxAxisLinear, Path=SelectedItem.PhysicalAxisInst.UnitHelper, StringFormat={} ({0})}"/>
+                </StackPanel>
+                <StackPanel Grid.Row="6" Orientation="Horizontal">
+                    <TextBlock Text="Max Rotating"/>
+                    <TextBlock Text="{Binding ElementName=cbxAxisRotating, Path=SelectedItem.PhysicalAxisInst.UnitHelper, StringFormat={} ({0})}"/>
+                </StackPanel>
+                <StackPanel Grid.Row="6" Grid.Column="1" Orientation="Horizontal">
+                    <TextBlock Text="Max Linear"/>
+                    <TextBlock Text="{Binding ElementName=cbxAxisLinear, Path=SelectedItem.PhysicalAxisInst.UnitHelper, StringFormat={} ({0})}"/>
+                </StackPanel>
+                <StackPanel Grid.Row="8" Grid.Column="0" Orientation="Horizontal">
+                    <TextBlock Grid.Row="8" Text="Target ΔPos."/>
+                    <TextBlock Text="{Binding ElementName=cbxAxisLinear, Path=SelectedItem.PhysicalAxisInst.UnitHelper, StringFormat={} ({0})}"/>
+                </StackPanel>
+                <TextBlock Grid.Row="8" Grid.Column="1" Text="ΔPos. Changing Rate(%)"/>
+                <StackPanel Grid.Row="10" Grid.Column="0" Orientation="Horizontal">
+                    <TextBlock Grid.Row="10" Text="Length of DUTs"/>
+                    <TextBlock Text="{Binding ElementName=cbxAxisLinear, Path=SelectedItem.PhysicalAxisInst.UnitHelper, StringFormat={} ({0})}"/>
+                </StackPanel>
+                <TextBlock Grid.Row="10" Grid.Column="1" Text="Move Speed (%)"/>
                 <ComboBox Grid.Row="1" Grid.Column="0" x:Name="cbxAxisRotating" ItemsSource="{Binding LogicalAxisCollection}" SelectedItem="{Binding RotatingScanArgs.AxisRotating}" />
                 <ComboBox Grid.Row="1" Grid.Column="1" x:Name="cbxAxisLinear" ItemsSource="{Binding LogicalAxisCollection}" SelectedItem="{Binding RotatingScanArgs.AxisLinear}" />
-                <ComboBox Grid.Row="3" Grid.Column="0" x:Name="cbxInstr" ItemsSource="{Binding ActiveInstrumentCollection}" SelectedItem="{Binding RotatingScanArgs.Instrument}" ToolTip="The instrument must correspond with the physical PD" />
-                <ComboBox Grid.Row="3" Grid.Column="1" x:Name="cbxInstr2" ItemsSource="{Binding ActiveInstrumentCollection}" SelectedItem="{Binding RotatingScanArgs.Instrument2}" ToolTip="{Binding ToolTip, ElementName=cbxInstr}" />
+                <ComboBox Grid.Row="3" Grid.Column="0" x:Name="cbxInstr" ItemsSource="{Binding ActiveInstrumentCollection}" DisplayMemberPath="Config.Caption" SelectedItem="{Binding RotatingScanArgs.Instrument}">
+                    <ComboBox.ToolTip>
+                        <ToolTip HasDropShadow="True">
+                            <StackPanel>
+                                <TextBlock Text="Insure one-to-one relationship between the instrument and the DUT" FontWeight="Bold"/>
+                            </StackPanel>
+                        </ToolTip>
+                    </ComboBox.ToolTip>
+                </ComboBox>
+                <ComboBox Grid.Row="3" Grid.Column="1" x:Name="cbxInstr2" ItemsSource="{Binding ActiveInstrumentCollection}" DisplayMemberPath="Config.Caption" SelectedItem="{Binding RotatingScanArgs.Instrument2}" ToolTip="{Binding ToolTip, ElementName=cbxInstr}" />
                 <dxe:TextEdit Grid.Row="5" Grid.Column="0" x:Name="txtGapRotating" Text="{Binding RotatingScanArgs.GapRotating}"/>
                 <dxe:TextEdit Grid.Row="5" Grid.Column="1" x:Name="txtGapLinear" Text="{Binding RotatingScanArgs.GapLinear}"/>
                 <dxe:TextEdit Grid.Row="7" Grid.Column="0" x:Name="txtRangeRotating" Text="{Binding RotatingScanArgs.RangeRotating}"/>
                 <dxe:TextEdit Grid.Row="7" Grid.Column="1" x:Name="txtRangeLinear" Text="{Binding RotatingScanArgs.RangeLinear}"/>
                 <dxe:TextEdit Grid.Row="9" Grid.Column="0" x:Name="txtTargetPosDiff" Text="{Binding RotatingScanArgs.TargetPositionDifferentialOfMaxPower}"/>
                 <dxe:TextEdit Grid.Row="9" Grid.Column="1" x:Name="txtTargetPosDiffChangeRate" Text="{Binding RotatingScanArgs.TargetPosDiffChangeRate}"/>
-                <dxe:TextEdit Grid.Row="11" Grid.Column="0" x:Name="txtMoveSpeed" Text="{Binding RotatingScanArgs.MoveSpeed}"/>
+                <dxe:TextEdit Grid.Row="11" Grid.Column="0" x:Name="txtLengthOfChannelStartToEnd" Text="{Binding RotatingScanArgs.LengthOfChannelStartToEnd}">
+                    <dxe:TextEdit.ToolTip>
+                        <ToolTip>
+                            <StackPanel>
+                                <TextBlock Text="The unit must be the same as the linear axis'" FontWeight="Bold"/>
+                                <TextBlock Text="the default unit is um" FontStyle="Italic"/>
+                            </StackPanel>
+                        </ToolTip>
+                    </dxe:TextEdit.ToolTip>
+                </dxe:TextEdit>
+                <dxe:TextEdit Grid.Row="11" Grid.Column="1" x:Name="txtMoveSpeed" Text="{Binding RotatingScanArgs.MoveSpeed}"/>
             </Grid>
         </dx:GroupFrame>
         <dxe:ListBoxEdit Grid.Row="1" localAssm:ListBoxBehavior.ScrollOnNewItem="True" IsSynchronizedWithCurrentItem="True" ItemsSource="{Binding RotatingScanArgs.Log}" Margin="0,5,0,0"/>
@@ -96,6 +132,9 @@
                 <RowDefinition Height="200"/>
             </Grid.RowDefinitions>
             <dxc:ChartControl Margin="0,0,0,5">
+                <dxc:ChartControl.Palette>
+                    <dxc:InAFogPalette/>
+                </dxc:ChartControl.Palette>
                 <dxc:ChartControl.Legend>
                     <dxc:Legend HorizontalPosition="Right" Background="{x:Null}" BorderBrush="{x:Null}"/>
                 </dxc:ChartControl.Legend>
@@ -103,7 +142,7 @@
                     <dxc:XYDiagram2D.AxisX>
                         <dxc:AxisX2D>
                             <dxc:AxisX2D.Title>
-                                <dxc:AxisTitle Content="Position" FontSize="12"/>
+                                <dxc:AxisTitle Content="ΔPosition" FontSize="12"/>
                             </dxc:AxisX2D.Title>
                         </dxc:AxisX2D>
                     </dxc:XYDiagram2D.AxisX>
@@ -114,19 +153,120 @@
                             </dxc:AxisY2D.Title>
                         </dxc:AxisY2D>
                     </dxc:XYDiagram2D.AxisY>
-                    <dxc:LineSeries2D DataSource="{Binding RotatingScanArgs.ScanCurve}" ValueDataMember="Y" ArgumentDataMember="X" DisplayName="{Binding RotatingScanArgs.Instrument.Config.Caption}"/>
-                    <dxc:LineSeries2D DataSource="{Binding RotatingScanArgs.ScanCurve2}" ValueDataMember="Y" ArgumentDataMember="X" DisplayName="{Binding RotatingScanArgs.Instrument2.Config.Caption}"/>
+                    <!--
+                    <dxc:XYDiagram2D.SeriesItemTemplate>
+                        <DataTemplate>
+                            <dxc:LineSeries2D DataSource="{Binding}" ValueDataMember="Y" ArgumentDataMember="X" DisplayName="{Binding DisplayName}" />
+                        </DataTemplate>
+                    </dxc:XYDiagram2D.SeriesItemTemplate>
+                    -->
+                    <!-- Line Series of ScanCurve -->
+                    <dxc:LineSeries2D DataSource="{Binding RotatingScanArgs.ScanCurve}" ValueDataMember="Y" ArgumentDataMember="X" DisplayName="{Binding RotatingScanArgs.ScanCurve.DisplayName}" MarkerVisible="True" MarkerSize="7" >
+                        <dxc:LineSeries2D.MarkerModel>
+                            <dxc:CircleMarker2DModel/>
+                        </dxc:LineSeries2D.MarkerModel>
+                        <dxc:LineSeries2D.LineStyle>
+                            <dxc:LineStyle Thickness="3"/>
+                        </dxc:LineSeries2D.LineStyle>
+                        <!-- Samples
+                        <dxc:SeriesPoint Argument="1" Value="100"/>
+                        <dxc:SeriesPoint Argument="2" Value="50"/>
+                        <dxc:SeriesPoint Argument="3" Value="40"/>
+                        <dxc:SeriesPoint Argument="5" Value="60"/>
+                        <dxc:SeriesPoint Argument="6" Value="-100"/>
+                        -->
+                    </dxc:LineSeries2D>
+
+                    <!-- Line Series of ScanCurve2 -->
+                    <dxc:LineSeries2D DataSource="{Binding RotatingScanArgs.ScanCurve2}" ValueDataMember="Y" ArgumentDataMember="X" DisplayName="{Binding RotatingScanArgs.ScanCurve2.DisplayName}" MarkerVisible="True" MarkerSize="7" >
+                        <dxc:LineSeries2D.MarkerModel>
+                            <dxc:CircleMarker2DModel/>
+                        </dxc:LineSeries2D.MarkerModel>
+                        <dxc:LineSeries2D.LineStyle>
+                            <dxc:LineStyle Thickness="3"/>
+                        </dxc:LineSeries2D.LineStyle>
+                    </dxc:LineSeries2D>
+
+                    <!-- Line Series of ScanCurve Fitting -->
+                    <dxc:SplineSeries2D DataSource="{Binding RotatingScanArgs.ScanCurveFitting}" ValueDataMember="Y" ArgumentDataMember="X" DisplayName="{Binding RotatingScanArgs.ScanCurve.DisplayName, StringFormat={}{0} Fitting}">
+                        <dxc:LineSeries2D.LineStyle>
+                            <dxc:LineStyle Thickness="2">
+                                <dxc:LineStyle.DashStyle>
+                                    <DashStyle Dashes="2,3"/>
+                                </dxc:LineStyle.DashStyle>
+                            </dxc:LineStyle>
+                        </dxc:LineSeries2D.LineStyle>
+                        <!-- Samples
+                        <dxc:SeriesPoint Argument="1" Value="100"/>
+                        <dxc:SeriesPoint Argument="2" Value="60"/>
+                        <dxc:SeriesPoint Argument="3" Value="40"/>
+                        <dxc:SeriesPoint Argument="5" Value="-20"/>
+                        <dxc:SeriesPoint Argument="6" Value="-50"/>
+                        -->
+                    </dxc:SplineSeries2D>
+
+                    <!-- Line Series of ScanCurve2 Fitting -->
+                    <dxc:SplineSeries2D DataSource="{Binding RotatingScanArgs.ScanCurveFitting2}" ValueDataMember="Y" ArgumentDataMember="X" DisplayName="{Binding RotatingScanArgs.ScanCurve2.DisplayName, StringFormat={}{0} Fitting}">
+                        <dxc:LineSeries2D.LineStyle>
+                            <dxc:LineStyle Thickness="2">
+                                <dxc:LineStyle.DashStyle>
+                                    <DashStyle Dashes="2,3"/>
+                                </dxc:LineStyle.DashStyle>
+                            </dxc:LineStyle>
+                        </dxc:LineSeries2D.LineStyle>
+                    </dxc:SplineSeries2D>
+                    
+                    <!-- Constant line indicates the location of the max power in ScanCurve -->
+                    <dxc:LineSeries2D DataSource="{Binding RotatingScanArgs.ScanCurve.MaxPowerConstantLine}" ValueDataMember="Y" ArgumentDataMember="X" DisplayName="{Binding RotatingScanArgs.ScanCurve.DisplayName, StringFormat={}{0} Max}" Brush="#FF047DE2">
+                        <dxc:LineSeries2D.LineStyle>
+                            <dxc:LineStyle Thickness="1" DashCap="Round">
+                                <dxc:LineStyle.DashStyle>
+                                    <DashStyle Dashes="1,5"/>
+                                </dxc:LineStyle.DashStyle>
+                            </dxc:LineStyle>
+                        </dxc:LineSeries2D.LineStyle>
+                        <!-- Samples
+                        <dxc:SeriesPoint Argument="1" Value="100"/>
+                        <dxc:SeriesPoint Argument="1" Value="0"/>
+                        -->
+                    </dxc:LineSeries2D>
+
+                    <!-- Constant line indicates the location of the max power in ScanCurve2 -->
+                    <dxc:LineSeries2D DataSource="{Binding RotatingScanArgs.ScanCurve2.MaxPowerConstantLine}" ValueDataMember="Y" ArgumentDataMember="X" DisplayName="{Binding RotatingScanArgs.ScanCurve2.DisplayName, StringFormat={}{0} Max}" Brush="#FFCE4D76">
+                        <dxc:LineSeries2D.LineStyle>
+                            <dxc:LineStyle Thickness="1" DashCap="Round">
+                                <dxc:LineStyle.DashStyle>
+                                    <DashStyle Dashes="1,5"/>
+                                </dxc:LineStyle.DashStyle>
+                            </dxc:LineStyle>
+                        </dxc:LineSeries2D.LineStyle>
+                        <!-- Samples
+                        <dxc:SeriesPoint Argument="2" Value="100"/>
+                        <dxc:SeriesPoint Argument="2" Value="0"/>
+                        -->
+                    </dxc:LineSeries2D>
                 </dxc:XYDiagram2D>
             </dxc:ChartControl>
             <dxc:ChartControl Grid.Row="1">
+                <dxc:ChartControl.Palette>
+                    <dxc:RedVioletPalette/>
+                </dxc:ChartControl.Palette>
                 <dxc:ChartControl.Legend>
-                    <dxc:Legend Visibility="Hidden" HorizontalPosition="Right"/>
+                    <dxc:Legend HorizontalPosition="Right" Background="{x:Null}" BorderBrush="{x:Null}"/>
                 </dxc:ChartControl.Legend>
                 <dxc:ChartControl.Titles>
-                    <dxc:Title Content="Pos. Differential Trend" FontSize="12" HorizontalAlignment="Center"/>
+                    <dxc:Title Content="ΔPosition Trend" FontSize="12" HorizontalAlignment="Center"/>
                 </dxc:ChartControl.Titles>
                 <dxc:XYDiagram2D>
-                    <dxc:SplineSeries2D DataSource="{Binding RotatingScanArgs.PosDiffTrendCurve}" ValueDataMember="Y" ArgumentDataMember="X" DisplayName="Trend"/>
+                    <dxc:SplineSeries2D DataSource="{Binding RotatingScanArgs.DeltaPositionTrendCurve}" ValueDataMember="Y" ArgumentDataMember="X" DisplayName="ΔPos. Trend" MarkerVisible="True" MarkerSize="7" >
+                        <!-- Samples
+                        <dxc:SeriesPoint Argument="1" Value="100"/>
+                        <dxc:SeriesPoint Argument="2" Value="50"/>
+                        <dxc:SeriesPoint Argument="3" Value="40"/>
+                        <dxc:SeriesPoint Argument="5" Value="60"/>
+                        <dxc:SeriesPoint Argument="6" Value="-100"/>
+                        -->
+                    </dxc:SplineSeries2D>
                 </dxc:XYDiagram2D>
             </dxc:ChartControl>
         </Grid>

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Irixi_Aligner_Common.Configuration.Base;
+using System;
 
 namespace Irixi_Aligner_Common.Interfaces
 {

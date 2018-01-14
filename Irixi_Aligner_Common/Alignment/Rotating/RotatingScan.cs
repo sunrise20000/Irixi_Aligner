@@ -1,10 +1,8 @@
 ﻿
-using Irixi_Aligner_Common.Alignment.Base;
 using System;
-using System.Linq;
+using System.Threading;
 using System.Windows;
-using Irixi_Aligner_Common.Classes;
-using Irixi_Aligner_Common.MotionControllers.Base;
+using Irixi_Aligner_Common.Alignment.BaseClasses;
 
 namespace Irixi_Aligner_Common.Alignment.Rotating
 {
@@ -28,25 +26,21 @@ namespace Irixi_Aligner_Common.Alignment.Rotating
             base.Start();
 
             int cycles = 0;
-            double posDiff = 9999;
+            double deltaPos = double.MaxValue;
             double rotatingDirection = 1;
             double previousPosDiff = 0, previousPosDiff2 = 0;
             double workingRotatingGap = Args.GapRotating;
 
             Args.Log.Clear();
-            Args.PosDiffTrendCurve.Clear();
+            Args.DeltaPositionTrendCurve.Clear();
 
             while(true)
             {
-                cycles++;
-
                 double distMovedLinear = 0, distMovedRotating = 0;
                 double halfRangeLinear = Args.RangeLinear / 2;
-
-
+                
                 Args.Log.Add(string.Format(">>> Start to align, cycle = {0} ...", cycles));
-
-
+                
                 #region Linear Alignment
 
                 // clear the previous scan curve
@@ -90,93 +84,113 @@ namespace Irixi_Aligner_Common.Alignment.Rotating
                         break;
                 }
 
-                // find the position of max power
-                var ordered = Args.ScanCurve.OrderByDescending(a => a.Y);
-                var pos = ordered.First().X;
-                var power = ordered.First().Y;
+                // beautify(polynomial fitting) the scan curves to find the accurate position of max optical power
+                Args.BeautifyScanCurves();
 
-                // find the position of max power2
-                ordered = Args.ScanCurve2.OrderByDescending(a => a.Y);
-                var pos2 = ordered.First().X;
-                var power2 = ordered.First().Y;
+                // find the position of max power and draw the constant lines
+                /// <seealso cref="ScanCurve.MaxPowerConstantLine"/>
+                var maxPos = Args.ScanCurve.FindMaximalPosition();
+                var maxPos2 = Args.ScanCurve2.FindMaximalPosition();
 
                 // calculate the position differential
-                posDiff = pos - pos2;
+                deltaPos = maxPos.X - maxPos2.X;
 
                 // move to the middle position of the max power
-                var returnToPos = pos - posDiff / 2;
+                var returnToPos = maxPos.X - deltaPos / 2;
 
+                // get the unit of linear axis
                 var unitLinearAxis = Args.AxisLinear.PhysicalAxisInst.UnitHelper;
 
-                Args.Log.Add(string.Format("    Position of max power: ({0}{4}, {1:F3})/({2}{4}, {3:F3})",
-                    new object[] { pos, power, pos2, power2, unitLinearAxis }));
+                // output messages
+                Args.Log.Add(string.Format("    Position of max power: ({0}{4}, {1})/({2}{4}, {3})",
+                    new object[] { maxPos.X, maxPos.Y, maxPos2.X, maxPos2.Y, unitLinearAxis }));
 
-                Args.Log.Add(string.Format("    Position Differential: {0}{1}", posDiff, unitLinearAxis));
-                Args.Log.Add(string.Format("    Middle Position: {0}{1}", returnToPos, unitLinearAxis));
-
+                Args.Log.Add(string.Format("    ΔPosition: {0}{1}", deltaPos, unitLinearAxis));
+                Args.Log.Add(string.Format("    Middle of ΔPosition: {0}{1}", returnToPos, unitLinearAxis));
 
                 // move to the middle position
                 if (Args.AxisLinear.PhysicalAxisInst.Move(MoveMode.REL, Args.MoveSpeed, -(distMovedLinear - returnToPos)) == false)
                     throw new InvalidOperationException(Args.AxisLinear.PhysicalAxisInst.LastError);
 
                 // if it's touched the target, exit the loop
-                if (Math.Abs(posDiff) <= Args.TargetPositionDifferentialOfMaxPower)
+                if (Math.Abs(deltaPos) <= Args.TargetPositionDifferentialOfMaxPower)
                     break;
+
+                Args.DeltaPositionTrendCurve.Add(new Point(cycles, deltaPos));
 
                 #endregion
 
-                Args.PosDiffTrendCurve.Add(new Point(cycles, posDiff));
-
-                // if the loop runned more than 3 times, check the change rate and shrink the rotating gap
-                if (Args.PosDiffTrendCurve.Count > 3)
+                if (cycles == 0)
                 {
-                    var lastChange = posDiff - previousPosDiff;
-                    var lastChange2 = previousPosDiff - previousPosDiff2;
-                    var posDiffChangeRate = (lastChange - lastChange2) / lastChange * 100;
-                    if (Math.Abs(posDiffChangeRate) <= Args.TargetPosDiffChangeRate)
-                        break;
+                    // if the first cycle, rotate to the position calculate according to the delta position and the length of the two DUTs
+                    double angle = Math.Asin(deltaPos / Args.LengthOfChannelStartToEnd) * (180 / Math.PI);
+                    Args.Log.Add(string.Format("    The angle to rotate for the 1st cycle is: {0}{1}", returnToPos, unitLinearAxis));
 
-                    Args.Log.Add(string.Format("    Pos. Diff Change Rate: {0}%", posDiffChangeRate));
+                    // record the angle rotated
+                    distMovedRotating += angle;
 
-                    // it indicates that the order of positions of max power has changed
-                    // if the sign of the pos-diff-change-rate was changed, shrink the rotating gap.
-                    if (lastChange * lastChange2 < 0)
+                    if (Args.AxisRotating.PhysicalAxisInst.Move(MoveMode.REL, Args.MoveSpeed, angle) == false)
+                        throw new InvalidOperationException(Args.AxisRotating.PhysicalAxisInst.LastError);
+                }
+                else
+                {
+
+                    // if the loop runned equals or more than 3 times, check the delta position changing rate and shrink the rotating gap
+                    if (cycles >= 2)
                     {
-                        workingRotatingGap /= 2;
-                        Args.Log.Add(string.Format("    Rotating Gap shrinked to {0}{1}", workingRotatingGap, Args.AxisRotating.PhysicalAxisInst.UnitHelper));
+                        var lastChange = deltaPos - previousPosDiff;
+                        var lastChange2 = previousPosDiff - previousPosDiff2;
+                        var posDiffChangeRate = (lastChange - lastChange2) / lastChange * 100;
+                        if (Math.Abs(posDiffChangeRate) <= Args.TargetPosDiffChangeRate)
+                            break;
+
+                        Args.Log.Add(string.Format("    ΔPosition Changing Rate: {0}%", posDiffChangeRate));
+
+                        // it indicates that the order of positions of max power has changed
+                        // if the sign of the pos-diff-change-rate was changed, shrink the rotating gap.
+                        if (lastChange * lastChange2 < 0)
+                        {
+                            workingRotatingGap /= 2;
+                            Args.Log.Add(string.Format("    Half the rotating interval to {0}{1}", workingRotatingGap, Args.AxisRotating.PhysicalAxisInst.UnitHelper));
+                        }
                     }
 
-                }
+                    // determine the rotating direction
+                    // if the posDiff tend to be larger, the rotating direction was error for the last,
+                    // change the direction.
+                    if (deltaPos > previousPosDiff)
+                    {
+                        rotatingDirection *= -1;
+                        Args.Log.Add(string.Format("    Next rotating direction has changed"));
+                    }
 
-                // determine the rotating direction
-                // if the posDiff tend to be larger, the rotating direction was error for the last,
-                // change the direction.
-                if (posDiff > previousPosDiff)
-                {
-                    rotatingDirection *= -1;
-                    Args.Log.Add(string.Format("    Next rotating direction has changed"));
+                    // rotate the axis
+                    var angle = rotatingDirection * workingRotatingGap;
+                    if (Args.AxisRotating.PhysicalAxisInst.Move(MoveMode.REL, Args.MoveSpeed, angle) == false)
+                        throw new InvalidOperationException(Args.AxisRotating.PhysicalAxisInst.LastError);
+
+                    // record the angle rotated
+                    distMovedRotating += angle;
+                    Args.Log.Add(string.Format("    Last/Accumulated Rotated: {0}{2}/{1}{2}", angle, distMovedRotating, Args.AxisRotating.PhysicalAxisInst.UnitHelper));
+
+                    // the previous loop is done
+                    Args.Log.Add(string.Format(">>> Cycle {0} done!", cycles));
+
+                    // the delay makes #Lichang has the opportunity to see the previous output clearly
+                    Thread.Sleep(500);
+
+                    // if runs out of the maximum rotating range, exit
+                    if (distMovedRotating >= Args.RangeRotating)
+                    {
+                        Args.Log.Add(string.Format("    Runs out of the rotating range, exit!"));
+                        break;
+                    }
                 }
 
                 previousPosDiff2 = previousPosDiff;
-                previousPosDiff = posDiff;
+                previousPosDiff = deltaPos;
 
-                // move roll axis
-                var rotating = rotatingDirection * workingRotatingGap;
-                if (Args.AxisRotating.PhysicalAxisInst.Move(MoveMode.REL, Args.MoveSpeed, rotating) == false)
-                    throw new InvalidOperationException(Args.AxisRotating.PhysicalAxisInst.LastError);
-
-                // record the distance moved
-                distMovedRotating += rotating;
-                Args.Log.Add(string.Format("    Last/Accumulated Rotated: {0}{2}/{1}{2}", rotating, distMovedRotating, Args.AxisRotating.PhysicalAxisInst.UnitHelper));
-
-
-                Args.Log.Add(string.Format(">>> Cycle {0} done!", cycles));
-
-                if(distMovedRotating >= Args.RangeRotating)
-                {
-                    Args.Log.Add(string.Format("    Runs out of the rotating range, exit!"));
-                    break;
-                }
+                cycles++;
             }
 
             Args.Log.Add(string.Format("Rotating Alignment Process is done!"));

@@ -331,6 +331,16 @@ namespace Irixi_Aligner_Common
             panelRotatingScan.Visibility = Visibility.Visible;
             dockLayoutManager.MDIController.Activate(panelRotatingScan);
         }
+
+        private void btnSnakeScan_ItemClick(object sender, ItemClickEventArgs e)
+        {
+
+        }
+
+        private void btnCentralAlign_ItemClick(object sender, ItemClickEventArgs e)
+        {
+
+        }
     }
 
 }

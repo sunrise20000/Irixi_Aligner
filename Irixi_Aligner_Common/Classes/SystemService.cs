@@ -3,7 +3,7 @@ using GalaSoft.MvvmLight.Command;
 using GalaSoft.MvvmLight.Ioc;
 using GalaSoft.MvvmLight.Messaging;
 using Irixi_Aligner_Common.Alignment.AlignmentXD;
-using Irixi_Aligner_Common.Alignment.Base;
+using Irixi_Aligner_Common.Alignment.BaseClasses;
 using Irixi_Aligner_Common.Alignment.Rotating;
 using Irixi_Aligner_Common.Alignment.SpiralScan;
 using Irixi_Aligner_Common.Classes.BaseClass;

@@ -1,11 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 
 namespace Irixi_Aligner_Common.Classes.BaseClass
 {
-    public  class ObservableCollection<T> : System.Collections.ObjectModel.ObservableCollection<T>
+    public class ObservableCollection<T> : System.Collections.ObjectModel.ObservableCollection<T>
     {
         /// <summary> 
         /// Adds the elements of the specified collection to the end of the ObservableCollection(Of T). 

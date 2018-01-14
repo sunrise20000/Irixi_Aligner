@@ -1,4 +1,4 @@
-﻿using Irixi_Aligner_Common.Alignment.Base;
+﻿using Irixi_Aligner_Common.Alignment.BaseClasses;
 using Irixi_Aligner_Common.Classes.BaseClass;
 using Irixi_Aligner_Common.MotionControllers.Base;
 using System.Windows;
@@ -7,7 +7,12 @@ namespace Irixi_Aligner_Common.Alignment.AlignmentXD
 {
     public class Alignment1DArgs : AlignmentArgsBase
     {
-        private bool isEnabled;
+        #region Variables
+
+        bool isEnabled;
+
+
+        #endregion
 
         public Alignment1DArgs()
         {
@@ -28,8 +33,6 @@ namespace Irixi_Aligner_Common.Alignment.AlignmentXD
                 RaisePropertyChanged();
             }
         }
-
-        public int MoveSpeed { set; get; }
 
         public double Interval { set; get; }
 

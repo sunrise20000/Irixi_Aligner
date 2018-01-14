@@ -4,12 +4,13 @@ using Irixi_Aligner_Common.Interfaces;
 using Irixi_Aligner_Common.MotionControllers.Base;
 using System;
 
-namespace Irixi_Aligner_Common.Alignment.Base
+namespace Irixi_Aligner_Common.Alignment.BaseClasses
 {
     public class AlignmentArgsBase : ViewModelBase
     {
         IInstrument instrument;
         LogicalMotionComponent motionComponent;
+        int moveSpeed;
 
         public AlignmentArgsBase()
         {
@@ -41,11 +42,22 @@ namespace Irixi_Aligner_Common.Alignment.Base
                 RaisePropertyChanged();
             }
         }
+
+        public int MoveSpeed
+        {
+            get => moveSpeed;
+            set
+            {
+                moveSpeed = value;
+                RaisePropertyChanged();
+            }
+        }
         
 
         public virtual void Validate()
         {
-            throw new NotImplementedException();
+            if(MoveSpeed < 1 || MoveSpeed > 100)
+                throw new ArgumentException("move speed must be between 1 ~ 100");
         }
 
         public virtual void ClearScanCurve()
