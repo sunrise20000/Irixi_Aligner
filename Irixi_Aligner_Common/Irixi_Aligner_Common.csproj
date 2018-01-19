@@ -212,9 +212,19 @@
     <Compile Include="Classes\Converters\VisibilityToBoolean.cs" />
     <Compile Include="Classes\Converters\EnumToBoolean.cs" />
     <Compile Include="Classes\Converters\OutputStateToBoolean.cs" />
+    <Compile Include="UserControls\AlignmentFunc\AlignmentPanel.xaml.cs">
+      <DependentUpon>AlignmentPanel.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="UserControls\AlignmentFunc\PropertyDefinitionTemplateSelector.cs" />
     <Compile Include="Classes\SqliteDb.cs" />
     <Compile Include="Configuration\Equipments\ConfigurationNewport2832C.cs" />
     <Compile Include="Docs\How to add new instrument to system.cs" />
+    <Compile Include="UserControls\AlignmentFunc\SnakeRouteScan\SnakeRouteScanPanel.xaml.cs">
+      <DependentUpon>SnakeRouteScanPanel.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="UserControls\AlignmentPanelSnakeRouteScan.xaml.cs">
+      <DependentUpon>AlignmentPanelSnakeRouteScan.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Windows\TestPurposeOnly.xaml.cs">
       <DependentUpon>TestPurposeOnly.xaml</DependentUpon>
     </Compile>
@@ -270,8 +280,8 @@
     <Compile Include="UserControls\AlignmentPanelBlindSearch.xaml.cs">
       <DependentUpon>AlignmentPanelBlindSearch.xaml</DependentUpon>
     </Compile>
-    <Compile Include="UserControls\AlignmentPanelRotatingScan.xaml.cs">
-      <DependentUpon>AlignmentPanelRotatingScan.xaml</DependentUpon>
+    <Compile Include="UserControls\AlignmentFunc\RotatingScan\RotatingScanPanel.xaml.cs">
+      <DependentUpon>RotatingScanPanel.xaml</DependentUpon>
     </Compile>
     <Compile Include="UserControls\AlignmentParamEditor.xaml.cs">
       <DependentUpon>AlignmentParamEditor.xaml</DependentUpon>
@@ -368,6 +378,26 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="UserControls\AlignmentFunc\AlignmentPanel.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="UserControls\AlignmentFunc\BaseTemplate.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="UserControls\AlignmentFunc\RotatingScan\Template.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="UserControls\AlignmentFunc\SnakeRouteScan\SnakeRouteScanPanel.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="UserControls\AlignmentFunc\SnakeRouteScan\Template.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="UserControls\AlignmentPanelAlignmentXD.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -376,7 +406,11 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="UserControls\AlignmentPanelRotatingScan.xaml">
+    <Page Include="UserControls\AlignmentFunc\RotatingScan\RotatingScanPanel.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="UserControls\AlignmentPanelSnakeRouteScan.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -444,10 +478,10 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Resources\Images\Icons\nD_2DUTs_32x32.png" />
-    <Resource Include="Resources\Images\Icons\nD_2DUTs_512x512.png" />
-    <Resource Include="Resources\Images\Icons\nD_32x32.png" />
-    <Resource Include="Resources\Images\Icons\nD_512x512.png" />
+    <Resource Include="Resources\Images\Icons\alignmentnd_32x32.png" />
+    <Resource Include="Resources\Images\Icons\alignmentnd_512x512.png" />
+    <Resource Include="Resources\Images\Icons\centralalign_32x32.png" />
+    <Resource Include="Resources\Images\Icons\centralalign_512x512.png" />
     <Resource Include="Resources\Images\Icons\snake_32x32.png" />
     <Resource Include="Resources\Images\Icons\snake_512x512.png" />
     <Resource Include="Resources\Images\Icons\spiral_32x32.png" />

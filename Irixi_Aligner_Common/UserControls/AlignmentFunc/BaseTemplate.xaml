@@ -1,0 +1,21 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:local="clr-namespace:Irixi_Aligner_Common.UserControls.AlignmentFunc"
+                    xmlns:dxprg="http://schemas.devexpress.com/winfx/2008/xaml/propertygrid">
+
+    <!-- the class is used to create the property grid control in alignment panel automatically -->
+    <local:PropertyDefinitionTemplateSelector x:Key="PropDefTemplSelector"/>
+
+    <DataTemplate x:Key="DefaultPropDefTemplate">
+        <dxprg:PropertyDefinition/>
+    </DataTemplate>
+
+    <Style TargetType="dxprg:PropertyGridControl">
+        <Setter Property="ShowProperties" Value="WithPropertyDefinitions"/>
+        <Setter Property="ShowDescriptionIn" Value="ToolTipAndPanel"/>
+        <Setter Property="ShowSearchBox" Value="False"/>
+        <Setter Property="AllowExpanding" Value="Force"/>
+        <Setter Property="ShowMenuButtonInRows" Value="False"/>
+    </Style>
+
+</ResourceDictionary>

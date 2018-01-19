@@ -13,14 +13,14 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace Irixi_Aligner_Common.UserControls
+namespace Irixi_Aligner_Common.UserControls.AlignmentFunc
 {
     /// <summary>
-    /// Interaction logic for AlignmentPanelRotatingSearch.xaml
+    /// Interaction logic for AlignmentPanel.xaml
     /// </summary>
-    public partial class AlignmentPanelRotatingScan : UserControl
+    public partial class AlignmentPanel : UserControl
     {
-        public AlignmentPanelRotatingScan()
+        public AlignmentPanel()
         {
             InitializeComponent();
         }

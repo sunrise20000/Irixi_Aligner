@@ -75,27 +75,86 @@ namespace Irixi_Aligner_Common.Alignment.BaseClasses
         {
             const int FITTING_ORDER = 3;
 
-            if (this.Count > 1)
+            if (this.Count >= 7)
             {
                 List<double> xData = new List<double>();
                 List<double> yData = new List<double>();
-
+                
+                // collect the points with Y value is greater than Max Y * 0.6
+                double max_y = this.Max(a => a.Y);
+                double thr_y = max_y * 0.5;
                 foreach (var p in this)
                 {
-                    xData.Add(p.X);
-                    yData.Add(p.Y);
+                    if (p.Y > thr_y)
+                    {
+                        xData.Add(p.X);
+                        yData.Add(p.Y);
+                    }
                 }
 
+                // insure that there are at least 7 points to fit to the polynomial
+                if (xData.Count < 7)
+                {
+
+                    xData.Clear();
+                    yData.Clear();
+
+                    // get the position of the point with maximum Y value
+                    int id_max_point = this.IndexOf(this.OrderBy(a => a.Y).Last());
+
+                    int start = id_max_point - 3;
+                    int end = id_max_point + 3;
+                    int last = this.Count - 1;
+
+                    // judge how many points are there on both side of the maximum point
+                    if (start < 0)
+                    {
+                        end += -start;
+                        if (end > last)
+                            end = last;
+                        start = 0;
+                    }
+                    else if(end > last)
+                    {
+                        start -= (end - last);
+                        if (start < 0)
+                            start = 0;
+                        end = last;
+                    }
+
+                    for (int i = start; i <= end; i++)
+                    {
+                        xData.Add(this[i].X);
+                        yData.Add(this[i].Y);
+                    }
+                }
+                
+                
+                FittingDomainMin = xData[0];
+                FittingDomainMax = xData[xData.Count - 1];
+                
                 PolyFittingEquationFactors = Fit.Polynomial(xData.ToArray(), yData.ToArray(), FITTING_ORDER);
                 return PolyFittingEquationFactors;
             }
             else
             {
                 PolyFittingEquationFactors = null;
-                throw new FormatException("There are not enough points to fit.");
+                throw new FormatException("There are not enough points to fit, at least 7 points are needed.");
             }
         }
-        
+
+        private double FittingDomainMin
+        {
+            get;
+            set;
+        }
+
+        private double FittingDomainMax
+        {
+            get;
+            set;
+        }
+
         /// <summary>
         /// Calculate the equation of the fitting curve and return the fitting curve by a list
         /// </summary>
@@ -111,10 +170,10 @@ namespace Irixi_Aligner_Common.Alignment.BaseClasses
             double[] equation = PolyFit();
 
             // the range to draw the fitting curve
-            double range = this.Last().X - this.First().X;
+            double range = FittingDomainMax - FittingDomainMin;
 
             // the start point to draw the fitting curve
-            double start = this.First().X;
+            double start = FittingDomainMin;
 
             // the steps to draw the fitting curve
             double step = range / POINTS_IN_BEAUTIFY_CURVE;
@@ -148,8 +207,8 @@ namespace Irixi_Aligner_Common.Alignment.BaseClasses
             double c = PolyFittingEquationFactors[1];
 
             double[] root = new double[2];
-            root[0] = (-b + Math.Sqrt(b * b - 4 * a * c)) / 2 * a;
-            root[1] = (-b - Math.Sqrt(b * b - 4 * a * c)) / 2 * a;
+            root[0] = (-b + Math.Sqrt(b * b - 4 * a * c)) / (2 * a);
+            root[1] = (-b - Math.Sqrt(b * b - 4 * a * c)) / (2 * a);
 
             // the condition of the maximal value: f'(x) = 0 and f''(x) < 0
             // calculate the factors of f''(x)
@@ -184,30 +243,6 @@ namespace Irixi_Aligner_Common.Alignment.BaseClasses
 
             return maxPoint;
         }
-
-        #region RaisePropertyChangedEvent
-
-        public event PropertyChangedEventHandler PropertyChanged;
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="OldValue"></param>
-        /// <param name="NewValue"></param>
-        /// <param name="PropertyName"></param>
-        protected void UpdateProperty<T>(ref T OldValue, T NewValue, [CallerMemberName]string PropertyName = "")
-        {
-            OldValue = NewValue;                // Set the property value to the new value
-            OnPropertyChanged(PropertyName);    // Raise the notify event
-        }
-
-        protected void OnPropertyChanged([CallerMemberName]string PropertyName = "")
-        {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(PropertyName));
-        }
-
-        #endregion
 
     }
 }

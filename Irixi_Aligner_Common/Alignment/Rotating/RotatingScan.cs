@@ -8,6 +8,12 @@ namespace Irixi_Aligner_Common.Alignment.Rotating
 {
     public class RotatingScan : AlignmentBase
     {
+        #region Variables
+
+        
+
+        #endregion
+
         #region Constructors
         public RotatingScan(RotatingScanArgs Args) : base(Args)
         {
@@ -27,19 +33,18 @@ namespace Irixi_Aligner_Common.Alignment.Rotating
 
             int cycles = 0;
             double deltaPos = double.MaxValue;
-            double rotatingDirection = 1;
-            double previousPosDiff = 0, previousPosDiff2 = 0;
-            double workingRotatingGap = Args.GapRotating;
+            //double rotatingDirection = 1;
+            //double previousPosDiff = 0, previousPosDiff2 = 0;
+            double workingRotatingGap = Args.RotatingInterval;
 
             Args.Log.Clear();
-            Args.DeltaPositionTrendCurve.Clear();
 
-            while(true)
-            {
+            //while(true)
+            //{
                 double distMovedLinear = 0, distMovedRotating = 0;
-                double halfRangeLinear = Args.RangeLinear / 2;
+                double halfRangeLinear = Args.LinearRestriction / 2;
                 
-                Args.Log.Add(string.Format(">>> Start to align, cycle = {0} ...", cycles));
+                Args.Log.Add(string.Format(">>> Start to align ..."));
                 
                 #region Linear Alignment
 
@@ -60,7 +65,7 @@ namespace Irixi_Aligner_Common.Alignment.Rotating
 
                 Args.Log.Add(string.Format("*Current angle: {0}{1}, aligning ...", distMovedRotating, Args.AxisRotating.PhysicalAxisInst.UnitHelper));
 
-                while (distMovedLinear <= Args.RangeLinear)
+                while (distMovedLinear <= Args.LinearRestriction)
                 {
                     // read power of channel 1
                     var ret = Args.Instrument.Fetch();
@@ -73,15 +78,22 @@ namespace Irixi_Aligner_Common.Alignment.Rotating
                     Args.ScanCurve2.Add(p);
 
                     // record distance moved
-                    distMovedLinear += Args.GapLinear;
+                    distMovedLinear += Args.LinearInterval;
 
                     // move to the next point
-                    if (Args.AxisLinear.PhysicalAxisInst.Move(MoveMode.REL, Args.MoveSpeed, Args.GapLinear) == false)
+                    if (Args.AxisLinear.PhysicalAxisInst.Move(MoveMode.REL, Args.MoveSpeed, Args.LinearInterval) == false)
                         throw new InvalidOperationException(Args.AxisLinear.PhysicalAxisInst.LastError);
 
                     // cancel the alignment process
                     if (cts_token.IsCancellationRequested)
                         break;
+                }
+
+                // cancel the alignment process
+                if (cts_token.IsCancellationRequested)
+                {
+                    Args.Log.Add(string.Format("{0} is stopped by user!", this.ToString()));
+                    return;
                 }
 
                 // beautify(polynomial fitting) the scan curves to find the accurate position of max optical power
@@ -112,18 +124,27 @@ namespace Irixi_Aligner_Common.Alignment.Rotating
                 if (Args.AxisLinear.PhysicalAxisInst.Move(MoveMode.REL, Args.MoveSpeed, -(distMovedLinear - returnToPos)) == false)
                     throw new InvalidOperationException(Args.AxisLinear.PhysicalAxisInst.LastError);
 
-                // if it's touched the target, exit the loop
-                if (Math.Abs(deltaPos) <= Args.TargetPositionDifferentialOfMaxPower)
-                    break;
-
-                Args.DeltaPositionTrendCurve.Add(new Point(cycles, deltaPos));
+                //// if it's touched the target, exit the loop
+                //if (Math.Abs(deltaPos) <= Args.TargetPositionDifferentialOfMaxPower)
+                //    break;
 
                 #endregion
 
+                // if the first cycle, rotate to the position calculate according to the delta position and the length of the two DUTs
+                double angle = -1 * Math.Asin(deltaPos / Args.LengthOfChannelStartToEnd) * (180 / Math.PI);
+                Args.Log.Add(string.Format("    The angle to rotate is: {0}{1}", returnToPos, unitLinearAxis));
+
+                // record the angle rotated
+                distMovedRotating += angle;
+
+                if (Args.AxisRotating.PhysicalAxisInst.Move(MoveMode.REL, Args.MoveSpeed, angle) == false)
+                    throw new InvalidOperationException(Args.AxisRotating.PhysicalAxisInst.LastError);
+
+                /*
                 if (cycles == 0)
                 {
                     // if the first cycle, rotate to the position calculate according to the delta position and the length of the two DUTs
-                    double angle = Math.Asin(deltaPos / Args.LengthOfChannelStartToEnd) * (180 / Math.PI);
+                    double angle = -1 * Math.Asin(deltaPos / Args.LengthOfChannelStartToEnd) * (180 / Math.PI);
                     Args.Log.Add(string.Format("    The angle to rotate for the 1st cycle is: {0}{1}", returnToPos, unitLinearAxis));
 
                     // record the angle rotated
@@ -191,9 +212,10 @@ namespace Irixi_Aligner_Common.Alignment.Rotating
                 previousPosDiff = deltaPos;
 
                 cycles++;
-            }
+                */
+            //}
 
-            Args.Log.Add(string.Format("Rotating Alignment Process is done!"));
+            Args.Log.Add(string.Format("{0} is done!", this));
         }
 
         public override string ToString()

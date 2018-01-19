@@ -18,7 +18,8 @@
                     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
                     xmlns:local="clr-namespace:Irixi_Aligner_Common" 
                     xmlns:Converters="clr-namespace:Irixi_Aligner_Common.Classes.Converters" 
-                    xmlns:UserControls="clr-namespace:Irixi_Aligner_Common.UserControls">       
+                    xmlns:UserControls="clr-namespace:Irixi_Aligner_Common.UserControls"
+                    xmlns:apanel="clr-namespace:Irixi_Aligner_Common.UserControls.AlignmentFunc">       
     <dxr:DXRibbonWindow.Resources>
 
         <Converters:VisibilityToBoolean x:Key="VisibilityToBoolean" />
@@ -52,8 +53,8 @@
                     <dxr:RibbonPageGroup Caption="Alignment">
                         <dxb:BarButtonItem x:Name="btnBlindSearch" Content="Blind Search" LargeGlyph="{StaticResource IconSpiral_32x32}" Glyph="{StaticResource IconSpiral_512x512}" ItemClick="btnBlindSearch_ItemClick" />
                         <dxb:BarButtonItem x:Name="btnSnakeScan" Content="Blind Search 2" LargeGlyph="{StaticResource IconSnake_32x32}" Glyph="{StaticResource IconSnake_512x512}" ItemClick="btnSnakeScan_ItemClick" />
-                        <dxb:BarButtonItem x:Name="btnAlignmentXD" Content="Alignment nD" LargeGlyph="{StaticResource IconnD_32x32}" Glyph="{StaticResource IconnD_512x512}" ItemClick="btnAlignmentXD_ItemClick" />
-                        <dxb:BarButtonItem x:Name="btnCentralAlign" Content="Central Align"  LargeGlyph="{StaticResource IconnD_2DUTs_32x32}" Glyph="{StaticResource IconnD_2DUTs_512x512}" ItemClick="btnCentralAlign_ItemClick"/>
+                        <dxb:BarButtonItem x:Name="btnAlignmentXD" Content="Alignment nD" LargeGlyph="{StaticResource IconAlignmentnD_32x32}" Glyph="{StaticResource IconAlignmentnD_512x512}" ItemClick="btnAlignmentXD_ItemClick" />
+                        <dxb:BarButtonItem x:Name="btnCentralAlign" Content="Central Align"  LargeGlyph="{StaticResource IconCentralAlign_32x32}" Glyph="{StaticResource IconCentralAlign_512x512}" ItemClick="btnCentralAlign_ItemClick"/>
                         <dxb:BarButtonItem x:Name="btnRotatingScan" Content="Rotating Scan" LargeGlyph="{StaticResource IconRotating_32x32}" Glyph="{StaticResource IconRotating_512x512}" ItemClick="btnRotatingScan_ItemClick" />
                     </dxr:RibbonPageGroup>
                 </dxr:RibbonPage>
@@ -127,9 +128,9 @@
                             </Grid>
                         </dxd:DocumentPanel>
                         
-                        <!-- AlignmentXD Panel -->
+                        <!-- AlignmentnD Panel -->
                         <dxd:DocumentPanel x:Name="panelAlignmentXD" 
-                                           Caption="Alignment XD" 
+                                           Caption="Alignment nD" 
                                            MDISize="1000,600"
                                            AllowFloat="False" 
                                            AllowSizing="True" 
@@ -154,7 +155,22 @@
                                            Visibility="Hidden">
                             <UserControls:AlignmentPanelBlindSearch DataContext="{Binding Service}"/>
                         </dxd:DocumentPanel>
+
+                        <!-- Blind Search 2 Panel -->
                         
+                        <dxd:DocumentPanel x:Name="panelSnakeRouteScan" 
+                                           Caption="Blind Search 2" 
+                                           MDISize="1000,600" 
+                                           AllowFloat="False" 
+                                           AllowSizing="True" 
+                                           AllowRename="False" 
+                                           AllowDock="False" 
+                                           AllowMaximize="true" 
+                                           AllowDockToDocumentGroup="False"
+                                           Visibility="Hidden">
+                            <apanel:AlignmentPanel DataContext="{Binding RotatingScanArgs}"/>
+                        </dxd:DocumentPanel>
+
                         <!-- Rotating Scan Panel -->
                         <dxd:DocumentPanel x:Name="panelRotatingScan" 
                                            Caption="Rotating Search" 
@@ -166,9 +182,10 @@
                                            AllowMaximize="true" 
                                            AllowDockToDocumentGroup="False"
                                            Visibility="Hidden">
-                            <UserControls:AlignmentPanelRotatingScan DataContext="{Binding Service}"/>
+                            <apanel:RotatingScanPanel DataContext="{Binding Service}">
+                            </apanel:RotatingScanPanel>
                         </dxd:DocumentPanel>
-                        
+
                     </dxd:DocumentGroup>
                 </dxd:LayoutGroup>
                 <dxd:TabbedGroup x:Name="bottomInfoPanelsHost">

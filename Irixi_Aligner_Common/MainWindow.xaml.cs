@@ -334,7 +334,8 @@ namespace Irixi_Aligner_Common
 
         private void btnSnakeScan_ItemClick(object sender, ItemClickEventArgs e)
         {
-
+            panelSnakeRouteScan.Visibility = Visibility.Visible;
+            dockLayoutManager.MDIController.Activate(panelSnakeRouteScan);
         }
 
         private void btnCentralAlign_ItemClick(object sender, ItemClickEventArgs e)

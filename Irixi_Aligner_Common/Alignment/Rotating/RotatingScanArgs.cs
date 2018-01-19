@@ -3,6 +3,8 @@ using Irixi_Aligner_Common.Equipments.Base;
 using Irixi_Aligner_Common.Interfaces;
 using Irixi_Aligner_Common.MotionControllers.Base;
 using System;
+using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 
 namespace Irixi_Aligner_Common.Alignment.Rotating
@@ -11,11 +13,14 @@ namespace Irixi_Aligner_Common.Alignment.Rotating
     {
         #region Variables
 
-        LogicalAxis axisRotating, axisLinear;
+        const string PROP_GRP_ROTATING = "Rotating Cond";
+        const string PROP_GRP_LINEAR = "Linear Cond";
+
+
+        LogicalAxis axisRotating = null, axisLinear = null;
         double targetPositionDifferentialOfMaxPower = 5, targetPosDiffChangeRate = 10, 
             gapRotating = 1, gapLinear = 1, 
-            rangeRotating = 1, rangeLinear = 100, lenghtOfChannelStartToEnd = 750;
-        int moveSpeed = 100;
+            rangeRotating = 5, rangeLinear = 100, lenghtOfChannelStartToEnd = 750 * 3;
 
         //2 channel should be detected at the same time, so we need 2 keithley2400s
         IInstrument instrument, instrument2;
@@ -26,26 +31,24 @@ namespace Irixi_Aligner_Common.Alignment.Rotating
         
         public RotatingScanArgs():base()
         {
-            ScanCurveGroup = new ScanCurveGroup();
-
             ScanCurve = new ScanCurve();
             ScanCurve2 = new ScanCurve();
             ScanCurveFitting = new ScanCurve();
             ScanCurveFitting2 = new ScanCurve();
-
-            DeltaPositionTrendCurve = new ScanCurve();
 
             // add the curves to the group
             ScanCurveGroup.Add(ScanCurve);
             ScanCurveGroup.Add(ScanCurve2);
             ScanCurveGroup.Add(ScanCurveFitting);
             ScanCurveGroup.Add(ScanCurveFitting2);
+            ScanCurveGroup.Add(ScanCurve.MaxPowerConstantLine);
+            ScanCurveGroup.Add(ScanCurve2.MaxPowerConstantLine);
         }
 
         #endregion
 
         #region Properties
-
+        [Display(Name = "Axis Rotating", GroupName = PROP_GRP_ROTATING, Description = "The axis to rotate.")]
         public LogicalAxis AxisRotating
         {
             get => axisRotating;
@@ -56,16 +59,7 @@ namespace Irixi_Aligner_Common.Alignment.Rotating
             }
         }
 
-        public LogicalAxis AxisLinear
-        {
-            get => axisLinear;
-            set
-            {
-                axisLinear = value;
-                RaisePropertyChanged();
-            }
-        }
-
+        [Display(Name = "Instr. Rotating", GroupName = PROP_GRP_ROTATING, Description = "The valid instrument like powermeter, keithley 2400, etc.")]
         new public IInstrument Instrument
         {
             get => instrument;
@@ -78,9 +72,46 @@ namespace Irixi_Aligner_Common.Alignment.Rotating
             }
         }
 
+        [Display(Name = "Rotating Interval", GroupName = PROP_GRP_ROTATING)]
+        [Obsolete("The property is meaningless in  the latest alignment logic."), Browsable(false)]
+        public double RotatingInterval
+        {
+            get => gapRotating;
+            set
+            {
+                gapRotating = value;
+                RaisePropertyChanged();
+            }
+        }
+
+
+        [Display(Name = "Rotating Restriction", GroupName = PROP_GRP_ROTATING)]
+        [Obsolete("The property is meaningless in  the latest alignment logic."), Browsable(false)]
+        public double RotatingRestriction
+        {
+            get => rangeRotating;
+            set
+            {
+                rangeRotating = value;
+                RaisePropertyChanged();
+            }
+        }
+
+        [Display(Name = "Axis Linear", GroupName = PROP_GRP_LINEAR, Description = "The axis to move straightly.")]
+        public LogicalAxis AxisLinear
+        {
+            get => axisLinear;
+            set
+            {
+                axisLinear = value;
+                RaisePropertyChanged();
+            }
+        }
+        
         /// <summary>
         /// The instrument to detmonitor the secondary channel
         /// </summary>
+        [Display(Name = "Instr. Linear", GroupName = PROP_GRP_LINEAR, Description = "The valid instrument like powermeter, keithley 2400, etc.")]
         public IInstrument Instrument2
         {
             get => instrument2;
@@ -92,10 +123,48 @@ namespace Irixi_Aligner_Common.Alignment.Rotating
                 this.ScanCurve2.DisplayName = ((InstrumentBase)instrument2).Config.Caption;
             }
         }
+        
+
+        [Display(Name = "Linear Interval", GroupName = PROP_GRP_LINEAR, Description = "The step size to align straightly.")]
+        public double LinearInterval
+        {
+            get => gapLinear;
+            set
+            {
+                gapLinear = value;
+                RaisePropertyChanged();
+            }
+        }
+
+
+        [Display(Name = "Linear Restriction", GroupName = PROP_GRP_LINEAR, Description = "The maximum range align straightly.")]
+        public double LinearRestriction
+        {
+            get => rangeLinear;
+            set
+            {
+                rangeLinear = value;
+                RaisePropertyChanged();
+            }
+        }
+
+        [Display(Name = "Pitch", GroupName = PROP_GRP_COMMON, Description = "The pitch of channels used to scan.")]
+        public double LengthOfChannelStartToEnd
+        {
+            get => lenghtOfChannelStartToEnd;
+            set
+            {
+                lenghtOfChannelStartToEnd = value;
+                RaisePropertyChanged();
+            }
+        }
+
 
         /// <summary>
         /// The target differential of the two positions at the max power of each channel
         /// </summary>
+        [Display(Name = "Target ΔPosition", GroupName = PROP_GRP_TARGET)]
+        [Obsolete("The property is meaningless in  the latest alignment logic."), Browsable(false)]
         public double TargetPositionDifferentialOfMaxPower
         {
             get => targetPositionDifferentialOfMaxPower;
@@ -110,6 +179,8 @@ namespace Irixi_Aligner_Common.Alignment.Rotating
         /// If the Pos. Diff. change rate is less than this value, exit alignment loop, 
         /// the value is in %.
         /// </summary>
+        [Display(Name = "ΔPos Changing Rate", GroupName = PROP_GRP_TARGET)]
+        [Obsolete("The property is meaningless in  the latest alignment logic."), Browsable(false)]
         public double TargetPosDiffChangeRate
         {
             get => targetPosDiffChangeRate;
@@ -120,84 +191,32 @@ namespace Irixi_Aligner_Common.Alignment.Rotating
             }
         }
 
-        public double GapRotating
-        {
-            get => gapRotating;
-            set
-            {
-                gapRotating = value;
-                RaisePropertyChanged();
-            }
-        }
-
-        public double RangeRotating
-        {
-            get => rangeRotating;
-            set
-            {
-                rangeRotating = value;
-                RaisePropertyChanged();
-            }
-        }
-
-        public double GapLinear
-        {
-            get => gapLinear;
-            set
-            {
-                gapLinear = value;
-                RaisePropertyChanged();
-            }
-        }
-
-        public double RangeLinear
-        {
-            get => rangeLinear;
-            set
-            {
-                rangeLinear = value;
-                RaisePropertyChanged();
-            }
-        }
-        
-
-        public double LengthOfChannelStartToEnd
-        {
-            get => lenghtOfChannelStartToEnd;
-            set
-            {
-                lenghtOfChannelStartToEnd = value;
-                RaisePropertyChanged();
-            }
-        }
-
-        public ScanCurveGroup ScanCurveGroup { private set; get; }
-
         /// <summary>
         /// Scan curve of instrument
         /// </summary>
+        [Browsable(false)]
         public ScanCurve ScanCurve { private set; get; }
-
+        
         /// <summary>
         /// Scan curve of instrument2
         /// </summary>
+        [Browsable(false)]
         public ScanCurve ScanCurve2 { private set; get; }
+
 
         /// <summary>
         /// The fitting curve of scan curve
         /// </summary>
+        [Browsable(false)]
         public ScanCurve ScanCurveFitting { private set; get; }
+
 
         /// <summary>
         /// The fitting curve of scan curve 2
         /// </summary>
+        [Browsable(false)]
         public ScanCurve ScanCurveFitting2 { private set; get; }
-
-        /// <summary>
-        /// Scan curve of delta position of max optical power of 2 channels
-        /// </summary>
-        public ScanCurve DeltaPositionTrendCurve { private set; get; }
-
+        
         #endregion
 
         #region Methods
@@ -210,11 +229,6 @@ namespace Irixi_Aligner_Common.Alignment.Rotating
 
             if(Instrument == Instrument2)
                 throw new ArgumentException("the 2 instruments must be different.");
-        }
-
-        public override void ClearScanCurve()
-        {
-            this.ScanCurveGroup.ClearCurvesContent();
         }
 
         public override void PauseInstruments()

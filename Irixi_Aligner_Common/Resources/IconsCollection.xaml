@@ -10,10 +10,10 @@
     <BitmapImage x:Key="IconSpiral_32x32">Images/Icons/spiral_32x32.png</BitmapImage>
     <BitmapImage x:Key="IconRotating_512x512">Images/Icons/rotating_512x512.png</BitmapImage>
     <BitmapImage x:Key="IconRotating_32x32">Images/Icons/rotating_32x32.png</BitmapImage>
-    <BitmapImage x:Key="IconnD_512x512">Images/Icons/nD_512x512.png</BitmapImage>
-    <BitmapImage x:Key="IconnD_32x32">Images/Icons/nD_32x32.png</BitmapImage>
-    <BitmapImage x:Key="IconnD_2DUTs_512x512">Images/Icons/nD_2DUTs_512x512.png</BitmapImage>
-    <BitmapImage x:Key="IconnD_2DUTs_32x32">Images/Icons/nD_2DUTs_32x32.png</BitmapImage>
+    <BitmapImage x:Key="IconAlignmentnD_512x512">Images/Icons/AlignmentnD_512x512.png</BitmapImage>
+    <BitmapImage x:Key="IconAlignmentnD_32x32">Images/Icons/AlignmentnD_32x32.png</BitmapImage>
+    <BitmapImage x:Key="IconCentralAlign_512x512">Images/Icons/CentralAlign_512x512.png</BitmapImage>
+    <BitmapImage x:Key="IconCentralAlign_32x32">Images/Icons/CentralAlign_32x32.png</BitmapImage>
     <BitmapImage x:Key="IconSnake_512x512">Images/Icons/snake_512x512.png</BitmapImage>
     <BitmapImage x:Key="IconSnake_32x32">Images/Icons/snake_32x32.png</BitmapImage>
     <BitmapImage x:Key="IconPlay_256x256">Images/Icons/play_256x256.png</BitmapImage>

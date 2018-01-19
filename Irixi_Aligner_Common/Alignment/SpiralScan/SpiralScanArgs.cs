@@ -103,16 +103,7 @@ namespace Irixi_Aligner_Common.Alignment.SpiralScan
                 RaisePropertyChanged();
             }
         }
-
-        public int MoveSpeed
-        {
-            get => moveSpeed;
-            set
-            {
-                moveSpeed = value;
-                RaisePropertyChanged();
-            }
-        }
+        
 
         public ObservableCollectionThreadSafe<Point3D> ScanCurve
         {

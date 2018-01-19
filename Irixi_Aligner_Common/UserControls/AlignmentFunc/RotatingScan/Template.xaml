@@ -1,0 +1,11 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:local="clr-namespace:Irixi_Aligner_Common.UserControls.AlignmentFunc"
+                    xmlns:classes ="clr-namespace:Irixi_Aligner_Common.Classes"
+                    xmlns:dxe="http://schemas.devexpress.com/winfx/2008/xaml/editors" 
+                    xmlns:dxprg="http://schemas.devexpress.com/winfx/2008/xaml/propertygrid">
+    <ResourceDictionary.MergedDictionaries>
+        <ResourceDictionary Source="/Irixi_Aligner_Common;component/UserControls/AlignmentFunc/BaseTemplate.xaml"/>
+    </ResourceDictionary.MergedDictionaries>
+
+</ResourceDictionary>

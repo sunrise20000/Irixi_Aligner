@@ -96,7 +96,7 @@ namespace Irixi_Aligner_Common.Alignment.AlignmentXD
 
         public override string ToString()
         {
-            return "Alignment-XD Process";
+            return "Alignment-nD Process";
         }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel.DataAnnotations;
 using Irixi_Aligner_Common.Alignment.BaseClasses;
 using Irixi_Aligner_Common.MotionControllers.Base;
 
@@ -7,12 +8,14 @@ namespace Irixi_Aligner_Common.Alignment.SnakeRouteScan
     public class SnakeRouteScanArgs: AlignmentArgsBase
     {
         #region Variables
+
         LogicalAxis axis, axis2;
-        double targetPower, scanInterval;
+        double targetPower = 100, scanInterval = 1, axisRestriction = 100, axis2Restriction = 100;
 
         #endregion
 
         #region Constructors
+
         public SnakeRouteScanArgs()
         {
             this.ScanCurve = new ScanCurve3D();
@@ -29,6 +32,7 @@ namespace Irixi_Aligner_Common.Alignment.SnakeRouteScan
             get;
         }
 
+        [Display(Name="Axis", GroupName = "Alignment Params")]
         public LogicalAxis Axis
         {
             get => axis;
@@ -45,6 +49,26 @@ namespace Irixi_Aligner_Common.Alignment.SnakeRouteScan
             set
             {
                 axis2 = value;
+                RaisePropertyChanged();
+            }
+        }
+
+        public double AxisRestriction
+        {
+            get => axisRestriction;
+            set
+            {
+                axisRestriction = value;
+                RaisePropertyChanged();
+            }
+        }
+
+        public double Axis2Restriction
+        {
+            get => axis2Restriction;
+            set
+            {
+                axis2Restriction = value;
                 RaisePropertyChanged();
             }
         }
