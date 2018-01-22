@@ -1,4 +1,5 @@
 ﻿using Irixi_Aligner_Common.Alignment.BaseClasses;
+using Irixi_Aligner_Common.Classes;
 using Irixi_Aligner_Common.Classes.BaseClass;
 using Irixi_Aligner_Common.MotionControllers.Base;
 using System.Windows;
@@ -14,7 +15,7 @@ namespace Irixi_Aligner_Common.Alignment.AlignmentXD
 
         #endregion
 
-        public Alignment1DArgs()
+        public Alignment1DArgs(SystemService Service) : base(Service)
         {
             ScanCurve = new ObservableCollectionThreadSafe<Point>();
         }

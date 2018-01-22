@@ -1,4 +1,5 @@
 ﻿using Irixi_Aligner_Common.Alignment.BaseClasses;
+using Irixi_Aligner_Common.Classes;
 using Irixi_Aligner_Common.MotionControllers.Base;
 using System;
 using System.Collections.ObjectModel;
@@ -16,7 +17,7 @@ namespace Irixi_Aligner_Common.Alignment.AlignmentXD
 
         #region Constructors
 
-        public AlignmentXDArgs()
+        public AlignmentXDArgs(SystemService Service):base(Service)
         {
             this.target = 0;
             this.maxCycles = 1;
@@ -40,7 +41,7 @@ namespace Irixi_Aligner_Common.Alignment.AlignmentXD
                 AxisParamCollection.Clear();
                 foreach (var axis in value.LogicalAxisCollection)
                 {
-                    var arg = new Alignment1DArgs()
+                    var arg = new Alignment1DArgs(this.Service)
                     {
                         Axis = axis,
                         IsEnabled = false,

@@ -1,9 +1,10 @@
 ﻿using System.Collections;
 using Irixi_Aligner_Common.Classes.BaseClass;
+using Irixi_Aligner_Common.Interfaces;
 
 namespace Irixi_Aligner_Common.Alignment.BaseClasses
 {
-    public class ScanCurveGroup : ObservableCollection<IList>
+    public class ScanCurveGroup : ObservableCollectionEx<IList>
     {
         public void ClearCurvesContent()
         {
@@ -11,6 +12,32 @@ namespace Irixi_Aligner_Common.Alignment.BaseClasses
             {
                 c.Clear();
             }
+        }
+
+        public void ChangeDisplayName(string DisplayName)
+        {
+            foreach (var c in this)
+            {
+                ((IScanCurve)c).DisplayName = DisplayName;
+            }
+        }
+
+        public void ChangePrefix(string Prefix)
+        {
+            foreach (var c in this)
+            {
+                ((IScanCurve)c).Prefix = Prefix;
+            }
+
+        }
+
+        public void ChangeSuffix(string Suffix)
+        {
+            foreach (var c in this)
+            {
+                ((IScanCurve)c).Suffix = Suffix;
+            }
+
         }
     }
 }

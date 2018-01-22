@@ -202,6 +202,7 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Classes\BaseClass\ObservableCollectionThreadSafe.cs" />
+    <Compile Include="Classes\BaseClass\Property.cs" />
     <Compile Include="Classes\BaseClass\RealworldPositionManager.cs" />
     <Compile Include="Classes\BaseClass\PresetPosition.cs" />
     <Compile Include="Classes\Converters\BooleanToVisibility.cs" />
@@ -212,6 +213,7 @@
     <Compile Include="Classes\Converters\VisibilityToBoolean.cs" />
     <Compile Include="Classes\Converters\EnumToBoolean.cs" />
     <Compile Include="Classes\Converters\OutputStateToBoolean.cs" />
+    <Compile Include="Interfaces\IScanCurve.cs" />
     <Compile Include="UserControls\AlignmentFunc\AlignmentPanel.xaml.cs">
       <DependentUpon>AlignmentPanel.xaml</DependentUpon>
     </Compile>
@@ -219,9 +221,6 @@
     <Compile Include="Classes\SqliteDb.cs" />
     <Compile Include="Configuration\Equipments\ConfigurationNewport2832C.cs" />
     <Compile Include="Docs\How to add new instrument to system.cs" />
-    <Compile Include="UserControls\AlignmentFunc\SnakeRouteScan\SnakeRouteScanPanel.xaml.cs">
-      <DependentUpon>SnakeRouteScanPanel.xaml</DependentUpon>
-    </Compile>
     <Compile Include="UserControls\AlignmentPanelSnakeRouteScan.xaml.cs">
       <DependentUpon>AlignmentPanelSnakeRouteScan.xaml</DependentUpon>
     </Compile>
@@ -387,10 +386,6 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="UserControls\AlignmentFunc\RotatingScan\Template.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="UserControls\AlignmentFunc\SnakeRouteScan\SnakeRouteScanPanel.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

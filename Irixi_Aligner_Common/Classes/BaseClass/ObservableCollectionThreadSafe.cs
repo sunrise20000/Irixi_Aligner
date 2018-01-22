@@ -2,7 +2,7 @@
 
 namespace Irixi_Aligner_Common.Classes.BaseClass
 {
-    public class ObservableCollectionThreadSafe<T>: ObservableCollection<T>
+    public class ObservableCollectionThreadSafe<T>: ObservableCollectionEx<T>
     {
         protected override void ClearItems()
         {

@@ -1,11 +1,12 @@
-﻿using Irixi_Aligner_Common.Alignment.BaseClasses;
+﻿using System;
+using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
+using Irixi_Aligner_Common.Alignment.BaseClasses;
+using Irixi_Aligner_Common.Classes;
+using Irixi_Aligner_Common.Classes.BaseClass;
 using Irixi_Aligner_Common.Equipments.Base;
 using Irixi_Aligner_Common.Interfaces;
 using Irixi_Aligner_Common.MotionControllers.Base;
-using System;
-using System.ComponentModel;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
 
 namespace Irixi_Aligner_Common.Alignment.Rotating
 {
@@ -13,8 +14,8 @@ namespace Irixi_Aligner_Common.Alignment.Rotating
     {
         #region Variables
 
-        const string PROP_GRP_ROTATING = "Rotating Cond";
-        const string PROP_GRP_LINEAR = "Linear Cond";
+        const string PROP_GRP_ROTATING = "Rotating Settings";
+        const string PROP_GRP_LINEAR = "Linear Settings";
 
 
         LogicalAxis axisRotating = null, axisLinear = null;
@@ -29,12 +30,12 @@ namespace Irixi_Aligner_Common.Alignment.Rotating
 
         #region Constructors
         
-        public RotatingScanArgs():base()
+        public RotatingScanArgs(SystemService Service) :base(Service)
         {
             ScanCurve = new ScanCurve();
             ScanCurve2 = new ScanCurve();
-            ScanCurveFitting = new ScanCurve();
-            ScanCurveFitting2 = new ScanCurve();
+            ScanCurveFitting = new ScanCurve() { Suffix = "Fit" };
+            ScanCurveFitting2 = new ScanCurve() { Suffix = "Fit" };
 
             // add the curves to the group
             ScanCurveGroup.Add(ScanCurve);
@@ -43,12 +44,29 @@ namespace Irixi_Aligner_Common.Alignment.Rotating
             ScanCurveGroup.Add(ScanCurveFitting2);
             ScanCurveGroup.Add(ScanCurve.MaxPowerConstantLine);
             ScanCurveGroup.Add(ScanCurve2.MaxPowerConstantLine);
+
+            Properties.Add(new Property("AxisRotating"));
+            Properties.Add(new Property("Instrument"));
+            Properties.Add(new Property("AxisLinear"));
+            Properties.Add(new Property("Instrument2"));
+            Properties.Add(new Property("LinearInterval"));
+            Properties.Add(new Property("LinearRestriction"));
+            Properties.Add(new Property("LengthOfChannelStartToEnd"));
+            Properties.Add(new Property("MoveSpeed"));
+
+            AxisXTitle = "ΔPosition";
+            AxisYTitle = "Power";
+
         }
 
         #endregion
 
         #region Properties
-        [Display(Name = "Axis Rotating", GroupName = PROP_GRP_ROTATING, Description = "The axis to rotate.")]
+
+        [Display(
+            Name = "Axis Rotating", 
+            GroupName = PROP_GRP_ROTATING, 
+            Description = "The axis to rotate.")]
         public LogicalAxis AxisRotating
         {
             get => axisRotating;
@@ -59,7 +77,10 @@ namespace Irixi_Aligner_Common.Alignment.Rotating
             }
         }
 
-        [Display(Name = "Instr. Rotating", GroupName = PROP_GRP_ROTATING, Description = "The valid instrument like powermeter, keithley 2400, etc.")]
+        [Display(
+            Name = "Instr. Rotating", 
+            GroupName = PROP_GRP_ROTATING, 
+            Description = "The valid instrument like powermeter, keithley 2400, etc.")]
         new public IInstrument Instrument
         {
             get => instrument;
@@ -68,7 +89,7 @@ namespace Irixi_Aligner_Common.Alignment.Rotating
                 instrument = value;
                 RaisePropertyChanged();
 
-                this.ScanCurve.DisplayName = ((InstrumentBase)instrument).Config.Caption;
+                ScanCurveGroup.ChangeDisplayName(((InstrumentBase)instrument).Config.Caption);
             }
         }
 
@@ -120,7 +141,7 @@ namespace Irixi_Aligner_Common.Alignment.Rotating
                 instrument2 = value;
                 RaisePropertyChanged();
 
-                this.ScanCurve2.DisplayName = ((InstrumentBase)instrument2).Config.Caption;
+                ScanCurveGroup.ChangeDisplayName(((InstrumentBase)instrument2).Config.Caption);
             }
         }
         
@@ -224,10 +245,20 @@ namespace Irixi_Aligner_Common.Alignment.Rotating
         {
             base.Validate();
 
+            if(AxisLinear == null)
+                throw new ArgumentException("you must specify the linear axis.");
+
+            if (AxisRotating == null)
+                throw new ArgumentException("you must specify the rotating axis.");
+
             if (AxisLinear == AxisRotating)
                 throw new ArgumentException("linear axis and rotating axis must be different.");
 
-            if(Instrument == Instrument2)
+            if (Instrument2 == null)
+                throw new ArgumentException(string.Format("you must specify the {0}",
+                    ((DisplayAttribute)TypeDescriptor.GetProperties(this)["Instrument2"].Attributes[typeof(DisplayAttribute)]).Name) ?? "instrument2");
+
+            if (Instrument == Instrument2)
                 throw new ArgumentException("the 2 instruments must be different.");
         }
 

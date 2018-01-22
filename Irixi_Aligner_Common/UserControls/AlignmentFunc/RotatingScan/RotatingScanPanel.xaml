@@ -14,19 +14,16 @@
     <UserControl.Resources>
         <ResourceDictionary >
             <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="../BaseTemplate.xaml"/>
                 <ResourceDictionary Source="Template.xaml"/>
             </ResourceDictionary.MergedDictionaries>
-            
-             <DataTemplate x:Key="PropDefHeaderTempl_LinearAxis">
-            <StackPanel Orientation="Horizontal">
-                <TextBlock Text="{Binding Header}"/>
-                <TextBlock Text="{Binding DataContext.RotatingScanArgs.AxisLinear.PhysicalAxisInst.UnitHelper, RelativeSource={RelativeSource AncestorType={x:Type UserControl}}, StringFormat={}({0})}"/>
-            </StackPanel>
-        </DataTemplate>
-            
+            <DataTemplate x:Key="PropDefHeaderTempl_LinearAxis">
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Text="{Binding Header}"/>
+                    <TextBlock Text="{Binding DataContext.RotatingScanArgs.AxisLinear.PhysicalAxisInst.UnitHelper, RelativeSource={RelativeSource AncestorType={x:Type UserControl}}, StringFormat={}({0})}"/>
+                </StackPanel>
+            </DataTemplate>
         </ResourceDictionary>
-       
-
     </UserControl.Resources>
     <Grid Margin="3">
         <Grid.ColumnDefinitions>

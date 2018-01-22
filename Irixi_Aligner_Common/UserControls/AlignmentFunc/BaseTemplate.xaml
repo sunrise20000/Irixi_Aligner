@@ -7,15 +7,16 @@
     <local:PropertyDefinitionTemplateSelector x:Key="PropDefTemplSelector"/>
 
     <DataTemplate x:Key="DefaultPropDefTemplate">
-        <dxprg:PropertyDefinition/>
+        <dxprg:PropertyDefinition Path="{Binding Name}"/>
     </DataTemplate>
 
     <Style TargetType="dxprg:PropertyGridControl">
-        <Setter Property="ShowProperties" Value="WithPropertyDefinitions"/>
-        <Setter Property="ShowDescriptionIn" Value="ToolTipAndPanel"/>
+        <Setter Property="ShowDescriptionIn" Value="Panel"/>
         <Setter Property="ShowSearchBox" Value="False"/>
         <Setter Property="AllowExpanding" Value="Force"/>
+        <Setter Property="ExpandCategoriesWhenSelectedObjectChanged" Value="True"/>
         <Setter Property="ShowMenuButtonInRows" Value="False"/>
+        <Setter Property="ShowProperties" Value="WithPropertyDefinitions"/>
     </Style>
 
 </ResourceDictionary>

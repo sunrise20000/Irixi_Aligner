@@ -157,7 +157,6 @@
                         </dxd:DocumentPanel>
 
                         <!-- Blind Search 2 Panel -->
-                        
                         <dxd:DocumentPanel x:Name="panelSnakeRouteScan" 
                                            Caption="Blind Search 2" 
                                            MDISize="1000,600" 
@@ -168,7 +167,11 @@
                                            AllowMaximize="true" 
                                            AllowDockToDocumentGroup="False"
                                            Visibility="Hidden">
-                            <apanel:AlignmentPanel DataContext="{Binding RotatingScanArgs}"/>
+                            <apanel:AlignmentPanel 
+                                DataContext="{Binding Service.SnakeRouteScanArgs}" 
+                                PropertiesTemplate="UserControls/AlignmentFunc/SnakeRouteScan/Template.xaml" 
+                                StartCommand="{Binding Service.CommandDoSnakeRouteScan}"
+                                StopCommand="{Binding Service.CommandStop}"/>
                         </dxd:DocumentPanel>
 
                         <!-- Rotating Scan Panel -->
@@ -182,8 +185,11 @@
                                            AllowMaximize="true" 
                                            AllowDockToDocumentGroup="False"
                                            Visibility="Hidden">
-                            <apanel:RotatingScanPanel DataContext="{Binding Service}">
-                            </apanel:RotatingScanPanel>
+                            <apanel:AlignmentPanel 
+                                DataContext="{Binding Service.RotatingScanArgs}" 
+                                PropertiesTemplate="UserControls/AlignmentFunc/RotatingScan/Template.xaml" 
+                                StartCommand="{Binding Service.CommandDoRotatingScan}"
+                                StopCommand="{Binding Service.CommandStop}"/>
                         </dxd:DocumentPanel>
 
                     </dxd:DocumentGroup>

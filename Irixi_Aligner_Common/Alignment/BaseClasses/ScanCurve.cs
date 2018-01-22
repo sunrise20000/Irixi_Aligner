@@ -1,17 +1,20 @@
-﻿using Irixi_Aligner_Common.Classes.BaseClass;
-using MathNet.Numerics;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
-using System.ComponentModel;
 using System.Linq;
-using System.Runtime.CompilerServices;
 using System.Windows;
+using System.Windows.Media;
+using MathNet.Numerics;
 
 namespace Irixi_Aligner_Common.Alignment.BaseClasses
 {
     public class ScanCurve : ScanCurveBase<Point>
     {
+        #region Variables
+
+        string displayName = "";
+
+        #endregion
 
         public ScanCurve() : base()
         {
@@ -25,7 +28,12 @@ namespace Irixi_Aligner_Common.Alignment.BaseClasses
 
         private void Construct()
         {
-            MaxPowerConstantLine = new ObservableCollectionThreadSafe<Point>();
+            MaxPowerConstantLine = new ScanCurveBase<Point>
+            {
+                Suffix = "Max"
+            };
+            MaxPowerConstantLine.LineStyle.Thickness = 1;
+            MaxPowerConstantLine.LineStyle.DashStyle = new DashStyle(new double[] { 1, 5 }, 0);
 
             this.CollectionChanged += ((s, e)=>
             {
@@ -38,10 +46,26 @@ namespace Irixi_Aligner_Common.Alignment.BaseClasses
         /// <summary>
         /// The constant line indicates where is the max power of the Scan Curve
         /// </summary>
-        public ObservableCollectionThreadSafe<Point> MaxPowerConstantLine
+        public ScanCurveBase<Point> MaxPowerConstantLine
         {
             private set;
             get;
+        }
+
+        /// <summary>
+        /// Get the name of the curve
+        /// </summary>
+        new public string DisplayName
+        {
+            set
+            {
+                MaxPowerConstantLine.DisplayName = value;
+                UpdateProperty(ref displayName, value);
+            }
+            get
+            {
+                return string.Join(" ", new object[] { Prefix, displayName, Suffix });
+            }
         }
 
         /// <summary>

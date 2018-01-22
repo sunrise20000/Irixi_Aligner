@@ -1,6 +1,7 @@
 ﻿using System.ComponentModel;
 using System.Windows;
 using System.Windows.Controls;
+using Irixi_Aligner_Common.Classes.BaseClass;
 
 namespace Irixi_Aligner_Common.UserControls.AlignmentFunc
 {
@@ -12,7 +13,7 @@ namespace Irixi_Aligner_Common.UserControls.AlignmentFunc
 
             if (element != null && item != null)
             {
-                var pd = item as PropertyDescriptor;
+                var pd = item as Property;
                 var pd_name = pd.Name;
 
                 // find the DataTemplate named with the property name

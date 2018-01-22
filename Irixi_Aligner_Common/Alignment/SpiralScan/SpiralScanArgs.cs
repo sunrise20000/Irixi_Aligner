@@ -1,4 +1,5 @@
 ﻿using Irixi_Aligner_Common.Alignment.BaseClasses;
+using Irixi_Aligner_Common.Classes;
 using Irixi_Aligner_Common.Classes.BaseClass;
 using Irixi_Aligner_Common.MotionControllers.Base;
 using System;
@@ -13,14 +14,12 @@ namespace Irixi_Aligner_Common.Alignment.SpiralScan
         private LogicalAxis axis1;
         private double target;
         private int maxCycles;
-        private double gap;
-        private double range;
-        private int moveSpeed;
+        private double gap, range;
         private Size3D aspectRatio;
         #endregion
 
         #region Constructors
-        public SpiralScanArgs()
+        public SpiralScanArgs(SystemService Service) : base(Service)
         {
             ScanCurve = new ObservableCollectionThreadSafe<Point3D>();
 

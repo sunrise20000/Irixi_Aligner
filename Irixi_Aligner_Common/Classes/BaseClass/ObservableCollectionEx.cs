@@ -1,10 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 
 namespace Irixi_Aligner_Common.Classes.BaseClass
 {
-    public class ObservableCollection<T> : System.Collections.ObjectModel.ObservableCollection<T>
+    public class ObservableCollectionEx<T> : ObservableCollection<T>
     {
         /// <summary> 
         /// Adds the elements of the specified collection to the end of the ObservableCollection(Of T). 
@@ -51,7 +52,7 @@ namespace Irixi_Aligner_Common.Classes.BaseClass
         /// <summary> 
         /// Initializes a new instance of the System.Collections.ObjectModel.ObservableCollection(Of T) class. 
         /// </summary> 
-        public ObservableCollection()
+        public ObservableCollectionEx()
         : base() { }
 
         /// <summary> 
@@ -59,7 +60,7 @@ namespace Irixi_Aligner_Common.Classes.BaseClass
         /// </summary> 
         /// <param name="collection">collection: The collection from which the elements are copied.</param> 
         /// <exception cref="System.ArgumentNullException">The collection parameter cannot be null.</exception> 
-        public ObservableCollection(IEnumerable<T> collection)
+        public ObservableCollectionEx(IEnumerable<T> collection)
         : base(collection) { }
     }
 }

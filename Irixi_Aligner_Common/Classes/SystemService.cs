@@ -5,6 +5,7 @@ using GalaSoft.MvvmLight.Messaging;
 using Irixi_Aligner_Common.Alignment.AlignmentXD;
 using Irixi_Aligner_Common.Alignment.BaseClasses;
 using Irixi_Aligner_Common.Alignment.Rotating;
+using Irixi_Aligner_Common.Alignment.SnakeRouteScan;
 using Irixi_Aligner_Common.Alignment.SpiralScan;
 using Irixi_Aligner_Common.Classes.BaseClass;
 using Irixi_Aligner_Common.Configuration.Common;
@@ -81,15 +82,16 @@ namespace Irixi_Aligner_Common.Classes
             BusyComponents = new List<IServiceSystem>();
 
             PhysicalMotionControllerCollection = new Dictionary<Guid, IMotionController>();
-            LogicalAxisCollection = new ObservableCollection<LogicalAxis>();
-            LogicalMotionComponentCollection = new ObservableCollection<LogicalMotionComponent>();
-            MeasurementInstrumentCollection = new ObservableCollection<InstrumentBase>();
-            ActiveInstrumentCollection = new ObservableCollection<InstrumentBase>();
+            LogicalAxisCollection = new ObservableCollectionEx<LogicalAxis>();
+            LogicalMotionComponentCollection = new ObservableCollectionEx<LogicalMotionComponent>();
+            MeasurementInstrumentCollection = new ObservableCollectionEx<InstrumentBase>();
+            ActiveInstrumentCollection = new ObservableCollectionEx<InstrumentBase>();
             State = SystemState.BUSY;
 
-            SpiralScanArgs = new SpiralScanArgs();
-            AlignmentXDArgs = new AlignmentXDArgs();
-            RotatingScanArgs = new RotatingScanArgs();
+            SpiralScanArgs = new SpiralScanArgs(this);
+            SnakeRouteScanArgs = new SnakeRouteScanArgs(this);
+            AlignmentXDArgs = new AlignmentXDArgs(this);
+            RotatingScanArgs = new RotatingScanArgs(this);
 
 
             /*
@@ -289,7 +291,7 @@ namespace Irixi_Aligner_Common.Classes
         /// Create a collection that contains all logical axes defined in the config file.
         /// this list enable users to operate each axis independently without knowing which physical motion controller it belongs to
         /// </summary>
-        public ObservableCollection<LogicalAxis> LogicalAxisCollection
+        public ObservableCollectionEx<LogicalAxis> LogicalAxisCollection
         {
             get;
         }
@@ -297,17 +299,17 @@ namespace Irixi_Aligner_Common.Classes
         /// <summary>
         /// Get the collection of the logical motion components, this property should be used to generate the motion control panel for each aligner
         /// </summary>
-        public ObservableCollection<LogicalMotionComponent> LogicalMotionComponentCollection { get; }
+        public ObservableCollectionEx<LogicalMotionComponent> LogicalMotionComponentCollection { get; }
 
         /// <summary>
         /// Get the collection of instruments that defined in the configuration file
         /// </summary>
-        public ObservableCollection<InstrumentBase> MeasurementInstrumentCollection { get; }
+        public ObservableCollectionEx<InstrumentBase> MeasurementInstrumentCollection { get; }
 
         /// <summary>
         /// Get the collection of the active instruments which are initialized successfully, the property should be used to represent the valid instruments in the alignment control panel
         /// </summary>
-        public ObservableCollection<InstrumentBase> ActiveInstrumentCollection { get; }
+        public ObservableCollectionEx<InstrumentBase> ActiveInstrumentCollection { get; }
 
         /// <summary>
         /// Set or get the last message.
@@ -337,8 +339,12 @@ namespace Irixi_Aligner_Common.Classes
             }
         }
 
+        #endregion
+
+        #region Alignment Function Args
+
         /// <summary>
-        /// Get argument of Spiral Scan, the properties in the class are binded to the UI
+        /// Get argument of Spiral Scan, the properties in the class are bound to the UI
         /// </summary>
         public SpiralScanArgs SpiralScanArgs
         {
@@ -346,7 +352,15 @@ namespace Irixi_Aligner_Common.Classes
         }
 
         /// <summary>
-        /// Get argument of Alignement-XD, the properties in the class are binded to the UI
+        /// Get argument of Snake Route Scan, the properties in the class are bound to the UI
+        /// </summary>
+        public SnakeRouteScanArgs SnakeRouteScanArgs
+        {
+            get;
+        }
+
+        /// <summary>
+        /// Get argument of Alignement-nD, the properties in the class are bound to the UI
         /// </summary>
         public AlignmentXDArgs AlignmentXDArgs
         {
@@ -354,7 +368,7 @@ namespace Irixi_Aligner_Common.Classes
         }
 
         /// <summary>
-        /// Get argument of rotating alignment
+        /// Get argument of rotating alignment, the properties in the class are bound to the UI
         /// </summary>
         public RotatingScanArgs RotatingScanArgs
         {
@@ -498,19 +512,32 @@ namespace Irixi_Aligner_Common.Classes
                 // to calculate time costs
                 DateTime alignStarts = DateTime.Now;
 
+                // add alignement class to busy components list
+                BusyComponents.Add(AlignHandler);
+
                 try
                 {
-                    // add alignement class to busy components list
-                    BusyComponents.Add(AlignHandler);
-
-                    // pause the auto-fetching process of instrument
-                    AlignHandler.Args.PauseInstruments();
-
-                    // run actual alignment process
-                    await Task.Run(() =>
+                    if (AlignHandler.Args == null)
                     {
-                        AlignHandler.Start();
-                    });
+                        this.LastMessage = new MessageItem(
+                            MessageType.Error,
+                            string.Format("{0} Error, {1}", AlignHandler, "the argument can not be null."));
+                        PostErrorMessageToFrontEnd(this.LastMessage.Message);
+                    }
+                    else
+                    {
+                        // validate the parameters
+                        AlignHandler.Args.Validate();
+                        
+                        // pause the auto-fetching process of instrument
+                        AlignHandler.Args.PauseInstruments();
+
+                        // run actual alignment process
+                        await Task.Run(() =>
+                        {
+                            AlignHandler.Start();
+                        });
+                    }
                 }
                 catch (Exception ex)
                 {
@@ -526,12 +553,13 @@ namespace Irixi_Aligner_Common.Classes
                     catch (Exception ex)
                     {
                         LastMessage = new MessageItem(MessageType.Error, string.Format("Unable to resume auto-fetching process of {0}, {1}", AlignHandler.Args.Instrument, ex.Message));
-                        BusyComponents.Remove(AlignHandler);
                     }
                 }
 
                 LastMessage = new MessageItem(MessageType.Normal, string.Format("{0} complete, costs {1}s", AlignHandler, (DateTime.Now - alignStarts).TotalSeconds));
 
+                BusyComponents.Remove(AlignHandler);
+                
                 SetSystemState(SystemState.IDLE);
             }
         }
@@ -925,6 +953,11 @@ namespace Irixi_Aligner_Common.Classes
             StartAlignmentProc(new SpiralScan(Args));
         }
 
+        public void DoSnakeRouteScan(SnakeRouteScanArgs Args)
+        {
+            StartAlignmentProc(new SnakeRouteScan(Args));
+        }
+
         public void DoRotatingScan(RotatingScanArgs Args)
         {
             StartAlignmentProc(new RotatingScan(Args));
@@ -1218,6 +1251,17 @@ namespace Irixi_Aligner_Common.Classes
                 return new RelayCommand<SpiralScanArgs>(args =>
                 {
                     DoBlindSearch(args);
+                });
+            }
+        }
+
+        public RelayCommand<SnakeRouteScanArgs> CommandDoSnakeRouteScan
+        {
+            get
+            {
+                return new RelayCommand<SnakeRouteScanArgs>(args =>
+                {
+                    DoSnakeRouteScan(args);
                 });
             }
         }
