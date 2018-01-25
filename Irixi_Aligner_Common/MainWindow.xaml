@@ -139,7 +139,12 @@
                                            AllowMaximize="true" 
                                            AllowDockToDocumentGroup="False" 
                                            Visibility="Hidden">
-                            <UserControls:AlignmentPanelAlignmentXD DataContext="{Binding Service}"/>
+                            <!--<UserControls:AlignmentPanelAlignmentXD DataContext="{Binding Service}"/>-->
+                            <apanel:AlignmentPanel 
+                                DataContext="{Binding Service.AlignmentXDArgs}" 
+                                PropertiesTemplate="UserControls/AlignmentFunc/AlignmentND/Template.xaml" 
+                                StartCommand="{Binding Service.CommandDoAlignmentXD}"
+                                StopCommand="{Binding Service.CommandStop}"/>
                         </dxd:DocumentPanel>
                         
                         <!-- Blind Search Panel -->
@@ -153,7 +158,11 @@
                                            AllowMaximize="true" 
                                            AllowDockToDocumentGroup="False"
                                            Visibility="Hidden">
-                            <UserControls:AlignmentPanelBlindSearch DataContext="{Binding Service}"/>
+                            <apanel:AlignmentPanel 
+                                DataContext="{Binding Service.SpiralScanArgs}" 
+                                PropertiesTemplate="UserControls/AlignmentFunc/SprialScan/Template.xaml" 
+                                StartCommand="{Binding Service.CommandDoBlindSearch}"
+                                StopCommand="{Binding Service.CommandStop}"/>
                         </dxd:DocumentPanel>
 
                         <!-- Blind Search 2 Panel -->
@@ -189,6 +198,24 @@
                                 DataContext="{Binding Service.RotatingScanArgs}" 
                                 PropertiesTemplate="UserControls/AlignmentFunc/RotatingScan/Template.xaml" 
                                 StartCommand="{Binding Service.CommandDoRotatingScan}"
+                                StopCommand="{Binding Service.CommandStop}"/>
+                        </dxd:DocumentPanel>
+
+                        <!-- Central Align Panel -->
+                        <dxd:DocumentPanel x:Name="panelCentralAlign" 
+                                           Caption="Central Align" 
+                                           MDISize="1000,600" 
+                                           AllowFloat="False" 
+                                           AllowSizing="True" 
+                                           AllowRename="False" 
+                                           AllowDock="False" 
+                                           AllowMaximize="true" 
+                                           AllowDockToDocumentGroup="False"
+                                           Visibility="Hidden">
+                            <apanel:AlignmentPanel 
+                                DataContext="{Binding Service.CentralAlignArgs}" 
+                                PropertiesTemplate="UserControls/AlignmentFunc/CentralAlign/Template.xaml" 
+                                StartCommand="{Binding Service.CommandDoCentralAlign}"
                                 StopCommand="{Binding Service.CommandStop}"/>
                         </dxd:DocumentPanel>
 

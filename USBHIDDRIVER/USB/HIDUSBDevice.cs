@@ -124,10 +124,13 @@ namespace USBHIDDRIVER.USB
 
         public void DisconnectDevice()
         {
-            myUSB.CT_CloseFile();
-            myUSB.CT_SetupDiDestroyDeviceInfoList();
+            if (this.IsConnected)
+            {
+                myUSB.CT_CloseFile();
+                myUSB.CT_SetupDiDestroyDeviceInfoList();
 
-            this.IsConnected = false;
+                this.IsConnected = false;
+            }
         }
         
         public bool WriteData(byte[] Data)

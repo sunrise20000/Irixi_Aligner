@@ -4,9 +4,6 @@
                     xmlns:dxe="http://schemas.devexpress.com/winfx/2008/xaml/editors" 
                     xmlns:dxprg="http://schemas.devexpress.com/winfx/2008/xaml/propertygrid">
 
-
-
-
     <!-- 
         Data Template of property definition header
     -->
@@ -42,15 +39,6 @@
         </dxprg:PropertyDefinition>
     </DataTemplate>
 
-    <DataTemplate x:Key="AxisRestriction">
-        <dxprg:PropertyDefinition Path="{Binding Name}"
-                                  HeaderTemplate="{StaticResource PropDefHeaderTempl_Axis}">
-            <dxprg:PropertyDefinition.EditSettings>
-                <dxe:SpinEditSettings/>
-            </dxprg:PropertyDefinition.EditSettings>
-        </dxprg:PropertyDefinition>
-    </DataTemplate>
-
     <DataTemplate x:Key="Axis2">
         <dxprg:PropertyDefinition Path="{Binding Name}" 
                                   IsReadOnly="False" 
@@ -65,9 +53,9 @@
         </dxprg:PropertyDefinition>
     </DataTemplate>
 
-    <DataTemplate x:Key="Axis2Restriction">
+    <DataTemplate x:Key="ScanRestriction">
         <dxprg:PropertyDefinition Path="{Binding Name}"
-                                  HeaderTemplate="{StaticResource PropDefHeaderTempl_Axis2}">
+                                  HeaderTemplate="{StaticResource PropDefHeaderTempl_Axis}">
             <dxprg:PropertyDefinition.EditSettings>
                 <dxe:SpinEditSettings/>
             </dxprg:PropertyDefinition.EditSettings>
@@ -95,5 +83,6 @@
             </dxprg:PropertyDefinition.EditSettings>
         </dxprg:PropertyDefinition>
     </DataTemplate>
+
 
 </ResourceDictionary>

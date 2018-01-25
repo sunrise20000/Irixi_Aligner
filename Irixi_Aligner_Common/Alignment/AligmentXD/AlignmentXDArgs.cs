@@ -1,18 +1,26 @@
 ﻿using Irixi_Aligner_Common.Alignment.BaseClasses;
 using Irixi_Aligner_Common.Classes;
+using Irixi_Aligner_Common.Classes.BaseClass;
 using Irixi_Aligner_Common.MotionControllers.Base;
 using System;
+using System.Linq;
 using System.Collections.ObjectModel;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel;
 
 namespace Irixi_Aligner_Common.Alignment.AlignmentXD
 {
     public class AlignmentXDArgs : AlignmentArgsBase
     {
         #region Variables
-        private LogicalMotionComponent motionComponent;
-        private double target;
-        private int maxCycles;
-        private ObservableCollection<Alignment1DArgs> axisParamCollection;
+        LogicalMotionComponent motionComponent;
+        double target;
+        int maxCycles;
+        int maxOrder;
+        ObservableCollectionEx<int> listScanOrder;
+
+       ObservableCollection<Alignment1DArgs> axisParamCollection;
+       ReadOnlyObservableCollection<Alignment1DArgs> readonlyAxisParamCollection;
         #endregion
 
         #region Constructors
@@ -22,13 +30,31 @@ namespace Irixi_Aligner_Common.Alignment.AlignmentXD
             this.target = 0;
             this.maxCycles = 1;
 
-            AxisParamCollection = new ObservableCollection<Alignment1DArgs>();
+            // build valid scan order
+            listScanOrder = new ObservableCollectionEx<int>();
+
+            // build list contains each single axis parameter object
+            axisParamCollection = new ObservableCollection<Alignment1DArgs>();
+            readonlyAxisParamCollection = new ReadOnlyObservableCollection<Alignment1DArgs>(axisParamCollection);
+
+            Properties.Add(new Property("MotionComponent"));
+            Properties.Add(new Property("Target"));
+            Properties.Add(new Property("MaxCycles"));
+            Properties.Add(new Property() { CollectionName = "AxisParamCollection" });
+
+            AxisXTitle = "Position";
+            AxisYTitle = "Indensity";
+
         }
 
         #endregion
 
         #region Properties
-        
+
+        [Display(
+            Name = "Motion Component",
+            GroupName = PROP_GRP_COMMON,
+            Description = "Which motion component belongs to of the axes to align.")]
         new public LogicalMotionComponent MotionComponent
         {
             get => motionComponent;
@@ -38,7 +64,8 @@ namespace Irixi_Aligner_Common.Alignment.AlignmentXD
                 RaisePropertyChanged();
 
                 // add new editors
-                AxisParamCollection.Clear();
+                axisParamCollection.Clear();
+                ScanCurveGroup.Clear();
                 foreach (var axis in value.LogicalAxisCollection)
                 {
                     var arg = new Alignment1DArgs(this.Service)
@@ -48,15 +75,22 @@ namespace Irixi_Aligner_Common.Alignment.AlignmentXD
                         MoveSpeed = 100,
                         Interval = 10,
                         ScanRange = 100,
-                        ScanOrder = 0,
-                        MaxOrder = value.LogicalAxisCollection.Count
+                        ScanOrder = 1
                     };
 
-                    AxisParamCollection.Add(arg);
+                    axisParamCollection.Add(arg);
+                    ScanCurveGroup.Add(arg.ScanCurve);
+                    //ScanCurveGroup.Add(arg.ScanCurve.MaxPowerConstantLine);
                 }
+
+                this.MaxOrder = value.LogicalAxisCollection.Count;
             }
         }
 
+        [Display(
+            Name = "Target",
+            GroupName = PROP_GRP_COMMON,
+            Description = "")]
         public double Target
         {
             get => target;
@@ -67,6 +101,10 @@ namespace Irixi_Aligner_Common.Alignment.AlignmentXD
             }
         }
 
+        [Display(
+            Name = "Max Cycles",
+            GroupName = PROP_GRP_COMMON,
+            Description = "")]
         public int MaxCycles
         {
             get => maxCycles;
@@ -77,20 +115,41 @@ namespace Irixi_Aligner_Common.Alignment.AlignmentXD
             }
         }
 
-        public ObservableCollection<Alignment1DArgs> AxisParamCollection
+        [Display(
+            Name = "Axes Setting",
+            GroupName = PROP_GRP_COMMON,
+            Description = "")]
+        public ReadOnlyObservableCollection<Alignment1DArgs> AxisParamCollection
         {
-            get => axisParamCollection;
+            get => readonlyAxisParamCollection;
+        }
 
+        [Browsable(false)]
+        public int MaxOrder
+        {
             set
             {
-                axisParamCollection = value;
+                maxOrder = value;
+
+                listScanOrder.Clear();
+                for (int i = 1; i <= maxOrder; i++)
+                {
+                    listScanOrder.Add(i);
+                }
             }
+            get => maxOrder;
+        }
+
+        [Browsable(false)]
+        public ObservableCollectionEx<int> ListScanOrder
+        {
+            get => listScanOrder;
         }
 
         #endregion
 
         #region Methods
-        
+
         public override void Validate()
         {
 

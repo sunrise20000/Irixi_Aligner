@@ -104,12 +104,12 @@ namespace Irixi_Aligner_Common
                 // raise the click event
                 btn.ItemClick += (s, e) =>
                 {
-                    var view = new ViewMassMove(service, aligner);
-                    var win = new MassMoveWindow
-                    {
-                        DataContext = view
-                    };
-                    win.ShowDialog();
+                    //var view = new ViewMassMove(service, aligner);
+                    //var win = new MassMoveWindow
+                    //{
+                    //    DataContext = view
+                    //};
+                    //win.ShowDialog();
                 };
 
                 rpgPresetPositionButtonsHost.Items.Add(btn);
@@ -340,7 +340,8 @@ namespace Irixi_Aligner_Common
 
         private void btnCentralAlign_ItemClick(object sender, ItemClickEventArgs e)
         {
-
+            panelCentralAlign.Visibility = Visibility.Visible;
+            dockLayoutManager.MDIController.Activate(panelCentralAlign);
         }
     }
 

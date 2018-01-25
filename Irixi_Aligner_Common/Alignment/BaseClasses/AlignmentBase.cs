@@ -6,7 +6,6 @@ namespace Irixi_Aligner_Common.Alignment.BaseClasses
 {
     public class AlignmentBase : IServiceSystem
     {
-
         protected CancellationTokenSource cts;
         protected CancellationToken cts_token;
 

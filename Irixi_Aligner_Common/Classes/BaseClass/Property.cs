@@ -2,6 +2,8 @@
 {
     public class Property
     {
+        public Property() { }
+
         public Property(string Name)
         {
             this.Name = Name;

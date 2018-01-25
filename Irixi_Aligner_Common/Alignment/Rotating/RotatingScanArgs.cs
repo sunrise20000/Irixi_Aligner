@@ -34,14 +34,12 @@ namespace Irixi_Aligner_Common.Alignment.Rotating
         {
             ScanCurve = new ScanCurve();
             ScanCurve2 = new ScanCurve();
-            ScanCurveFitting = new ScanCurve() { Suffix = "Fit" };
-            ScanCurveFitting2 = new ScanCurve() { Suffix = "Fit" };
 
             // add the curves to the group
             ScanCurveGroup.Add(ScanCurve);
             ScanCurveGroup.Add(ScanCurve2);
-            ScanCurveGroup.Add(ScanCurveFitting);
-            ScanCurveGroup.Add(ScanCurveFitting2);
+            ScanCurveGroup.Add(ScanCurve.FittingCurve);
+            ScanCurveGroup.Add(ScanCurve2.FittingCurve);
             ScanCurveGroup.Add(ScanCurve.MaxPowerConstantLine);
             ScanCurveGroup.Add(ScanCurve2.MaxPowerConstantLine);
 
@@ -55,7 +53,7 @@ namespace Irixi_Aligner_Common.Alignment.Rotating
             Properties.Add(new Property("MoveSpeed"));
 
             AxisXTitle = "ΔPosition";
-            AxisYTitle = "Power";
+            AxisYTitle = "Indensity";
 
         }
 
@@ -89,7 +87,7 @@ namespace Irixi_Aligner_Common.Alignment.Rotating
                 instrument = value;
                 RaisePropertyChanged();
 
-                ScanCurveGroup.ChangeDisplayName(((InstrumentBase)instrument).Config.Caption);
+                ScanCurve.DisplayName = ((InstrumentBase)instrument).Config.Caption;
             }
         }
 
@@ -141,7 +139,7 @@ namespace Irixi_Aligner_Common.Alignment.Rotating
                 instrument2 = value;
                 RaisePropertyChanged();
 
-                ScanCurveGroup.ChangeDisplayName(((InstrumentBase)instrument2).Config.Caption);
+                ScanCurve2.DisplayName = ((InstrumentBase)instrument2).Config.Caption;
             }
         }
         
@@ -224,20 +222,6 @@ namespace Irixi_Aligner_Common.Alignment.Rotating
         [Browsable(false)]
         public ScanCurve ScanCurve2 { private set; get; }
 
-
-        /// <summary>
-        /// The fitting curve of scan curve
-        /// </summary>
-        [Browsable(false)]
-        public ScanCurve ScanCurveFitting { private set; get; }
-
-
-        /// <summary>
-        /// The fitting curve of scan curve 2
-        /// </summary>
-        [Browsable(false)]
-        public ScanCurve ScanCurveFitting2 { private set; get; }
-        
         #endregion
 
         #region Methods
@@ -272,21 +256,6 @@ namespace Irixi_Aligner_Common.Alignment.Rotating
         {
             Instrument.ResumeAutoFetching();
             Instrument2.ResumeAutoFetching();
-        }
-
-        /// <summary>
-        /// calculate the fitting equation and draw the fitting curve
-        /// </summary>
-        /// <param name="Curve"></param>
-        public void BeautifyScanCurves()
-        {
-            var points = ScanCurve.GetBeautifiedCurve();
-            foreach (var p in points)
-                ScanCurveFitting.Add(p);
-
-            points = ScanCurve2.GetBeautifiedCurve();
-            foreach (var p in points)
-                ScanCurveFitting2.Add(p);
         }
 
         #endregion

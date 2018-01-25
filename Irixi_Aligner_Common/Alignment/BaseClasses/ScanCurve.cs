@@ -16,21 +16,33 @@ namespace Irixi_Aligner_Common.Alignment.BaseClasses
 
         #endregion
 
+        #region Constructors
+
         public ScanCurve() : base()
         {
             Construct();
         }
 
-        public ScanCurve(string DisplayName) : base()
+        public ScanCurve(string DisplayName) : base(DisplayName)
         {
             Construct();
+
+            this.DisplayName = DisplayName;
         }
 
         private void Construct()
         {
+            FittingCurve = new ScanCurveBase<Point>
+            {
+                Suffix = "Fitting"
+            };
+            FittingCurve.LineStyle.Thickness = 1;
+            FittingCurve.LineStyle.DashStyle = new DashStyle(new double[] { 1, 5 }, 0);
+
             MaxPowerConstantLine = new ScanCurveBase<Point>
             {
-                Suffix = "Max"
+                Suffix = "Max",
+                Visible = false
             };
             MaxPowerConstantLine.LineStyle.Thickness = 1;
             MaxPowerConstantLine.LineStyle.DashStyle = new DashStyle(new double[] { 1, 5 }, 0);
@@ -38,10 +50,38 @@ namespace Irixi_Aligner_Common.Alignment.BaseClasses
             this.CollectionChanged += ((s, e)=>
             {
                 if (e.Action == NotifyCollectionChangedAction.Reset)
+                {
+                    FittingCurve.Clear();
+                    FittingCurve.Visible = false;
+
                     MaxPowerConstantLine.Clear();
+                    MaxPowerConstantLine.Visible = false;
+                }
             });
+
+            // generate some fake points to debug
+            Random r = new Random((int)DateTime.Now.Ticks);
+            var offset = r.NextDouble();
+            for (double i = -2; i < 2; i += 0.2)
+            {
+                this.Add(new Point(i, GaussianDistribution.Invoke(i, 1, offset + r.NextDouble() / 10)));
+            }
+
+            FindMaximalPosition();
         }
 
+        #endregion
+
+        #region Properties
+
+        /// <summary>
+        /// The fitting curve
+        /// </summary>
+        public ScanCurveBase<Point> FittingCurve
+        {
+            private set;
+            get;
+        }
 
         /// <summary>
         /// The constant line indicates where is the max power of the Scan Curve
@@ -59,6 +99,7 @@ namespace Irixi_Aligner_Common.Alignment.BaseClasses
         {
             set
             {
+                FittingCurve.DisplayName = value;
                 MaxPowerConstantLine.DisplayName = value;
                 UpdateProperty(ref displayName, value);
             }
@@ -67,17 +108,12 @@ namespace Irixi_Aligner_Common.Alignment.BaseClasses
                 return string.Join(" ", new object[] { Prefix, displayName, Suffix });
             }
         }
-
-        /// <summary>
-        /// Get the factors list of the polynomial
-        /// </summary>
-        public double[] PolyFittingEquationFactors { private set; get; }
-
+        
         /// <summary>
         /// Get the polynomial equation
         /// </summary>
         /// <returns></returns>
-        private Func<double, double> PolyFittingEqution
+        Func<double, double> PolyFittingEqution
         {
             get
             {
@@ -90,12 +126,33 @@ namespace Irixi_Aligner_Common.Alignment.BaseClasses
                 });
             }
         }
+
+        double FittingDomainMin
+        {
+            get;
+            set;
+        }
+
+        double FittingDomainMax
+        {
+            get;
+            set;
+        }
         
+        /// <summary>
+        /// Get the factors list of the polynomial
+        /// </summary>
+        public double[] PolyFittingEquationFactors { private set; get; }
+
+        #endregion
+
+        #region Methods
+
         /// <summary>
         /// Fit the scan curve to a polynomial with the order defined inside of the methods
         /// </summary>
         /// <returns></returns>
-        private double[] PolyFit()
+        double[] PolyFit()
         {
             const int FITTING_ORDER = 3;
 
@@ -103,7 +160,7 @@ namespace Irixi_Aligner_Common.Alignment.BaseClasses
             {
                 List<double> xData = new List<double>();
                 List<double> yData = new List<double>();
-                
+
                 // collect the points with Y value is greater than Max Y * 0.6
                 double max_y = this.Max(a => a.Y);
                 double thr_y = max_y * 0.5;
@@ -138,7 +195,7 @@ namespace Irixi_Aligner_Common.Alignment.BaseClasses
                             end = last;
                         start = 0;
                     }
-                    else if(end > last)
+                    else if (end > last)
                     {
                         start -= (end - last);
                         if (start < 0)
@@ -152,43 +209,30 @@ namespace Irixi_Aligner_Common.Alignment.BaseClasses
                         yData.Add(this[i].Y);
                     }
                 }
-                
-                
+
+
                 FittingDomainMin = xData[0];
                 FittingDomainMax = xData[xData.Count - 1];
-                
+
                 PolyFittingEquationFactors = Fit.Polynomial(xData.ToArray(), yData.ToArray(), FITTING_ORDER);
                 return PolyFittingEquationFactors;
             }
             else
             {
                 PolyFittingEquationFactors = null;
-                throw new FormatException("There are not enough points to fit, at least 7 points are needed.");
+                throw new InvalidOperationException(string.Format("There are not enough points in the scanned curve #{0} to fit, at least 7 points are needed.", DisplayName));
             }
-        }
-
-        private double FittingDomainMin
-        {
-            get;
-            set;
-        }
-
-        private double FittingDomainMax
-        {
-            get;
-            set;
         }
 
         /// <summary>
         /// Calculate the equation of the fitting curve and return the fitting curve by a list
         /// </summary>
         /// <returns></returns>
-        public List<Point> GetBeautifiedCurve()
+        void GetBeautifiedCurve()
         {
             // the fitting curve consist of these points
             const double POINTS_IN_BEAUTIFY_CURVE = 20;
-
-            List<Point> curve = new List<Point>();
+            
 
             // fitting the curve
             double[] equation = PolyFit();
@@ -206,10 +250,10 @@ namespace Irixi_Aligner_Common.Alignment.BaseClasses
             {
                 double x = start + i * step;
                 double y = PolyFittingEqution(x);
-                curve.Add(new Point(x, y));
+                FittingCurve.Add(new Point(x, y));
             }
 
-            return curve;
+            FittingCurve.Visible = true;
         }
 
         /// <summary>
@@ -217,8 +261,11 @@ namespace Irixi_Aligner_Common.Alignment.BaseClasses
         /// The 3-order polynomal are used to fit the scan curve.
         /// </summary>
         /// <returns></returns>
-        public Point FindMaximalPosition()
+        public override Point FindMaximalPosition()
         {
+            // Do Poly fit
+            GetBeautifiedCurve();
+
             //! NOTE:
             //! The function base on the condition that the polynomial order to fit is 3
             //! See the function this.PolyFit() for the detail
@@ -264,9 +311,12 @@ namespace Irixi_Aligner_Common.Alignment.BaseClasses
             MaxPowerConstantLine.Clear();
             MaxPowerConstantLine.Add(new Point(maxPoint.X, 0));
             MaxPowerConstantLine.Add(maxPoint);
+            MaxPowerConstantLine.Visible = true;
 
             return maxPoint;
         }
+
+        #endregion
 
     }
 }

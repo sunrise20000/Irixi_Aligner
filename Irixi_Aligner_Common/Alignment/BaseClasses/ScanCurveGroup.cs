@@ -4,7 +4,7 @@ using Irixi_Aligner_Common.Interfaces;
 
 namespace Irixi_Aligner_Common.Alignment.BaseClasses
 {
-    public class ScanCurveGroup : ObservableCollectionEx<IList>
+    public class ScanCurveGroup : ObservableCollectionEx<IScanCurve>
     {
         public void ClearCurvesContent()
         {
@@ -18,7 +18,7 @@ namespace Irixi_Aligner_Common.Alignment.BaseClasses
         {
             foreach (var c in this)
             {
-                ((IScanCurve)c).DisplayName = DisplayName;
+                c.DisplayName = DisplayName;
             }
         }
 
@@ -26,7 +26,7 @@ namespace Irixi_Aligner_Common.Alignment.BaseClasses
         {
             foreach (var c in this)
             {
-                ((IScanCurve)c).Prefix = Prefix;
+                c.Prefix = Prefix;
             }
 
         }
@@ -35,7 +35,7 @@ namespace Irixi_Aligner_Common.Alignment.BaseClasses
         {
             foreach (var c in this)
             {
-                ((IScanCurve)c).Suffix = Suffix;
+                c.Suffix = Suffix;
             }
 
         }

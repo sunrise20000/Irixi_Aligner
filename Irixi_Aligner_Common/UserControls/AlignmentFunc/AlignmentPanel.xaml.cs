@@ -2,6 +2,8 @@
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using System.Windows.Media.Media3D;
+using GalaSoft.MvvmLight.Command;
 
 namespace Irixi_Aligner_Common.UserControls.AlignmentFunc
 {
@@ -15,8 +17,8 @@ namespace Irixi_Aligner_Common.UserControls.AlignmentFunc
             InitializeComponent();
         }
 
-
-
+        #region Properties
+        
         public Uri PropertiesTemplate
         {
             get { return (Uri)GetValue(PropertiesTemplateProperty); }
@@ -32,6 +34,33 @@ namespace Irixi_Aligner_Common.UserControls.AlignmentFunc
                     owner.Resources.MergedDictionaries.Add(new ResourceDictionary() { Source = (Uri)e.NewValue });
                 }));
 
+
+        public Transform3DGroup ContentTransform
+        {
+            get { return (Transform3DGroup)GetValue(ContentTransformProperty); }
+            set { SetValue(ContentTransformProperty, value); }
+        }
+
+        // Using a DependencyProperty as the backing store for transform3DGroup.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty ContentTransformProperty =
+            DependencyProperty.Register("ContentTransform", typeof(Transform3DGroup), typeof(UserControl), new PropertyMetadata(new Transform3DGroup()
+            {
+                Children = new Transform3DCollection()
+                {
+                    new RotateTransform3D(new AxisAngleRotation3D()
+                {
+                    Angle = -40,
+                    Axis = new Vector3D(0, 1, 0)
+                }),
+
+                new RotateTransform3D(new AxisAngleRotation3D()
+                {
+                    Angle = 20,
+                    Axis = new Vector3D(1, 0, 0)
+                })
+                }
+            }));
+
         public ICommand StartCommand
         {
             get { return (ICommand)GetValue(StartCommandProperty); }
@@ -42,8 +71,7 @@ namespace Irixi_Aligner_Common.UserControls.AlignmentFunc
         public static readonly DependencyProperty StartCommandProperty =
             DependencyProperty.Register("StartCommand", typeof(ICommand), typeof(UserControl), new PropertyMetadata(null));
 
-
-
+        
         public object StartCommandParameter
         {
             get { return (object)GetValue(StartCommandParameterProperty); }
@@ -54,9 +82,6 @@ namespace Irixi_Aligner_Common.UserControls.AlignmentFunc
         public static readonly DependencyProperty StartCommandParameterProperty =
             DependencyProperty.Register("StartCommandParameter", typeof(object), typeof(UserControl), new PropertyMetadata(null));
 
-
-
-
         public ICommand StopCommand
         {
             get { return (ICommand)GetValue(StopCommandProperty); }
@@ -66,6 +91,77 @@ namespace Irixi_Aligner_Common.UserControls.AlignmentFunc
         // Using a DependencyProperty as the backing store for StopCommand.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty StopCommandProperty =
             DependencyProperty.Register("StopCommand", typeof(ICommand), typeof(UserControl), new PropertyMetadata(null));
+
+
+        #endregion
+
+
+        #region Methods
+
+        private RelayCommand Reset3DChartView
+        {
+            get
+            {
+                return new RelayCommand(() =>
+                {
+
+                    Transform3DCollection collection = new Transform3DCollection
+                    {
+                        new RotateTransform3D(new AxisAngleRotation3D()
+                        {
+                            Angle = -40,
+                            Axis = new Vector3D(0, 1, 0)
+                        }),
+
+                        new RotateTransform3D(new AxisAngleRotation3D()
+                        {
+                            Angle = 20,
+                            Axis = new Vector3D(1, 0, 0)
+                        })
+                    };
+
+                    Transform3DGroup group = new Transform3DGroup()
+                    {
+                        Children = collection,
+                    };
+
+                    this.ContentTransform = group;
+                });
+            }
+        }
+
+
+        /// <summary>
+        /// Reset set the view of 3D chart
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void cmResetView_Click(object sender, RoutedEventArgs e)
+        {
+            Transform3DCollection collection = new Transform3DCollection
+            {
+                new RotateTransform3D(new AxisAngleRotation3D()
+                {
+                    Angle = -40,
+                    Axis = new Vector3D(0, 1, 0)
+                }),
+
+                new RotateTransform3D(new AxisAngleRotation3D()
+                {
+                    Angle = 20,
+                    Axis = new Vector3D(1, 0, 0)
+                })
+            };
+
+            Transform3DGroup group = new Transform3DGroup()
+            {
+                Children = collection,
+            };
+
+            this.ContentTransform = group;
+        }
+
+        #endregion
 
     }
 }

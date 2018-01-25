@@ -22,11 +22,12 @@ namespace Irixi_Aligner_Common.Alignment.SnakeRouteScan
 
         public SnakeRouteScanArgs(SystemService Service) : base(Service)
         {
-            this.ScanCurve = new ScanCurve3D();
+            ScanCurve = new ScanCurve3D();
+            ScanCurveGroup.Add(ScanCurve);
 
             AxisXTitle = "Horizontal";
             AxisYTitle = "Verical";
-            AxisZTitle = "Power";
+            AxisZTitle = "Indensity";
 
             Properties.Add(new Property("Instrument"));
             Properties.Add(new Property("Axis"));
@@ -135,6 +136,9 @@ namespace Irixi_Aligner_Common.Alignment.SnakeRouteScan
 
             if (Axis == Axis2)
                 throw new ArgumentException("The horizontal axis and the vertical axis must be different.");
+
+            if (Axis.PhysicalAxisInst.UnitHelper.Unit != Axis2.PhysicalAxisInst.UnitHelper.Unit)
+                throw new ArgumentException("the two axes have different unit");
         }
 
         public override void PauseInstruments()

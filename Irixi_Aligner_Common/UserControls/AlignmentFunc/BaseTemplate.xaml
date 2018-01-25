@@ -1,6 +1,7 @@
 ﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:local="clr-namespace:Irixi_Aligner_Common.UserControls.AlignmentFunc"
+                    xmlns:dxe="http://schemas.devexpress.com/winfx/2008/xaml/editors" 
                     xmlns:dxprg="http://schemas.devexpress.com/winfx/2008/xaml/propertygrid">
 
     <!-- the class is used to create the property grid control in alignment panel automatically -->
@@ -18,5 +19,13 @@
         <Setter Property="ShowMenuButtonInRows" Value="False"/>
         <Setter Property="ShowProperties" Value="WithPropertyDefinitions"/>
     </Style>
+
+    <DataTemplate x:Key="MoveSpeed">
+        <dxprg:PropertyDefinition Path="{Binding Name}">
+            <dxprg:PropertyDefinition.EditSettings>
+                <dxe:SpinEditSettings/>
+            </dxprg:PropertyDefinition.EditSettings>
+        </dxprg:PropertyDefinition>
+    </DataTemplate>
 
 </ResourceDictionary>

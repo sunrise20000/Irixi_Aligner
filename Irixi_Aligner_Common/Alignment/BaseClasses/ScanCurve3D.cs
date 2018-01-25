@@ -1,18 +1,68 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Media.Media3D;
-using Irixi_Aligner_Common.Classes.BaseClass;
 
 namespace Irixi_Aligner_Common.Alignment.BaseClasses
 {
     public class ScanCurve3D : ScanCurveBase<Point3D>
     {
-        public ScanCurve3D() : base() { }
+        #region Variables
 
-        public ScanCurve3D(string DisplayName) : base() { }
+        #endregion
+
+        #region Constructors
+
+        public ScanCurve3D() : base()
+        {
+            Construct();
+        }
+
+        public ScanCurve3D(string DisplayName) : base(DisplayName)
+        {
+            Construct();
+        }
+
+        private void Construct()
+        {
+            // generate some random points to debug
+
+            Random r = new Random();
+
+            for (double x = -Math.PI; x < Math.PI; x += 0.1)
+            {
+                for (double y = -Math.PI; y < Math.PI; y += 0.1)
+                {
+                    this.Add(new Point3D(x, y, Math.Sin(x * r.NextDouble()) * Math.Cos(y)));
+                }
+            }
+        }
+
+        #endregion
+
+        #region Properties
+
+
+
+        #endregion
+
+        #region Methods
+
+        /// <summary>
+        /// Get the position with the maximum indensity
+        /// </summary>
+        /// <returns></returns>
+        public override Point3D FindMaximalPosition3D()
+        {
+            if (this.Count < 2)
+                throw new InvalidOperationException(string.Format("There are no enough points in the scanned curve #{0}", this.DisplayName));
+
+            var order = this.OrderByDescending(p => p.Z);
+            var maxPosition = order.First();
+            return maxPosition;
+
+        }
+
+        #endregion
 
     }
 }

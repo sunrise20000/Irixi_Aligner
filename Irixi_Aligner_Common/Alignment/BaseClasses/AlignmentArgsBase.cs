@@ -1,6 +1,7 @@
 ﻿using System;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
+using System.Windows.Media.Media3D;
 using GalaSoft.MvvmLight;
 using Irixi_Aligner_Common.Classes;
 using Irixi_Aligner_Common.Classes.BaseClass;
@@ -26,6 +27,7 @@ namespace Irixi_Aligner_Common.Alignment.BaseClasses
         
         public AlignmentArgsBase(SystemService Service)
         {
+
             Log = new ObservableCollectionThreadSafe<string>();
             ScanCurveGroup = new ScanCurveGroup();
 
@@ -57,6 +59,9 @@ namespace Irixi_Aligner_Common.Alignment.BaseClasses
             get;
         }
 
+        /// <summary>
+        /// Get the title of the Axis X for both 2D&3D chart
+        /// </summary>
         [Browsable(false)]
         public string AxisXTitle
         {
@@ -71,6 +76,9 @@ namespace Irixi_Aligner_Common.Alignment.BaseClasses
             }
         }
 
+        /// <summary>
+        /// Get the title of the Axis Y for both 2D&3D chart
+        /// </summary>
         [Browsable(false)]
         public string AxisYTitle
         {
@@ -85,6 +93,9 @@ namespace Irixi_Aligner_Common.Alignment.BaseClasses
             }
         }
 
+        /// <summary>
+        /// Get the title of the Secondary Axis Y for both 2D&3D chart
+        /// </summary>
         [Browsable(false)]
         public string AxisY2Title
         {
@@ -99,6 +110,9 @@ namespace Irixi_Aligner_Common.Alignment.BaseClasses
             }
         }
 
+        /// <summary>
+        /// Get the title of the Axis X for both 3D chart
+        /// </summary>
         [Browsable(false)]
         public string AxisZTitle
         {
@@ -113,9 +127,16 @@ namespace Irixi_Aligner_Common.Alignment.BaseClasses
             }
         }
 
+        /// <summary>
+        /// Get the group of scanned curves, NOTE it's only used to contain the 2D scanned curves,
+        /// for 3D curve, the ScanCurve is bound directly to UI because of issuses of Series3D binding.
+        /// </summary>
         [Browsable(false)]
         public ScanCurveGroup ScanCurveGroup { private set; get; }
 
+        /// <summary>
+        /// Get the messages of the alignment process
+        /// </summary>
         [Browsable(false)]
         public ObservableCollectionThreadSafe<string> Log
         {

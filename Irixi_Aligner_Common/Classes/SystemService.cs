@@ -4,6 +4,7 @@ using GalaSoft.MvvmLight.Ioc;
 using GalaSoft.MvvmLight.Messaging;
 using Irixi_Aligner_Common.Alignment.AlignmentXD;
 using Irixi_Aligner_Common.Alignment.BaseClasses;
+using Irixi_Aligner_Common.Alignment.CentralAlign;
 using Irixi_Aligner_Common.Alignment.Rotating;
 using Irixi_Aligner_Common.Alignment.SnakeRouteScan;
 using Irixi_Aligner_Common.Alignment.SpiralScan;
@@ -92,7 +93,7 @@ namespace Irixi_Aligner_Common.Classes
             SnakeRouteScanArgs = new SnakeRouteScanArgs(this);
             AlignmentXDArgs = new AlignmentXDArgs(this);
             RotatingScanArgs = new RotatingScanArgs(this);
-
+            CentralAlignArgs = new CentralAlignArgs(this);
 
             /*
              * enumerate all physical motion controllers defined in the config file,
@@ -375,6 +376,14 @@ namespace Irixi_Aligner_Common.Classes
             get;
         }
 
+        /// <summary>
+        /// Get argument of central alignment, the properties in the class are bound to the UI
+        /// </summary>
+        public CentralAlignArgs CentralAlignArgs
+        {
+            get;
+        }
+
         #endregion
 
         #region Private Methods
@@ -552,7 +561,7 @@ namespace Irixi_Aligner_Common.Classes
                     }
                     catch (Exception ex)
                     {
-                        LastMessage = new MessageItem(MessageType.Error, string.Format("Unable to resume auto-fetching process of {0}, {1}", AlignHandler.Args.Instrument, ex.Message));
+                        //LastMessage = new MessageItem(MessageType.Error, string.Format("Unable to resume auto-fetching process of {0}, {1}", AlignHandler.Args.Instrument, ex.Message));
                     }
                 }
 
@@ -963,6 +972,11 @@ namespace Irixi_Aligner_Common.Classes
             StartAlignmentProc(new RotatingScan(Args));
         }
 
+        public void DoCentralAlign(CentralAlignArgs Args)
+        {
+            StartAlignmentProc(new CentralAlign(Args));
+        }
+
         #region Cylinder Control
 
         #region Fiber Clamp Control
@@ -1165,7 +1179,7 @@ namespace Irixi_Aligner_Common.Classes
 
         #endregion
         
-        #region ICommands
+        #region Commands
 
         public RelayCommand<IAxis> CommandHome
         {
@@ -1273,6 +1287,17 @@ namespace Irixi_Aligner_Common.Classes
                 return new RelayCommand<RotatingScanArgs>(args =>
                 {
                     DoRotatingScan(args);
+                });
+            }
+        }
+
+        public RelayCommand<CentralAlignArgs> CommandDoCentralAlign
+        {
+            get
+            {
+                return new RelayCommand<CentralAlignArgs>(args =>
+                {
+                    DoCentralAlign(args);
                 });
             }
         }

@@ -16,6 +16,12 @@ namespace Irixi_Aligner_Common.UserControls.AlignmentFunc
                 var pd = item as Property;
                 var pd_name = pd.Name;
 
+                if(string.IsNullOrEmpty(pd_name))
+                {
+                    pd_name = pd.CollectionName;
+                }
+
+
                 // find the DataTemplate named with the property name
                 var res = element.TryFindResource(pd_name) as DataTemplate;
 

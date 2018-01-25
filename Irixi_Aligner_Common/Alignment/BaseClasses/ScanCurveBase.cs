@@ -1,6 +1,9 @@
-﻿using System.ComponentModel;
+﻿using System;
+using System.ComponentModel;
 using System.Runtime.CompilerServices;
+using System.Windows;
 using System.Windows.Media;
+using System.Windows.Media.Media3D;
 using DevExpress.Xpf.Charts;
 using Irixi_Aligner_Common.Classes.BaseClass;
 using Irixi_Aligner_Common.Interfaces;
@@ -11,6 +14,7 @@ namespace Irixi_Aligner_Common.Alignment.BaseClasses
         where T:struct
     {
         string displayName = "-", prefix = "", suffix = "";
+        bool isVisible = false;
 
         public ScanCurveBase()
         {
@@ -25,6 +29,7 @@ namespace Irixi_Aligner_Common.Alignment.BaseClasses
 
         private void Constructor()
         {
+            // Set the default style of the 2D series
             LineStyle = new LineStyle(2);
             MarkerVisible = false;
             MarkerSize = 7;
@@ -72,14 +77,60 @@ namespace Irixi_Aligner_Common.Alignment.BaseClasses
                 return suffix;
             }
         }
-        
+
+        #region NOTE the properties in block is used for the 2D series only
+
         public LineStyle LineStyle { set; get; }
         public Marker2DModel MarkerModel { get; set; }
         public int MarkerSize { get; set; }
         public bool MarkerVisible { get; set; }
         public SolidColorBrush Brush { set; get; }
-        public bool Visible{ set; get; }
 
+        #endregion
+
+        public bool Visible
+        {
+            get => isVisible;
+            set
+            { 
+                UpdateProperty(ref isVisible, value);
+            }
+
+        }
+
+        #region Formulars to generate fake curve to debug
+        protected Func<double, double, double, double> GaussianDistribution
+        {
+            get
+            {
+                /// You could draw the line on: 
+                /// http://fooplot.com/#W3sidHlwZSI6MCwiZXEiOiIxLygxKnNxcnQoMipwaSkpKmV4cCgtMSooKHgtMyleMi8yKjFeMikpIiwiY29sb3IiOiIjMDAwMDAwIn0seyJ0eXBlIjoxMDAwfV0-
+                /// Equation:
+                /// 1/(1*sqrt(2*pi))*exp(-1*((x-3)^2/2*1^2))
+                
+                return new Func<double, double, double, double>((x, delta, u) =>
+                {
+                    return 1 / (delta * Math.Sqrt(2 * Math.PI)) * Math.Exp(-1 * Math.Pow((x - u), 2) / (2 * delta * delta));
+                });
+            }
+        }
+
+        #endregion
+
+
+        #region Methods
+
+        public virtual Point FindMaximalPosition()
+        {
+            throw new NotImplementedException();
+        }
+
+        public virtual Point3D FindMaximalPosition3D()
+        {
+            throw new NotImplementedException();
+        }
+
+        #endregion
 
         #region RaisePropertyChangedEvent
 
@@ -102,7 +153,7 @@ namespace Irixi_Aligner_Common.Alignment.BaseClasses
         {
            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(PropertyName));
         }
-
+        
         #endregion
     }
 }
