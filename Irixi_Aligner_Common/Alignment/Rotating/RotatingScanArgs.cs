@@ -62,6 +62,41 @@ namespace Irixi_Aligner_Common.Alignment.Rotating
         #region Properties
 
         [Display(
+            Name = "Instrument 1",
+            GroupName = PROP_GRP_COMMON,
+            Description = "The feedback instrument of the first channel")]
+        new public IInstrument Instrument
+        {
+            get => instrument;
+            set
+            {
+                instrument = value;
+                RaisePropertyChanged();
+
+                ScanCurve.DisplayName = ((InstrumentBase)instrument).Config.Caption;
+            }
+        }
+
+        /// <summary>
+        /// The instrument to detmonitor the secondary channel
+        /// </summary>
+        [Display(Name = "Instrument 2", 
+            GroupName = PROP_GRP_COMMON, 
+            Description = "The feedback instrument of the last channel")]
+        public IInstrument Instrument2
+        {
+            get => instrument2;
+            set
+            {
+                instrument2 = value;
+                RaisePropertyChanged();
+
+                ScanCurve2.DisplayName = ((InstrumentBase)instrument2).Config.Caption;
+            }
+        }
+
+
+        [Display(
             Name = "Axis Rotating", 
             GroupName = PROP_GRP_ROTATING, 
             Description = "The axis to rotate.")]
@@ -75,21 +110,7 @@ namespace Irixi_Aligner_Common.Alignment.Rotating
             }
         }
 
-        [Display(
-            Name = "Instr. Rotating", 
-            GroupName = PROP_GRP_ROTATING, 
-            Description = "The valid instrument like powermeter, keithley 2400, etc.")]
-        new public IInstrument Instrument
-        {
-            get => instrument;
-            set
-            {
-                instrument = value;
-                RaisePropertyChanged();
-
-                ScanCurve.DisplayName = ((InstrumentBase)instrument).Config.Caption;
-            }
-        }
+        
 
         [Display(Name = "Rotating Interval", GroupName = PROP_GRP_ROTATING)]
         [Obsolete("The property is meaningless in  the latest alignment logic."), Browsable(false)]
@@ -127,21 +148,7 @@ namespace Irixi_Aligner_Common.Alignment.Rotating
             }
         }
         
-        /// <summary>
-        /// The instrument to detmonitor the secondary channel
-        /// </summary>
-        [Display(Name = "Instr. Linear", GroupName = PROP_GRP_LINEAR, Description = "The valid instrument like powermeter, keithley 2400, etc.")]
-        public IInstrument Instrument2
-        {
-            get => instrument2;
-            set
-            {
-                instrument2 = value;
-                RaisePropertyChanged();
-
-                ScanCurve2.DisplayName = ((InstrumentBase)instrument2).Config.Caption;
-            }
-        }
+        
         
 
         [Display(Name = "Linear Interval", GroupName = PROP_GRP_LINEAR, Description = "The step size to align straightly.")]
@@ -227,7 +234,7 @@ namespace Irixi_Aligner_Common.Alignment.Rotating
         #region Methods
         public override void Validate()
         {
-            base.Validate();
+            //base.Validate();
 
             if(AxisLinear == null)
                 throw new ArgumentException("you must specify the linear axis.");
@@ -238,12 +245,19 @@ namespace Irixi_Aligner_Common.Alignment.Rotating
             if (AxisLinear == AxisRotating)
                 throw new ArgumentException("linear axis and rotating axis must be different.");
 
+            if (MoveSpeed < 1 || MoveSpeed > 100)
+                throw new ArgumentException("move speed must be between 1 ~ 100");
+
+            if (Instrument == null)
+                throw new ArgumentException(string.Format("you must specify the {0}",
+                    ((DisplayAttribute)TypeDescriptor.GetProperties(this)["Instrument"].Attributes[typeof(DisplayAttribute)]).Name) ?? "instrument");
+
             if (Instrument2 == null)
                 throw new ArgumentException(string.Format("you must specify the {0}",
                     ((DisplayAttribute)TypeDescriptor.GetProperties(this)["Instrument2"].Attributes[typeof(DisplayAttribute)]).Name) ?? "instrument2");
 
             if (Instrument == Instrument2)
-                throw new ArgumentException("the 2 instruments must be different.");
+                throw new ArgumentException("the two instruments must be different.");
         }
 
         public override void PauseInstruments()

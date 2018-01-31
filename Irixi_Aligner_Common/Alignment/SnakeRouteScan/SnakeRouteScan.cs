@@ -62,21 +62,32 @@ namespace Irixi_Aligner_Common.Alignment.SnakeRouteScan
                     // move along the horizontal direction
                     hAxis.PhysicalAxisInst.Move(MoveMode.REL, Args.MoveSpeed, hDir * Args.ScanInterval);
 
-                    hMoved += Args.ScanInterval;
-
                     // cancel the alignment process
                     if (cts_token.IsCancellationRequested)
                         break;
 
-                } while (hMoved < Args.AxisRestriction);
+                    if(hDir > 0)
+                    {
+                        hMoved += Args.ScanInterval;
+
+                        if (hMoved >= Args.AxisRestriction)
+                            break;
+                    }
+                    else
+                    {
+                        hMoved -= Args.ScanInterval;
+
+                        if (hMoved <= 0)
+                            break;
+                    }
+
+                } while (true);
 
                 // cancel the alignment process
                 if (cts_token.IsCancellationRequested)
                     return;
 
                 #endregion
-
-                vMoved += Args.ScanInterval;
 
                 // check if the vertical position is out of the restriction
                 if (vMoved < Args.Axis2Restriction)
@@ -86,6 +97,8 @@ namespace Irixi_Aligner_Common.Alignment.SnakeRouteScan
 
                     // move along the vertical direction
                     vAxis.PhysicalAxisInst.Move(MoveMode.REL, Args.MoveSpeed, Args.ScanInterval);
+
+                    vMoved += Args.ScanInterval;
                 }
                 else
                 {

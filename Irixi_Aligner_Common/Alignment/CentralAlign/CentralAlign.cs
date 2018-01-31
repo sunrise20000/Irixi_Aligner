@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 using System.Windows;
 using Irixi_Aligner_Common.Alignment.BaseClasses;
 using Irixi_Aligner_Common.MotionControllers.Base;
@@ -56,7 +57,7 @@ namespace Irixi_Aligner_Common.Alignment.CentralAlign
             {
                 // start to scan
                 var indensity = Args.Instrument.Fetch();
-                var indensity2 = Args.Instrument.Fetch();
+                var indensity2 = Args.Instrument2.Fetch();
 
                 Args.ScanCurve.Add(new Point(moved, indensity));
                 Args.ScanCurve2.Add(new Point(moved, indensity2));
@@ -91,10 +92,10 @@ namespace Irixi_Aligner_Common.Alignment.CentralAlign
 
             // output messages
             Args.Log.Add(string.Format("    Position of max power: ({0}{4}, {1})/({2}{4}, {3})",
-                new object[] { maxPos.X, maxPos.Y, maxPos2.X, maxPos2.Y, activeAxis }));
+                new object[] { maxPos.X, maxPos.Y, maxPos2.X, maxPos2.Y, activeAxis.PhysicalAxisInst.UnitHelper }));
 
             Args.Log.Add(string.Format("    ΔPosition: {0}{1}", diffPos, activeAxis));
-            Args.Log.Add(string.Format("    Middle of ΔPosition: {0}{1}", returnToPos, activeAxis));
+            Args.Log.Add(string.Format("    Middle of ΔPosition: {0}{1}", returnToPos, activeAxis.PhysicalAxisInst.UnitHelper));
 
             if(activeAxis.PhysicalAxisInst.Move(MoveMode.REL, Args.MoveSpeed, -(moved - returnToPos)) == false)
                 throw new InvalidOperationException(activeAxis.PhysicalAxisInst.LastError);
@@ -105,6 +106,9 @@ namespace Irixi_Aligner_Common.Alignment.CentralAlign
                 state++;
                 activeAxis = Args.Axis2;
                 restriction = Args.Axis2Restriction;
+
+                Task.Delay(500);
+
                 goto _align;
             }
 

@@ -79,13 +79,12 @@ namespace Irixi_Aligner_Common.Alignment.AlignmentXD
                         break;
 
                     // return to the position with the maximnm measurement data
-                    var ordered = arg1d.ScanCurve.OrderByDescending(a => a.Y);
-                    var max_pos = ordered.First().X;
-                    max_measval = ordered.First().Y;
+                    var max_pos = arg1d.ScanCurve.FindMaximalPosition();
+                    max_measval = max_pos.Y;
 
                     // move to the position of max power
                     // Note: The distance to move is minus
-                    if (arg1d.Axis.PhysicalAxisInst.Move(MoveMode.REL, arg1d.MoveSpeed, -(dist_moved - max_pos)) == false)
+                    if (arg1d.Axis.PhysicalAxisInst.Move(MoveMode.REL, arg1d.MoveSpeed, -(dist_moved - max_pos.X)) == false)
                         throw new InvalidOperationException(arg1d.Axis.PhysicalAxisInst.LastError);
                 }
 

@@ -1,6 +1,7 @@
 ﻿using Irixi_Aligner_Common.Configuration.Base;
 using Irixi_Aligner_Common.Interfaces;
 using System;
+using System.Diagnostics;
 using System.IO.Ports;
 using System.Threading;
 using System.Threading.Tasks;
@@ -122,9 +123,15 @@ namespace Irixi_Aligner_Common.Equipments.Base
             {
                 // cancel the task of fetching loop
                 cts_fetching.Cancel();
-                TimeSpan ts = TimeSpan.FromMilliseconds(3000);
-                if (!task_fetch_loop.Wait(ts))
-                    throw new TimeoutException("unable to stop the fetching loop task");
+
+                //TimeSpan ts = TimeSpan.FromMilliseconds(2000);
+
+                //Task.Run(() =>
+                //{
+                //    // wait until the auto-fetch loop exit successfully
+                //    if (!task_fetch_loop.Wait(ts))
+                //        throw new TimeoutException("unable to stop the fetching loop task");
+                //});
             }
         }
         

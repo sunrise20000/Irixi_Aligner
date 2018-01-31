@@ -198,7 +198,22 @@ namespace Irixi_Aligner_Common.Alignment.CentralAlign
 
         public override void Validate()
         {
-            base.Validate();
+            //base.Validate();
+
+            if (MoveSpeed < 1 || MoveSpeed > 100)
+                throw new ArgumentException("move speed must be between 1 ~ 100");
+
+            if (Instrument == null)
+                throw new ArgumentException(string.Format("you must specify the {0}",
+                    ((DisplayAttribute)TypeDescriptor.GetProperties(this)["Instrument"].Attributes[typeof(DisplayAttribute)]).Name) ?? "instrument");
+
+            if (Instrument2 == null)
+                throw new ArgumentException(string.Format("you must specify the {0}",
+                    ((DisplayAttribute)TypeDescriptor.GetProperties(this)["Instrument2"].Attributes[typeof(DisplayAttribute)]).Name) ?? "instrument2");
+
+            if (Instrument == Instrument2)
+                throw new ArgumentException("the two instruments must be different.");
+
 
             if (Axis == null)
                 throw new ArgumentException("You must specify the horizontal axis.");
@@ -216,11 +231,13 @@ namespace Irixi_Aligner_Common.Alignment.CentralAlign
         public override void PauseInstruments()
         {
             Instrument.PauseAutoFetching();
+            Instrument2.PauseAutoFetching();
         }
 
         public override void ResumeInstruments()
         {
             Instrument.ResumeAutoFetching();
+            Instrument2.ResumeAutoFetching();
         }
 
         #endregion

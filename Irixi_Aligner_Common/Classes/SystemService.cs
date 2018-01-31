@@ -21,10 +21,13 @@ using Irixi_Aligner_Common.MotionControllers.Luminos;
 using IrixiStepperControllerHelper;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Data;
 
 namespace Irixi_Aligner_Common.Classes
 {
@@ -36,6 +39,8 @@ namespace Irixi_Aligner_Common.Classes
         MessageItem _lastmsg = null;
         MessageHelper _msg_helper = new MessageHelper();
         bool isInitialized = false;
+        readonly object _lock = new object();
+        ObservableCollection<InstrumentBase> activeMeasurementInstrumentCollection;
 
         /// <summary>
         /// lock while set or get this.State
@@ -86,7 +91,15 @@ namespace Irixi_Aligner_Common.Classes
             LogicalAxisCollection = new ObservableCollectionEx<LogicalAxis>();
             LogicalMotionComponentCollection = new ObservableCollectionEx<LogicalMotionComponent>();
             MeasurementInstrumentCollection = new ObservableCollectionEx<InstrumentBase>();
-            ActiveInstrumentCollection = new ObservableCollectionEx<InstrumentBase>();
+            activeMeasurementInstrumentCollection = new ObservableCollection<InstrumentBase>();
+
+            /// Cross-Thread operation detected error occurred while changing the properties of instruments
+            /// bound to the #ComboBoxEditSettings
+            /// <see cref="https://docs.microsoft.com/en-us/dotnet/api/system.windows.data.bindingoperations.enablecollectionsynchronization?view=netframework-4.7#System_Windows_Data_BindingOperations_EnableCollectionSynchronization_System_Collections_IEnumerable_System_Object_System_Windows_Data_CollectionSynchronizationCallback_"/>
+            /// <see cref="https://www.devexpress.com/Support/Center/Question/Details/T264581/comboboxedit-in-ribbon-cross-thread-operation-detected-when-updating-bound-items-from"/>
+            BindingOperations.EnableCollectionSynchronization(activeMeasurementInstrumentCollection, _lock);
+
+
             State = SystemState.BUSY;
 
             SpiralScanArgs = new SpiralScanArgs(this);
@@ -310,7 +323,13 @@ namespace Irixi_Aligner_Common.Classes
         /// <summary>
         /// Get the collection of the active instruments which are initialized successfully, the property should be used to represent the valid instruments in the alignment control panel
         /// </summary>
-        public ObservableCollectionEx<InstrumentBase> ActiveInstrumentCollection { get; }
+        public ICollectionView ActiveInstrumentCollection
+        {
+            get
+            {
+                return CollectionViewSource.GetDefaultView(activeMeasurementInstrumentCollection);
+            }
+        }
 
         /// <summary>
         /// Set or get the last message.
@@ -660,7 +679,8 @@ namespace Irixi_Aligner_Common.Classes
                 this.LastMessage = new MessageItem(MessageType.Normal, "{0} Initializing ...", this.CylinderController);
             }
 
-            // initizlize the keithley 2400
+            // initizlize the measurement instruments defined in the config file
+            // the instruments initialized successfully will be added to the collection #ActiveInstrumentCollection
             foreach (var instr in this.MeasurementInstrumentCollection)
             {
                 if (instr.IsEnabled)
@@ -685,7 +705,9 @@ namespace Irixi_Aligner_Common.Classes
 
                     // add the instruments which are initialized successfully to the acitve collection
                     if (_equipments[ended_id] is InstrumentBase)
-                        ActiveInstrumentCollection.Add((InstrumentBase)_equipments[ended_id]);
+                    {
+                        activeMeasurementInstrumentCollection.Add((InstrumentBase)_equipments[ended_id]);
+                    }
                 }
                 else
                     this.LastMessage = new MessageItem(MessageType.Error, "{0} Initialization is failed, {1}", _equipments[ended_id], _equipments[ended_id].LastError);
@@ -693,6 +715,9 @@ namespace Irixi_Aligner_Common.Classes
                 _tasks.RemoveAt(ended_id);
                 _equipments.RemoveAt(ended_id);
             }
+
+            //ActiveInstrumentCollection.DisableNotifications();
+
             #endregion
 
             SetSystemState(SystemState.IDLE);

@@ -77,7 +77,8 @@
                 Margin="5,5,0,0" 
                 FontSize="10" 
                 FontWeight="Bold" 
-                Foreground="#3EE100" Visibility="{Binding K2400.IsInRangeCompliance, Mode=OneWay, Converter={StaticResource BooleanToVisibility}}"/>
+                Foreground="#3EE100" 
+                Visibility="{Binding K2400.IsInRangeCompliance, Mode=OneWay, Converter={StaticResource BooleanToVisibility}}"/>
             <TextBlock 
                 Text="OL" 
                 Grid.Row="1" 

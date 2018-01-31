@@ -204,10 +204,7 @@
                     PropertyDefinitionsSource="{Binding Properties}"
                     PropertyDefinitionTemplateSelector="{StaticResource PropDefTemplSelector}"
                     SelectedObject="{Binding}" 
-                    Margin="0,0,0,5">
-                    <!--ShowProperties="WithPropertyDefinitions"-->
-
-                </dxprg:PropertyGridControl>
+                    Margin="0,0,0,5"/>
 
                 <GridSplitter Grid.Row="1" HorizontalAlignment="Stretch" VerticalAlignment="Center" Margin="0" />
 

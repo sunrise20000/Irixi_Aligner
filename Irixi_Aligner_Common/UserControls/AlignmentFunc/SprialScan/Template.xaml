@@ -72,10 +72,10 @@
     </DataTemplate>
 
     <DataTemplate x:Key="Instrument">
-        <dxprg:PropertyDefinition Path="{Binding Name}" 
-                                  IsReadOnly="False">
+        <dxprg:PropertyDefinition Path="{Binding Name}">
             <dxprg:PropertyDefinition.EditSettings>
                 <dxe:ComboBoxEditSettings 
+                    DisplayMember="Config.Caption"
                     ItemsSource="{Binding 
                         DataContext.Service.ActiveInstrumentCollection, 
                         RelativeSource={RelativeSource AncestorType={x:Type UserControl}}}" 

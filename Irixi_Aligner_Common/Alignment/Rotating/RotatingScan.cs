@@ -103,8 +103,9 @@ namespace Irixi_Aligner_Common.Alignment.Rotating
             // move to the middle position of the max power
             var returnToPos = maxPos.X - deltaPos / 2;
 
-            // get the unit of linear axis
+            // get the unit of axes
             var unitLinearAxis = Args.AxisLinear.PhysicalAxisInst.UnitHelper;
+            var unitRotatingAxis = Args.AxisRotating.PhysicalAxisInst.UnitHelper;
 
             // output messages
             Args.Log.Add(string.Format("    Position of max power: ({0}{4}, {1})/({2}{4}, {3})",
@@ -125,7 +126,7 @@ namespace Irixi_Aligner_Common.Alignment.Rotating
 
             // if the first cycle, rotate to the position calculate according to the delta position and the length of the two DUTs
             double angle = -1 * Math.Asin(deltaPos / Args.LengthOfChannelStartToEnd) * (180 / Math.PI);
-            Args.Log.Add(string.Format("    The angle to rotate is: {0}{1}", returnToPos, unitLinearAxis));
+            Args.Log.Add(string.Format("    The angle to rotate is: {0}{1}", angle, unitRotatingAxis));
 
             // record the angle rotated
             distMovedRotating += angle;

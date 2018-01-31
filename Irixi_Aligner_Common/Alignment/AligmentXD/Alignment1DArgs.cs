@@ -82,7 +82,7 @@ namespace Irixi_Aligner_Common.Alignment.AlignmentXD
 
         public override void ClearScanCurve()
         {
-            throw new NotImplementedException();
+            ScanCurve.Clear();
         }
 
         public override void PauseInstruments()

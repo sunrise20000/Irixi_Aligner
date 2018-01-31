@@ -49,8 +49,16 @@
                 HeaderTemplate="{StaticResource axisElementsHeaderTemplate}" 
                 ContentTemplate="{StaticResource axisElementsContentTemplate}">
                 <dxprg:PropertyDefinition Path="IsEnabled"/>
-                <dxprg:PropertyDefinition Path="Interval"/>
-                <dxprg:PropertyDefinition Path="ScanRange"/>
+                <dxprg:PropertyDefinition Path="Interval">
+                    <dxprg:PropertyDefinition.EditSettings>
+                        <dxe:SpinEditSettings/>
+                    </dxprg:PropertyDefinition.EditSettings>
+                </dxprg:PropertyDefinition>
+                <dxprg:PropertyDefinition Path="ScanRange">
+                    <dxprg:PropertyDefinition.EditSettings>
+                        <dxe:SpinEditSettings/>
+                    </dxprg:PropertyDefinition.EditSettings>
+                </dxprg:PropertyDefinition>
                 <dxprg:PropertyDefinition Path="ScanOrder">
                     <dxprg:PropertyDefinition.EditSettings>
                         <dxe:ComboBoxEditSettings 
@@ -60,6 +68,19 @@
                 </dxprg:PropertyDefinition>
             </dxprg:PropertyDefinition>
         </dxprg:CollectionDefinition>
+    </DataTemplate>
+
+    <DataTemplate x:Key="Instrument">
+        <dxprg:PropertyDefinition Path="{Binding Name}">
+            <dxprg:PropertyDefinition.EditSettings>
+                <dxe:ComboBoxEditSettings 
+                    DisplayMember="Config.Caption"
+                    ItemsSource="{Binding 
+                        DataContext.Service.ActiveInstrumentCollection, 
+                        RelativeSource={RelativeSource AncestorType={x:Type UserControl}}}" 
+                    IsTextEditable="False"/>
+            </dxprg:PropertyDefinition.EditSettings>
+        </dxprg:PropertyDefinition>
     </DataTemplate>
 
 

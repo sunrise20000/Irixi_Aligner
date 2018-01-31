@@ -38,6 +38,7 @@ namespace Irixi_Aligner_Common.Alignment.AlignmentXD
             readonlyAxisParamCollection = new ReadOnlyObservableCollection<Alignment1DArgs>(axisParamCollection);
 
             Properties.Add(new Property("MotionComponent"));
+            Properties.Add(new Property("Instrument"));
             Properties.Add(new Property("Target"));
             Properties.Add(new Property("MaxCycles"));
             Properties.Add(new Property() { CollectionName = "AxisParamCollection" });

@@ -201,6 +201,7 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Classes\BaseClass\ObservableCollectionEx2.cs" />
     <Compile Include="Classes\BaseClass\ObservableCollectionThreadSafe.cs" />
     <Compile Include="Classes\BaseClass\Property.cs" />
     <Compile Include="Classes\BaseClass\RealworldPositionManager.cs" />
