@@ -64,12 +64,7 @@ namespace Irixi_Aligner_Common.UserControls
 
                 // call the move function of the systemservice
                 this.LogicalAxis.Move.Execute(
-                    new Classes.BaseClass.MoveByDistanceArgs()
-                    {
-                        Mode = _mode,
-                        Speed = _speed,
-                        Distance = _distance
-                    });
+                    new Classes.BaseClass.MoveByDistanceArgs(_mode, _speed, _distance));
             }
         }
 

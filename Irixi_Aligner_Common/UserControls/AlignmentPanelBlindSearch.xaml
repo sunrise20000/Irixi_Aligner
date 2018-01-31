@@ -67,7 +67,7 @@
                 <dxe:TextEdit x:Name="txtRange" Text="{Binding SpiralScanArgs.Range}" Grid.Row="5" Grid.Column="1" />
                 <TextBlock Text="Speed" Grid.Row="6" />
                 <dxe:TextEdit x:Name="txtSpeed" Text="{Binding SpiralScanArgs.MoveSpeed}" Grid.Row="7" />
-                <TextBlock Text="Logical X" Grid.Row="8" />
+                <TextBlock Text="Axis 0 (Logical X)" Grid.Row="8" />
                 <ComboBox x:Name="cbxAxis0" Grid.Row="9" ItemsSource="{Binding SelectedItem, ElementName=cbxBSMotionController, Converter={StaticResource CvtLogicalAxisCollection}}" DisplayMemberPath="AxisName" SelectedItem="{Binding SpiralScanArgs.Axis0}" />
                 <TextBlock Text="Axis 1 (Logical Y)" Grid.Row="8" Grid.Column="1" />
                 <ComboBox x:Name="cbxAxis1" Grid.Row="9" Grid.Column="1" ItemsSource="{Binding SelectedItem, ElementName=cbxBSMotionController, Converter={StaticResource CvtLogicalAxisCollection}}" DisplayMemberPath="AxisName" SelectedItem="{Binding SpiralScanArgs.Axis1}" />

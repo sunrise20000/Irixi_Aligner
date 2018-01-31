@@ -38,21 +38,31 @@
         /// Reverse the move direction 
         /// </summary>
         REVERSE,
-
+        
         /// <summary>
         /// Set the state of the general output port
         /// </summary>
         GENOUT = 10,
 
         /// <summary>
+        /// Request the system state
+        /// </summary>
+        REQ_SYSTEM_STATE,
+
+        /// <summary>
+        /// Request the axis state
+        /// </summary>
+        REQ_AXIS_STATE,
+
+        /// <summary>
         /// Get the information of firmware
         /// </summary>
-        FWINFO = 21,
+        REQ_FIRMWARE_INFO = 21,
 
         /// <summary>
         /// Read the value of pca9534
         /// </summary>
-        READ9534 = 22,
+        REQ_READ9534_STA = 22,
     }
 
     public enum MoveMode
@@ -92,7 +102,7 @@
     public static class PublicDefinitions
     {
         /// <summary>
-        /// The lenght of HID Out Report
+        /// The lenght of HID Out HidReport
         /// </summary>
         public const int MAX_WRITEDATA_LEN = 64;
     }

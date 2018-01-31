@@ -7,7 +7,15 @@
     <BitmapImage x:Key="IconLampON_64x64">Images/Icons/lamp_on_64x64.png</BitmapImage>
     <BitmapImage x:Key="IconLampOFF_64x64">Images/Icons/lamp_off_64x64.png</BitmapImage>
     <BitmapImage x:Key="IconSpiral_512x512">Images/Icons/spiral_512x512.png</BitmapImage>
-    <BitmapImage x:Key="IconXY_512x512">Images/Icons/xy_512x512.png</BitmapImage>
+    <BitmapImage x:Key="IconSpiral_32x32">Images/Icons/spiral_32x32.png</BitmapImage>
+    <BitmapImage x:Key="IconRotating_512x512">Images/Icons/rotating_512x512.png</BitmapImage>
+    <BitmapImage x:Key="IconRotating_32x32">Images/Icons/rotating_32x32.png</BitmapImage>
+    <BitmapImage x:Key="IconAlignmentnD_512x512">Images/Icons/AlignmentnD_512x512.png</BitmapImage>
+    <BitmapImage x:Key="IconAlignmentnD_32x32">Images/Icons/AlignmentnD_32x32.png</BitmapImage>
+    <BitmapImage x:Key="IconCentralAlign_512x512">Images/Icons/CentralAlign_512x512.png</BitmapImage>
+    <BitmapImage x:Key="IconCentralAlign_32x32">Images/Icons/CentralAlign_32x32.png</BitmapImage>
+    <BitmapImage x:Key="IconSnake_512x512">Images/Icons/snake_512x512.png</BitmapImage>
+    <BitmapImage x:Key="IconSnake_32x32">Images/Icons/snake_32x32.png</BitmapImage>
     <BitmapImage x:Key="IconPlay_256x256">Images/Icons/play_256x256.png</BitmapImage>
     <BitmapImage x:Key="IconStop_256x256">Images/Icons/stop_256x256.png</BitmapImage>
 </ResourceDictionary>

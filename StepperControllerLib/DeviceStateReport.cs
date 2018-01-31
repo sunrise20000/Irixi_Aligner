@@ -3,13 +3,12 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.IO;
 using System.Runtime.CompilerServices;
-using System.Runtime.Serialization.Formatters.Binary;
 using System.Windows.Data;
 
 namespace IrixiStepperControllerHelper
 {
-    
-    public class AxisState : INotifyPropertyChanged, ICloneable
+
+    public class AxisStateReport : INotifyPropertyChanged, ICloneable
     {
         int _abs_position = 0;
         int _axis_index = 0;
@@ -93,6 +92,12 @@ namespace IrixiStepperControllerHelper
             {
                 return _error;
             }
+        }
+
+        public byte CommandOrder
+        {
+            set;
+            get;
         }
 
         /// <summary>
@@ -217,27 +222,62 @@ namespace IrixiStepperControllerHelper
             }
         }
 
+        public bool Parse(byte[] Buffer)
+        {
+            byte temp = 0x0;
+
+            using (MemoryStream stream = new MemoryStream(Buffer))
+            {
+                using (BinaryReader reader = new BinaryReader(stream))
+                {
+                    this.AbsPosition = reader.ReadInt32();
+
+                    // parse Usability
+                    temp = reader.ReadByte();
+                    this.IsHomed = ((temp >> 0) & 0x1) > 0 ? true : false;
+                    this.IsRunning = ((temp >> 1) & 0x1) > 0 ? true : false;
+
+                    // parse input signal
+                    temp = reader.ReadByte();
+                    this.CWLS = ((temp >> 0) & 0x1) > 0 ? InputState.Triggered : InputState.Untriggered;
+                    this.CCWLS = ((temp >> 1) & 0x1) > 0 ? InputState.Triggered : InputState.Untriggered;
+                    this.ORG = ((temp >> 2) & 0x1) > 0 ? InputState.Triggered : InputState.Untriggered;
+                    this.ZeroOut = ((temp >> 3) & 0x1) > 0 ? InputState.Triggered : InputState.Untriggered;
+                    this.IN_A = ((temp >> 4) & 0x1) > 0 ? InputState.Untriggered : InputState.Triggered;
+                    this.IN_B = ((temp >> 5) & 0x1) > 0 ? InputState.Untriggered : InputState.Triggered;
+                    this.OUT_A = ((temp >> 6) & 0x1) > 0 ? OutputState.Enabled : OutputState.Disabled;
+                    this.OUT_B = ((temp >> 7) & 0x1) > 0 ? OutputState.Enabled : OutputState.Disabled;
+
+                    this.Error = reader.ReadByte();
+                    this.CommandOrder = reader.ReadByte();
+                }
+            }
+
+            return true;
+        }
+
         public object Clone()
         {
-            AxisState state = new AxisState();
-            state.AbsPosition = this.AbsPosition;
-            state.AxisIndex = this.AxisIndex;
-            state.IsHomed = this.IsHomed;
-            state.IsRunning = this.IsRunning;
-            state.Error = this.Error;
-            state.CWLS = this.CWLS;
-            state.CCWLS = this.CCWLS;
-            state.ORG = this.ORG;
-            state.ZeroOut = this.ZeroOut;
-            state.IN_A = this.IN_A;
-            state.IN_B = this.IN_B;
-            state.OUT_A = this.OUT_A;
-            state.OUT_B = this.OUT_B;
+            AxisStateReport state = new AxisStateReport
+            {
+                AbsPosition = this.AbsPosition,
+                AxisIndex = this.AxisIndex,
+                IsHomed = this.IsHomed,
+                IsRunning = this.IsRunning,
+                Error = this.Error,
+                CWLS = this.CWLS,
+                CCWLS = this.CCWLS,
+                ORG = this.ORG,
+                ZeroOut = this.ZeroOut,
+                IN_A = this.IN_A,
+                IN_B = this.IN_B,
+                OUT_A = this.OUT_A,
+                OUT_B = this.OUT_B
+            };
 
             return state;
         }
-
-
+        
         #region RaisePropertyChangedEvent
 
         public event PropertyChangedEventHandler PropertyChanged;
@@ -298,9 +338,10 @@ namespace IrixiStepperControllerHelper
         #endregion
 
         #region Constructors
+
         public DeviceStateReport()
         {
-            this.AxisStateCollection = new ObservableCollection<AxisState>();
+            this.AxisStateCollection = new ObservableCollection<AxisStateReport>();
             BindingOperations.EnableCollectionSynchronization(this.AxisStateCollection, _lock);
         }
 
@@ -433,7 +474,7 @@ namespace IrixiStepperControllerHelper
             }
         }
 
-        public ObservableCollection<AxisState> AxisStateCollection { internal set; get; }
+        public ObservableCollection<AxisStateReport> AxisStateCollection { internal set; get; }
         #endregion
 
         #region Methods
@@ -441,7 +482,7 @@ namespace IrixiStepperControllerHelper
         /// Parse the raw data of hid report
         /// </summary>
         /// <param name="Data"></param>
-        public void ParseRawData(byte[] Data)
+        public void Parse(byte[] Data)
         {
             byte temp = 0x0;
 
@@ -469,38 +510,47 @@ namespace IrixiStepperControllerHelper
                     this.CoreVref = reader.ReadInt32();
                     this.CoreTemp = reader.ReadInt32();
 
-                    if (this.AxisStateCollection == null || this.AxisStateCollection.Count == 0)
+                    if (this.AxisStateCollection == null || AxisStateCollection.Count == 0)
                         return;
 
-                    // flush the state of each axis
-                    for (int i = 0; i < this.AxisStateCollection.Count; i++)
+                    var buffRemainCnt = (int)(stream.Length - stream.Position);
+                    if (buffRemainCnt % 3 > 0)
                     {
-                        ///
-                        /// The following parsing process are base on the type of AxisState_TypeDef which is defined in the controller firmware
-                        ///
 
-                        this.AxisStateCollection[i].AbsPosition = reader.ReadInt32();
+                    }
+                    else
+                    {
+                        var blockLen = buffRemainCnt / 3;
+                        // flush the state of each axis
+                        for (int i = 0; i < this.AxisStateCollection.Count; i++)
+                        {
+                            var buffAxisState = reader.ReadBytes(blockLen);
+                            this.AxisStateCollection[i].Parse(buffAxisState);
+                            /////
+                            ///// The following parsing process are base on the type of AxisState_TypeDef which is defined in the controller firmware
+                            /////
 
-                        // parse Usability
-                        temp = reader.ReadByte();
-                        this.AxisStateCollection[i].IsHomed = ((temp >> 0) & 0x1) > 0 ? true : false;
-                        this.AxisStateCollection[i].IsRunning = ((temp >> 1) & 0x1) > 0 ? true : false;
+                            //this.AxisStateCollection[i].AbsPosition = reader.ReadInt32();
 
-                        // parse input signal
-                        temp = reader.ReadByte();
-                        this.AxisStateCollection[i].CWLS = ((temp >> 0) & 0x1) > 0 ? InputState.Triggered : InputState.Untriggered;
-                        this.AxisStateCollection[i].CCWLS = ((temp >> 1) & 0x1) > 0 ? InputState.Triggered : InputState.Untriggered;
-                        this.AxisStateCollection[i].ORG = ((temp >> 2) & 0x1) > 0 ? InputState.Triggered : InputState.Untriggered;
-                        this.AxisStateCollection[i].ZeroOut = ((temp >> 3) & 0x1) > 0 ? InputState.Triggered : InputState.Untriggered;
-                        this.AxisStateCollection[i].IN_A = ((temp >> 4) & 0x1) > 0 ? InputState.Untriggered : InputState.Triggered;
-                        this.AxisStateCollection[i].IN_B = ((temp >> 5) & 0x1) > 0 ? InputState.Untriggered : InputState.Triggered;
-                        this.AxisStateCollection[i].OUT_A = ((temp >> 6) & 0x1) > 0 ? OutputState.Enabled : OutputState.Disabled;
-                        this.AxisStateCollection[i].OUT_B = ((temp >> 7) & 0x1) > 0 ? OutputState.Enabled : OutputState.Disabled;
+                            //// parse Usability
+                            //temp = reader.ReadByte();
+                            //this.AxisStateCollection[i].IsHomed = ((temp >> 0) & 0x1) > 0 ? true : false;
+                            //this.AxisStateCollection[i].IsRunning = ((temp >> 1) & 0x1) > 0 ? true : false;
 
-                        this.AxisStateCollection[i].Error = reader.ReadByte();
+                            //// parse input signal
+                            //temp = reader.ReadByte();
+                            //this.AxisStateCollection[i].CWLS = ((temp >> 0) & 0x1) > 0 ? InputState.Triggered : InputState.Untriggered;
+                            //this.AxisStateCollection[i].CCWLS = ((temp >> 1) & 0x1) > 0 ? InputState.Triggered : InputState.Untriggered;
+                            //this.AxisStateCollection[i].ORG = ((temp >> 2) & 0x1) > 0 ? InputState.Triggered : InputState.Untriggered;
+                            //this.AxisStateCollection[i].ZeroOut = ((temp >> 3) & 0x1) > 0 ? InputState.Triggered : InputState.Untriggered;
+                            //this.AxisStateCollection[i].IN_A = ((temp >> 4) & 0x1) > 0 ? InputState.Untriggered : InputState.Triggered;
+                            //this.AxisStateCollection[i].IN_B = ((temp >> 5) & 0x1) > 0 ? InputState.Untriggered : InputState.Triggered;
+                            //this.AxisStateCollection[i].OUT_A = ((temp >> 6) & 0x1) > 0 ? OutputState.Enabled : OutputState.Disabled;
+                            //this.AxisStateCollection[i].OUT_B = ((temp >> 7) & 0x1) > 0 ? OutputState.Enabled : OutputState.Disabled;
 
-                        // read dummy byte, this is used to align struct on 4-byte
-                        reader.ReadByte();
+                            //this.AxisStateCollection[i].Error = reader.ReadByte();
+                            //this.AxisStateCollection[i].CommandOrder = reader.ReadByte();
+                        }
                     }
 
                     reader.Close();
@@ -598,10 +648,10 @@ namespace IrixiStepperControllerHelper
             state.CoreVref = this.CoreVref;
             state.CoreTemp = this.CoreTemp;
 
-            state.AxisStateCollection = new ObservableCollection<AxisState>();
+            state.AxisStateCollection = new ObservableCollection<AxisStateReport>();
             for (int i = 0; i < this.AxisStateCollection.Count; i++)
             {
-                state.AxisStateCollection.Add(this.AxisStateCollection[i].Clone() as AxisState);
+                state.AxisStateCollection.Add(this.AxisStateCollection[i].Clone() as AxisStateReport);
             }
 
             return state;

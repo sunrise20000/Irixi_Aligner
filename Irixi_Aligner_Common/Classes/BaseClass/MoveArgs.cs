@@ -16,6 +16,15 @@ namespace Irixi_Aligner_Common.Classes.BaseClass
 
     public class MoveByDistanceArgs :EventArgs
     {
+        
+
+        public MoveByDistanceArgs(MoveMode Mode, int Speed, double Distance)
+        {
+            this.Mode = Mode;
+            this.Speed = Speed;
+            this.Distance = Distance;
+        }
+
         public int Speed { get; set; }
         public double Distance { get; set; }
         public MoveMode Mode { get; set; }

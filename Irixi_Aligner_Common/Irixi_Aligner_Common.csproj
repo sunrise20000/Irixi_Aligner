@@ -17,6 +17,21 @@
     <TargetFrameworkProfile />
     <NuGetPackageImportStamp>
     </NuGetPackageImportStamp>
+    <PublishUrl>publish\</PublishUrl>
+    <Install>true</Install>
+    <InstallFrom>Disk</InstallFrom>
+    <UpdateEnabled>false</UpdateEnabled>
+    <UpdateMode>Foreground</UpdateMode>
+    <UpdateInterval>7</UpdateInterval>
+    <UpdateIntervalUnits>Days</UpdateIntervalUnits>
+    <UpdatePeriodically>false</UpdatePeriodically>
+    <UpdateRequired>false</UpdateRequired>
+    <MapFileExtensions>true</MapFileExtensions>
+    <ApplicationRevision>0</ApplicationRevision>
+    <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
+    <IsWebBootstrapper>false</IsWebBootstrapper>
+    <UseApplicationTrust>false</UseApplicationTrust>
+    <BootstrapperEnabled>true</BootstrapperEnabled>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -24,7 +39,7 @@
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
     <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DefineConstants>TRACE;DEBUG</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <Prefer32Bit>true</Prefer32Bit>
@@ -34,7 +49,8 @@
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
+    <DefineConstants>
+    </DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <Prefer32Bit>true</Prefer32Bit>
@@ -43,6 +59,9 @@
     <ApplicationIcon>AlignerLogo.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="CommonServiceLocator, Version=2.0.1.0, Culture=neutral, PublicKeyToken=489b6accfaf20ef0, processorArchitecture=MSIL">
+      <HintPath>..\packages\CommonServiceLocator.2.0.1\lib\net45\CommonServiceLocator.dll</HintPath>
+    </Reference>
     <Reference Include="DevExpress.Charts.v17.1.Core, Version=17.1.3.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL" />
     <Reference Include="DevExpress.Data.v17.1, Version=17.1.3.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL" />
     <Reference Include="DevExpress.Images.v17.1, Version=17.1.3.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a">
@@ -92,10 +111,10 @@
       <Private>False</Private>
     </Reference>
     <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
-      <HintPath>..\packages\EntityFramework.6.0.0\lib\net45\EntityFramework.dll</HintPath>
+      <HintPath>..\packages\EntityFramework.6.1.3\lib\net45\EntityFramework.dll</HintPath>
     </Reference>
     <Reference Include="EntityFramework.SqlServer, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
-      <HintPath>..\packages\EntityFramework.6.0.0\lib\net45\EntityFramework.SqlServer.dll</HintPath>
+      <HintPath>..\packages\EntityFramework.6.1.3\lib\net45\EntityFramework.SqlServer.dll</HintPath>
     </Reference>
     <Reference Include="GalaSoft.MvvmLight, Version=5.3.0.19026, Culture=neutral, PublicKeyToken=e7570ab207bcb616, processorArchitecture=MSIL">
       <HintPath>..\packages\MvvmLightLibs.5.3.0.0\lib\net45\GalaSoft.MvvmLight.dll</HintPath>
@@ -110,10 +129,11 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>ExtDlls\log4net.dll</HintPath>
     </Reference>
-    <Reference Include="Microsoft.CSharp" />
-    <Reference Include="Microsoft.Practices.ServiceLocation, Version=1.3.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\packages\CommonServiceLocator.1.3\lib\portable-net4+sl5+netcore45+wpa81+wp8\Microsoft.Practices.ServiceLocation.dll</HintPath>
+    <Reference Include="MathNet.Numerics, Version=3.20.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\MathNet.Numerics.3.20.0\lib\net40\MathNet.Numerics.dll</HintPath>
     </Reference>
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="Microsoft.Practices.ServiceLocation, Version=1.3.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35" />
     <Reference Include="Newtonsoft.Json, Version=10.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\packages\Newtonsoft.Json.10.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
@@ -160,19 +180,30 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="Alignment\00_Template_AlignmentArgs.cs" />
-    <Compile Include="Alignment\AdjustRollBy1DScan.cs" />
+    <Compile Include="Alignment\BaseClasses\ScanCurve.cs" />
+    <Compile Include="Alignment\BaseClasses\ScanCurve3D.cs" />
+    <Compile Include="Alignment\BaseClasses\ScanCurveBase.cs" />
+    <Compile Include="Alignment\BaseClasses\ScanCurveGroup.cs" />
+    <Compile Include="Alignment\CentralAlign\CentralAlign.cs" />
+    <Compile Include="Alignment\CentralAlign\CentralAlignArgs.cs" />
+    <Compile Include="Alignment\Rotating\RotatingScanArgs.cs" />
+    <Compile Include="Alignment\Rotating\RotatingScan.cs" />
     <Compile Include="Alignment\AligmentXD\Alignment1DArgs.cs" />
     <Compile Include="Alignment\BaseClasses\AlignmentBase.cs" />
     <Compile Include="Alignment\AligmentXD\AlignmentXD.cs" />
     <Compile Include="Alignment\AligmentXD\AlignmentXDArgs.cs" />
     <Compile Include="Alignment\BaseClasses\AlignmentArgsBase.cs" />
+    <Compile Include="Alignment\SnakeRouteScan\SnakeRouteScan.cs" />
+    <Compile Include="Alignment\SnakeRouteScan\SnakeRouteScanArgs.cs" />
     <Compile Include="Alignment\SpiralScan\SpiralScan.cs" />
     <Compile Include="Alignment\SpiralScan\SpiralScanArgs.cs" />
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Classes\BaseClass\ObservableCollectionEx2.cs" />
     <Compile Include="Classes\BaseClass\ObservableCollectionThreadSafe.cs" />
+    <Compile Include="Classes\BaseClass\Property.cs" />
     <Compile Include="Classes\BaseClass\RealworldPositionManager.cs" />
     <Compile Include="Classes\BaseClass\PresetPosition.cs" />
     <Compile Include="Classes\Converters\BooleanToVisibility.cs" />
@@ -183,9 +214,18 @@
     <Compile Include="Classes\Converters\VisibilityToBoolean.cs" />
     <Compile Include="Classes\Converters\EnumToBoolean.cs" />
     <Compile Include="Classes\Converters\OutputStateToBoolean.cs" />
+    <Compile Include="Interfaces\IScanCurve.cs" />
+    <Compile Include="UserControls\AlignmentFunc\AlignmentPanel.xaml.cs">
+      <DependentUpon>AlignmentPanel.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="UserControls\AlignmentFunc\ChartTypeSelector.cs" />
+    <Compile Include="UserControls\AlignmentFunc\PropertyDefinitionTemplateSelector.cs" />
     <Compile Include="Classes\SqliteDb.cs" />
     <Compile Include="Configuration\Equipments\ConfigurationNewport2832C.cs" />
     <Compile Include="Docs\How to add new instrument to system.cs" />
+    <Compile Include="Windows\TestPurposeOnly.xaml.cs">
+      <DependentUpon>TestPurposeOnly.xaml</DependentUpon>
+    </Compile>
     <None Include="Docs\Templates\new_instrument.cs.tmpl" />
     <Compile Include="Equipments\BaseClass\InstrumentBase.cs" />
     <Compile Include="Configuration\BaseClasses\ConfigurationBase.cs" />
@@ -232,12 +272,6 @@
       <DependentUpon>Splash.xaml</DependentUpon>
     </Compile>
     <Compile Include="StaticVariables.cs" />
-    <Compile Include="UserControls\AlignmentPanelAlignmentXD.xaml.cs">
-      <DependentUpon>AlignmentPanelAlignmentXD.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="UserControls\AlignmentPanelBlindSearch.xaml.cs">
-      <DependentUpon>AlignmentPanelBlindSearch.xaml</DependentUpon>
-    </Compile>
     <Compile Include="UserControls\AlignmentParamEditor.xaml.cs">
       <DependentUpon>AlignmentParamEditor.xaml</DependentUpon>
     </Compile>
@@ -255,6 +289,9 @@
     </Compile>
     <Compile Include="UserControls\Newport2832cControlPanel.xaml.cs">
       <DependentUpon>Newport2832cControlPanel.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="UserControls\TestPurposeOnly.xaml.cs">
+      <DependentUpon>TestPurposeOnly.xaml</DependentUpon>
     </Compile>
     <Compile Include="ViewModel\ViewKeithley2400.cs" />
     <Compile Include="ViewModel\ViewMassMove.cs" />
@@ -330,13 +367,33 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="UserControls\AlignmentPanelAlignmentXD.xaml">
+    <Page Include="UserControls\AlignmentFunc\AlignmentND\Template.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="UserControls\AlignmentFunc\AlignmentPanel.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="UserControls\AlignmentPanelBlindSearch.xaml">
+    <Page Include="UserControls\AlignmentFunc\BaseTemplate.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="UserControls\AlignmentFunc\CentralAlign\Template.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="UserControls\AlignmentFunc\RotatingScan\Template.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="UserControls\AlignmentFunc\SnakeRouteScan\Template.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="UserControls\AlignmentFunc\SprialScan\Template.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
     <Page Include="UserControls\AlignmentParamEditor.xaml">
       <SubType>Designer</SubType>
@@ -366,11 +423,19 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="UserControls\TestPurposeOnly.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Windows\InputBox.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Windows\MassMoveWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Windows\TestPurposeOnly.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -386,9 +451,7 @@
     <Resource Include="Resources\Images\Icons\warning_32x32.png" />
     <Resource Include="Resources\Images\Icons\wrong.png" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="MotionControllers\Thorlabs\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <ProjectReference Include="..\StepperControllerLib\IrixiStepperControllerHelper.csproj">
       <Project>{7d9a7b1a-e2e1-4d53-8986-3a4de679551c}</Project>
@@ -396,10 +459,19 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <Resource Include="Resources\Images\Icons\alignmentnd_32x32.png" />
+    <Resource Include="Resources\Images\Icons\alignmentnd_512x512.png" />
+    <Resource Include="Resources\Images\Icons\centralalign_32x32.png" />
+    <Resource Include="Resources\Images\Icons\centralalign_512x512.png" />
+    <Resource Include="Resources\Images\Icons\snake_32x32.png" />
+    <Resource Include="Resources\Images\Icons\snake_512x512.png" />
+    <Resource Include="Resources\Images\Icons\spiral_32x32.png" />
+    <Resource Include="Resources\Images\Icons\rotating_32x32.png" />
+    <Resource Include="Resources\Images\Icons\rotating_512x512.png" />
+    <Resource Include="Resources\Images\splash_background.png" />
     <Resource Include="Resources\Images\Icons\play_256x256.png" />
     <Resource Include="Resources\Images\Icons\stop_256x256.png" />
     <Resource Include="Resources\Images\Icons\spiral_512x512.png" />
-    <Resource Include="Resources\Images\Icons\xy_512x512.png" />
     <Resource Include="Resources\Images\Icons\lamp_off_64x64.png" />
     <Resource Include="Resources\Images\Icons\lamp_on_64x64.png" />
     <Resource Include="AlignerLogo.ico" />
@@ -417,6 +489,18 @@
     <Resource Include="Resources\Images\Icons\show_view.png" />
     <Resource Include="Resources\Images\Icons\Irixi_Logo_128x128.png" />
     <Resource Include="Resources\Images\Icons\Irixi_Logo.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <BootstrapperPackage Include=".NETFramework,Version=v4.5.2">
+      <Visible>False</Visible>
+      <ProductName>Microsoft .NET Framework 4.5.2 %28x86 and x64%29</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <ProjectExtensions />

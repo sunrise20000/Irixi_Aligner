@@ -56,6 +56,36 @@
           "Unit": "mm",
           "Resolution": 0.002,
           "TravelDistance": 150
+        },
+        {
+          "Model": "EKT3-50R",
+          "Unit": "mm",
+          "Resolution": 0.001,
+          "TravelDistance": 50
+        },
+        {
+          "Model": "EKS1-10R",
+          "Unit": "mm",
+          "Resolution": 0.0005,
+          "TravelDistance": 10
+        },
+        {
+          "Model": "KGW06100-R",
+          "Unit": "deg",
+          "Resolution": 0.0025,
+          "TravelDistance": 12
+        },
+        {
+          "Model": "KGW04040-R",
+          "Unit": "deg",
+          "Resolution": 0.003,
+          "TravelDistance": 16
+        },
+        {
+          "Model": "KGW06075-R",
+          "Unit": "deg",
+          "Resolution": 0.0032,
+          "TravelDistance": 16
         }
       ]
     },

@@ -73,13 +73,7 @@ namespace Irixi_Aligner_Common.ViewModel
                         axesgrp.Add(new Tuple<int, LogicalAxis, MoveByDistanceArgs>(
                             axis.Order,
                             axis.LogicalAxis,
-                            new MoveByDistanceArgs()
-                            {
-                                Speed = axis.Speed,
-                                Distance = axis.Position,
-                                Mode = axis.IsAbsMode ? MoveMode.ABS : MoveMode.REL
-                            }
-                            ));
+                            new MoveByDistanceArgs(axis.IsAbsMode ? MoveMode.ABS : MoveMode.REL, axis.Speed, axis.Position)));
                     }
 
                     // start to mass move

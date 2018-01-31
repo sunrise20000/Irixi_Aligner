@@ -9,12 +9,17 @@ namespace IrixiStepperControllerHelper
         // 1 byte should be plused for report id at the begin of the buffer
         const int MAX_CMD_LEN = 33;
 
-        const byte REPORT_ID_CMD = 0x3;
+        const byte REPORT_ID_CMD = 0x1;
 
         UInt32 _cmd_counter = 0;
 
+        #region Properties
+
         public EnumCommand Command { set; get; }
+        public byte CommandOrder { set; get; }
         public int AxisIndex { set; get; }
+        public byte Dummy0 { set; get; }
+        public byte Dummy1 { set; get; }
         public int AccSteps { set; get; }
         public int DriveVelocity { set; get; }
         public int TotalSteps { set; get; }
@@ -24,6 +29,10 @@ namespace IrixiStepperControllerHelper
         public OutputState GenOutState { set; get; }
 
         public bool IsReversed { set; get; }
+
+        #endregion
+
+        #region Methods
 
         /// <summary>
         /// Convert the command struct to the byte array
@@ -37,11 +46,14 @@ namespace IrixiStepperControllerHelper
             BinaryWriter writer = new BinaryWriter(stream);
 
             // report ID
-            writer.Write((byte)REPORT_ID_CMD);
+            writer.Write(REPORT_ID_CMD);
 
             writer.Write(_cmd_counter++);
             writer.Write((int)this.Command);
-            writer.Write(this.AxisIndex);
+            writer.Write((byte)this.CommandOrder);
+            writer.Write((byte)this.AxisIndex);
+            writer.Write((byte)0xCC); // dummy byte
+            writer.Write((byte)0xCC); // dummy byte
 
             switch (this.Command)
             {
@@ -69,5 +81,6 @@ namespace IrixiStepperControllerHelper
 
         }
 
+        #endregion
     }
 }

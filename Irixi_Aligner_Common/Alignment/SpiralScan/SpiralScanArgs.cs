@@ -1,7 +1,10 @@
-﻿using Irixi_Aligner_Common.Alignment.Base;
+﻿using Irixi_Aligner_Common.Alignment.BaseClasses;
+using Irixi_Aligner_Common.Classes;
 using Irixi_Aligner_Common.Classes.BaseClass;
 using Irixi_Aligner_Common.MotionControllers.Base;
 using System;
+using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 using System.Windows.Media.Media3D;
 
 namespace Irixi_Aligner_Common.Alignment.SpiralScan
@@ -9,134 +12,114 @@ namespace Irixi_Aligner_Common.Alignment.SpiralScan
     public class SpiralScanArgs : AlignmentArgsBase
     {
         #region Variables
-        private LogicalAxis axis0;
-        private LogicalAxis axis1;
-        private double target;
-        private int maxCycles;
-        private double gap;
-        private double range;
-        private int moveSpeed;
-        private Size3D aspectRatio;
+        const string PROP_GRP_AXIS = "Axis Settings";
+
+        private LogicalAxis axis, axis2;
+        private double scanInterval, scanRestriction;
         #endregion
 
         #region Constructors
-        public SpiralScanArgs()
+
+        public SpiralScanArgs(SystemService Service) : base(Service)
         {
-            ScanCurve = new ObservableCollectionThreadSafe<Point3D>();
+            ScanCurve = new ScanCurve3D();
+            this.ScanCurveGroup.Add(ScanCurve);
 
-            Target = 0;
-            MaxCycles = 1;
-            Gap = 10;
-            Range = 100;
-            MoveSpeed = 100;
-            AspectRatio = new Size3D(1, 1, 1);
+            AxisXTitle = "Horizontal";
+            AxisYTitle = "Verical";
+            AxisZTitle = "Indensity";
 
-            Random r = new Random();
-
-            for (int x = 0; x < 100; x++)
-            {
-                for (int y = 0; y < 100; y++)
-                {
-                    ScanCurve.Add(new Point3D(x, y, r.NextDouble()));
-                }
-            }
+            Properties.Add(new Property("Instrument"));
+            Properties.Add(new Property("Axis"));
+            Properties.Add(new Property("Axis2"));
+            Properties.Add(new Property("ScanInterval"));
+            Properties.Add(new Property("ScanRestriction"));
+            Properties.Add(new Property("MoveSpeed"));
         }
+
         #endregion
 
         #region Properties
+
+        [Display(
+            Name = "H Axis",
+            GroupName = PROP_GRP_AXIS,
+            Description = "The scan process starts along the horizontal axis first.")]
+        public LogicalAxis Axis
+        {
+            get => axis;
+            set
+            {
+                axis = value;
+                RaisePropertyChanged();
+            }
+        }
+
+        [Display(
+            Name = "V Axis",
+            GroupName = PROP_GRP_AXIS,
+            Description = "The scan process starts along the horizontal axis first.")]
+        public LogicalAxis Axis2
+        {
+            get => axis2;
+            set
+            {
+                axis2 = value;
+                RaisePropertyChanged();
+            }
+        }
+
+        [Display(
+            Name = "Interval",
+            GroupName = PROP_GRP_AXIS,
+            Description = "The scan interval for both H-Axis and V-Axis.")]
+        public double ScanInterval
+        {
+            get => scanInterval;
+            set
+            {
+                scanInterval = value;
+                RaisePropertyChanged();
+            }
+        }
+
+        [Display(
+            Name = "Restriction",
+            GroupName = PROP_GRP_AXIS,
+            Description = "The scan scope restriction.")]
+        public double ScanRestriction
+        {
+            get => scanRestriction;
+            set
+            {
+                scanRestriction = value;
+                RaisePropertyChanged();
+            }
+        }
         
-        public LogicalAxis Axis0
-        {
-            get => axis0;
-            set
-            {
-                axis0 = value;
-                RaisePropertyChanged();
-            }
-        }
-        public LogicalAxis Axis1
-        {
-            get => axis1;
-            set
-            {
-                axis1 = value;
-                RaisePropertyChanged();
-            }
-        }
-
-        public double Target
-        {
-            get => target;
-            set
-            {
-                target = value;
-                RaisePropertyChanged();
-            }
-        }
-
-        public int MaxCycles
-        {
-            get => maxCycles;
-            set
-            {
-                maxCycles = value;
-                RaisePropertyChanged();
-            }
-        }
-
-        public double Gap
-        {
-            get => gap;
-            set
-            {
-                gap = value;
-                RaisePropertyChanged();
-            }
-        }
-
-        public double Range
-        {
-            get => range;
-            set
-            {
-                range = value;
-                RaisePropertyChanged();
-            }
-        }
-
-        public int MoveSpeed
-        {
-            get => moveSpeed;
-            set
-            {
-                moveSpeed = value;
-                RaisePropertyChanged();
-            }
-        }
-
-        public ObservableCollectionThreadSafe<Point3D> ScanCurve
+        [Browsable(false)]
+        public ScanCurve3D ScanCurve
         {
             get;
         }
-        
-        public Size3D AspectRatio
-        {
-            get => aspectRatio;
-            set
-            {
-                aspectRatio = value;
-                RaisePropertyChanged();
-            }
-        }
+
         #endregion
 
         #region Methods
         public override void Validate()
         {
-            if (Axis0.Equals(Axis1))
+            base.Validate();
+
+            if (Axis == null)
+                throw new ArgumentException("You must specify the horizontal axis.");
+
+            if (Axis2 == null)
+                throw new ArgumentException("You must specify the vertical axis.");
+
+            if (Axis.Equals(Axis2))
                 throw new ArgumentException("the two axes must be different");
 
-            if (Axis0.PhysicalAxisInst.UnitHelper.Unit != Axis1.PhysicalAxisInst.UnitHelper.Unit)
+            if (Axis.PhysicalAxisInst.UnitHelper.Unit != Axis2.PhysicalAxisInst.UnitHelper.Unit)
                 throw new ArgumentException("the two axes have different unit");
         }
 

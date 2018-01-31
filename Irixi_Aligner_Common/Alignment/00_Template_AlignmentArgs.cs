@@ -1,4 +1,5 @@
-﻿using Irixi_Aligner_Common.Alignment.Base;
+﻿using Irixi_Aligner_Common.Alignment.BaseClasses;
+using Irixi_Aligner_Common.Classes;
 using System;
 
 namespace Irixi_Aligner_Common.Alignment
@@ -10,7 +11,10 @@ namespace Irixi_Aligner_Common.Alignment
         #endregion
 
         #region Constructors
+        public _00_Template_AlignmentArgs(SystemService Service) : base(Service)
+        {
 
+        }
         #endregion
 
         #region Properties

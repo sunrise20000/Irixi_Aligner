@@ -1,9 +1,8 @@
-﻿using System.Collections.ObjectModel;
-using System.Windows;
+﻿using System.Windows;
 
 namespace Irixi_Aligner_Common.Classes.BaseClass
 {
-    public class ObservableCollectionThreadSafe<T>: System.Collections.ObjectModel.ObservableCollection<T>
+    public class ObservableCollectionThreadSafe<T>: ObservableCollectionEx<T>
     {
         protected override void ClearItems()
         {

@@ -33,7 +33,7 @@ namespace Irixi_Aligner_Common.Configuration.MotionController
         /// <summary>
         /// Get how many steps to accelerate to the max speed
         /// </summary>
-        public int AccelerationSteps { get; set; }
+        public int Acceleration { get; set; }
 
         /// <summary>
         /// Get the subdivsion set of the motor driver hardware

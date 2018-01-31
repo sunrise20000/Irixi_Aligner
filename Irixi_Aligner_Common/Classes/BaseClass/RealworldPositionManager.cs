@@ -140,6 +140,11 @@ namespace Irixi_Aligner_Common.Classes.BaseClass
             // if the property was set, the related properties must be recalculated
             this.Resolution = this.TravelDistance / (double)this.MaxSteps;
         }
+
+        public override string ToString()
+        {
+            return this.Unit.ToString();
+        }
         #endregion  
 
         #region RaisePropertyChangedEvent

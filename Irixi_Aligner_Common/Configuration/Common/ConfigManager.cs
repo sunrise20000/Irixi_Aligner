@@ -9,32 +9,26 @@ namespace Irixi_Aligner_Common.Configuration.Common
 {
     public class ConfigManager
     {
-        const string kCONF_MOTIONCONTROLLER = @"Configuration\system_setting.json";
-        const string kPROF_SURUGASTAGES = @"Configuration\profile_motorized_stages.json";
-        const string kPROF_LAYOUT = @"Configuration\layout.json";
-        const string kPROF_DEFAULTLAYOUT = @"Configuration\defaultlayout.json";
+        const string FILE_SYSTEMSETTING = @"Configuration\system_setting.json";
+        const string FILE_PROFILE = @"Configuration\profile_motorized_stages.json";
+        const string FILE_LAYOUT = @"Configuration\layout.json";
+        const string FILE_DEFAULTLAYOUT = @"Configuration\defaultlayout.json";
 
 
         public ConfigManager()
         {
-            string json_string = string.Empty;
-
             #region Read the configration of motion controller
 
             try
             {
-                using (StreamReader reader = File.OpenText(kCONF_MOTIONCONTROLLER))
-                {
-                    json_string = reader.ReadToEnd();
-                    reader.Close();
-                }
+                var json_string = File.ReadAllText(FILE_SYSTEMSETTING);
 
                 // Convert to object 
                 this.ConfSystemSetting = JsonConvert.DeserializeObject<ConfigurationSystemSetting>(json_string);
             }
             catch (Exception ex)
             {
-                LogHelper.WriteLine("Unable to load config file {0}, {1}", kCONF_MOTIONCONTROLLER, ex.Message, LogHelper.LogType.ERROR);
+                LogHelper.WriteLine("Unable to load config file {0}, {1}", FILE_SYSTEMSETTING, ex.Message, LogHelper.LogType.ERROR);
 
                 throw new Exception(ex.Message);
             }
@@ -44,18 +38,15 @@ namespace Irixi_Aligner_Common.Configuration.Common
             #region Read the profile of Suruage stages
             try
             {
-                using (StreamReader reader = File.OpenText(kPROF_SURUGASTAGES))
-                {
-                    json_string = reader.ReadToEnd();
-                    reader.Close();
-                }
+
+                var json_string = File.ReadAllText(FILE_PROFILE);
 
                 // Convert to object 
                 this.ProfileManager = JsonConvert.DeserializeObject<MotorizedStagesProfileManager>(json_string);
             }
             catch (Exception ex)
             {
-                LogHelper.WriteLine("Unable to load config file {0}, {1}", kPROF_SURUGASTAGES, ex.Message, LogHelper.LogType.ERROR);
+                LogHelper.WriteLine("Unable to load config file {0}, {1}", FILE_PROFILE, ex.Message, LogHelper.LogType.ERROR);
 
                 throw new Exception(ex.Message);
             }
@@ -68,17 +59,16 @@ namespace Irixi_Aligner_Common.Configuration.Common
                 if (StaticVariables.IsLoadDefaultLayout)
                 {
                     // load default layout
-                    layout_file = kPROF_DEFAULTLAYOUT;
+                    layout_file = FILE_DEFAULTLAYOUT;
                 }
                 else
                 {
                     // load last layout
-                    layout_file = kPROF_LAYOUT;
+                    layout_file = FILE_LAYOUT;
                 }
+                
 
-                StreamReader reader = File.OpenText(layout_file);
-                json_string = reader.ReadToEnd();
-                reader.Close();
+                var json_string = File.ReadAllText(layout_file);
 
                 // Convert to object
                 this.ConfWSLayout = JsonConvert.DeserializeObject<LayoutManager>(json_string);
@@ -136,7 +126,7 @@ namespace Irixi_Aligner_Common.Configuration.Common
         {
             string json_str = JsonConvert.SerializeObject(layout);
 
-            using (FileStream fs = File.Open(kPROF_LAYOUT, FileMode.Create, FileAccess.Write))
+            using (FileStream fs = File.Open(FILE_LAYOUT, FileMode.Create, FileAccess.Write))
             {
                 using (StreamWriter wr = new StreamWriter(fs))
                 {

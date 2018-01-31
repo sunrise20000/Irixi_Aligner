@@ -7,19 +7,19 @@
                     Icon="AlignerLogo.ico" 
                     x:Class="Irixi_Aligner_Common.MainWindow" 
                     Title="Irixi Alignment System for 2x25G/10x10G Tx/Rx" 
-        xmlns:dxr="http://schemas.devexpress.com/winfx/2008/xaml/ribbon" 
-        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" 
-        xmlns:dxb="http://schemas.devexpress.com/winfx/2008/xaml/bars" 
-        xmlns:dx="http://schemas.devexpress.com/winfx/2008/xaml/core" 
-        xmlns:dxd="http://schemas.devexpress.com/winfx/2008/xaml/docking" 
-        xmlns:dxe="http://schemas.devexpress.com/winfx/2008/xaml/editors" 
-        xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" 
-        xmlns:dxc="http://schemas.devexpress.com/winfx/2008/xaml/charts" 
-        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
-        xmlns:local="clr-namespace:Irixi_Aligner_Common" 
-        xmlns:Converters="clr-namespace:Irixi_Aligner_Common.Classes.Converters" 
-        xmlns:UserControls="clr-namespace:Irixi_Aligner_Common.UserControls">       
+                    xmlns:dxr="http://schemas.devexpress.com/winfx/2008/xaml/ribbon" 
+                    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" 
+                    xmlns:dxb="http://schemas.devexpress.com/winfx/2008/xaml/bars" 
+                    xmlns:dx="http://schemas.devexpress.com/winfx/2008/xaml/core" 
+                    xmlns:dxd="http://schemas.devexpress.com/winfx/2008/xaml/docking" 
+                    xmlns:dxe="http://schemas.devexpress.com/winfx/2008/xaml/editors" 
+                    xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" 
+                    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+                    xmlns:local="clr-namespace:Irixi_Aligner_Common" 
+                    xmlns:Converters="clr-namespace:Irixi_Aligner_Common.Classes.Converters" 
+                    xmlns:UserControls="clr-namespace:Irixi_Aligner_Common.UserControls"
+                    xmlns:apanel="clr-namespace:Irixi_Aligner_Common.UserControls.AlignmentFunc">       
     <dxr:DXRibbonWindow.Resources>
 
         <Converters:VisibilityToBoolean x:Key="VisibilityToBoolean" />
@@ -28,7 +28,7 @@
     
     </dxr:DXRibbonWindow.Resources>
     <DockPanel DataContext="{Binding Source={StaticResource Locator}}">
-        <dxr:RibbonControl x:Name="ribbonControl1" RibbonStyle="Office2010" DockPanel.Dock="Top" AllowCustomization="False" ToolbarShowMode="Hide" ToolbarShowCustomizationButton="False">
+        <dxr:RibbonControl x:Name="ribbonControl1" DockPanel.Dock="Top" AllowCustomization="False" ToolbarShowCustomizationButton="False" RibbonStyle="Office2010">
             <dxr:RibbonControl.ApplicationMenu>
                 <dxr:ApplicationMenu RightPaneWidth="280" ShowRightPane="True">
                     <dxr:ApplicationMenu.RightPane>
@@ -45,15 +45,17 @@
                 <dxr:RibbonPage x:Name="rpHome" Caption="Home">
                     <dxr:RibbonPageGroup Caption="Actions">
                         <dxb:BarButtonItem Content="Home" Glyph="{dx:DXImageOffice2013 Image=Solution_16x16.png}" LargeGlyph="{dx:DXImageOffice2013 Image=Solution_32x32.png}" Command="{Binding Service.CommandHomeAllAxes}" IsEnabled="{Binding IsEnabled, ElementName=btnStart}" RibbonStyle="SmallWithText" />
-                        <dxb:BarButtonItem x:Name="btnStart" Content="Start" RibbonStyle="Large"  Glyph="{DynamicResource IconPlay_256x256}" LargeGlyph="{DynamicResource IconPlay_256x256}" IsEnabled="{Binding Service.State, Converter={StaticResource SystemStatusToStartButtonEnable}}" />
-                        <dxb:BarButtonItem x:Name="btnStop" Content="Stop" Glyph="{DynamicResource IconStop_256x256}" LargeGlyph="{DynamicResource IconStop_256x256}" IsEnabled="{Binding Service.State, Converter={StaticResource SystemStatusToStopButtonEnable}}" Command="{Binding Service.CommandStop}" RibbonStyle="Large" />
+                        <dxb:BarButtonItem x:Name="btnStart" Content="Start" RibbonStyle="Large"  Glyph="{DynamicResource IconPlay_256x256}" LargeGlyph="{StaticResource IconPlay_256x256}" IsEnabled="{Binding Service.State, Converter={StaticResource SystemStatusToStartButtonEnable}}" />
+                        <dxb:BarButtonItem x:Name="btnStop" Content="Stop" Glyph="{StaticResource IconStop_256x256}" LargeGlyph="{StaticResource IconStop_256x256}" IsEnabled="{Binding Service.State, Converter={StaticResource SystemStatusToStopButtonEnable}}" Command="{Binding Service.CommandStop}" RibbonStyle="Large" />
                     </dxr:RibbonPageGroup>
                     <dxr:RibbonPageGroup x:Name="rpgPresetPositionButtonsHost" Caption="Preset Position">
                     </dxr:RibbonPageGroup>
                     <dxr:RibbonPageGroup Caption="Alignment">
-                        <dxb:BarButtonItem x:Name="btnBlindSearch" Content="Blind Search" LargeGlyph="{DynamicResource IconSpiral_512x512}" ItemClick="btnBlindSearch_ItemClick" />
-                        <dxb:BarButtonItem x:Name="btnAlignmentXD" Content="Alignment xD" LargeGlyph="{DynamicResource IconXY_512x512}" ItemClick="btnAlignmentXD_ItemClick" />
-                        <dxb:BarButtonItem Content="Fast Alignment" Glyph="{dx:DXImageOffice2013 Image=Solution_16x16.png}" LargeGlyph="{dx:DXImageOffice2013 Image=Solution_32x32.png}" />
+                        <dxb:BarButtonItem x:Name="btnBlindSearch" Content="Blind Search" LargeGlyph="{StaticResource IconSpiral_32x32}" Glyph="{StaticResource IconSpiral_512x512}" ItemClick="btnBlindSearch_ItemClick" />
+                        <dxb:BarButtonItem x:Name="btnSnakeScan" Content="Blind Search 2" LargeGlyph="{StaticResource IconSnake_32x32}" Glyph="{StaticResource IconSnake_512x512}" ItemClick="btnSnakeScan_ItemClick" />
+                        <dxb:BarButtonItem x:Name="btnAlignmentXD" Content="Alignment nD" LargeGlyph="{StaticResource IconAlignmentnD_32x32}" Glyph="{StaticResource IconAlignmentnD_512x512}" ItemClick="btnAlignmentXD_ItemClick" />
+                        <dxb:BarButtonItem x:Name="btnCentralAlign" Content="Central Align"  LargeGlyph="{StaticResource IconCentralAlign_32x32}" Glyph="{StaticResource IconCentralAlign_512x512}" ItemClick="btnCentralAlign_ItemClick"/>
+                        <dxb:BarButtonItem x:Name="btnRotatingScan" Content="Rotating Scan" LargeGlyph="{StaticResource IconRotating_32x32}" Glyph="{StaticResource IconRotating_512x512}" ItemClick="btnRotatingScan_ItemClick" />
                     </dxr:RibbonPageGroup>
                 </dxr:RibbonPage>
                 <dxr:RibbonPage x:Name="rpgView" Caption="View">
@@ -126,9 +128,9 @@
                             </Grid>
                         </dxd:DocumentPanel>
                         
-                        <!-- AlignmentXD Panel -->
+                        <!-- AlignmentnD Panel -->
                         <dxd:DocumentPanel x:Name="panelAlignmentXD" 
-                                           Caption="Alignment XD" 
+                                           Caption="Alignment nD" 
                                            MDISize="1000,600"
                                            AllowFloat="False" 
                                            AllowSizing="True" 
@@ -137,7 +139,12 @@
                                            AllowMaximize="true" 
                                            AllowDockToDocumentGroup="False" 
                                            Visibility="Hidden">
-                            <UserControls:AlignmentPanelAlignmentXD DataContext="{Binding Service}"/>
+                            <!--<UserControls:AlignmentPanelAlignmentXD DataContext="{Binding Service}"/>-->
+                            <apanel:AlignmentPanel 
+                                DataContext="{Binding Service.AlignmentXDArgs}" 
+                                PropertiesTemplate="UserControls/AlignmentFunc/AlignmentND/Template.xaml" 
+                                StartCommand="{Binding Service.CommandDoAlignmentXD}"
+                                StopCommand="{Binding Service.CommandStop}"/>
                         </dxd:DocumentPanel>
                         
                         <!-- Blind Search Panel -->
@@ -151,9 +158,67 @@
                                            AllowMaximize="true" 
                                            AllowDockToDocumentGroup="False"
                                            Visibility="Hidden">
-                            <UserControls:AlignmentPanelBlindSearch DataContext="{Binding Service}"/>
+                            <apanel:AlignmentPanel 
+                                DataContext="{Binding Service.SpiralScanArgs}" 
+                                PropertiesTemplate="UserControls/AlignmentFunc/SprialScan/Template.xaml" 
+                                StartCommand="{Binding Service.CommandDoBlindSearch}"
+                                StopCommand="{Binding Service.CommandStop}"/>
                         </dxd:DocumentPanel>
-                        
+
+                        <!-- Blind Search 2 Panel -->
+                        <dxd:DocumentPanel x:Name="panelSnakeRouteScan" 
+                                           Caption="Blind Search 2" 
+                                           MDISize="1000,600" 
+                                           AllowFloat="False" 
+                                           AllowSizing="True" 
+                                           AllowRename="False" 
+                                           AllowDock="False" 
+                                           AllowMaximize="true" 
+                                           AllowDockToDocumentGroup="False"
+                                           Visibility="Hidden">
+                            <apanel:AlignmentPanel 
+                                DataContext="{Binding Service.SnakeRouteScanArgs}" 
+                                PropertiesTemplate="UserControls/AlignmentFunc/SnakeRouteScan/Template.xaml" 
+                                StartCommand="{Binding Service.CommandDoSnakeRouteScan}"
+                                StopCommand="{Binding Service.CommandStop}"/>
+                        </dxd:DocumentPanel>
+
+                        <!-- Rotating Scan Panel -->
+                        <dxd:DocumentPanel x:Name="panelRotatingScan" 
+                                           Caption="Rotating Search" 
+                                           MDISize="1000,600" 
+                                           AllowFloat="False" 
+                                           AllowSizing="True" 
+                                           AllowRename="False" 
+                                           AllowDock="False" 
+                                           AllowMaximize="true" 
+                                           AllowDockToDocumentGroup="False"
+                                           Visibility="Hidden">
+                            <apanel:AlignmentPanel 
+                                DataContext="{Binding Service.RotatingScanArgs}" 
+                                PropertiesTemplate="UserControls/AlignmentFunc/RotatingScan/Template.xaml" 
+                                StartCommand="{Binding Service.CommandDoRotatingScan}"
+                                StopCommand="{Binding Service.CommandStop}"/>
+                        </dxd:DocumentPanel>
+
+                        <!-- Central Align Panel -->
+                        <dxd:DocumentPanel x:Name="panelCentralAlign" 
+                                           Caption="Central Align" 
+                                           MDISize="1000,600" 
+                                           AllowFloat="False" 
+                                           AllowSizing="True" 
+                                           AllowRename="False" 
+                                           AllowDock="False" 
+                                           AllowMaximize="true" 
+                                           AllowDockToDocumentGroup="False"
+                                           Visibility="Hidden">
+                            <apanel:AlignmentPanel 
+                                DataContext="{Binding Service.CentralAlignArgs}" 
+                                PropertiesTemplate="UserControls/AlignmentFunc/CentralAlign/Template.xaml" 
+                                StartCommand="{Binding Service.CommandDoCentralAlign}"
+                                StopCommand="{Binding Service.CommandStop}"/>
+                        </dxd:DocumentPanel>
+
                     </dxd:DocumentGroup>
                 </dxd:LayoutGroup>
                 <dxd:TabbedGroup x:Name="bottomInfoPanelsHost">

@@ -10,7 +10,6 @@
 	Width="350"
 	ResizeMode="NoResize" 
 	WindowStartupLocation="CenterScreen" 
-	dx:ThemeManager.ThemeName="Office2013"
 	Loaded="Window_Loaded" 
     WindowStyle="SingleBorderWindow">
     

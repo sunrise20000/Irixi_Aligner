@@ -1,4 +1,4 @@
-﻿using Irixi_Aligner_Common.Alignment.Base;
+﻿using Irixi_Aligner_Common.Alignment.BaseClasses;
 using System;
 using System.Linq;
 using System.Windows;
@@ -45,7 +45,12 @@ namespace Irixi_Aligner_Common.Alignment.AlignmentXD
                     double dist_moved = 0;
                     double halfrange = arg1d.ScanRange / 2;
 
-                    // move to start position
+                    /// <summary>
+                    /// move to alignment start position.
+                    /// the move methods of the physical axis MUST BE called because the move methods of logical
+                    /// axis will trigger the changing of system status in SystemService.
+                    /// <see cref="SystemService.MoveLogicalAxis(MotionControllers.Base.LogicalAxis, MoveByDistanceArgs)"/>
+                    /// </summary>
                     if (arg1d.Axis.PhysicalAxisInst.Move(MoveMode.REL, arg1d.MoveSpeed, -halfrange) == false)
                         throw new InvalidOperationException(arg1d.Axis.PhysicalAxisInst.LastError);
 
@@ -74,12 +79,12 @@ namespace Irixi_Aligner_Common.Alignment.AlignmentXD
                         break;
 
                     // return to the position with the maximnm measurement data
-                    var ordered = arg1d.ScanCurve.OrderByDescending(a => a.Y);
-                    var max_pos = ordered.First().X;
-                    max_measval = ordered.First().Y;
+                    var max_pos = arg1d.ScanCurve.FindMaximalPosition();
+                    max_measval = max_pos.Y;
 
+                    // move to the position of max power
                     // Note: The distance to move is minus
-                    if (arg1d.Axis.PhysicalAxisInst.Move(MoveMode.REL, arg1d.MoveSpeed, -(dist_moved - max_pos)) == false)
+                    if (arg1d.Axis.PhysicalAxisInst.Move(MoveMode.REL, arg1d.MoveSpeed, -(dist_moved - max_pos.X)) == false)
                         throw new InvalidOperationException(arg1d.Axis.PhysicalAxisInst.LastError);
                 }
 
@@ -90,7 +95,7 @@ namespace Irixi_Aligner_Common.Alignment.AlignmentXD
 
         public override string ToString()
         {
-            return "Alignment-XD Process";
+            return "Alignment-nD Process";
         }
     }
 }

@@ -59,7 +59,7 @@ namespace Irixi_Aligner_Common.ViewModel
                     }
                     catch (Exception ex)
                     {
-                        Messenger.Default.Send(new NotificationMessage<string>(string.Format("unable to set output state, {0}", ex.Message), "ERROR"));
+                        Messenger.Default.Send(new NotificationMessage<string>(string.Format("error occurred while setting output state, {0}", ex.Message), "ERROR"));
                     }
                 });
             }

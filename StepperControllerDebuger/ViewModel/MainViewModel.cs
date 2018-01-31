@@ -3,7 +3,6 @@ using GalaSoft.MvvmLight.Command;
 using GalaSoft.MvvmLight.Messaging;
 using IrixiStepperControllerHelper;
 using System;
-using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -23,10 +22,15 @@ namespace StepperControllerDebuger.ViewModel
     /// </summary>
     public class MainViewModel : ViewModelBase, IDisposable
     {
+        #region Variables
 
-        IrixiStepperControllerHelper.IrixiMotionController _controller;
-
+        IrixiMotionController _controller;
+        string _device_sn = "";
         string _conn_prog_msg = "";
+
+        #endregion
+
+        #region Constructors
 
         /// <summary>
         /// Initializes a new instance of the MainViewModel class.
@@ -39,51 +43,51 @@ namespace StepperControllerDebuger.ViewModel
             }
             else
             {
-                ThreadPool.SetMinThreads(50, 50);
+                ThreadPool.SetMinThreads(10, 10);
 
                 this.DeviceSN = GlobalVariables.HidSN;
 
-                _controller = new IrixiStepperControllerHelper.IrixiMotionController(GlobalVariables.HidSN); // For debug, the default SN of the controller is used.
+                _controller = new IrixiMotionController(GlobalVariables.HidSN); // For debug, the default SN of the controller is used.
                 //
                 // While scanning the controller, report the state to user window
                 //
-                _controller.OnConnectionStatusChanged += new EventHandler<IrixiStepperControllerHelper.ConnectionEventArgs>((sender, args) =>
+                _controller.OnConnectionStatusChanged += new EventHandler<ConnectionEventArgs>((sender, args) =>
                 {
-                    switch(args.Event)
+                    switch (args.Event)
                     {
-                        case ConnectionEventArgs.EventType.TotalAxesReturned:
+                        case ConnectionEventArgs.EventType.ConnectionSuccess:
                             this.ConnectionStateChangedMessage = "Connected";
-                            for(int i = 0; i < _controller.AxisCollection.Count; i++)
+                            for (int i = 0; i < _controller.AxisCollection.Count; i++)
                             {
                                 _controller.AxisCollection[i].SoftCWLS = 1000000;
+                                _controller.AxisCollection[i].MaxSteps = 1000000;
                             }
                             break;
 
-                        case ConnectionEventArgs.EventType.ConnectionRetried: // how many times tried to connect to the device is reported
-                            this.ConnectionStateChangedMessage = string.Format("Scanning controller, retried {0} times ...", (int)args.Content);
+                        case ConnectionEventArgs.EventType.Connecting: // how many times tried to connect to the device is reported
+                            this.ConnectionStateChangedMessage = "Connecting to the controller ...";
                             break;
 
                         case ConnectionEventArgs.EventType.ConnectionLost:
-                            this.ConnectionStateChangedMessage = "Reconnecting ...";
-                            StartOpenDevice();
+                            this.ConnectionStateChangedMessage = "Lost the connection";
                             break;
                     }
-                    
+
                 });
 
-                _controller.OnInputIOStatusChanged += new EventHandler<InputEventArgs>((s, e) =>
+                _controller.OnInputIOStatusChanged += new EventHandler<InputIOEventArgs>((s, e) =>
                 {
-                    if(e.Channel == 0 && e.State == InputState.Triggered)
+                    if (e.Channel == 0 && e.State == InputState.Triggered)
                     {
                         _controller.SetGeneralOutput(0, OutputState.Enabled);
                     }
                 });
-                
+
 
                 //
                 // Once the report is received, update the UI components.
                 //
-                _controller.OnReportUpdated += new System.EventHandler<IrixiStepperControllerHelper.DeviceStateReport>((sender, report) =>
+                _controller.OnReportUpdated += new EventHandler<IrixiStepperControllerHelper.DeviceStateReport>((sender, report) =>
                 {
                     //
                     // Nothing to do in this demo
@@ -92,22 +96,19 @@ namespace StepperControllerDebuger.ViewModel
                 });
 
                 //_controller.OpenDeviceAsync();
-                StartOpenDevice();
+                Open();
+
+                for (int i = 0; i < 5; i++)
+                {
+                    Task.Factory.StartNew(DoFooWork);
+                }
             }
         }
 
-        async void StartOpenDevice()
-        {
-            bool success = false;
-            do
-            {
-                success = await _controller.OpenDeviceAsync();
-            }
-            while (success == false);
-        }
+        #endregion
 
         #region Properties
-        string _device_sn = "";
+
         public string DeviceSN
         {
             private set
@@ -140,7 +141,7 @@ namespace StepperControllerDebuger.ViewModel
         /// <summary>
         /// Get the instance of the stepper controller class
         /// </summary>
-        public IrixiStepperControllerHelper.IrixiMotionController StepperController
+        public IrixiMotionController StepperController
         {
             get
             {
@@ -150,18 +151,115 @@ namespace StepperControllerDebuger.ViewModel
 
         #endregion
 
-        #region Commands
+        #region Methods
 
-        #region Explain of null Command argument
-        //!         While the ¡®commnd argument' incoming is null
-        // ref to the command struct generator class, while the format of the input values are illegal,
-        // for example, the distance value is not a integer, a null command object will be returned in 
-        // the converter.
-        //
-        // As a matter of the fact, the input values should be validated in XAML level.
-        //TODO: Validate the input values in xaml
-        //
+        void DoFooWork()
+        {
+            int n = 0;
+
+            while(true)
+            {
+                
+                n++;
+                for (int i = 0; i < 10000; i++)
+                {
+                    n++;
+                }
+
+                Thread.Sleep(10);
+            }
+        }
+
+        void Open()
+        {
+           var ret = Task.Factory.StartNew(_controller.Open).Result;
+        }
+
+        /// <summary>
+        /// Home all axes
+        /// </summary>
+        void Home()
+        {
+            Task<bool>[] tasks = new Task<bool>[_controller.TotalAxes];
+            bool[] retvals = new bool[_controller.TotalAxes];
+
+            for (int i = 0; i < _controller.TotalAxes; i++)
+            {
+                tasks[i] = _controller.HomeAsync(i);
+
+                Thread.Sleep(200);
+            }
+        }
+
+        /// <summary>
+        /// Home the specified axis
+        /// </summary>
+        /// <param name="AxisIndex"></param>
+        void Home(int AxisIndex)
+        {
+            _controller.HomeAsync(AxisIndex);
+        }
+        
+        async void Move(CommandStruct args)
+        {
+            bool success = await _controller.MoveAsync(args.AxisIndex, args.DriveVelocity, args.TotalSteps, args.Mode);
+            if (!success)
+            {
+                //Messenger.Default.Send<NotificationMessage<string>>(
+                //    new NotificationMessage<string>(
+                //        string.Format("Unable to move, {0}", _controller.LastError),
+                //        "Error"));
+
+            }
+        }
+
+        /// <summary>
+        /// Read the information of the firmware like version, compiled date
+        /// </summary>
+        void ReadFirmwareInfo()
+        {
+            var ret = _controller.ReadFWInfo();
+            if (ret)
+            {
+                Messenger.Default.Send(
+                    new NotificationMessage<string>(
+                        string.Format("{0}", _controller.FirmwareInfo.ToString()),
+                        "MSG"));
+            }
+            else
+            {
+                Messenger.Default.Send(
+                    new NotificationMessage<string>(
+                        string.Format("Unable to read firmware info."),
+                        "Error"));
+            }
+        }
+
+        /// <summary>
+        /// Read the input status registers of PCA9534s
+        /// </summary>
+        void ReadPCA9534InputReg()
+        {
+            var ret = _controller.ReadPCA9534();
+            if (ret)
+            {
+                Messenger.Default.Send(
+                    new NotificationMessage<string>(
+                        string.Format("{0}", _controller.PCA9534Info.ToString()),
+                        "MSG"));
+            }
+            else
+            {
+                Messenger.Default.Send(
+                    new NotificationMessage<string>(
+                        string.Format("Unable to read PCA9534."),
+                        "Error"));
+            }
+        }
+
         #endregion
+
+        #region Commands
 
         /// <summary>
         /// Home all axis
@@ -173,58 +271,10 @@ namespace StepperControllerDebuger.ViewModel
                 return new RelayCommand<int>(axisid =>
                 {
                     if (axisid == -1)
-                        StartHomeAsync();
+                        Home();
                     else
-                        StartHomeAsync(axisid);
+                        Home(axisid);
                 });
-            }
-        }
-
-        /// <summary>
-        /// Home all axes
-        /// </summary>
-        async void StartHomeAsync()
-        {
-            Task<bool>[] tasks = new Task<bool>[_controller.TotalAxes];
-            bool[] retvals = new bool[_controller.TotalAxes];
-
-            for (int i = 0; i < _controller.TotalAxes; i ++)
-            {
-                tasks[i] = _controller.HomeAsync(i);
-              
-            }
-
-            retvals = await Task.WhenAll<bool>(tasks);
-        }
-
-        /// <summary>
-        /// Home the specified axis
-        /// </summary>
-        /// <param name="AxisIndex"></param>
-        async void StartHomeAsync(int AxisIndex)
-        {
-            bool success = await _controller.HomeAsync(AxisIndex);
-            if (success)
-            {
-                success = await _controller.MoveAsync(
-                    AxisIndex,
-                    100,
-                    _controller.AxisCollection[AxisIndex].PosAfterHome,
-                    MoveMode.ABS);
-
-                if (!success)
-                {
-                    Messenger.Default.Send<NotificationMessage<string>>(
-                        new NotificationMessage<string>(string.Format("Unable to move to the initial position, {0}", _controller.LastError),
-                                                        "Error"));
-                }
-            }
-            else
-            {
-                Messenger.Default.Send<NotificationMessage<string>>(
-                            new NotificationMessage<string>(
-                                string.Format("Unable to home, {0}", _controller.LastError),
-                                "Error"));
             }
         }
 
@@ -247,7 +297,7 @@ namespace StepperControllerDebuger.ViewModel
                     }
                     else if (args.Command == IrixiStepperControllerHelper.EnumCommand.MOVE)
                     {
-                        StartMoveAsync(args);
+                        Move(args);
                     }
                     else
                     {
@@ -257,20 +307,7 @@ namespace StepperControllerDebuger.ViewModel
                 });
             }
         }
-
-        async void StartMoveAsync(CommandStruct args)
-        {
-            bool success = await _controller.MoveAsync(args.AxisIndex, args.DriveVelocity, args.TotalSteps, args.Mode);
-            if (!success)
-            {
-                Messenger.Default.Send<NotificationMessage<string>>(
-                    new NotificationMessage<string>(
-                        string.Format("Unable to move, {0}", _controller.LastError),
-                        "Error"));
-
-            }
-        }
-
+        
         /// <summary>
         /// Stop the specified axis
         /// </summary>
@@ -300,7 +337,7 @@ namespace StepperControllerDebuger.ViewModel
             {
                 return new RelayCommand<Tuple<int, bool>>(arg =>
                 {
-                    bool ret = _controller.ReverseMoveDirection(arg.Item1, arg.Item2);
+                    bool ret = _controller.ReverseOriginPosition(arg.Item1, arg.Item2);
                 });
             }
         }
@@ -322,27 +359,8 @@ namespace StepperControllerDebuger.ViewModel
             {
                 return new RelayCommand(() =>
                 {
-                    ReadFWInfo();
+                    ReadFirmwareInfo();
                 });
-            }
-        }
-
-        async void ReadFWInfo()
-        {
-            bool success = await _controller.ReadFWInfoAsync();
-            if(success)
-            {
-                Messenger.Default.Send<NotificationMessage<string>>(
-                    new NotificationMessage<string>(
-                        string.Format("{0}", _controller.FirmwareInfo.ToString()),
-                        "MSG"));
-            }
-            else
-            {
-                Messenger.Default.Send<NotificationMessage<string>>(
-                    new NotificationMessage<string>(
-                        string.Format("Unable to read firmware info."),
-                        "Error"));
             }
         }
 
@@ -352,27 +370,8 @@ namespace StepperControllerDebuger.ViewModel
             {
                 return new RelayCommand(() =>
                 {
-                    ReadPCA9534();
+                    ReadPCA9534InputReg();
                 });
-            }
-        }
-
-        async void ReadPCA9534()
-        {
-            bool success = await _controller.ReadPCA9534Async();
-            if (success)
-            {
-                Messenger.Default.Send<NotificationMessage<string>>(
-                    new NotificationMessage<string>(
-                        string.Format("{0}", _controller.PCA9534Info.ToString()),
-                        "MSG"));
-            }
-            else
-            {
-                Messenger.Default.Send<NotificationMessage<string>>(
-                    new NotificationMessage<string>(
-                        string.Format("Unable to read PCA9534."),
-                        "Error"));
             }
         }
 
@@ -388,7 +387,7 @@ namespace StepperControllerDebuger.ViewModel
         }
 
         #endregion
-        
+
         public void Dispose()
         {
             _controller.Dispose();
