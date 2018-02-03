@@ -652,6 +652,7 @@
     {
       "Caption": "VGroove Aligner",
       "Icon": "IconViewWsPanels",
+      "IsAligner": true,
       "LogicalAxisArray": [
         {
           "DeviceClass": "5013d013-f167-4dcb-86d9-599a325744b8",
@@ -700,6 +701,7 @@
     {
       "Caption": "Lens Aligner",
       "Icon": "IconViewWsPanels",
+      "IsAligner": true,
       "LogicalAxisArray": [
         {
           "DeviceClass": "412e55e4-ceae-4eb4-8798-e8de7b5b5669",
@@ -760,6 +762,7 @@
     {
       "Caption": "POD Aligner",
       "Icon": "IconViewWsPanels",
+      "IsAligner": true,
       "LogicalAxisArray": [
         {
           "DeviceClass": "19dcf462-f4b8-4e99-bd5c-9f0bd78726d3",
@@ -808,6 +811,7 @@
     {
       "Caption": "Angle Camera",
       "Icon": "IconViewWsPanels",
+      "IsAligner": false,
       "LogicalAxisArray": [
         {
           "DeviceClass": "c6af0f93-7e49-4b1a-b08d-0c84f8d812c0",
@@ -832,6 +836,7 @@
     {
       "Caption": "Top Camera",
       "Icon": "IconViewWsPanels",
+      "IsAligner": false,
       "LogicalAxisArray": [
         {
           "DeviceClass": "d11d1864-6315-4c01-b07f-3e268834cd10",
@@ -856,6 +861,7 @@
     {
       "Caption": "Front Camera",
       "Icon": "IconViewWsPanels",
+      "IsAligner": false,
       "LogicalAxisArray": [
         {
           "DeviceClass": "1D36D23C-CAB9-43FA-ACBC-F09BD824383B",

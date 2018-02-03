@@ -40,7 +40,6 @@ namespace Irixi_Aligner_Common.Classes
         MessageHelper _msg_helper = new MessageHelper();
         bool isInitialized = false;
         readonly object _lock = new object();
-        ObservableCollection<InstrumentBase> activeMeasurementInstrumentCollection;
 
         /// <summary>
         /// lock while set or get this.State
@@ -89,16 +88,12 @@ namespace Irixi_Aligner_Common.Classes
 
             PhysicalMotionControllerCollection = new Dictionary<Guid, IMotionController>();
             LogicalAxisCollection = new ObservableCollectionEx<LogicalAxis>();
+            LogicalAxisInAlignerCollection = new ObservableCollectionEx<LogicalAxis>();
             LogicalMotionComponentCollection = new ObservableCollectionEx<LogicalMotionComponent>();
+            LogicalAlignerCollection = new ObservableCollectionEx<LogicalMotionComponent>();
             MeasurementInstrumentCollection = new ObservableCollectionEx<InstrumentBase>();
-            activeMeasurementInstrumentCollection = new ObservableCollection<InstrumentBase>();
-
-            /// Cross-Thread operation detected error occurred while changing the properties of instruments
-            /// bound to the #ComboBoxEditSettings
-            /// <see cref="https://docs.microsoft.com/en-us/dotnet/api/system.windows.data.bindingoperations.enablecollectionsynchronization?view=netframework-4.7#System_Windows_Data_BindingOperations_EnableCollectionSynchronization_System_Collections_IEnumerable_System_Object_System_Windows_Data_CollectionSynchronizationCallback_"/>
-            /// <see cref="https://www.devexpress.com/Support/Center/Question/Details/T264581/comboboxedit-in-ribbon-cross-thread-operation-detected-when-updating-bound-items-from"/>
-            BindingOperations.EnableCollectionSynchronization(activeMeasurementInstrumentCollection, _lock);
-
+            orgActiveInstrumentCollection = new ObservableCollectionEx2<InstrumentBase>();
+            BindingOperations.EnableCollectionSynchronization(orgActiveInstrumentCollection, _lock);
 
             State = SystemState.BUSY;
 
@@ -156,13 +151,13 @@ namespace Irixi_Aligner_Common.Classes
             // create the instance of the Logical Motion Components
             foreach (var cfg_motion_comp in conf_manager.ConfSystemSetting.LogicalMotionComponents)
             {
-                LogicalMotionComponent comp = new LogicalMotionComponent(cfg_motion_comp.Caption, cfg_motion_comp.Icon);
+                LogicalMotionComponent comp = new LogicalMotionComponent(cfg_motion_comp.Caption, cfg_motion_comp.Icon, cfg_motion_comp.IsAligner);
 
                 int axis_id = 0;
                 foreach (var cfg_axis in cfg_motion_comp.LogicalAxisArray)
                 {
                     // new logical axis object will be added to the Logical Motion Component
-                    MotionControllers.Base.LogicalAxis axis = new MotionControllers.Base.LogicalAxis(this, cfg_axis, cfg_motion_comp.Caption, axis_id);
+                    LogicalAxis axis = new LogicalAxis(this, cfg_axis, cfg_motion_comp.Caption, axis_id);
 
                     axis.OnHomeRequsted += LogicalAxis_OnHomeRequsted;
                     axis.OnMoveRequsted += LogicalAxis_OnMoveRequsted;
@@ -173,11 +168,16 @@ namespace Irixi_Aligner_Common.Classes
 
                     comp.LogicalAxisCollection.Add(axis);
                     this.LogicalAxisCollection.Add(axis);
+                    if (comp.IsAligner)
+                        this.LogicalAxisInAlignerCollection.Add(axis);
 
                     axis_id++;
                 }
 
                 this.LogicalMotionComponentCollection.Add(comp);
+
+                if (comp.IsAligner)
+                    this.LogicalAlignerCollection.Add(comp);
             }
 
             // create the instance of the cylinder
@@ -316,6 +316,16 @@ namespace Irixi_Aligner_Common.Classes
         public ObservableCollectionEx<LogicalMotionComponent> LogicalMotionComponentCollection { get; }
 
         /// <summary>
+        /// Get the collection contains the logical axis which belongs to the logical aligner
+        /// </summary>
+        public ObservableCollectionEx<LogicalAxis> LogicalAxisInAlignerCollection { get; }
+
+        /// <summary>
+        /// Get the logical motion components which is marked as logical aligner
+        /// </summary>
+        public ObservableCollectionEx<LogicalMotionComponent> LogicalAlignerCollection { get; }
+
+        /// <summary>
         /// Get the collection of instruments that defined in the configuration file
         /// </summary>
         public ObservableCollectionEx<InstrumentBase> MeasurementInstrumentCollection { get; }
@@ -323,11 +333,16 @@ namespace Irixi_Aligner_Common.Classes
         /// <summary>
         /// Get the collection of the active instruments which are initialized successfully, the property should be used to represent the valid instruments in the alignment control panel
         /// </summary>
+        public ObservableCollectionEx2<InstrumentBase> orgActiveInstrumentCollection
+        {
+            get;
+        }
+
         public ICollectionView ActiveInstrumentCollection
         {
             get
             {
-                return CollectionViewSource.GetDefaultView(activeMeasurementInstrumentCollection);
+                return CollectionViewSource.GetDefaultView(orgActiveInstrumentCollection);
             }
         }
 
@@ -706,7 +721,7 @@ namespace Irixi_Aligner_Common.Classes
                     // add the instruments which are initialized successfully to the acitve collection
                     if (_equipments[ended_id] is InstrumentBase)
                     {
-                        activeMeasurementInstrumentCollection.Add((InstrumentBase)_equipments[ended_id]);
+                        orgActiveInstrumentCollection.Add((InstrumentBase)_equipments[ended_id]);
                     }
                 }
                 else

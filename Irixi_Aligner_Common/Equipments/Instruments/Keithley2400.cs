@@ -165,6 +165,7 @@ namespace Irixi_Aligner_Common.Equipments.Instruments
         AmpsUnit ampsMeasUnit;
         VoltsUnit voltsMeasUnit;
         EnumMeasRangeVolts range_volts = EnumMeasRangeVolts.AUTO;
+        Keithliey2400ProgressReportArgs prgChgArgs = new Keithliey2400ProgressReportArgs();
         double meas_speed = MEAS_SPEED_DEF;
         bool is_output_enabled = false;
         double voltage_level = 0, current_level = 0;
@@ -1126,26 +1127,26 @@ namespace Irixi_Aligner_Common.Equipments.Instruments
                         if (status.HasFlag(EnumOperationStatus.RANGECMPL))
                         {
 
-                            this.IsMeasOverRange = true;
+                            prgChgArgs.IsMeasOverRange = true;
                         }
                         else
                         {
-                            this.IsMeasOverRange = false;
+                            prgChgArgs.IsMeasOverRange = false;
                         }
 
                         // check flag of range compliance
                         if (status.HasFlag(EnumOperationStatus.CMPL))
                         {
-                            this.IsInRangeCompliance = true;
+                            prgChgArgs.IsInRangeCompliance = true;
                         }
                         else
                         {
-                            this.IsInRangeCompliance = false;
+                            prgChgArgs.IsInRangeCompliance = false;
                         }
                     }
                 }
 
-                this.MeasurementValue = meas_val;
+                prgChgArgs.MeasurementValue = meas_val;
 
 
 
@@ -1154,6 +1155,43 @@ namespace Irixi_Aligner_Common.Equipments.Instruments
             else
                 throw new InvalidCastException(string.Format("unknown value {0} returned, {1}", ret, new StackTrace().GetFrame(0).ToString()));
 
+        }
+
+        protected override void DoAutoFetching(CancellationToken token, IProgress<EventArgs> progress)
+        {
+            // disable display to speed up instrument operation
+            // SetDisplayCircuitry(false);
+
+            while (!token.IsCancellationRequested)
+            {
+                try
+                {
+                    Fetch();
+
+                    progress.Report(prgChgArgs);
+                }
+                catch(Exception ex)
+                {
+                    throw new AggregateException(new Exception[] { ex });
+                }
+                
+
+
+                Thread.Sleep(20);
+            }
+
+            // resume display
+            //SetDisplayCircuitry(true);
+        }
+
+        protected override void AutoFetchingProgressChanged(EventArgs Args)
+        {
+            var args = Args as Keithliey2400ProgressReportArgs;
+
+            // change the values on the window in UI thread context
+            this.IsMeasOverRange = args.IsMeasOverRange;
+            this.IsInRangeCompliance = args.IsInRangeCompliance;
+            this.MeasurementValue = args.MeasurementValue;
         }
 
         protected override void UserDisposeProc()
@@ -1166,22 +1204,6 @@ namespace Irixi_Aligner_Common.Equipments.Instruments
 
             // remove remote state
             SetExitRemoteState();
-        }
-
-        protected override void DoAutoFetching(CancellationToken token)
-        {
-            // disable display to speed up instrument operation
-            // SetDisplayCircuitry(false);
-
-            while (!token.IsCancellationRequested)
-            {
-                Fetch();
-                
-                Thread.Sleep(20);
-            }
-
-            // resume display
-            //SetDisplayCircuitry(true);
         }
 
         protected override void Send(string Command)
