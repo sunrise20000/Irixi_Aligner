@@ -13,8 +13,8 @@ namespace Irixi_Aligner_Common
         {
             InitializeComponent();
 
-            Version version = Assembly.GetExecutingAssembly().GetName().Version;
-            txtVersionInfo.Text = string.Format("v{0}.{1}.{2}", version.Major, version.Minor, version.Revision);
+            var version = Assembly.GetExecutingAssembly().GetName().Version;
+            txtVersionInfo.Text = string.Format("v{0}", version);
         }
     }
 }

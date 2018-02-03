@@ -28,6 +28,15 @@
         }
 
         /// <summary>
+        /// Get whether the logical motion component is used to align the production
+        /// </summary>
+        public bool IsAligner
+        {
+            get;
+            set;
+        }
+
+        /// <summary>
         /// Get the array of logical axis defined in the json file
         /// </summary>
         public ConfigLogicalAxis[] LogicalAxisArray { set; get; }

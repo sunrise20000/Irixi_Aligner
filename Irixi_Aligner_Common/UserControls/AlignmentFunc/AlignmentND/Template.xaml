@@ -11,7 +11,7 @@
             <dxprg:PropertyDefinition.EditSettings>
                 <dxe:ComboBoxEditSettings 
                     ItemsSource="{Binding 
-                        DataContext.Service.LogicalMotionComponentCollection, 
+                        DataContext.Service.LogicalAlignerCollection, 
                         RelativeSource={RelativeSource AncestorType={x:Type UserControl}}}" 
                     IsTextEditable="False"/>
             </dxprg:PropertyDefinition.EditSettings>

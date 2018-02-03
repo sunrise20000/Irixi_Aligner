@@ -195,7 +195,7 @@ namespace Irixi_Aligner_Common.Equipments.Instruments
             return MetaProperties[ActiveChannel].MeasurementValue;
         }
 
-        protected override void DoAutoFetching(CancellationToken token)
+        protected override void DoAutoFetching(CancellationToken token, IProgress<EventArgs> progress)
         {
             while (!token.IsCancellationRequested)
             {

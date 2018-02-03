@@ -5,10 +5,11 @@ namespace Irixi_Aligner_Common.MotionControllers.Base
 
     public class LogicalMotionComponent
     {
-        public LogicalMotionComponent(string Caption, string Icon)
+        public LogicalMotionComponent(string Caption, string Icon, bool IsAligner)
         {
             this.Caption = Caption;
             this.Icon = Icon;
+            this.IsAligner = IsAligner;
             LogicalAxisCollection = new ObservableCollection<LogicalAxis>();
         }
 
@@ -21,6 +22,11 @@ namespace Irixi_Aligner_Common.MotionControllers.Base
         /// Get the icon shown on the caption and the show/hide button
         /// </summary>
         public string Icon { private set; get; }
+
+        /// <summary>
+        /// Get whether the motion component is the alignment component
+        /// </summary>
+        public bool IsAligner { private set; get; }
    
         /// <summary>
         /// Get the collection contains logical axes, 

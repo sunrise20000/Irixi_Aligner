@@ -257,8 +257,19 @@ namespace Irixi_Aligner_Common.MotionControllers.Irixi
 
         public override void Dispose()
         {
-            _controller.Close();
-            _controller = null;
+            try
+            {
+
+                _controller.Close();
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+            finally
+            {
+                _controller = null;
+            }
         }
 
         #endregion
