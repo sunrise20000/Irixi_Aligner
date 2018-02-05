@@ -1,5 +1,6 @@
 ﻿using DevExpress.Xpf.Bars;
 using DevExpress.Xpf.Docking;
+using DevExpress.Xpf.Ribbon;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Ioc;
 using GalaSoft.MvvmLight.Messaging;
@@ -15,6 +16,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -23,19 +25,32 @@ using System.Windows.Media.Imaging;
 
 namespace Irixi_Aligner_Common
 {
-    public partial class MainWindow : DevExpress.Xpf.Ribbon.DXRibbonWindow
+    public partial class MainWindow : DXRibbonWindow
     {
         Splash splashscreen;
+        Thread SplashThread;
+        ManualResetEvent ResetSplashCreated;
 
         public MainWindow()
         {
-
+            #region Show Splash Screen
             // show splash screen
-            splashscreen = new Splash();
-            splashscreen.Show();
+            ResetSplashCreated = new ManualResetEvent(false);
 
+            // Create a new thread for the splash screen to run on
+            SplashThread = new Thread(ShowSplash);
+            SplashThread.SetApartmentState(ApartmentState.STA);
+            SplashThread.IsBackground = true;
+            SplashThread.Name = "Splash Screen";
+            SplashThread.Start();
+
+            ResetSplashCreated.WaitOne();
+
+            #endregion
+
+            splashscreen.ShowMessage("Initializing main window ...");
             InitializeComponent();
-
+            
             Messenger.Default.Register<NotificationMessage<string>>(this, PopNotificationMessage);
 
             // create DocumentPanel per the logical motion components defined in the config file
@@ -44,9 +59,11 @@ namespace Irixi_Aligner_Common
             #region Create logical motioin components panels
             foreach (var aligner in service.LogicalMotionComponentCollection)
             {
+                splashscreen.ShowMessage(string.Format("Initializing {0} panel ...", aligner));
+
                 // create a motion component panel control
                 // which is the content of the document panel
-                MotionComponentPanel uc = new MotionComponentPanel()
+                MotionComponentPanel mcPanel = new MotionComponentPanel()
                 {
                     // set the datacontext to the LogicalMotionComponent
                     DataContext = aligner
@@ -65,7 +82,7 @@ namespace Irixi_Aligner_Common
                     ClosingBehavior = ClosingBehavior.HideToClosedPanelsCollection,
 
                     // put the user control into the panel
-                    Content = uc
+                    Content = mcPanel
                 };
 
                 // add the documentpanel to the documentgroup
@@ -143,6 +160,8 @@ namespace Irixi_Aligner_Common
                     };
                 }
 
+                splashscreen.ShowMessage(string.Format("Initializing {0} panel ...", instr));
+
                 // create document panel in the window
                 DocumentPanel panel = new DocumentPanel()
                 {
@@ -186,7 +205,10 @@ namespace Irixi_Aligner_Common
 
             #endregion
 
+            splashscreen.ShowMessage(string.Format("Restoring the workspace layout ..."));
+
             #region Restore workspace layout
+
             var config = SimpleIoc.Default.GetInstance<ConfigManager>();
             for (int i = 0; i < MotionComponentPanelHost.Items.Count; i++)
             {
@@ -217,6 +239,17 @@ namespace Irixi_Aligner_Common
             #endregion
         }
 
+        private void ShowSplash()
+        {
+            // create the instance of the splash screen
+            splashscreen = new Splash();
+            splashscreen.Show();
+
+            // the splash screen has initialized, the main thread can go on 
+            ResetSplashCreated.Set();
+            System.Windows.Threading.Dispatcher.Run();
+        }
+
         private void PopNotificationMessage(NotificationMessage<string> message)
         {
             //if (message.Sender is SystemService)
@@ -231,18 +264,20 @@ namespace Irixi_Aligner_Common
             //}
         }
 
-        private async void DXRibbonWindow_Loaded(object sender, RoutedEventArgs e)
+        private void DXRibbonWindow_Loaded(object sender, RoutedEventArgs e)
         {
             var service = SimpleIoc.Default.GetInstance<SystemService>();
 
             try
             {
                 // update window immediately
-                await Task.Delay(100);
+                //await Task.Delay(100);
+                splashscreen.ShowMessage(string.Format("Starting system service ..."));
 
                 service.Init();
 
-                splashscreen.Close();
+                // close the splash screen
+                splashscreen.LoadComplete();
             }
             catch (Exception ex)
             {

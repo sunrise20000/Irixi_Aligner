@@ -67,7 +67,7 @@ namespace Irixi_Aligner_Common.Alignment.AlignmentXD
                 // add new editors
                 axisParamCollection.Clear();
                 ScanCurveGroup.Clear();
-                foreach (var axis in value.LogicalAxisCollection)
+                foreach (var axis in value)
                 {
                     var arg = new Alignment1DArgs(this.Service)
                     {
@@ -84,7 +84,7 @@ namespace Irixi_Aligner_Common.Alignment.AlignmentXD
                     //ScanCurveGroup.Add(arg.ScanCurve.MaxPowerConstantLine);
                 }
 
-                this.MaxOrder = value.LogicalAxisCollection.Count;
+                this.MaxOrder = value.Count;
             }
         }
 

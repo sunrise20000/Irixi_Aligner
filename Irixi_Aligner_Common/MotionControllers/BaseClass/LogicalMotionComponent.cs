@@ -3,14 +3,13 @@
 namespace Irixi_Aligner_Common.MotionControllers.Base
 {
 
-    public class LogicalMotionComponent
+    public class LogicalMotionComponent : ObservableCollection<LogicalAxis>
     {
         public LogicalMotionComponent(string Caption, string Icon, bool IsAligner)
         {
             this.Caption = Caption;
             this.Icon = Icon;
             this.IsAligner = IsAligner;
-            LogicalAxisCollection = new ObservableCollection<LogicalAxis>();
         }
 
         /// <summary>
@@ -27,26 +26,16 @@ namespace Irixi_Aligner_Common.MotionControllers.Base
         /// Get whether the motion component is the alignment component
         /// </summary>
         public bool IsAligner { private set; get; }
-   
-        /// <summary>
-        /// Get the collection contains logical axes, 
-        /// these axes are defined in the json file.
-        /// </summary>
-        public ObservableCollection<LogicalAxis> LogicalAxisCollection
-        {
-            private set;
-            get;
-        }
 
         public override int GetHashCode()
         {
             int _hashcode = 0;
-            foreach(var axis in LogicalAxisCollection)
+            foreach(var axis in this)
             {
                 _hashcode ^= axis.GetHashCode();
             }
 
-            _hashcode ^= this.LogicalAxisCollection.Count.GetHashCode();
+            _hashcode ^= this.Count.GetHashCode();
             return _hashcode;
         }
 

@@ -11,7 +11,7 @@ namespace Irixi_Aligner_Common.Classes.Converters
         {
             if (value is LogicalMotionComponent)
             {
-                return ((LogicalMotionComponent)value).LogicalAxisCollection;
+                return ((LogicalMotionComponent)value);
             }
             else
             {

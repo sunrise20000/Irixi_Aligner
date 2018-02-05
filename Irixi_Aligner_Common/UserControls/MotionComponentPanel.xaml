@@ -48,7 +48,7 @@
             <!-- binding ItemsSourct to UserControl's DataContext 
             the type of datacontext is LogicalMotionComponent-->
             
-            <ItemsControl ItemsSource="{Binding LogicalAxisCollection}">
+            <ItemsControl ItemsSource="{Binding}">
                 <ItemsControl.ItemTemplate>
                     <DataTemplate>
                         <local:Axis 

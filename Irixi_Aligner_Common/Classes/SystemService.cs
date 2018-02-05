@@ -113,17 +113,17 @@ namespace Irixi_Aligner_Common.Classes
 
                 switch (conf.Model)
                 {
-                    case MotionControllerModel.LUMINOS_P6A:
+                    case MotionControllerType.LUMINOS_P6A:
                         motion_controller = new LuminosP6A(conf);
                         motion_controller.OnMoveBegin += PhysicalMotionController_OnMoveBegin;
                         motion_controller.OnMoveEnd += PhysicalMotionController_OnMoveEnd;
                         break;
 
-                    case MotionControllerModel.THORLABS_TDC001:
+                    case MotionControllerType.THORLABS_TDC001:
                         //TODO create the instance of thorlabs TDC001
                         break;
 
-                    case MotionControllerModel.IRIXI_EE0017:
+                    case MotionControllerType.IRIXI_EE0017:
                         motion_controller = new IrixiEE0017(conf);
                         motion_controller.OnMoveBegin += PhysicalMotionController_OnMoveBegin;
                         motion_controller.OnMoveEnd += PhysicalMotionController_OnMoveEnd;
@@ -166,7 +166,7 @@ namespace Irixi_Aligner_Common.Classes
                     // bind the physical axis instance to logical axis object
                     BindPhysicalAxis(axis);
 
-                    comp.LogicalAxisCollection.Add(axis);
+                    comp.Add(axis);
                     this.LogicalAxisCollection.Add(axis);
                     if (comp.IsAligner)
                         this.LogicalAxisInAlignerCollection.Add(axis);
@@ -422,11 +422,27 @@ namespace Irixi_Aligner_Common.Classes
 
         #region Private Methods
 
+        private void SetSystemState(SystemState State)
+        {
+            lock (lockSystemStatus)
+            {
+                this.State = State;
+            }
+        }
+
+        private SystemState GetSystemState()
+        {
+            lock (lockSystemStatus)
+            {
+                return this.State;
+            }
+        }
+
         /// <summary>
         /// Add the busy object to the list to stop it
         /// </summary>
         /// <param name="Obj"></param>
-        void RegisterBusyComponent(IServiceSystem Obj)
+        private void RegisterBusyComponent(IServiceSystem Obj)
         {
             if (!BusyComponents.Contains(Obj))
                 BusyComponents.Add(Obj);
@@ -436,7 +452,7 @@ namespace Irixi_Aligner_Common.Classes
         /// Remove the busy object from the list which has been stopped
         /// </summary>
         /// <param name="Obj"></param>
-        void DeregisterBusyComponent(IServiceSystem Obj)
+        private void DeregisterBusyComponent(IServiceSystem Obj)
         {
             if (BusyComponents.Contains(Obj))
                 BusyComponents.Remove(Obj);
@@ -448,7 +464,7 @@ namespace Irixi_Aligner_Common.Classes
         /// <param name="ParentAligner">which logical aligner belongs to</param>
         /// <param name="Axis"></param>
         /// <returns></returns>
-        bool BindPhysicalAxis(MotionControllers.Base.LogicalAxis Axis)
+        private bool BindPhysicalAxis(MotionControllers.Base.LogicalAxis Axis)
         {
             bool ret = false;
 
@@ -484,27 +500,11 @@ namespace Irixi_Aligner_Common.Classes
 
             return ret;
         }
-
-        void SetSystemState(SystemState State)
-        {
-            lock (lockSystemStatus)
-            {
-                this.State = State;
-            }
-        }
-
-        SystemState GetSystemState()
-        {
-            lock (lockSystemStatus)
-            {
-                return this.State;
-            }
-        }
-
+        
         /// <summary>
         /// Start running user program
         /// </summary>
-        void Start()
+        private void Start()
         {
             //TODO here we should judge whether the auto-program is paused or not
             // if the auto-program is not worked and an auto-program has been selected, run it;
@@ -514,7 +514,7 @@ namespace Irixi_Aligner_Common.Classes
         /// <summary>
         /// Stop the moving axes or stop running the user program
         /// </summary>
-        void Stop()
+        private void Stop()
         {
             List<Task> tasks = new List<Task>();
 
@@ -544,7 +544,7 @@ namespace Irixi_Aligner_Common.Classes
         /// Start a specified alignment process asynchronously, all alignment process will be started by this common function
         /// </summary>
         /// <param name="AlignHandler"></param>
-        async void StartAlignmentProc(AlignmentBase AlignHandler)
+        private async void StartAlignmentProc(AlignmentBase AlignHandler)
         {
             if (GetSystemState() == SystemState.IDLE)
             {
@@ -565,7 +565,7 @@ namespace Irixi_Aligner_Common.Classes
                         this.LastMessage = new MessageItem(
                             MessageType.Error,
                             string.Format("{0} Error, {1}", AlignHandler, "the argument can not be null."));
-                        PostErrorMessageToFrontEnd(this.LastMessage.Message);
+                        PostErrorMessage(this.LastMessage.Message);
                     }
                     else
                     {
@@ -585,7 +585,7 @@ namespace Irixi_Aligner_Common.Classes
                 catch (Exception ex)
                 {
                     this.LastMessage = new MessageItem(MessageType.Error, string.Format("{0} Error, {1}", AlignHandler, ex.Message));
-                    PostErrorMessageToFrontEnd(this.LastMessage.Message);
+                    PostErrorMessage(this.LastMessage.Message);
                 }
                 finally
                 {
@@ -607,12 +607,11 @@ namespace Irixi_Aligner_Common.Classes
             }
         }
 
-
         /// <summary>
-        /// Post the error message by Mvvmlight.Messenger class
+        /// Post the error message to the UI
         /// </summary>
         /// <param name="Message"></param>
-        void PostErrorMessageToFrontEnd(string Message)
+        private void PostErrorMessage(string Message)
         {
             Messenger.Default.Send<NotificationMessage<string>>(new NotificationMessage<string>(
                         this,
@@ -767,7 +766,7 @@ namespace Irixi_Aligner_Common.Classes
                 {
                     this.LastMessage = new MessageItem(MessageType.Error, "{0} Unable to move, {1}", Axis, Axis.PhysicalAxisInst.LastError);
 
-                    PostErrorMessageToFrontEnd(this.LastMessage.Message);
+                    PostErrorMessage(this.LastMessage.Message);
                 }
                 else
                 {

@@ -79,7 +79,7 @@ namespace Irixi_Aligner_Common.Equipments.Base
             Thread.Sleep(200);
         }
         
-        public override bool Init()
+        public sealed override bool Init()
         {
             try
             {
@@ -115,19 +115,6 @@ namespace Irixi_Aligner_Common.Equipments.Base
         }
 
         public virtual double Fetch(int Channel)
-        {
-            throw new NotImplementedException();
-        }
-
-        public virtual Task<double> FetchAsync()
-        {
-            return new Task<double>(() =>
-            {
-                return Fetch();
-            });
-        }
-        
-        public virtual Task<double> FetchAsync(int Channel)
         {
             throw new NotImplementedException();
         }

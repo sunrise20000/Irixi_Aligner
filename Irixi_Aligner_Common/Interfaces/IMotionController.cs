@@ -4,9 +4,9 @@ using System.Collections.Generic;
 namespace Irixi_Aligner_Common.Interfaces
 {
 
-    public enum MotionControllerModel
+    public enum MotionControllerType
     {
-        LUMINOS_P6A,
+        LUMINOS_P6A,        
         THORLABS_TDC001,
         IRIXI_EE0017
     }
@@ -28,7 +28,7 @@ namespace Irixi_Aligner_Common.Interfaces
         /// <summary>
         /// Get the model of this controller.
         /// </summary>
-        MotionControllerModel Model { get; }
+        MotionControllerType Model { get; }
 
         /// <summary>
         /// See <see cref="MotionControllers.MotionControllerBase{T}"/> for the detail of the usage

@@ -52,7 +52,7 @@ namespace Irixi_Aligner_Common.MotionControllers.Base
         #region Properties
         public Guid DeviceClass { private set; get; }
 
-        public MotionControllerModel Model { private set; get; }
+        public MotionControllerType Model { private set; get; }
 
         public string Port { private set; get; }
 

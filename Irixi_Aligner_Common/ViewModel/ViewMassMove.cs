@@ -22,13 +22,13 @@ namespace Irixi_Aligner_Common.ViewModel
 
             // create user controls of Axis4MassMove
             AxisControlCollection = new List<UserControls.Axis4MassMove>();
-            for(int i = 0; i < component.LogicalAxisCollection.Count; i++)
+            for(int i = 0; i < component.Count; i++)
             {
-                var logicalaxis = component.LogicalAxisCollection[i];
+                var logicalaxis = component[i];
 
                 AxisControlCollection.Add(new UserControls.Axis4MassMove()
                 {
-                    TotalAxes = component.LogicalAxisCollection.Count,
+                    TotalAxes = component.Count,
                     AxisName = logicalaxis.AxisName,
                     Position = logicalaxis.PhysicalAxisInst.UnitHelper.RelPosition,
                     IsAbsMode = logicalaxis.PhysicalAxisInst.IsAbsMode,
@@ -112,63 +112,63 @@ namespace Irixi_Aligner_Common.ViewModel
                     pos.Items[i] = AxisControlCollection[i].PresetAggregation;
                 }
 
-                using (SqliteDb db = new SqliteDb())
-                {
-                    // check if the preset exists
-                    if (db.ReadPresetPosition(pos.MotionComponentHashCode, Name, out PresetPosition preset))
-                    {
-                        if (preset == null)
-                        {
-                            // save the preset position
-                            db.SavePresetPosition(pos);
+                //using (SqliteDb db = new SqliteDb())
+                //{
+                //    // check if the preset exists
+                //    if (db.ReadPresetPosition(pos.MotionComponentHashCode, Name, out PresetPosition preset))
+                //    {
+                //        if (preset == null)
+                //        {
+                //            // save the preset position
+                //            db.SavePresetPosition(pos);
 
-                            Messenger.Default.Send<NotificationMessage<string>>(new NotificationMessage<string>(
-                                this,
-                                string.Format("The preset position saved successfully."),
-                                "NOTIFY"));
-                        }
-                        else
-                        {
-                            // overwrite 
-                            Messenger.Default.Send<NotificationMessageAction<MessageBoxResult>>(new NotificationMessageAction<MessageBoxResult>(
-                                this,
-                                "AskForOverwrite",
-                                (ret) =>
-                                {
-                                    if (ret == MessageBoxResult.Yes)
-                                    {
-                                        // overwrite the current preset position
-                                        if (db.DeletePresetPosition(pos.MotionComponentHashCode, pos.Name))
-                                        {
-                                            // save the preset position
-                                            db.SavePresetPosition(pos);
+                //            Messenger.Default.Send<NotificationMessage<string>>(new NotificationMessage<string>(
+                //                this,
+                //                string.Format("The preset position saved successfully."),
+                //                "NOTIFY"));
+                //        }
+                //        else
+                //        {
+                //            // overwrite 
+                //            Messenger.Default.Send<NotificationMessageAction<MessageBoxResult>>(new NotificationMessageAction<MessageBoxResult>(
+                //                this,
+                //                "AskForOverwrite",
+                //                (ret) =>
+                //                {
+                //                    if (ret == MessageBoxResult.Yes)
+                //                    {
+                //                        // overwrite the current preset position
+                //                        if (db.DeletePresetPosition(pos.MotionComponentHashCode, pos.Name))
+                //                        {
+                //                            // save the preset position
+                //                            db.SavePresetPosition(pos);
 
-                                            Messenger.Default.Send<NotificationMessage<string>>(new NotificationMessage<string>(
-                                                this,
-                                                string.Format("The preset position saved successfully."),
-                                                "NOTIFY"));
-                                        }
-                                        else
-                                        {
-                                            Messenger.Default.Send<NotificationMessage<string>>(new NotificationMessage<string>(
-                                                this,
-                                                string.Format("Unable to delete the preset position, {0}", db.LastError),
-                                                "ERROR"));
-                                        }
-                                    }
-                                }
-                                ));
-                        }
-                    }
-                    else
-                    {
-                        // error while reading preset position from database
-                        Messenger.Default.Send<NotificationMessage<string>>(new NotificationMessage<string>(
-                            this,
-                            string.Format("Unable to check the existence of the preset position, {0}", db.LastError),
-                            "ERROR"));
-                    }
-                }
+                //                            Messenger.Default.Send<NotificationMessage<string>>(new NotificationMessage<string>(
+                //                                this,
+                //                                string.Format("The preset position saved successfully."),
+                //                                "NOTIFY"));
+                //                        }
+                //                        else
+                //                        {
+                //                            Messenger.Default.Send<NotificationMessage<string>>(new NotificationMessage<string>(
+                //                                this,
+                //                                string.Format("Unable to delete the preset position, {0}", db.LastError),
+                //                                "ERROR"));
+                //                        }
+                //                    }
+                //                }
+                //                ));
+                //        }
+                //    }
+                //    else
+                //    {
+                //        // error while reading preset position from database
+                //        Messenger.Default.Send<NotificationMessage<string>>(new NotificationMessage<string>(
+                //            this,
+                //            string.Format("Unable to check the existence of the preset position, {0}", db.LastError),
+                //            "ERROR"));
+                //    }
+                //}
             }
             catch(Exception ex)
             {
@@ -181,11 +181,12 @@ namespace Irixi_Aligner_Common.ViewModel
 
         public string[] GetPresetPositionList()
         {
-            // load the existed preset
-            using (SqliteDb db = new SqliteDb())
-            {
-                return db.GetPresetPositionNames(MotionComponent.GetHashCode());
-            }
+            //// load the existed preset
+            //using (SqliteDb db = new SqliteDb())
+            //{
+            //    return db.GetPresetPositionNames(MotionComponent.GetHashCode());
+            //}
+            return null;
         }
         
         public override int GetHashCode()

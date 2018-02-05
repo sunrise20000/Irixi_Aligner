@@ -91,7 +91,7 @@ namespace Irixi_Aligner_Common.Windows
                 for (int i = 0; i < view.AxisControlCollection.Count; i ++)
                 {
                     Axis4MassMove _axis_view = view.AxisControlCollection[i];
-                    LogicalAxis _log_axis = view.MotionComponent.LogicalAxisCollection[i];
+                    LogicalAxis _log_axis = view.MotionComponent[i];
 
                     _axis_view.Position = _log_axis.PhysicalAxisInst.UnitHelper.RelPosition;
                     _axis_view.IsAbsMode = _log_axis.PhysicalAxisInst.IsAbsMode;

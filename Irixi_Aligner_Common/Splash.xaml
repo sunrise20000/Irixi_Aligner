@@ -13,8 +13,24 @@
         <Grid.RowDefinitions>
             <RowDefinition/>
             <RowDefinition Height="30"/>
+            <RowDefinition Height="30"/>
         </Grid.RowDefinitions>
-        <Image Source="Resources/Images/splash_background.png" Stretch="Fill" Grid.RowSpan="2"/>
-        <TextBlock x:Name="txtVersionInfo" Text="v1.0.0" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="10,0,0,0" Foreground="#7FFFFFFF" Grid.Row="1"/>
+        <Image Source="Resources/Images/splash_background.png" Stretch="Fill" Grid.RowSpan="3"/>
+        <TextBlock 
+            x:Name="txtMessage" 
+            Grid.Row="1" 
+            Text="" 
+            VerticalAlignment="Center" 
+            HorizontalAlignment="Left" 
+            Margin="10,0,0,0" 
+            Foreground="White"/>
+        <TextBlock 
+            x:Name="txtVersionInfo" 
+            Text="v1.0.0" 
+            VerticalAlignment="Center" 
+            HorizontalAlignment="Left" 
+            Margin="10,0,0,0" 
+            Foreground="#7FFFFFFF" 
+            Grid.Row="2"/>
     </Grid>
 </Window>
