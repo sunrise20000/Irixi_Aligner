@@ -34,10 +34,10 @@ namespace Irixi_Aligner_Common.MotionControllers.Base
             _axis_lock = new SemaphoreSlim(1);
         }
 
-        public AxisBase(int AxisIndex, ConfigPhysicalAxis Configuration, IMotionController ParentController)
+        public AxisBase(int AxisIndex, ConfigPhysicalAxis Configuration, IMotionController Parent)
         {
             _axis_lock = new SemaphoreSlim(1);
-            SetParameters(AxisIndex, Configuration, ParentController);
+            SetParameters(AxisIndex, Configuration, Parent);
         }
         
         #endregion
@@ -188,7 +188,7 @@ namespace Irixi_Aligner_Common.MotionControllers.Base
         
         public string LastError { set; get; }
 
-        public IMotionController ParentController { get; private set; }
+        public IMotionController Parent { get; private set; }
 
 
         #endregion
@@ -220,7 +220,7 @@ namespace Irixi_Aligner_Common.MotionControllers.Base
                 this.InitPosition = Config.OffsetAfterHome;
                 this.MaxSpeed = Config.MaxSpeed;
                 this.AccelerationSteps = Config.Acceleration;
-                this.ParentController = Controller;
+                this.Parent = Controller;
                 
                 this.UnitHelper = new RealworldPositionManager(
                     Config.MotorizedStageProfile.TravelDistance,
@@ -243,33 +243,17 @@ namespace Irixi_Aligner_Common.MotionControllers.Base
 
         public virtual bool Home()
         {
-            return this.ParentController.Home(this);
+            return this.Parent.Home(this);
         }
-
-        public virtual bool Move(MoveMode Mode, int Speed, int Steps)
-        {
-            return this.ParentController.Move(this, Mode, Speed, Steps);
-        }
-
+        
         public virtual bool Move(MoveMode Mode, int Speed, double Distance)
         {
-            return this.ParentController.Move(this, Mode, Speed, this.UnitHelper.ConvertPositionToSteps(Distance));
-        }
-
-        public virtual bool MoveWithTrigger(MoveMode Mode, int Speed, int Steps, int Interval, int Channel)
-        {
-            return this.ParentController.MoveWithTrigger(
-                this, 
-                Mode, 
-                Speed, 
-                Steps, 
-                Interval, 
-                Channel);
+            return Parent.Move(this, Mode, Speed, this.UnitHelper.ConvertPositionToSteps(Distance));
         }
 
         public virtual bool MoveWithTrigger(MoveMode Mode, int Speed, double Distance, double Interval, int Channel)
         {
-            return this.ParentController.MoveWithTrigger(
+            return Parent.MoveWithTrigger(
                 this, 
                 Mode, 
                 Speed, 
@@ -278,20 +262,9 @@ namespace Irixi_Aligner_Common.MotionControllers.Base
                 Channel);
         }
 
-        public virtual bool MoveWithInnerADC(MoveMode Mode, int Speed, int Steps, int Interval, int Channel)
-        {
-            return this.ParentController.MoveWithInnerADC(
-                this, 
-                Mode, 
-                Speed, 
-                Steps, 
-                Interval, 
-                Channel);
-        }
-
         public virtual bool MoveWithInnerADC(MoveMode Mode, int Speed, double Distance, double Interval, int Channel)
         {
-            return this.ParentController.MoveWithInnerADC(this,
+            return Parent.MoveWithInnerADC(this,
                 Mode,
                 Speed,
                 this.UnitHelper.ConvertPositionToSteps(Distance),
@@ -301,7 +274,7 @@ namespace Irixi_Aligner_Common.MotionControllers.Base
 
         public virtual void Stop()
         {
-            this.ParentController.Stop();
+            this.Parent.Stop();
         }
 
         public void ToggleMoveMode()
@@ -327,12 +300,12 @@ namespace Irixi_Aligner_Common.MotionControllers.Base
 
         public override string ToString()
         {
-            return string.Format("*{0}@{1}*", this.AxisName, this.ParentController.DeviceClass);
+            return string.Format("*{0}@{1}*", this.AxisName, this.Parent.DeviceClass);
         }
 
         public override int GetHashCode()
         {
-            return ParentController.GetHashCode() ^ this.AxisName.GetHashCode();
+            return Parent.GetHashCode() ^ this.AxisName.GetHashCode();
         }
 
         #endregion

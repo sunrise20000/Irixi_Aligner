@@ -53,7 +53,7 @@ namespace Irixi_Aligner_Common.MotionControllers.Luminos
             // if the command relative to position is received, flush the AbsPosition of axis 
             int device = e.DeviceMessage.DeviceNumber;
 
-            if (FindAxisByName(device.ToString()) is LuminosAxis axis)
+            if (this[device.ToString()] is LuminosAxis axis)
             {
                 switch (e.DeviceMessage.Command)
                 {
@@ -77,7 +77,7 @@ namespace Irixi_Aligner_Common.MotionControllers.Luminos
         #endregion
 
         #region Methods
-        protected override bool CustomInitProcess()
+        protected override bool InitProcess()
         {
             bool _init_ret = true;
 
@@ -99,7 +99,7 @@ namespace Irixi_Aligner_Common.MotionControllers.Luminos
                         }
                         else
                         {
-                            if (FindAxisByName(conversation.Device.DeviceNumber.ToString()) is LuminosAxis _axis)
+                            if (this[conversation.Device.DeviceNumber.ToString()] is LuminosAxis _axis)
                             {
                                 _axis.RegisterZaberConversation(conversation);
 
@@ -136,7 +136,7 @@ namespace Irixi_Aligner_Common.MotionControllers.Luminos
             }
         }
         
-        protected override bool CustomHomeProcess(Interfaces.IAxis Axis)
+        protected override bool HomeProcess(Interfaces.IAxis Axis)
         {
             bool ret = false;
             LuminosAxis _axis = Axis as LuminosAxis;
@@ -182,7 +182,7 @@ namespace Irixi_Aligner_Common.MotionControllers.Luminos
             return ret;
         }
 
-        protected override bool CustomMoveProcess(Interfaces.IAxis Axis, MoveMode Mode, int Speed, int Distance)
+        protected override bool MoveProcess(Interfaces.IAxis Axis, MoveMode Mode, int Speed, int Distance)
         {
             LuminosAxis axis = Axis as LuminosAxis;
 

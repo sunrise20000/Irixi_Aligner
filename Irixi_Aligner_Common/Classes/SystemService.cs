@@ -237,14 +237,14 @@ namespace Irixi_Aligner_Common.Classes
 
         void PhysicalMotionController_OnMoveBegin(object sender, EventArgs args)
         {
-            var obj = (IServiceSystem)sender;
-            RegisterBusyComponent(obj);
+            var imbusy = (IServiceSystem)sender;
+            RegisterBusyComponent(imbusy);
         }
 
         void PhysicalMotionController_OnMoveEnd(object sender, EventArgs args)
         {
-            var obj = (IServiceSystem)sender;
-            DeregisterBusyComponent(obj);
+            var imfree = (IServiceSystem)sender;
+            UnregisterBusyComponent(imfree);
         }
 
         #endregion
@@ -443,23 +443,23 @@ namespace Irixi_Aligner_Common.Classes
         }
 
         /// <summary>
-        /// Add the busy object to the list to stop it
+        /// Indicates which components should be stoped if #STOP button clicked
         /// </summary>
-        /// <param name="Obj"></param>
-        private void RegisterBusyComponent(IServiceSystem Obj)
+        /// <param name="BusyGuy"></param>
+        private void RegisterBusyComponent(IServiceSystem BusyGuy)
         {
-            if (!BusyComponents.Contains(Obj))
-                BusyComponents.Add(Obj);
+            if (!BusyComponents.Contains(BusyGuy))
+                BusyComponents.Add(BusyGuy);
         }
 
         /// <summary>
-        /// Remove the busy object from the list which has been stopped
+        /// Remove the busy component
         /// </summary>
-        /// <param name="Obj"></param>
-        private void DeregisterBusyComponent(IServiceSystem Obj)
+        /// <param name="BusyGuy"></param>
+        private void UnregisterBusyComponent(IServiceSystem BusyGuy)
         {
-            if (BusyComponents.Contains(Obj))
-                BusyComponents.Remove(Obj);
+            if (BusyComponents.Contains(BusyGuy))
+                BusyComponents.Remove(BusyGuy);
         }
 
         /// <summary>
@@ -468,7 +468,7 @@ namespace Irixi_Aligner_Common.Classes
         /// <param name="ParentAligner">which logical aligner belongs to</param>
         /// <param name="Axis"></param>
         /// <returns></returns>
-        private bool BindPhysicalAxis(MotionControllers.Base.LogicalAxis Axis)
+        private bool BindPhysicalAxis(LogicalAxis Axis)
         {
             bool ret = false;
 

@@ -1,4 +1,5 @@
-﻿using System.Collections.ObjectModel;
+﻿using System;
+using System.Collections.ObjectModel;
 
 namespace Irixi_Aligner_Common.MotionControllers.Base
 {
@@ -26,6 +27,16 @@ namespace Irixi_Aligner_Common.MotionControllers.Base
         /// Get whether the motion component is the alignment component
         /// </summary>
         public bool IsAligner { private set; get; }
+
+        /// <summary>
+        /// Generate the json file contains the preset position information
+        /// </summary>
+        /// <returns></returns>
+        public string GetPresetPositionJsonString()
+        {
+            throw new NotImplementedException();
+        }
+
 
         public override int GetHashCode()
         {

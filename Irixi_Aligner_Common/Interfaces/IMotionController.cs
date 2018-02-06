@@ -38,7 +38,7 @@ namespace Irixi_Aligner_Common.Interfaces
         /// <summary>
         /// Get or set the collection of axes
         /// </summary>
-        Dictionary<string, IAxis> AxisCollection { get; }
+        //Dictionary<string, IAxis> AxisCollection { get; }
 
         #endregion
 

@@ -92,7 +92,7 @@ namespace Irixi_Aligner_Common.MotionControllers.Irixi
 
         #region Methods
 
-        protected override bool CustomInitProcess()
+        protected override bool InitProcess()
         {
             _controller.Open();
             if (_controller.IsConnected)
@@ -100,9 +100,9 @@ namespace Irixi_Aligner_Common.MotionControllers.Irixi
                 LogHelper.WriteLine("{0}, firmware version {1}", this, _controller.FirmwareInfo);
 
                 // pass the configurations to the instance of irixi motion controller class
-                for (int i = 0; i < this.AxisCollection.Count; i++)
+                for (int i = 0; i < this.Count; i++)
                 {
-                    var axis = this.AxisCollection[i.ToString()] as IrixiAxis;
+                    var axis = this[i.ToString()] as IrixiAxis;
                     var sdkAxis = _controller.AxisCollection[i];
 
                     sdkAxis.PosAfterHome = 0;
@@ -125,7 +125,7 @@ namespace Irixi_Aligner_Common.MotionControllers.Irixi
             }
         }
 
-        protected override bool CustomHomeProcess(IAxis Axis)
+        protected override bool HomeProcess(IAxis Axis)
         {
                 bool ret = false;
                 IrixiAxis _axis = Axis as IrixiAxis;
@@ -171,7 +171,7 @@ namespace Irixi_Aligner_Common.MotionControllers.Irixi
                 return ret;
             }
 
-        protected override bool CustomMoveProcess(IAxis Axis, MoveMode Mode, int Speed, int Distance)
+        protected override bool MoveProcess(IAxis Axis, MoveMode Mode, int Speed, int Distance)
         {
             bool ret = false;
             IrixiAxis _axis = Axis as IrixiAxis;

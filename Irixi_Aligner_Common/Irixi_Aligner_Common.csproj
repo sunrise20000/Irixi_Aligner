@@ -205,6 +205,7 @@
     <Compile Include="Classes\Converters\OutputStateToBoolean.cs" />
     <Compile Include="Equipments\Instruments\Keithliey2400ProgressReportArgs.cs" />
     <Compile Include="Interfaces\IScanCurve.cs" />
+    <Compile Include="MotionControllers\BaseClass\LogicalMotionComponentPresetPosition.cs" />
     <Compile Include="UserControls\AlignmentFunc\AlignmentPanel.xaml.cs">
       <DependentUpon>AlignmentPanel.xaml</DependentUpon>
     </Compile>

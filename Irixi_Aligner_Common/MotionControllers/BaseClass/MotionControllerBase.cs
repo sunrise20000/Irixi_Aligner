@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 namespace Irixi_Aligner_Common.MotionControllers.Base
 {
-    public class MotionControllerBase<T> : IMotionController, IDisposable
+    public class MotionControllerBase<T> : Dictionary<string, T>, IMotionController, IDisposable
         where T : IAxis, new()
     {
 
@@ -31,7 +31,6 @@ namespace Irixi_Aligner_Common.MotionControllers.Base
             Port = _config.Port;
             IsEnabled = Config.Enabled;
             IsInitialized = false;
-            AxisCollection = new Dictionary<string, IAxis>();
             BusyAxesCount = 0;
 
             //
@@ -43,7 +42,7 @@ namespace Irixi_Aligner_Common.MotionControllers.Base
                 T _axis = new T();
                 _axis.SetParameters(i, _axis_cfg, this);
 
-                this.AxisCollection.Add(_axis_cfg.Name, _axis);
+                this.Add(_axis_cfg.Name, _axis);
                 i++;
             }
         } 
@@ -72,7 +71,7 @@ namespace Irixi_Aligner_Common.MotionControllers.Base
             }
         }
 
-        public Dictionary<string, IAxis>AxisCollection { private set; get; }
+        //public Dictionary<string, IAxis>AxisCollection { private set; get; }
 
         /// <summary>
         /// The property indicates that how many axes are moving. 
@@ -91,7 +90,7 @@ namespace Irixi_Aligner_Common.MotionControllers.Base
         public bool Init()
         {
             if (this.IsEnabled)
-                return CustomInitProcess();
+                return InitProcess();
             else
             {
                 this.LastError = "the controller is disabled";
@@ -121,7 +120,7 @@ namespace Irixi_Aligner_Common.MotionControllers.Base
                     OnMoveBegin?.Invoke(this, new EventArgs());
 
                 IncreaceBusyAxesCount();
-                ret = CustomHomeProcess(Axis);
+                ret = HomeProcess(Axis);
                 DecreaceBusyAxesCount();
 
                 if (BusyAxesCount <= 0)
@@ -166,7 +165,7 @@ namespace Irixi_Aligner_Common.MotionControllers.Base
 
                 IncreaceBusyAxesCount();
 
-                ret = CustomMoveProcess(Axis, Mode, Speed, Distance);
+                ret = MoveProcess(Axis, Mode, Speed, Distance);
 
                 DecreaceBusyAxesCount();
 
@@ -192,22 +191,17 @@ namespace Irixi_Aligner_Common.MotionControllers.Base
             throw new NotImplementedException();
         }
         
-        public override int GetHashCode()
-        {
-            return this.DeviceClass.GetHashCode();
-        }
-
-        protected virtual bool CustomInitProcess()
+        protected virtual bool InitProcess()
         {
             throw new NotImplementedException();
         }
 
-        protected virtual bool CustomHomeProcess(IAxis Axis)
+        protected virtual bool HomeProcess(IAxis Axis)
         {
             throw new NotImplementedException();
         }
 
-        protected virtual bool CustomMoveProcess(IAxis Axis, MoveMode Mode, int Speed, int Distance)
+        protected virtual bool MoveProcess(IAxis Axis, MoveMode Mode, int Speed, int Distance)
         {
             throw new NotImplementedException();
         }
@@ -228,7 +222,7 @@ namespace Irixi_Aligner_Common.MotionControllers.Base
             //    return null;
             try
             {
-                return this.AxisCollection[Name];
+                return this[Name];
             }
             catch
             {
@@ -236,7 +230,12 @@ namespace Irixi_Aligner_Common.MotionControllers.Base
             }
         }
 
-        sealed public override string ToString()
+        public override int GetHashCode()
+        {
+            return this.DeviceClass.GetHashCode();
+        }
+
+        public sealed override string ToString()
         {
             return string.Format("*{0}@{1}*", this.Model.ToString(), this.Port);
         }
@@ -249,6 +248,7 @@ namespace Irixi_Aligner_Common.MotionControllers.Base
         #endregion
 
         #region Private Methods
+
         void IncreaceBusyAxesCount()
         {
             lock(lockBusyAxesCount)
@@ -264,6 +264,7 @@ namespace Irixi_Aligner_Common.MotionControllers.Base
                 BusyAxesCount--;
             }
         }
+
         #endregion
     }
 }
