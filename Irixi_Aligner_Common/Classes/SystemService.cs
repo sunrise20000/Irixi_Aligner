@@ -39,12 +39,16 @@ namespace Irixi_Aligner_Common.Classes
         MessageItem _lastmsg = null;
         MessageHelper _msg_helper = new MessageHelper();
         bool isInitialized = false;
-        readonly object _lock = new object();
 
         /// <summary>
         /// lock while set or get this.State
         /// </summary>
         readonly object lockSystemStatus = new object();
+
+        /// <summary>
+        /// Output put initialization messages
+        /// </summary>
+        public event EventHandler<string> InitProgressChanged;
 
         #endregion
 
@@ -93,7 +97,7 @@ namespace Irixi_Aligner_Common.Classes
             LogicalAlignerCollection = new ObservableCollectionEx<LogicalMotionComponent>();
             MeasurementInstrumentCollection = new ObservableCollectionEx<InstrumentBase>();
             orgActiveInstrumentCollection = new ObservableCollectionEx2<InstrumentBase>();
-            BindingOperations.EnableCollectionSynchronization(orgActiveInstrumentCollection, _lock);
+            BindingOperations.EnableCollectionSynchronization(orgActiveInstrumentCollection, lockSystemStatus);
 
             State = SystemState.BUSY;
 
@@ -115,8 +119,6 @@ namespace Irixi_Aligner_Common.Classes
                 {
                     case MotionControllerType.LUMINOS_P6A:
                         motion_controller = new LuminosP6A(conf);
-                        motion_controller.OnMoveBegin += PhysicalMotionController_OnMoveBegin;
-                        motion_controller.OnMoveEnd += PhysicalMotionController_OnMoveEnd;
                         break;
 
                     case MotionControllerType.THORLABS_TDC001:
@@ -125,8 +127,7 @@ namespace Irixi_Aligner_Common.Classes
 
                     case MotionControllerType.IRIXI_EE0017:
                         motion_controller = new IrixiEE0017(conf);
-                        motion_controller.OnMoveBegin += PhysicalMotionController_OnMoveBegin;
-                        motion_controller.OnMoveEnd += PhysicalMotionController_OnMoveEnd;
+                        
                         ((IrixiEE0017)motion_controller).OnMessageReported += ((sender, message) =>
                         {
                             Application.Current.Dispatcher.Invoke(() =>
@@ -140,6 +141,9 @@ namespace Irixi_Aligner_Common.Classes
                         this.LastMessage = new MessageItem(MessageType.Error, "Unrecognized controller model {0}.", conf.Model);
                         break;
                 }
+
+                motion_controller.OnMoveBegin += PhysicalMotionController_OnMoveBegin;
+                motion_controller.OnMoveEnd += PhysicalMotionController_OnMoveEnd;
 
                 // Add the controller to the dictionary<Guid, Controller>
                 if (motion_controller != null)
@@ -619,6 +623,15 @@ namespace Irixi_Aligner_Common.Classes
                         "ERROR"));
         }
 
+        /// <summary>
+        /// Output init messages
+        /// </summary>
+        /// <param name="Message"></param>
+        private void PostInitMessage(string Message)
+        {
+            InitProgressChanged?.Invoke(this, Message);
+        }
+
         #endregion
 
         #region Public Methods (The functions are also APIs of the user's programm)
@@ -634,6 +647,8 @@ namespace Irixi_Aligner_Common.Classes
             SetSystemState(SystemState.BUSY);
 
             #region Initialize motion controllers
+
+            PostInitMessage("Initializing motion controllers ...");
 
             // initialize all motion controllers simultaneously
             foreach (var controller in this.PhysicalMotionControllerCollection.Values)
@@ -684,6 +699,8 @@ namespace Irixi_Aligner_Common.Classes
 
             #region Initialize the other equipments
 
+            PostInitMessage("Initializing cylinder controller ...");
+
             // initialize the cylinder controller
             if (CylinderController.IsEnabled)
             {
@@ -692,6 +709,9 @@ namespace Irixi_Aligner_Common.Classes
 
                 this.LastMessage = new MessageItem(MessageType.Normal, "{0} Initializing ...", this.CylinderController);
             }
+
+
+            PostInitMessage("Initializing measurement instruments ...");
 
             // initizlize the measurement instruments defined in the config file
             // the instruments initialized successfully will be added to the collection #ActiveInstrumentCollection
@@ -795,7 +815,7 @@ namespace Irixi_Aligner_Common.Classes
         /// <remarks>
         /// An args is consisted of 3 elements: Move Order, Logical Axis, How to Move
         /// </remarks>
-        public async void MassMoveLogicalAxis(Tuple<int, MotionControllers.Base.LogicalAxis, MoveByDistanceArgs>[] AxesGroup)
+        public async void MassMoveLogicalAxis(Tuple<int, LogicalAxis, MoveByDistanceArgs>[] AxesGroup)
         {
             if (GetSystemState() != SystemState.BUSY)
             {
@@ -902,7 +922,7 @@ namespace Irixi_Aligner_Common.Classes
                 int _homed_cnt = 0;
                 int _total_axis = this.LogicalAxisCollection.Count;
                 List<Task<bool>> _tasks = new List<Task<bool>>();
-                List<MotionControllers.Base.LogicalAxis> _axis_homing = new List<MotionControllers.Base.LogicalAxis>();
+                List<LogicalAxis> _axis_homing = new List<LogicalAxis>();
 
                 SetSystemState(SystemState.BUSY);
 

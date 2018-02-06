@@ -1,4 +1,13 @@
-﻿using DevExpress.Xpf.Bars;
+﻿using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading;
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Data;
+using System.Windows.Media.Imaging;
+using DevExpress.Xpf.Bars;
 using DevExpress.Xpf.Docking;
 using DevExpress.Xpf.Ribbon;
 using GalaSoft.MvvmLight;
@@ -11,24 +20,18 @@ using Irixi_Aligner_Common.Configuration.Layout;
 using Irixi_Aligner_Common.Equipments.Instruments;
 using Irixi_Aligner_Common.UserControls;
 using Irixi_Aligner_Common.ViewModel;
-using Irixi_Aligner_Common.Windows;
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Media.Imaging;
 
 namespace Irixi_Aligner_Common
 {
     public partial class MainWindow : DXRibbonWindow
     {
+        // splash screen instance
         Splash splashscreen;
+
+        // thread to open splash screen
         Thread SplashThread;
+
+        // signal indicates that the splash screen has opened successfully
         ManualResetEvent ResetSplashCreated;
 
         public MainWindow()
@@ -270,8 +273,6 @@ namespace Irixi_Aligner_Common
 
             try
             {
-                // update window immediately
-                //await Task.Delay(100);
                 splashscreen.ShowMessage(string.Format("Starting system service ..."));
 
                 service.Init();

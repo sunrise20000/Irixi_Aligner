@@ -213,9 +213,6 @@
     <Compile Include="Configuration\Equipments\ConfigurationNewport2832C.cs" />
     <Compile Include="Docs\How to add new instrument to system.cs" />
     <Compile Include="ViewModel\ViewMassMove.cs" />
-    <Compile Include="Windows\TestPurposeOnly.xaml.cs">
-      <DependentUpon>TestPurposeOnly.xaml</DependentUpon>
-    </Compile>
     <None Include="Docs\Templates\new_instrument.cs.tmpl" />
     <Compile Include="Equipments\BaseClass\InstrumentBase.cs" />
     <Compile Include="Configuration\BaseClasses\ConfigurationBase.cs" />
@@ -420,10 +417,6 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Windows\MassMoveWindow.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Windows\TestPurposeOnly.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
