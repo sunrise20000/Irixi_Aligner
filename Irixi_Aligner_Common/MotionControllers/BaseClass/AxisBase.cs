@@ -14,35 +14,50 @@ namespace Irixi_Aligner_Common.MotionControllers.Base
     public class AxisBase : IAxis, INotifyPropertyChanged
     {
         #region Variables
-        int _abs_pos = 0, _rel_pos = 0;
-        int _cwl = 0, _ccwl = 0;
+        int absPosition = 0, relPosition = 0;
+        int scwl = 0, sccwl = 0;
         bool
-            _is_enabled = false,
-            _is_aligner = true,
-            _is_homed = false,
-            _is_manual_enabled = false,
-            _is_abs_mode = false,
-            _is_busy = false;
+            isEnabled = false,
+            isAligner = true,
+            isHomed = false,
+            isManualEnabled = false,
+            isAbsMode = false,
+            isBusy = false;
         
-        SemaphoreSlim _axis_lock;
+        ManualResetEvent _axis_lock;
 
         #endregion
 
-        #region Constructor
-        public AxisBase()
+        #region Constructors
+
+        private void DoConstruct()
         {
-            _axis_lock = new SemaphoreSlim(1);
+            _axis_lock = new ManualResetEvent(false);
+
+            this.IsEnabled = false;
+            this.AxisName = "N/A";
         }
 
-        public AxisBase(int AxisIndex, ConfigPhysicalAxis Configuration, IMotionController Parent)
+        /// <summary>
+        /// If you create this object without any parameters, the SetParameters() function MUST BE implemented
+        /// </summary>
+        public AxisBase()
         {
-            _axis_lock = new SemaphoreSlim(1);
-            SetParameters(AxisIndex, Configuration, Parent);
+            DoConstruct();
         }
-        
+
+        public AxisBase(int AxisIndex, ConfigPhysicalAxis Config, IMotionController Controller)
+        {
+            DoConstruct();
+            SetParameters(AxisIndex, Config, Controller);
+        }
+
         #endregion
 
         #region Properties
+
+        public IMotionController Parent { get; private set; }
+
         public int AxisIndex { get; private set; }
 
         public string AxisName { private set; get; }
@@ -51,11 +66,11 @@ namespace Irixi_Aligner_Common.MotionControllers.Base
         {
             get
             {
-                return _is_busy;
+                return isBusy;
             }
             set
             {
-                UpdateProperty<bool>(ref _is_busy, value);
+                UpdateProperty<bool>(ref isBusy, value);
             }
         }
 
@@ -63,11 +78,11 @@ namespace Irixi_Aligner_Common.MotionControllers.Base
         {
             get
             {
-                return _is_enabled;
+                return isEnabled;
             }
             set
             {
-                UpdateProperty<bool>(ref _is_enabled, value);
+                UpdateProperty<bool>(ref isEnabled, value);
             }
         }
 
@@ -75,11 +90,11 @@ namespace Irixi_Aligner_Common.MotionControllers.Base
         {
             get
             {
-                return _is_aligner;
+                return isAligner;
             }
             set
             {
-                UpdateProperty<bool>(ref _is_aligner, value);
+                UpdateProperty<bool>(ref isAligner, value);
             }
         }
 
@@ -87,11 +102,11 @@ namespace Irixi_Aligner_Common.MotionControllers.Base
         {
             set
             {
-                UpdateProperty<bool>(ref _is_manual_enabled, value);
+                UpdateProperty<bool>(ref isManualEnabled, value);
             }
             get
             {
-                return _is_manual_enabled;
+                return isManualEnabled;
             }
         }
 
@@ -99,11 +114,11 @@ namespace Irixi_Aligner_Common.MotionControllers.Base
         {
             set
             {
-                UpdateProperty<bool>(ref _is_abs_mode, value);
+                UpdateProperty<bool>(ref isAbsMode, value);
             }
             get
             {
-                return _is_abs_mode;
+                return isAbsMode;
             }
         }
 
@@ -111,11 +126,11 @@ namespace Irixi_Aligner_Common.MotionControllers.Base
         {
             internal set
             {
-                UpdateProperty<bool>(ref _is_homed, value);
+                UpdateProperty<bool>(ref isHomed, value);
             }
             get
             {
-                return _is_homed;
+                return isHomed;
             }
         }
 
@@ -125,17 +140,17 @@ namespace Irixi_Aligner_Common.MotionControllers.Base
         {
             get
             {
-                return _abs_pos;
+                return absPosition;
             }
             set
             {
                 // calculate relative postion once the absolute position was changed
-                this.RelPosition += (value - _abs_pos);
+                this.RelPosition += (value - absPosition);
 
-                UpdateProperty<int>(ref _abs_pos, value);
+                UpdateProperty<int>(ref absPosition, value);
 
                 // convert steps to real-world distance
-                this.UnitHelper.AbsPosition = this.UnitHelper.ConvertStepsToPosition(_abs_pos);
+                this.UnitHelper.AbsPosition = this.UnitHelper.ConvertStepsToPosition(absPosition);
             }
         }
 
@@ -143,44 +158,56 @@ namespace Irixi_Aligner_Common.MotionControllers.Base
         {
             get
             {
-                return _rel_pos;
+                return relPosition;
             }
             private set
             {
-                UpdateProperty<int>(ref _rel_pos, value);
+                UpdateProperty<int>(ref relPosition, value);
 
                 // convert steps to real-world distance
-                this.UnitHelper.RelPosition = this.UnitHelper.ConvertStepsToPosition(_rel_pos);
+                this.UnitHelper.RelPosition = this.UnitHelper.ConvertStepsToPosition(relPosition);
             }
         }
 
         public object Tag { get; set; }
 
+        /// <summary>
+        /// Get the maximum speed
+        /// </summary>
         public int MaxSpeed { get; protected set; }
 
+        /// <summary>
+        /// Get how many steps used to accelerate
+        /// </summary>
         public int AccelerationSteps { private set; get; }
         
+        /// <summary>
+        /// Get the soft CCW limit in config file (normal zero point)
+        /// </summary>
         public int SCCWL
         {
             get
             {
-                return _ccwl;
+                return sccwl;
             }
             protected set
             {
-                UpdateProperty<int>(ref _ccwl, value);
+                UpdateProperty(ref sccwl, value);
             }
         }
 
+        /// <summary>
+        /// Get the soft CW limit in config file
+        /// </summary>
         public int SCWL
         {
             get
             {
-                return _cwl;
+                return scwl;
             }
             protected set
             {
-                UpdateProperty<int>(ref _cwl, value);
+                UpdateProperty(ref scwl, value);
             }
         }
 
@@ -188,22 +215,10 @@ namespace Irixi_Aligner_Common.MotionControllers.Base
         
         public string LastError { set; get; }
 
-        public IMotionController Parent { get; private set; }
-
-
         #endregion
 
         #region Methods
-        public bool Lock()
-        {
-            return _axis_lock.Wait(100);
-        }
-        
-        public void Unlock()
-        {
-            _axis_lock.Release();
-        }
-        
+
         public virtual void SetParameters(int AxisIndex, ConfigPhysicalAxis Config, IMotionController Controller)
         {
             this.AxisIndex = AxisIndex;
@@ -211,7 +226,7 @@ namespace Irixi_Aligner_Common.MotionControllers.Base
             if (Config == null)
             {
                 this.IsEnabled = false;
-                this.AxisName = "Unkonwn";
+                this.AxisName = "N/A";
             }
             else
             {
@@ -221,16 +236,26 @@ namespace Irixi_Aligner_Common.MotionControllers.Base
                 this.MaxSpeed = Config.MaxSpeed;
                 this.AccelerationSteps = Config.Acceleration;
                 this.Parent = Controller;
-                
+
                 this.UnitHelper = new RealworldPositionManager(
                     Config.MotorizedStageProfile.TravelDistance,
                     Config.MotorizedStageProfile.Resolution,
                     Config.MotorizedStageProfile.Unit,
                     Config.ScaleDisplayed);
-                
+
                 this.SCCWL = 0;
                 this.SCWL = this.UnitHelper.MaxSteps;
             }
+        }
+
+        public bool Lock()
+        {
+            return _axis_lock.WaitOne(500);
+        }
+        
+        public void Unlock()
+        {
+            _axis_lock.Set();
         }
         
         public bool CheckSoftLimitation(int TargetPosition)
@@ -330,6 +355,7 @@ namespace Irixi_Aligner_Common.MotionControllers.Base
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(PropertyName));
                 
         }
+
         #endregion
     }
 }

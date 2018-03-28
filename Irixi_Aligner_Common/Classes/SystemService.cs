@@ -477,7 +477,7 @@ namespace Irixi_Aligner_Common.Classes
             {
                 // find the axis in the specified controller by the axis name
                 // and bind the physical axis to the logical axis
-                Axis.PhysicalAxisInst = this.PhysicalMotionControllerCollection[Axis.Config.DeviceClass].FindAxisByName(Axis.Config.AxisName);
+                Axis.PhysicalAxisInst = this.PhysicalMotionControllerCollection[Axis.Config.DeviceClass].GetAxisByName(Axis.Config.AxisName);
 
                 if (Axis.PhysicalAxisInst == null) // if the physical axis was not found
                 {

@@ -1,7 +1,5 @@
 ﻿using Irixi_Aligner_Common.Classes.BaseClass;
-using Irixi_Aligner_Common.Configuration;
 using Irixi_Aligner_Common.Configuration.MotionController;
-using System.Threading.Tasks;
 
 namespace Irixi_Aligner_Common.Interfaces
 {
@@ -20,6 +18,7 @@ namespace Irixi_Aligner_Common.Interfaces
 
         /// <summary>
         /// Indicates that whether the axis is used to align the components
+        /// If it's true, it will be shown in the window like AlignmentnD, Blind Search, etc.
         /// </summary>
         bool IsAligner { get; }
 
@@ -97,6 +96,14 @@ namespace Irixi_Aligner_Common.Interfaces
 
         #region Methods
         /// <summary>
+        /// Set the parameters defined in the setting file
+        /// </summary>
+        /// <param name="AxisIndex"></param>
+        /// <param name="Config"></param>
+        /// <param name="Controller"></param>
+        void SetParameters(int AxisIndex, ConfigPhysicalAxis Config, IMotionController Controller);
+
+        /// <summary>
         /// Lock the axis before any operation
         /// </summary>
         /// <returns></returns>
@@ -106,15 +113,6 @@ namespace Irixi_Aligner_Common.Interfaces
         /// Unlock the axis after any operation
         /// </summary>
         void Unlock();
-
-        /// <summary>
-        /// Set the parameters once the class is instantiated
-        /// </summary>
-        /// <param name="AxisIndex"></param>
-        /// <param name="Config"></param>
-        /// <param name="Controller"></param>
-        void SetParameters(int AxisIndex, ConfigPhysicalAxis Config, IMotionController Controller);
-
         /// <summary>
         /// Start a task to home the axis
         /// </summary>

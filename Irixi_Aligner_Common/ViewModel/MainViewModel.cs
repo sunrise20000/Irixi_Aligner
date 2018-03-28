@@ -1,6 +1,6 @@
-﻿using GalaSoft.MvvmLight;
+using GalaSoft.MvvmLight;
 
-namespace $rootnamespace$.ViewModel
+namespace Irixi_Aligner_Common.ViewModel
 {
     /// <summary>
     /// This class contains properties that the main View can data bind to.

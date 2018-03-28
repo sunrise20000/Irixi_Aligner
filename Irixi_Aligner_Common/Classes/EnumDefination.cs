@@ -17,4 +17,11 @@
         IDLE,
         BUSY
     }
+
+    public enum MotionControllerType
+    {
+        LUMINOS_P6A,
+        THORLABS_TDC001,
+        IRIXI_EE0017
+    }
 }

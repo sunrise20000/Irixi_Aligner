@@ -1,54 +1,60 @@
-﻿using Irixi_Aligner_Common.Configuration.MotionController;
-using Irixi_Aligner_Common.Interfaces;
-using System;
+﻿using System;
 using System.Collections.Generic;
+using System.Security.Cryptography;
+using System.Text;
+using Irixi_Aligner_Common.Configuration.MotionController;
+using Irixi_Aligner_Common.Interfaces;
 
 namespace Irixi_Aligner_Common.MotionControllers.Base
 {
     public class MotionControllerBase<T> : Dictionary<string, T>, IMotionController, IDisposable
-        where T : IAxis, new()
+        where T:IAxis, new()
     {
-
         #region Variables
 
         public event EventHandler OnMoveBegin;
+
         public event EventHandler OnMoveEnd;
-        
-        string lastError = "";
+
+        private string lastError = "";
         protected ConfigPhysicalMotionController _config;
-        
-        readonly object lockBusyAxesCount = new object();
-        
-        #endregion
+
+        private readonly object lockBusyAxesCount = new object();
+
+        #endregion Variables
 
         #region Constructor
 
         public MotionControllerBase(ConfigPhysicalMotionController Config)
         {
-            _config = Config;
-            DeviceClass = _config.DeviceClass;
-            Model = _config.Model;
-            Port = _config.Port;
+            DeviceClass = Config.DeviceClass;
+            Model = Config.Model;
+            Port = Config.Port;
             IsEnabled = Config.Enabled;
             IsInitialized = false;
             BusyAxesCount = 0;
+
 
             //
             // Generate the items of AxisCollection according the config of the physical motion controller
             //
             int i = 0;
-            foreach (var _axis_cfg in Config.AxisCollection)
+            foreach (var axisConfig in Config.AxisCollection)
             {
-                T _axis = new T();
-                _axis.SetParameters(i, _axis_cfg, this);
+                T axis = new T();
+                axis.SetParameters(i, axisConfig, this);
 
-                this.Add(_axis_cfg.Name, _axis);
+                //TODO What if the axis name had been existed?
+                this.Add(axisConfig.Name, axis);
+
                 i++;
             }
-        } 
-        #endregion
+        }
+
+        #endregion Constructor
 
         #region Properties
+
         public Guid DeviceClass { private set; get; }
 
         public MotionControllerType Model { private set; get; }
@@ -74,16 +80,15 @@ namespace Irixi_Aligner_Common.MotionControllers.Base
         //public Dictionary<string, IAxis>AxisCollection { private set; get; }
 
         /// <summary>
-        /// The property indicates that how many axes are moving. 
-        /// If it is 0, raise the event #OnMoveBegin before moving, 
-        /// If it is 0, raise the event #OnMoveEnd after moving, 
-        /// This feature is especially used to tell #SystemService whether I(Motion Controller) am busy or not, 
-        /// I'll be added to #BusyComponent list once the first axis was moving and be removed once the last axis was stopped. 
+        /// The property indicates that how many axes are moving.
+        /// If it is 0, fire the event #OnMoveBegin before moving, and fire the event #OnMoveEnd after moving,
+        /// This feature is especially used to tell #SystemService whether I(Motion Controller) am busy or not,
+        /// I'll be added to #BusyComponent list once the first axis was moving and be removed once the last axis was stopped.
         /// In order to execute #Stop command ASAP, #SystemService only stops the components which are in the #BusyComponent list.
         /// </summary>
         public int BusyAxesCount { private set; get; }
-        
-        #endregion
+
+        #endregion Properties
 
         #region Methods
 
@@ -96,6 +101,11 @@ namespace Irixi_Aligner_Common.MotionControllers.Base
                 this.LastError = "the controller is disabled";
                 return false;
             }
+        }
+
+        public IAxis GetAxisByName(string AxisName)
+        {
+            return this[AxisName];
         }
 
         public bool Home(IAxis Axis)
@@ -127,8 +137,6 @@ namespace Irixi_Aligner_Common.MotionControllers.Base
                     OnMoveEnd?.Invoke(this, new EventArgs());
             }
 
-
-
             return ret;
         }
 
@@ -159,7 +167,6 @@ namespace Irixi_Aligner_Common.MotionControllers.Base
             }
             else
             {
-
                 if (BusyAxesCount <= 0)
                     OnMoveBegin?.Invoke(this, new EventArgs());
 
@@ -190,17 +197,35 @@ namespace Irixi_Aligner_Common.MotionControllers.Base
         {
             throw new NotImplementedException();
         }
-        
+
+        /// <summary>
+        /// Customized process of initialization
+        /// </summary>
+        /// <returns></returns>
         protected virtual bool InitProcess()
         {
             throw new NotImplementedException();
         }
 
+        /// <summary>
+        /// Customized process to home
+        /// </summary>
+        /// <param name="Axis">The axis to home</param>
+        /// <returns></returns>
         protected virtual bool HomeProcess(IAxis Axis)
         {
             throw new NotImplementedException();
         }
 
+
+        /// <summary>
+        /// Customized process to move
+        /// </summary>
+        /// <param name="Axis">The axis to move</param>
+        /// <param name="Mode">Rel/Abs</param>
+        /// <param name="Speed">0 ~ 100 in percent</param>
+        /// <param name="Distance">The distance to move in steps</param>
+        /// <returns></returns>
         protected virtual bool MoveProcess(IAxis Axis, MoveMode Mode, int Speed, int Distance)
         {
             throw new NotImplementedException();
@@ -230,34 +255,36 @@ namespace Irixi_Aligner_Common.MotionControllers.Base
             }
         }
 
-        public override int GetHashCode()
+        public string GetHashString()
         {
-            return this.DeviceClass.GetHashCode();
+            SHA256 sha256 = SHA256.Create();
+            byte[] hashvalue = sha256.ComputeHash(DeviceClass.ToByteArray());
+            return Encoding.Default.GetString(hashvalue);
         }
 
         public sealed override string ToString()
         {
             return string.Format("*{0}@{1}*", this.Model.ToString(), this.Port);
         }
-        
+
         public virtual void Dispose()
         {
             throw new NotImplementedException();
         }
 
-        #endregion
+        #endregion Methods
 
         #region Private Methods
 
-        void IncreaceBusyAxesCount()
+        private void IncreaceBusyAxesCount()
         {
-            lock(lockBusyAxesCount)
+            lock (lockBusyAxesCount)
             {
                 BusyAxesCount++;
             }
         }
 
-        void DecreaceBusyAxesCount()
+        private void DecreaceBusyAxesCount()
         {
             lock (lockBusyAxesCount)
             {
@@ -265,6 +292,6 @@ namespace Irixi_Aligner_Common.MotionControllers.Base
             }
         }
 
-        #endregion
+        #endregion Private Methods
     }
 }

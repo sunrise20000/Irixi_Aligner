@@ -2,7 +2,7 @@
   "LogEnabled": true,
   "NewPort2832Cs": [
     {
-      "Enabled": false,
+      "Enabled": true,
       "DeviceClass": "927FF004-8672-44B7-A1BA-73D6FC6A04B8",
       "Desc": "NEWPORT 2832C",
       "Port": "COM5",
@@ -50,7 +50,7 @@
     {
       "DeviceClass": "5013d013-f167-4dcb-86d9-599a325744b8",
       "Model": "LUMINOS_P6A",
-      "Port": "COM9",
+      "Port": "COM4",
       "Enabled": true,
       "Comment": "For VGroove Aligner",
       "AxisCollection": [

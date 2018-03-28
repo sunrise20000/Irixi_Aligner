@@ -127,10 +127,10 @@ namespace Irixi_Aligner_Common.Classes.BaseClass
         }
 
         /// <summary>
-        /// this method exists specially for the Luminos P6A.
-        /// For the P6A, the travel distance and max steps are given, 
-        /// but the max steps are stored in the external flash of the P6A, so this property should be re-set after
-        /// initializing the P6A.
+        /// This method exists specially for the Luminos P6A.
+        /// For the P6A, though the travel distance is defined in the profile, 
+        /// it might be different from the value stored in the P6A's flash which has the higher 
+        /// priority, so the MaxSteps should be changed to the value in flash.
         /// </summary>
         /// <param name="MaxSteps"></param>
         public void ChangeMaxSteps(int MaxSteps)
@@ -138,7 +138,7 @@ namespace Irixi_Aligner_Common.Classes.BaseClass
             this.MaxSteps = MaxSteps;
 
             // if the property was set, the related properties must be recalculated
-            this.Resolution = this.TravelDistance / (double)this.MaxSteps;
+            this.Resolution = this.TravelDistance / this.MaxSteps;
         }
 
         public override string ToString()

@@ -171,7 +171,7 @@ namespace Irixi_Aligner_Common.MotionControllers.Irixi
                 return ret;
             }
 
-        protected override bool MoveProcess(IAxis Axis, MoveMode Mode, int Speed, int Distance)
+        protected override bool MoveProcess(IAxis Axis, MoveMode Mode, int Speed, int Steps)
         {
             bool ret = false;
             IrixiAxis _axis = Axis as IrixiAxis;
@@ -190,11 +190,11 @@ namespace Irixi_Aligner_Common.MotionControllers.Irixi
                 // Set the move speed
                 if (Mode == MoveMode.ABS)
                 {
-                    target_pos = Math.Abs(Distance);
+                    target_pos = Math.Abs(Steps);
                 }
                 else
                 {
-                    target_pos = _axis.AbsPosition + Distance;
+                    target_pos = _axis.AbsPosition + Steps;
                 }
 
                 // Move the the target position
@@ -242,7 +242,7 @@ namespace Irixi_Aligner_Common.MotionControllers.Irixi
         public override void Stop()
         {
             if (this.IsInitialized)
-                _controller.Stop(-1);
+                _controller.Stop(-1);  // stop all, whatever it is moving or not
         }
         
         public void ToggleOutput(int Channel)
