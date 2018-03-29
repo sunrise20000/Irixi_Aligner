@@ -81,6 +81,12 @@ namespace Irixi_Aligner_Common.Equipments.Base
         
         public sealed override bool Init()
         {
+            if (this.IsEnabled == false)
+            {
+                LastError = "the device is disabled";
+                return false;
+            }
+
             try
             {
                 serialport.Open();
@@ -104,7 +110,7 @@ namespace Irixi_Aligner_Common.Equipments.Base
 
                 }
 
-                LastError = ex.StackTrace;
+                LastError = ex.Message;
                 return false;
             }
         }

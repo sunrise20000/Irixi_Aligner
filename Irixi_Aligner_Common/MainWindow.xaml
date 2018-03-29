@@ -82,7 +82,7 @@
             
             <dxd:LayoutGroup 
                 x:Name="rootLayout" 
-                             Orientation="Vertical">
+                Orientation="Vertical">
                 
                 <dxd:LayoutGroup 
                     x:Name="mainWorkspace" 

@@ -82,10 +82,10 @@ namespace Irixi_Aligner_Common.Classes
 
             // read the configuration from the file named SystemCfg.json
             // the file is located in \Configuration
-            ConfigManager conf_manager = SimpleIoc.Default.GetInstance<ConfigManager>();
+            ConfigManager configMgr = SimpleIoc.Default.GetInstance<ConfigManager>();
 
             // whether output the log
-            LogHelper.LogEnabled = conf_manager.ConfSystemSetting.LogEnabled;
+            LogHelper.LogEnabled = configMgr.ConfSystemSetting.LogEnabled;
 
             // initialize the properties
             BusyComponents = new List<IServiceSystem>();
@@ -111,7 +111,7 @@ namespace Irixi_Aligner_Common.Classes
              * enumerate all physical motion controllers defined in the config file,
              * and create the instance of the motion controller class.
              */
-            foreach (var conf in conf_manager.ConfSystemSetting.PhysicalMotionControllers)
+            foreach (var conf in configMgr.ConfSystemSetting.PhysicalMotionControllers)
             {
                 IMotionController motion_controller = null;
 
@@ -153,7 +153,7 @@ namespace Irixi_Aligner_Common.Classes
             }
 
             // create the instance of the Logical Motion Components
-            foreach (var cfg_motion_comp in conf_manager.ConfSystemSetting.LogicalMotionComponents)
+            foreach (var cfg_motion_comp in configMgr.ConfSystemSetting.LogicalMotionComponents)
             {
                 LogicalMotionComponent comp = new LogicalMotionComponent(cfg_motion_comp.Caption, cfg_motion_comp.Icon, cfg_motion_comp.IsAligner);
 
@@ -184,29 +184,28 @@ namespace Irixi_Aligner_Common.Classes
                     this.LogicalAlignerCollection.Add(comp);
             }
 
-            // create the instance of the cylinder
+            // create the instance of the cylinder controller
+            IrixiEE0017 controller = null;
             try
             {
-                if (conf_manager.ConfSystemSetting.Cylinder.Enabled)
-                {
-                    IrixiEE0017 ctrl = PhysicalMotionControllerCollection[Guid.Parse(conf_manager.ConfSystemSetting.Cylinder.Port)] as IrixiEE0017;
-                    CylinderController = new CylinderController(conf_manager.ConfSystemSetting.Cylinder, ctrl);
-                }
+                controller =  PhysicalMotionControllerCollection[Guid.Parse(configMgr.ConfSystemSetting.Cylinder.Port)] as IrixiEE0017;
             }
-            catch (Exception e)
+            catch
             {
-                this.LastMessage = new MessageItem(MessageType.Error, "Unable to initialize the cylinder controller, {0}", e.Message);
+                this.LastMessage = new MessageItem(MessageType.Error, "Unable to find the attached motion controller as the cylinder controller");
             }
 
+            CylinderController = new CylinderController(configMgr.ConfSystemSetting.Cylinder, controller);
+
             // create instance of the keithley 2400
-            foreach (var cfg in conf_manager.ConfSystemSetting.Keithley2400s)
+            foreach (var cfg in configMgr.ConfSystemSetting.Keithley2400s)
             {
                 if(cfg.Enabled)
                     MeasurementInstrumentCollection.Add(new Keithley2400(cfg));
             }
 
             // create instance of the newport 2832C
-            foreach (var cfg in conf_manager.ConfSystemSetting.Newport2832Cs)
+            foreach (var cfg in configMgr.ConfSystemSetting.Newport2832Cs)
             {
                 if (cfg.Enabled)
                     MeasurementInstrumentCollection.Add(new Newport2832C(cfg));
@@ -702,13 +701,9 @@ namespace Irixi_Aligner_Common.Classes
             PostInitMessage("Initializing cylinder controller ...");
 
             // initialize the cylinder controller
-            if (CylinderController.IsEnabled)
-            {
-                _tasks.Add(Task.Factory.StartNew(this.CylinderController.Init));
-                _equipments.Add(this.CylinderController);
-
-                this.LastMessage = new MessageItem(MessageType.Normal, "{0} Initializing ...", this.CylinderController);
-            }
+            _tasks.Add(Task.Factory.StartNew(this.CylinderController.Init));
+            _equipments.Add(this.CylinderController);
+            this.LastMessage = new MessageItem(MessageType.Normal, "{0} Initializing ...", this.CylinderController);
 
 
             PostInitMessage("Initializing measurement instruments ...");
@@ -717,14 +712,11 @@ namespace Irixi_Aligner_Common.Classes
             // the instruments initialized successfully will be added to the collection #ActiveInstrumentCollection
             foreach (var instr in this.MeasurementInstrumentCollection)
             {
-                if (instr.IsEnabled)
-                {
-                    _tasks.Add(Task.Factory.StartNew(instr.Init));
-                    _equipments.Add(instr);
-
-                    this.LastMessage = new MessageItem(MessageType.Normal, "{0} Initializing ...", instr);
-                }
+                _tasks.Add(Task.Factory.StartNew(instr.Init));
+                _equipments.Add(instr);
+                this.LastMessage = new MessageItem(MessageType.Normal, "{0} Initializing ...", instr);
             }
+
 
             while (_tasks.Count > 0)
             {

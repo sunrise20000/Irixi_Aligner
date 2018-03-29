@@ -72,11 +72,12 @@ namespace Irixi_Aligner_Common
                     DataContext = aligner
                 };
 
-                // create a document panel in the window
+                // create a document panel
                 DocumentPanel panel = new DocumentPanel()
                 {
                     Name = string.Format("dp{0}", aligner.Caption.Replace(" ", "")),
                     Caption = aligner.Caption,
+                    AllowContextMenu = false,
                     AllowMaximize = false,
                     AllowSizing = false,
                     AllowFloat = false,
@@ -113,26 +114,26 @@ namespace Irixi_Aligner_Common
 
                 rpgView_MotionComponent.Items.Add(chk);
 
-                // add buttons to show the preset position window 
-                BarButtonItem btn = new BarButtonItem()
-                {
-                    Content = aligner.Caption,
-                    LargeGlyph = image,
-                    DataContext = aligner
-                };
+                //// add buttons to show the preset position window 
+                //BarButtonItem btn = new BarButtonItem()
+                //{
+                //    Content = aligner.Caption,
+                //    LargeGlyph = image,
+                //    DataContext = aligner
+                //};
 
-                // raise the click event
-                btn.ItemClick += (s, e) =>
-                {
-                    //var view = new ViewMassMove(service, aligner);
-                    //var win = new MassMoveWindow
-                    //{
-                    //    DataContext = view
-                    //};
-                    //win.ShowDialog();
-                };
+                //// raise the click event
+                //btn.ItemClick += (s, e) =>
+                //{
+                //    //var view = new ViewMassMove(service, aligner);
+                //    //var win = new MassMoveWindow
+                //    //{
+                //    //    DataContext = view
+                //    //};
+                //    //win.ShowDialog();
+                //};
 
-                rpgPresetPositionButtonsHost.Items.Add(btn);
+                //rpgPresetPositionButtonsHost.Items.Add(btn);
             }
             #endregion
 
@@ -208,7 +209,7 @@ namespace Irixi_Aligner_Common
 
             #endregion
 
-            splashscreen.ShowMessage(string.Format("Restoring the workspace layout ..."));
+            splashscreen.ShowMessage(string.Format("Restoring workspace ..."));
 
             #region Restore workspace layout
 
@@ -219,16 +220,14 @@ namespace Irixi_Aligner_Common
 
                 if (panel is DocumentPanel)
                 {
-                    //var layout =
-                    //    (from items
-                    //    in config.WorkspaceLayoutHelper.WorkspaceLayout
-                    //     where items.PanelName == panel.Name
-                    //     select items).First();
-
                     try
                     {
                         var setting = ((IEnumerable)config.ConfWSLayout.WorkspaceLayout).Cast<dynamic>().Where(item => item.PanelName == panel.Name).First();
+
+                        // set visibility
                         panel.Visibility = setting.IsClosed ? Visibility.Hidden : Visibility.Visible;
+
+                        // set location
                         ((DocumentPanel)panel).MDILocation = setting.MDILocation;
                     }
                     catch

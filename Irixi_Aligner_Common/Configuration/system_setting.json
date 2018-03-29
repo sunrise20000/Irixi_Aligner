@@ -2,7 +2,7 @@
   "LogEnabled": true,
   "NewPort2832Cs": [
     {
-      "Enabled": true,
+      "Enabled": false,
       "DeviceClass": "927FF004-8672-44B7-A1BA-73D6FC6A04B8",
       "Desc": "NEWPORT 2832C",
       "Port": "COM5",
@@ -14,7 +14,7 @@
   ],
   "Keithley2400s": [
     {
-      "Enabled": true,
+      "Enabled": false,
       "DeviceClass": "371EEBD8-4C57-4EB2-A830-CBD5AEC89D8E",
       "Desc": "KEITHLEY 2401",
       "Port": "COM6",
@@ -24,7 +24,7 @@
       "Comment": "Chanel 1 of PD array"
     },
     {
-      "Enabled": true,
+      "Enabled": false,
       "DeviceClass": "D2F48892-340A-41B3-A058-77452AAEAE02",
       "Desc": "KEITHLEY 2400",
       "Port": "COM8",
@@ -35,7 +35,7 @@
     }
   ],
   "Cylinder": {
-    "Enabled": true,
+    "Enabled": false,
     "DeviceClass": "937E661D-F310-4879-A56F-A0FE61DDE535",
     "Desc": "Cylinder Controller",
     "Port": "86e3e6c8-0fce-455b-8545-9011cd3fe6a7",

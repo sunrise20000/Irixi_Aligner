@@ -21,22 +21,24 @@ namespace Irixi_Aligner_Common.Equipments.Equipments
             this.PLCVacuumOutputPort = Config.PLCVacuumOutput;
             this.PODVacuumOutputPort = Config.PODVacuumOutput;
 
-            // detect the input gpio of the pedal state
-            this.Controller.OnInputStateChanged += ((s, e) =>
+            if (ControllerAttached != null)
             {
-                if (e.Channel == this.PedalInputPort && e.State == InputState.Triggered)
-                    DoPedalTriggerd();
-            });
+                // detect the input gpio of the pedal state
+                this.Controller.OnInputStateChanged += ((s, e) =>
+                {
+                    if (e.Channel == this.PedalInputPort && e.State == InputState.Triggered)
+                        DoPedalTriggerd();
+                });
 
-            // the hid report is received, flush the cylinders' state (Output)
-            this.Controller.OnHIDReportReceived += ((s, e) =>
-            {
-                this.FiberClampState = e.GetOutputState(this.FiberClampOutputPort);
-                this.LensVacuumState = e.GetOutputState(this.LensVacuumOutputPort);
-                this.PlcVacuumState = e.GetOutputState(this.PLCVacuumOutputPort);
-                this.PodVacuumState = e.GetOutputState(this.PODVacuumOutputPort);
-            });
-            
+                // the hid report is received, flush the cylinders' state (Output)
+                this.Controller.OnHIDReportReceived += ((s, e) =>
+                {
+                    this.FiberClampState = e.GetOutputState(this.FiberClampOutputPort);
+                    this.LensVacuumState = e.GetOutputState(this.LensVacuumOutputPort);
+                    this.PlcVacuumState = e.GetOutputState(this.PLCVacuumOutputPort);
+                    this.PodVacuumState = e.GetOutputState(this.PODVacuumOutputPort);
+                });
+            }
         }
         #endregion
 
@@ -86,7 +88,7 @@ namespace Irixi_Aligner_Common.Equipments.Equipments
         {
             private set
             {
-                UpdateProperty<OutputState>(ref _fiber_clamp_state, value);
+                UpdateProperty(ref _fiber_clamp_state, value);
             }
             get
             {
@@ -102,7 +104,7 @@ namespace Irixi_Aligner_Common.Equipments.Equipments
         {
             private set
             {
-                UpdateProperty<OutputState>(ref _lens_vacuum, value);
+                UpdateProperty(ref _lens_vacuum, value);
             }
             get
             {
@@ -119,7 +121,7 @@ namespace Irixi_Aligner_Common.Equipments.Equipments
         {
             private set
             {
-                UpdateProperty<OutputState>(ref _plc_vacuum, value);
+                UpdateProperty(ref _plc_vacuum, value);
             }
             get
             {
@@ -135,7 +137,7 @@ namespace Irixi_Aligner_Common.Equipments.Equipments
         {
             private set
             {
-                UpdateProperty<OutputState>(ref _pod_vacuum, value);
+                UpdateProperty(ref _pod_vacuum, value);
             }
             get
             {
@@ -184,7 +186,7 @@ namespace Irixi_Aligner_Common.Equipments.Equipments
                 }
                 else
                 {
-                    this.LastError = "the corresponding motion controller is not available";
+                    this.LastError = "the attached motion controller is not available";
                     return false;
                 }
             }
