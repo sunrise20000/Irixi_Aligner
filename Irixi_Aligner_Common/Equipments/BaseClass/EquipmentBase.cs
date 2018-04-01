@@ -1,4 +1,5 @@
-﻿using Irixi_Aligner_Common.Configuration.Base;
+﻿using Irixi_Aligner_Common.Classes.BaseClass;
+using Irixi_Aligner_Common.Configuration.Base;
 using Irixi_Aligner_Common.Interfaces;
 using System;
 using System.ComponentModel;
@@ -105,9 +106,9 @@ namespace Irixi_Aligner_Common.Equipments.Base
             return string.Format("*{0}@{1}*", this.Description, this.Port);
         }
 
-        public override int GetHashCode()
+        public string GetHashString()
         {
-            return this.DeviceClass.GetHashCode();
+            return HashGenerator.GetHashSHA256(DeviceClass.ToString());
         }
 
         #endregion

@@ -1,4 +1,13 @@
-﻿using GalaSoft.MvvmLight;
+﻿using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.ComponentModel;
+using System.Reflection;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows;
+using System.Windows.Data;
+using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
 using GalaSoft.MvvmLight.Ioc;
 using GalaSoft.MvvmLight.Messaging;
@@ -19,15 +28,6 @@ using Irixi_Aligner_Common.MotionControllers.Base;
 using Irixi_Aligner_Common.MotionControllers.Irixi;
 using Irixi_Aligner_Common.MotionControllers.Luminos;
 using IrixiStepperControllerHelper;
-using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.ComponentModel;
-using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Data;
 
 namespace Irixi_Aligner_Common.Classes
 {
@@ -153,29 +153,26 @@ namespace Irixi_Aligner_Common.Classes
             }
 
             // create the instance of the Logical Motion Components
-            foreach (var cfg_motion_comp in configMgr.ConfSystemSetting.LogicalMotionComponents)
+            foreach (var cfgLogicalMC in configMgr.ConfSystemSetting.LogicalMotionComponents)
             {
-                LogicalMotionComponent comp = new LogicalMotionComponent(cfg_motion_comp.Caption, cfg_motion_comp.Icon, cfg_motion_comp.IsAligner);
-
-                int axis_id = 0;
-                foreach (var cfg_axis in cfg_motion_comp.LogicalAxisArray)
+                LogicalMotionComponent comp = new LogicalMotionComponent(cfgLogicalMC.Caption, cfgLogicalMC.Icon, cfgLogicalMC.IsAligner);
+                
+                foreach (var cfgLogicalAxis in cfgLogicalMC.LogicalAxisArray)
                 {
                     // new logical axis object will be added to the Logical Motion Component
-                    LogicalAxis axis = new LogicalAxis(this, cfg_axis, cfg_motion_comp.Caption, axis_id);
+                    LogicalAxis axis = new LogicalAxis(cfgLogicalAxis, cfgLogicalMC.Caption);
 
                     axis.OnHomeRequsted += LogicalAxis_OnHomeRequsted;
                     axis.OnMoveRequsted += LogicalAxis_OnMoveRequsted;
                     axis.OnStopRequsted += LogicalAxis_OnStopRequsted;
 
-                    // bind the physical axis instance to logical axis object
+                    // bind the physical axis instance to logical axis
                     BindPhysicalAxis(axis);
 
                     comp.Add(axis);
                     this.LogicalAxisCollection.Add(axis);
                     if (comp.IsAligner)
                         this.LogicalAxisInAlignerCollection.Add(axis);
-
-                    axis_id++;
                 }
 
                 this.LogicalMotionComponentCollection.Add(comp);
@@ -218,19 +215,19 @@ namespace Irixi_Aligner_Common.Classes
 
         void LogicalAxis_OnHomeRequsted(object sender, EventArgs args)
         {
-            var s = sender as MotionControllers.Base.LogicalAxis;
+            var s = sender as LogicalAxis;
             Home(s.PhysicalAxisInst);
         }
 
-        void LogicalAxis_OnMoveRequsted(object sender, MoveByDistanceArgs args)
+        void LogicalAxis_OnMoveRequsted(object sender, AxisMoveArgs args)
         {
-            var s = sender as MotionControllers.Base.LogicalAxis;
+            var s = sender as LogicalAxis;
             MoveLogicalAxis(s, args);
         }
 
         void LogicalAxis_OnStopRequsted(object sender, EventArgs args)
         {
-            var s = sender as MotionControllers.Base.LogicalAxis;
+            var s = sender as LogicalAxis;
             s.PhysicalAxisInst.Stop();
         }
 
@@ -758,16 +755,13 @@ namespace Irixi_Aligner_Common.Classes
         /// </summary>
         /// <param name="Axis"></param>
         /// <param name="Args"></param>
-        public async void MoveLogicalAxis(LogicalAxis Axis, MoveByDistanceArgs Args)
+        public async void MoveLogicalAxis(LogicalAxis Axis, AxisMoveArgs Args)
         {
             if (GetSystemState() != SystemState.BUSY)
             {
                 SetSystemState(SystemState.BUSY);
 
-                this.LastMessage = new MessageItem(MessageType.Normal, "{0} Move with argument {1}{2} ...",
-                    Axis,
-                    Args,
-                    Axis.PhysicalAxisInst.UnitHelper.Unit);
+                this.LastMessage = new MessageItem(MessageType.Normal, "{0} Move with argument {1} ...", Axis, Args);
 
                 var ret = await Task.Run(() =>
                 {
@@ -807,7 +801,7 @@ namespace Irixi_Aligner_Common.Classes
         /// <remarks>
         /// An args is consisted of 3 elements: Move Order, Logical Axis, How to Move
         /// </remarks>
-        public async void MassMoveLogicalAxis(Tuple<int, LogicalAxis, MoveByDistanceArgs>[] AxesGroup)
+        public async void MassMoveLogicalAxis(Tuple<int, LogicalAxis, AxisMoveArgs>[] AxesGroup)
         {
             if (GetSystemState() != SystemState.BUSY)
             {

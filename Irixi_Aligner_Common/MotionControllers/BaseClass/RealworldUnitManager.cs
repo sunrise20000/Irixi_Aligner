@@ -1,10 +1,12 @@
 ﻿using System;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
+using Irixi_Aligner_Common.Classes.BaseClass;
+using Irixi_Aligner_Common.Interfaces;
 
-namespace Irixi_Aligner_Common.Classes.BaseClass
+namespace Irixi_Aligner_Common.MotionControllers.Base
 {
-    public class RealworldPositionManager : INotifyPropertyChanged
+    public class RealworldUnitManager : INotifyPropertyChanged, IHashable
     {
         public enum UnitType
         {
@@ -21,7 +23,7 @@ namespace Irixi_Aligner_Common.Classes.BaseClass
         double _rel_pos = 0;
         #endregion
 
-        public RealworldPositionManager(double TravelDistance, double Resolution, UnitType Unit = UnitType.mm, int ScaleDisplayed = 2)
+        public RealworldUnitManager(double TravelDistance, double Resolution, UnitType Unit = UnitType.mm, int ScaleDisplayed = 2)
         {
             this.ScaleDisplayed = ScaleDisplayed;
             this.Unit = Unit;
@@ -139,6 +141,19 @@ namespace Irixi_Aligner_Common.Classes.BaseClass
 
             // if the property was set, the related properties must be recalculated
             this.Resolution = this.TravelDistance / this.MaxSteps;
+        }
+
+
+        public string GetHashString()
+        {
+            var factor = String.Join("", new object[]
+            {
+                Resolution,
+                MaxSteps,
+                Unit
+            });
+
+            return HashGenerator.GetHashSHA256(factor);
         }
 
         public override string ToString()

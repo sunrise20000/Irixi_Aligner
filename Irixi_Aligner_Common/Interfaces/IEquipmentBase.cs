@@ -1,9 +1,8 @@
-﻿using Irixi_Aligner_Common.Configuration.Base;
-using System;
+﻿using System;
 
 namespace Irixi_Aligner_Common.Interfaces
 {
-    public interface IEquipmentBase : IDisposable
+    public interface IEquipmentBase : IDisposable, IHashable
     {
 
         /// <summary>

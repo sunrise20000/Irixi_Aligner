@@ -192,11 +192,13 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Classes\BaseClass\HashGenerator.cs" />
+    <Compile Include="Classes\BaseClass\MassMoveArgs.cs" />
     <Compile Include="Classes\BaseClass\ObservableCollectionEx2.cs" />
     <Compile Include="Classes\BaseClass\ObservableCollectionThreadSafe.cs" />
     <Compile Include="Classes\BaseClass\Property.cs" />
-    <Compile Include="Classes\BaseClass\RealworldPositionManager.cs" />
-    <Compile Include="Classes\BaseClass\PresetPosition.cs" />
+    <Compile Include="Interfaces\IHashable.cs" />
+    <Compile Include="MotionControllers\BaseClass\RealworldUnitManager.cs" />
     <Compile Include="Classes\Converters\BooleanToVisibility.cs" />
     <Compile Include="Classes\Converters\LogicalComponentToAxisCollection.cs" />
     <Compile Include="Classes\Converters\EnumToInt.cs" />
@@ -214,7 +216,9 @@
     <Compile Include="UserControls\AlignmentFunc\PropertyDefinitionTemplateSelector.cs" />
     <Compile Include="Configuration\Equipments\ConfigurationNewport2832C.cs" />
     <Compile Include="Docs\How to add new instrument to system.cs" />
-    <Compile Include="ViewModel\ViewMassMove.cs" />
+    <Compile Include="UserControls\PresetPositionPanel.xaml.cs">
+      <DependentUpon>PresetPositionPanel.xaml</DependentUpon>
+    </Compile>
     <None Include="Docs\Templates\new_instrument.cs.tmpl" />
     <Compile Include="Equipments\BaseClass\InstrumentBase.cs" />
     <Compile Include="Configuration\BaseClasses\ConfigurationBase.cs" />
@@ -266,8 +270,8 @@
     <Compile Include="UserControls\AlignmentParamEditPanel.xaml.cs">
       <DependentUpon>AlignmentParamEditPanel.xaml</DependentUpon>
     </Compile>
-    <Compile Include="UserControls\Axis4MassMove.xaml.cs">
-      <DependentUpon>Axis4MassMove.xaml</DependentUpon>
+    <Compile Include="UserControls\AxisForMassMove.xaml.cs">
+      <DependentUpon>AxisForMassMove.xaml</DependentUpon>
     </Compile>
     <Compile Include="UserControls\Keithley2400ControlPanel.xaml.cs">
       <DependentUpon>Keithley2400ControlPanel.xaml</DependentUpon>
@@ -387,7 +391,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="UserControls\Axis4MassMove.xaml">
+    <Page Include="UserControls\AxisForMassMove.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -400,6 +404,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="UserControls\Newport2832cControlPanel.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="UserControls\PresetPositionPanel.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

@@ -80,7 +80,7 @@ namespace Irixi_Aligner_Common.MotionControllers.Irixi
         {
             foreach (var state in e.AxisStateCollection)
             {
-                var _axis = FindAxisByName(state.AxisIndex.ToString()) as IrixiAxis;
+                var _axis = GetAxisByName(state.AxisIndex.ToString()) as IrixiAxis;
                 _axis.AbsPosition = state.AbsPosition;
                 _axis.IsHomed = state.IsHomed;
             }

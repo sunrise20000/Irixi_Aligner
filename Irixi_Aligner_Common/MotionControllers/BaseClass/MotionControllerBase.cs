@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Security.Cryptography;
-using System.Text;
+using Irixi_Aligner_Common.Classes.BaseClass;
 using Irixi_Aligner_Common.Configuration.MotionController;
 using Irixi_Aligner_Common.Interfaces;
 
@@ -230,36 +229,10 @@ namespace Irixi_Aligner_Common.MotionControllers.Base
         {
             throw new NotImplementedException();
         }
-
-        /// <summary>
-        /// Find the axis by name property
-        /// </summary>
-        /// <param name="Name">Axis Name</param>
-        /// <returns></returns>
-        public IAxis FindAxisByName(string Name)
-        {
-            //// Get the axis with the unit property equels the specified value
-            //var axis = from c in this.AxisCollection where (c.AxisName.ToLower() == Name.ToLower()) select c;
-
-            //if (axis.Any()) // If the axis which was specified by name was found
-            //    return axis.ToList()[0];
-            //else
-            //    return null;
-            try
-            {
-                return this[Name];
-            }
-            catch
-            {
-                return null;
-            }
-        }
-
+        
         public string GetHashString()
         {
-            SHA256 sha256 = SHA256.Create();
-            byte[] hashvalue = sha256.ComputeHash(DeviceClass.ToByteArray());
-            return Encoding.Default.GetString(hashvalue);
+            return HashGenerator.GetHashSHA256(DeviceClass.ToString());
         }
 
         public sealed override string ToString()

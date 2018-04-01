@@ -37,8 +37,8 @@ namespace Irixi_Aligner_Common.Alignment.AlignmentXD
                 // select enabled axes
                 var arg_enabled = Args.AxisParamCollection.Where(a => a.IsEnabled == true);
 
-                // sort by Axis-ID and AlignOrder
-                var args = arg_enabled.OrderBy(a => a.ScanOrder).ThenBy(a => a.Axis.ID);
+                // sort by AlignOrder
+                var args = arg_enabled.OrderBy(a => a.ScanOrder);
 
                 foreach (var arg1d in args)
                 {

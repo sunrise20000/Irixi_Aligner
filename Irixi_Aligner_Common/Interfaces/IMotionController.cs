@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace Irixi_Aligner_Common.Interfaces
 {
-    public interface IMotionController : IEquipmentBase, IServiceSystem
+    public interface IMotionController : IEquipmentBase, IServiceSystem, IHashable
     {
         /// <summary>
         /// Raise the event after the Home/Move/etc. action begins

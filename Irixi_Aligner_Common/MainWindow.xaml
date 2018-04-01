@@ -127,7 +127,7 @@
                                 <ToggleButton Height="30" Margin="0,2" Content="POD Vacuum" Command="{Binding Service.CommandTogglePodVacuumState, Mode=OneWay}" IsChecked="{Binding Service.CylinderController.PodVacuumState, Converter={StaticResource OutputStateToBoolean}, Mode=OneWay}" Grid.Row="3" Grid.Column="1" />
                             </Grid>
                         </dxd:DocumentPanel>
-                        
+
                         <!-- AlignmentnD Panel -->
                         <dxd:DocumentPanel x:Name="panelAlignmentXD" 
                                            Caption="Alignment nD" 
@@ -217,6 +217,60 @@
                                 PropertiesTemplate="UserControls/AlignmentFunc/CentralAlign/Template.xaml" 
                                 StartCommand="{Binding Service.CommandDoCentralAlign}"
                                 StopCommand="{Binding Service.CommandStop}"/>
+                        </dxd:DocumentPanel>
+
+                        <!-- The position preset panel -->
+                        <dxd:DocumentPanel 
+                            x:Name="PositionPresetPanel" 
+                            Caption="Position Preset" 
+                            MDISize="700,400" 
+                            ShowMaximizeButton="False" 
+                            AllowFloat="False" 
+                            AllowRename="False" 
+                            AllowDock="False" 
+                            AllowMaximize="False" 
+                            AllowContextMenu="False"
+                            AllowDockToDocumentGroup="False">
+                            <Grid>
+                                <Grid.Resources>
+                                    <Style TargetType="TextBlock">
+                                        <Setter Property="HorizontalAlignment" Value="Left"/>
+                                        <Setter Property="VerticalAlignment" Value="Center"/>
+                                    </Style>
+                                    <Style TargetType="ComboBox">
+                                        <Setter Property="Grid.Column" Value="1"/>
+                                        <Setter Property="IsEditable" Value="False"/>
+                                        <Setter Property="HorizontalAlignment" Value="Stretch"/>
+                                        <Setter Property="VerticalAlignment" Value="Center"/>
+                                    </Style>
+                                </Grid.Resources>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="270" />
+                                    <ColumnDefinition />
+                                </Grid.ColumnDefinitions>
+                                <GroupBox Header="Settings">
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="120"/>
+                                            <ColumnDefinition/>
+                                        </Grid.ColumnDefinitions>
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="30"/>
+                                            <RowDefinition Height="30"/>
+                                            <RowDefinition Height="30"/>
+                                            <RowDefinition Height="30"/>
+                                            <RowDefinition />
+                                        </Grid.RowDefinitions>
+                                        <TextBlock Text="Motion Component"/>
+                                        <TextBlock Grid.Row="1" Text="Profile"/>
+                                        <ComboBox x:Name="cbxPosPresetMotionComponent" 
+                                              ItemsSource="{Binding Service.LogicalMotionComponentCollection}" 
+                                              DisplayMemberPath="Caption"/>
+                                        <ComboBox Grid.Row="1" />
+                                    </Grid>
+                                </GroupBox>
+                                <UserControls:PresetPositionPanel Grid.Column="1" DataContext="{Binding ElementName=cbxPosPresetMotionComponent, Path=SelectedItem}"/>
+                            </Grid>
                         </dxd:DocumentPanel>
 
                     </dxd:DocumentGroup>

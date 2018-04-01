@@ -21,7 +21,7 @@ namespace Irixi_Aligner_Common.MotionControllers.Base
             isAligner = true,
             isHomed = false,
             isManualEnabled = false,
-            isAbsMode = false,
+            isAbsMode = true,
             isBusy = false;
         
         ManualResetEvent _axis_lock;
@@ -211,7 +211,7 @@ namespace Irixi_Aligner_Common.MotionControllers.Base
             }
         }
 
-        public RealworldPositionManager UnitHelper { protected set; get; }
+        public RealworldUnitManager UnitHelper { protected set; get; }
         
         public string LastError { set; get; }
 
@@ -237,7 +237,7 @@ namespace Irixi_Aligner_Common.MotionControllers.Base
                 this.AccelerationSteps = Config.Acceleration;
                 this.Parent = Controller;
 
-                this.UnitHelper = new RealworldPositionManager(
+                this.UnitHelper = new RealworldUnitManager(
                     Config.MotorizedStageProfile.TravelDistance,
                     Config.MotorizedStageProfile.Resolution,
                     Config.MotorizedStageProfile.Unit,
@@ -328,9 +328,16 @@ namespace Irixi_Aligner_Common.MotionControllers.Base
             return string.Format("*{0}@{1}*", this.AxisName, this.Parent.DeviceClass);
         }
 
-        public override int GetHashCode()
+        public string GetHashString()
         {
-            return Parent.GetHashCode() ^ this.AxisName.GetHashCode();
+            var factor = string.Join("", new object[]
+            {
+                AxisName,
+                UnitHelper.GetHashString(),
+                Parent.DeviceClass
+            });
+
+            return HashGenerator.GetHashSHA256(factor);
         }
 
         #endregion

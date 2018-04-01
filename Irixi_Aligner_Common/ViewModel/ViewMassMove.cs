@@ -44,7 +44,7 @@ namespace Irixi_Aligner_Common.ViewModel
             get;
         }
 
-        public List<UserControls.Axis4MassMove> AxisControlCollection
+        public List<UserControls.AxisForMassMove> AxisControlCollection
         {
             private set;
             get;
@@ -66,14 +66,14 @@ namespace Irixi_Aligner_Common.ViewModel
             {
                 return new RelayCommand(() =>
                 {
-                    List<Tuple<int, LogicalAxis, MoveByDistanceArgs>> axesgrp = new List<Tuple<int, LogicalAxis, MoveByDistanceArgs>>();
+                    List<Tuple<int, LogicalAxis, AxisMoveArgs>> axesgrp = new List<Tuple<int, LogicalAxis, AxisMoveArgs>>();
 
                     foreach(var axis in AxisControlCollection)
                     {
-                        axesgrp.Add(new Tuple<int, LogicalAxis, MoveByDistanceArgs>(
+                        axesgrp.Add(new Tuple<int, LogicalAxis, AxisMoveArgs>(
                             axis.Order,
                             axis.LogicalAxis,
-                            new MoveByDistanceArgs(axis.IsAbsMode ? MoveMode.ABS : MoveMode.REL, axis.Speed, axis.Position)));
+                            new AxisMoveArgs(axis.IsAbsMode ? MoveMode.ABS : MoveMode.REL, axis.Speed, axis.Position)));
                     }
 
                     // start to mass move

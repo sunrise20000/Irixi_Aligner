@@ -1,10 +1,13 @@
 ﻿using System;
 using System.Collections.ObjectModel;
+using System.Text;
+using Irixi_Aligner_Common.Classes.BaseClass;
+using Irixi_Aligner_Common.Interfaces;
 
 namespace Irixi_Aligner_Common.MotionControllers.Base
 {
 
-    public class LogicalMotionComponent : ObservableCollection<LogicalAxis>
+    public class LogicalMotionComponent : ObservableCollection<LogicalAxis>, IHashable
     {
         #region Constructors
 
@@ -39,39 +42,25 @@ namespace Irixi_Aligner_Common.MotionControllers.Base
         #region Methods
 
         /// <summary>
-        /// Generate the json file contains the preset position information
+        /// Move a set of axes
         /// </summary>
         /// <returns></returns>
-        public string GetPresetPositionJsonString()
+        public void MoveToPresetPosition(MassMoveArgs Args)
         {
             throw new NotImplementedException();
         }
 
-        /// <summary>
-        /// Save the current position/mode as the content of the preset files
-        /// </summary>
-        /// <param name="Name">The name of the preset file</param>
-        public void SavePosition(string Name)
-        {
-
-        }
-
         public string GetHashString()
         {
-            return "";
+            StringBuilder factor = new StringBuilder();
+
+            foreach(var axis in this)
+            {
+                factor.Append(axis.GetHashString());
+            }
+
+            return HashGenerator.GetHashSHA256(factor.ToString());
         }
-
-        //public override int GetHashCode()
-        //{
-        //    int _hashcode = 0;
-        //    foreach(var axis in this)
-        //    {
-        //        _hashcode ^= axis.GetHashCode();
-        //    }
-
-        //    _hashcode ^= this.Count.GetHashCode();
-        //    return _hashcode;
-        //}
 
         public override string ToString()
         {

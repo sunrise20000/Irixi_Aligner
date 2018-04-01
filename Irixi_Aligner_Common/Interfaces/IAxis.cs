@@ -1,9 +1,9 @@
-﻿using Irixi_Aligner_Common.Classes.BaseClass;
-using Irixi_Aligner_Common.Configuration.MotionController;
+﻿using Irixi_Aligner_Common.Configuration.MotionController;
+using Irixi_Aligner_Common.MotionControllers.Base;
 
 namespace Irixi_Aligner_Common.Interfaces
 {
-    public interface IAxis
+    public interface IAxis : IHashable
     {
         #region Properties
         /// <summary>
@@ -81,7 +81,7 @@ namespace Irixi_Aligner_Common.Interfaces
         /// <summary>
         /// Get the unithelper to convert position in step to position to real-world unit
         /// </summary>
-        RealworldPositionManager UnitHelper { get; }
+        RealworldUnitManager UnitHelper { get; }
 
         /// <summary>
         /// Get the last error

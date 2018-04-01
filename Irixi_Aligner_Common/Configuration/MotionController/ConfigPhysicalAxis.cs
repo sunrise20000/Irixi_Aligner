@@ -1,4 +1,5 @@
-﻿using static Irixi_Aligner_Common.Classes.BaseClass.RealworldPositionManager;
+﻿
+using Irixi_Aligner_Common.MotionControllers.Base;
 
 namespace Irixi_Aligner_Common.Configuration.MotionController
 {
@@ -58,7 +59,7 @@ namespace Irixi_Aligner_Common.Configuration.MotionController
         /// <summary>
         /// Get the unit of the real world distance
         /// </summary>
-        public UnitType Unit { get; set; }
+        public RealworldUnitManager.UnitType Unit { get; set; }
 
         /// <summary>
         /// Get whether the CWLS and CCWLS should be switched
