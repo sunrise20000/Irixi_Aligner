@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 
@@ -15,6 +16,7 @@ namespace Irixi_Aligner_Common.Classes.BaseClass
         bool isMoveable = false;
         int moveOrder = 0;
         int maxMoveOrder = 0;
+        string[] moveOrderList = null;
         string unit = "um";
 
         #endregion
@@ -153,7 +155,26 @@ namespace Irixi_Aligner_Common.Classes.BaseClass
             }
             set
             {
+                List<string> list = new List<string>();
+                for (int i = 1; i <= value; i++)
+                    list.Add(i.ToString());
+
+                MoveOrderList = list.ToArray();
+
                 UpdateProperty(ref maxMoveOrder, value);
+            }
+        }
+
+        public string[] MoveOrderList
+        {
+            set
+            {
+                UpdateProperty(ref moveOrderList, value);
+
+            }
+            get
+            {
+                return moveOrderList;
             }
         }
 

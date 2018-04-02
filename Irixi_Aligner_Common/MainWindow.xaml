@@ -257,19 +257,49 @@
                                         <Grid.RowDefinitions>
                                             <RowDefinition Height="30"/>
                                             <RowDefinition Height="30"/>
-                                            <RowDefinition Height="30"/>
-                                            <RowDefinition Height="30"/>
+                                            <RowDefinition Height="*"/>
+                                            <RowDefinition Height="60"/>
                                             <RowDefinition />
                                         </Grid.RowDefinitions>
                                         <TextBlock Text="Motion Component"/>
                                         <TextBlock Grid.Row="1" Text="Profile"/>
-                                        <ComboBox x:Name="cbxPosPresetMotionComponent" 
-                                              ItemsSource="{Binding Service.LogicalMotionComponentCollection}" 
-                                              DisplayMemberPath="Caption"/>
-                                        <ComboBox Grid.Row="1" />
+                                        <!-- Logical Motion Controller selector -->
+                                        <ComboBox 
+                                            IsEditable="False"
+                                            ItemsSource="{Binding Service.LogicalMotionComponentCollection}" 
+                                            SelectedItem="{Binding PositionPresetManager.SelectedMotionComponent, Mode=OneWayToSource}"
+                                            DisplayMemberPath="Caption"/>
+                                        <!-- Profile selector -->
+                                        <ComboBox 
+                                            IsEditable="False"
+                                            Grid.Row="1" 
+                                            ItemsSource="{Binding PositionPresetManager.ProfileList, Mode=OneWay}"
+                                            SelectedItem="{Binding PositionPresetManager.SelectedProfile, Mode=OneWayToSource}"/>
+                                        <Grid Grid.Column="2">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition/>
+                                                <ColumnDefinition/>
+                                            </Grid.ColumnDefinitions>
+                                            <Grid.RowDefinitions>
+                                                <RowDefinition/>
+                                                <RowDefinition/>
+                                            </Grid.RowDefinitions>
+                                            <Button 
+                                                Content="Load Current" 
+                                                Command="{Binding PositionPresetManager.GetCurrentPositions, Mode=OneWay}"
+                                                CommandParameter="{Binding PositionPresetManager.SelectedMotionComponent}"/>
+                                            <Button 
+                                                Grid.Column="1"
+                                                Content="Save" 
+                                                Command="{Binding PositionPresetManager.Save, Mode=OneWay}"
+                                                CommandParameter="{Binding PositionPresetManager.SelectedMotionComponent}"/>
+                                        </Grid>
                                     </Grid>
                                 </GroupBox>
-                                <UserControls:PresetPositionPanel Grid.Column="1" DataContext="{Binding ElementName=cbxPosPresetMotionComponent, Path=SelectedItem}"/>
+                                <!-- Arguments displayer -->
+                                <UserControls:PresetPositionPanel 
+                                    Grid.Column="1" 
+                                    DataContext="{Binding PositionPresetManager.MoveArgsCollection, Mode=OneWay}"/>
                             </Grid>
                         </dxd:DocumentPanel>
 

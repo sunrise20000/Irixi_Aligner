@@ -30,7 +30,10 @@ namespace Irixi_Aligner_Common.MotionControllers.Base
             this.Config = Config;
             this.AxisName = Config.DisplayName;
             this.ParentName = ParentComponentName;
-            this.MoveArgs = new AxisMoveArgs();
+            this.MoveArgs = new AxisMoveArgs()
+            {
+                AxisCaption = AxisName
+            };
         } 
 
         #endregion

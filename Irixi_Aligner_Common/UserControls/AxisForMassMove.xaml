@@ -5,8 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:Irixi_Aligner_Common.UserControls"
              mc:Ignorable="d" 
-             d:DesignWidth="300"
-             DataContext="{Binding RelativeSource={RelativeSource Self}}">
+             d:DesignWidth="300">
     <UserControl.Resources>
         <!--<local:ConvertSelectItemsToMoveOrder x:Key="cvt2order"/>-->
     </UserControl.Resources>
@@ -20,12 +19,12 @@
             <ColumnDefinition Width="60"/>
             <ColumnDefinition Width="50"/>
         </Grid.ColumnDefinitions>
-        <CheckBox VerticalAlignment="Center" HorizontalAlignment="Center" IsChecked="{Binding IsMoveable}"/>
+        <CheckBox VerticalAlignment="Center" HorizontalAlignment="Center" IsChecked="{Binding MoveArgs.IsMoveable}"/>
         <TextBlock Grid.Column="1" Text="{Binding AxisCaption}" VerticalAlignment="Center"/>
         <TextBox Grid.Column="2" Text="{Binding Distance}" IsReadOnly="True" VerticalAlignment="Center" Margin="5,0" HorizontalContentAlignment="Right" />
         <TextBlock Grid.Column="3" Text="{Binding Unit}" VerticalAlignment="Center" Margin="5,0" />
-        <TextBox Grid.Column="4" Text="{Binding IsAbsMode}" IsReadOnly="True" VerticalAlignment="Center" Margin="0,0,5,0"/>
+        <TextBox Grid.Column="4" Text="{Binding Mode}" IsReadOnly="True" VerticalAlignment="Center" Margin="0,0,5,0"/>
         <TextBox Grid.Column="5" Text="{Binding Speed}" IsReadOnly="True" VerticalAlignment="Center" Margin="0,0,5,0" HorizontalContentAlignment="Center"/>
-        <ComboBox Grid.Column="6" ItemsSource="{Binding MaxMoveOrder}" SelectedItem="{Binding MoveOrder}" VerticalAlignment="Center"/>
+        <ComboBox Grid.Column="6" ItemsSource="{Binding MoveOrderList}" SelectedItem="{Binding MoveOrder}" VerticalAlignment="Center"/>
     </Grid>
 </UserControl>

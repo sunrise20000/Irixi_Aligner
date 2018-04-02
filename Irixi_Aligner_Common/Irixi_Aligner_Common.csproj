@@ -198,6 +198,7 @@
     <Compile Include="Classes\BaseClass\ObservableCollectionThreadSafe.cs" />
     <Compile Include="Classes\BaseClass\Property.cs" />
     <Compile Include="Interfaces\IHashable.cs" />
+    <Compile Include="MotionControllers\BaseClass\PositionPresetManager.cs" />
     <Compile Include="MotionControllers\BaseClass\RealworldUnitManager.cs" />
     <Compile Include="Classes\Converters\BooleanToVisibility.cs" />
     <Compile Include="Classes\Converters\LogicalComponentToAxisCollection.cs" />
@@ -238,7 +239,7 @@
     <Compile Include="MotionControllers\BaseClass\LogicalMotionComponent.cs" />
     <Compile Include="MotionControllers\BaseClass\LogicalAxis.cs" />
     <Compile Include="MotionControllers\BaseClass\MotionControllerBase.cs" />
-    <Compile Include="Classes\BaseClass\MoveArgs.cs" />
+    <Compile Include="Classes\BaseClass\AxisMoveArgs.cs" />
     <Compile Include="Classes\BaseClass\ObservableCollectionEx.cs" />
     <Compile Include="Classes\Converters\MessageTypeToColor.cs" />
     <Compile Include="Classes\Converters\MessageTypeToImage.cs" />

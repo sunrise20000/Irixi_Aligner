@@ -5,10 +5,14 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Irixi_Aligner_Common"
         mc:Ignorable="d"
-        Title="Splash" Height="200" Width="500" 
+        Title="Irixi Aligner" 
+        Height="200" 
+        Width="500" 
         WindowStartupLocation="CenterScreen" 
         WindowStyle="None" 
-        Topmost="True" ResizeMode="NoResize">
+        Topmost="False"
+        ShowInTaskbar="False"
+        ResizeMode="NoResize">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition/>

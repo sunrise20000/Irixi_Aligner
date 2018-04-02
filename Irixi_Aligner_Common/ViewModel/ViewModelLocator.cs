@@ -17,6 +17,7 @@ using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Ioc;
 using Irixi_Aligner_Common.Classes;
 using Irixi_Aligner_Common.Configuration.Common;
+using Irixi_Aligner_Common.MotionControllers.Base;
 
 namespace Irixi_Aligner_Common.ViewModel
 {
@@ -42,6 +43,7 @@ namespace Irixi_Aligner_Common.ViewModel
                 // Create run time view services and models
                 SimpleIoc.Default.Register<SystemService>();
                 SimpleIoc.Default.Register<ConfigManager>();
+                SimpleIoc.Default.Register<PositionPresetManager>();
             }
         }
 
@@ -59,6 +61,15 @@ namespace Irixi_Aligner_Common.ViewModel
             {
                 return ServiceLocator.Current.GetInstance<ConfigManager>();
             }
+        }
+
+        public PositionPresetManager PositionPresetManager
+        {
+            get
+            {
+                return ServiceLocator.Current.GetInstance<PositionPresetManager>();
+            }
+
         }
         
         public static void Cleanup()
