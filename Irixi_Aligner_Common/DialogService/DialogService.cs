@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Forms;
 using GalaSoft.MvvmLight.Views;
+using Irixi_Aligner_Common.DialogService.HomeConfirmDialog;
 using Irixi_Aligner_Common.DialogService.InputDialog;
 
 namespace Irixi_Aligner_Common.DialogService
@@ -27,6 +28,16 @@ namespace Irixi_Aligner_Common.DialogService
             if(ret.HasValue && ret == true)
             {
                 CallBack(vm.InputText);
+            }
+        }
+
+        public void OpenHomeConfirmDialog(Window Owner, Action<bool> CallBack)
+        {
+            HomeConfirmDialogViewModel vm = new HomeConfirmDialogViewModel("Confirm to Home", "");
+            var ret = ShowDialog(vm, Owner);
+            if(ret.HasValue)
+            {
+                CallBack(ret.Value);
             }
         }
 

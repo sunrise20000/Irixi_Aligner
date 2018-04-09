@@ -801,19 +801,19 @@ namespace Irixi_Aligner_Common.Classes
         /// <remarks>
         /// An args is consisted of 3 elements: Move Order, Logical Axis, How to Move
         /// </remarks>
-        public async void MassMoveLogicalAxis(Tuple<int, LogicalAxis, AxisMoveArgs>[] AxesGroup)
+        public async void MassMoveLogicalAxis(MassMoveArgs Args)
         {
             if (GetSystemState() != SystemState.BUSY)
             {
                 SetSystemState(SystemState.BUSY);
 
                 // how many axes to be moved
-                int _total_to_move = AxesGroup.Length;
+                int _total_to_move = Args.Count;
 
                 // how many axes have been moved
                 int _moved_cnt = 0;
 
-                int _present_order = 0;
+                int _present_order = 1;
 
 
                 // generate a list which contains the movement tasks
@@ -830,13 +830,9 @@ namespace Irixi_Aligner_Common.Classes
                     _axis_moving.Clear();
 
                     // find the axes which belong to current order
-                    foreach (var item in AxesGroup)
+                    foreach (var item in Args)
                     {
-                        var _order = item.Item1;
-                        var _axis = item.Item2;
-                        var _arg = item.Item3;
-
-                        if (_order == _present_order)
+                        if (item.MoveOrder == _present_order)
                         {
                             var t = new Task<bool>(() =>
                             {
@@ -1243,7 +1239,27 @@ namespace Irixi_Aligner_Common.Classes
             {
                 return new RelayCommand(() =>
                 {
-                    MassHome();
+                    DialogService.DialogService ds = new DialogService.DialogService();
+                    ds.OpenHomeConfirmDialog(null, ret =>
+                    {
+                        if(ret == true)
+                        {
+                            MassHome();
+                        }
+                    });
+
+                   
+                });
+            }
+        }
+
+        public RelayCommand<MassMoveArgs> CommandMassMove
+        {
+            get
+            {
+                return new RelayCommand<MassMoveArgs>(args =>
+                {
+
                 });
             }
         }

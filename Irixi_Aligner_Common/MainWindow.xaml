@@ -44,30 +44,81 @@
             <dxr:RibbonDefaultPageCategory>
                 <dxr:RibbonPage x:Name="rpHome" Caption="Home">
                     <dxr:RibbonPageGroup Caption="Actions">
-                        <dxb:BarButtonItem Content="Home" Glyph="{dx:DXImageOffice2013 Image=Solution_16x16.png}" LargeGlyph="{dx:DXImageOffice2013 Image=Solution_32x32.png}" Command="{Binding Service.CommandHomeAllAxes}" IsEnabled="{Binding IsEnabled, ElementName=btnStart}" RibbonStyle="SmallWithText" />
-                        <dxb:BarButtonItem x:Name="btnStart" Content="Start" RibbonStyle="Large"  Glyph="{DynamicResource IconPlay_256x256}" LargeGlyph="{StaticResource IconPlay_256x256}" IsEnabled="{Binding Service.State, Converter={StaticResource SystemStatusToStartButtonEnable}}" />
-                        <dxb:BarButtonItem x:Name="btnStop" Content="Stop" Glyph="{StaticResource IconStop_256x256}" LargeGlyph="{StaticResource IconStop_256x256}" IsEnabled="{Binding Service.State, Converter={StaticResource SystemStatusToStopButtonEnable}}" Command="{Binding Service.CommandStop}" RibbonStyle="Large" />
+                        <dxb:BarButtonItem 
+                            Content="Home" 
+                            RibbonStyle="Large"
+                            LargeGlyph="{StaticResource IconHome_32x32}" 
+                            Command="{Binding Service.CommandHomeAllAxes}" 
+                            IsEnabled="{Binding Service.State, Converter={StaticResource SystemStatusToStartButtonEnable}}" />
+                        <dxb:BarButtonItem 
+                            x:Name="btnStart" 
+                            Content="Start" 
+                            RibbonStyle="Large"
+                            Glyph="{StaticResource IconPlay_256x256}" 
+                            LargeGlyph="{StaticResource IconPlay_256x256}" 
+                            IsEnabled="{Binding Service.State, Converter={StaticResource SystemStatusToStartButtonEnable}}" />
+                        <dxb:BarButtonItem 
+                            x:Name="btnStop"
+                            Content="Stop" 
+                            RibbonStyle="Large"
+                            Glyph="{StaticResource IconStop_256x256}" 
+                            LargeGlyph="{StaticResource IconStop_256x256}" 
+                            IsEnabled="{Binding Service.State, Converter={StaticResource SystemStatusToStopButtonEnable}}" />
                     </dxr:RibbonPageGroup>
                     <dxr:RibbonPageGroup Caption="Tools">
                         <dxb:BarButtonItem 
                             x:Name="btnOpenPositionPresetPanel" 
                             Content="Position Preset" 
+                            RibbonStyle="Large"
+                            LargeGlyph="{StaticResource IconList_32x32}"
                             ItemClick="btnOpenPositionPresetPanel_ItemClick" />
                     </dxr:RibbonPageGroup>
                     <dxr:RibbonPageGroup Caption="Alignment">
-                        <dxb:BarButtonItem x:Name="btnBlindSearch" Content="Blind Search" LargeGlyph="{StaticResource IconSpiral_32x32}" Glyph="{StaticResource IconSpiral_512x512}" ItemClick="btnBlindSearch_ItemClick" />
-                        <dxb:BarButtonItem x:Name="btnSnakeScan" Content="Blind Search 2" LargeGlyph="{StaticResource IconSnake_32x32}" Glyph="{StaticResource IconSnake_512x512}" ItemClick="btnSnakeScan_ItemClick" />
-                        <dxb:BarButtonItem x:Name="btnAlignmentXD" Content="Alignment nD" LargeGlyph="{StaticResource IconAlignmentnD_32x32}" Glyph="{StaticResource IconAlignmentnD_512x512}" ItemClick="btnAlignmentXD_ItemClick" />
-                        <dxb:BarButtonItem x:Name="btnCentralAlign" Content="Central Align"  LargeGlyph="{StaticResource IconCentralAlign_32x32}" Glyph="{StaticResource IconCentralAlign_512x512}" ItemClick="btnCentralAlign_ItemClick"/>
-                        <dxb:BarButtonItem x:Name="btnRotatingScan" Content="Rotating Scan" LargeGlyph="{StaticResource IconRotating_32x32}" Glyph="{StaticResource IconRotating_512x512}" ItemClick="btnRotatingScan_ItemClick" />
+                        <dxb:BarButtonItem 
+                            x:Name="btnBlindSearch" 
+                            Content="Blind Search" 
+                            LargeGlyph="{StaticResource IconSpiral_32x32}" 
+                            Glyph="{StaticResource IconSpiral_512x512}" 
+                            ItemClick="btnBlindSearch_ItemClick" />
+                        <dxb:BarButtonItem 
+                            x:Name="btnSnakeScan" 
+                            Content="Blind Search 2" 
+                            LargeGlyph="{StaticResource IconSnake_32x32}" 
+                            Glyph="{StaticResource IconSnake_512x512}" 
+                            ItemClick="btnSnakeScan_ItemClick" />
+                        <dxb:BarButtonItem 
+                            x:Name="btnAlignmentXD" 
+                            Content="Alignment nD" 
+                            LargeGlyph="{StaticResource IconAlignmentnD_32x32}" 
+                            Glyph="{StaticResource IconAlignmentnD_512x512}" 
+                            ItemClick="btnAlignmentXD_ItemClick" />
+                        <dxb:BarButtonItem 
+                            x:Name="btnCentralAlign" 
+                            Content="Central Align" 
+                            LargeGlyph="{StaticResource IconCentralAlign_32x32}" 
+                            Glyph="{StaticResource IconCentralAlign_512x512}" 
+                            ItemClick="btnCentralAlign_ItemClick"/>
+                        <dxb:BarButtonItem 
+                            x:Name="btnRotatingScan" 
+                            Content="Rotating Scan" 
+                            LargeGlyph="{StaticResource IconRotating_32x32}" 
+                            Glyph="{StaticResource IconRotating_512x512}" 
+                            ItemClick="btnRotatingScan_ItemClick" />
                     </dxr:RibbonPageGroup>
                 </dxr:RibbonPage>
                 <dxr:RibbonPage x:Name="rpgView" Caption="View">
                     <dxr:RibbonPageGroup x:Name="rpgView_MotionComponent" Caption="Motion Control">
 
                     </dxr:RibbonPageGroup>
-                    <dxr:RibbonPageGroup x:Name="rpgView_Equipments" Caption="Equipments">
-                        <dxb:BarCheckItem Content="Cylinders" Glyph="{dx:DXImageOffice2013 Image=Solution_16x16.png}" LargeGlyph="{dx:DXImageOffice2013 Image=Solution_32x32.png}" RibbonStyle="Default" IsChecked="{Binding Visibility, ElementName=CylinderControlPanel, Mode=TwoWay, Converter={StaticResource VisibilityToBoolean}}" />
+                    <dxr:RibbonPageGroup 
+                        x:Name="rpgView_Equipments" 
+                        Caption="Equipments">
+                        <dxb:BarCheckItem 
+                            Content="Cylinders" 
+                            Glyph="{dx:DXImageOffice2013 Image=Solution_16x16.png}" 
+                            LargeGlyph="{dx:DXImageOffice2013 Image=Solution_32x32.png}" 
+                            RibbonStyle="Default" 
+                            IsChecked="{Binding Visibility, ElementName=CylinderControlPanel, Mode=TwoWay, Converter={StaticResource VisibilityToBoolean}}" />
                     </dxr:RibbonPageGroup>
                 </dxr:RibbonPage>
             </dxr:RibbonDefaultPageCategory>
@@ -83,17 +134,14 @@
             dxd:RestoreLayoutOptions.AddNewLayoutControlItems="False" 
             DockItemClosing="dockLayoutManager_DockItemClosing" 
             ItemIsVisibleChanged="dockLayoutManager_ItemIsVisibleChanged">
-            
             <dxd:LayoutGroup 
                 x:Name="rootLayout" 
                 Orientation="Vertical">
-                
                 <dxd:LayoutGroup 
                     x:Name="mainWorkspace" 
                     Orientation="Horizontal" 
                     AllowSplitters="False" 
                     ItemHeight="4*">
-                    
                     <dxd:DocumentGroup 
                         x:Name="MotionComponentPanelHost" 
                         MDIStyle="MDI">
@@ -121,14 +169,52 @@
                                     <ColumnDefinition Width="30" />
                                     <ColumnDefinition />
                                 </Grid.ColumnDefinitions>
-                                <CheckBox IsChecked="{Binding Service.CylinderController.FiberClampState, Converter={StaticResource OutputStateToBoolean}, Mode=OneWay}" Style="{DynamicResource CheckBoxStyle1}" />
-                                <CheckBox Grid.Row="1" IsChecked="{Binding Service.CylinderController.LensVacuumState, Converter={StaticResource OutputStateToBoolean}, Mode=OneWay}" Style="{DynamicResource CheckBoxStyle1}" />
-                                <CheckBox Grid.Row="2" IsChecked="{Binding Service.CylinderController.PlcVacuumState, Converter={StaticResource OutputStateToBoolean}, Mode=OneWay}" Style="{DynamicResource CheckBoxStyle1}" />
-                                <CheckBox Grid.Row="3" IsChecked="{Binding Service.CylinderController.PodVacuumState, Converter={StaticResource OutputStateToBoolean}, Mode=OneWay}" Style="{DynamicResource CheckBoxStyle1}" />
-                                <ToggleButton Height="30" Margin="0,2" Content="Fiber Clamp" Command="{Binding Service.CommandToggleFiberClampState, Mode=OneWay}" IsChecked="{Binding Service.CylinderController.FiberClampState, Converter={StaticResource OutputStateToBoolean}, Mode=OneWay}" Grid.Column="1" />
-                                <ToggleButton Height="30" Margin="0,2" Content="Lens Vacuum" Command="{Binding Service.CommandToggleLensVacuumState, Mode=OneWay}" IsChecked="{Binding Service.CylinderController.LensVacuumState, Converter={StaticResource OutputStateToBoolean}, Mode=OneWay}" Grid.Row="1" Grid.Column="1" />
-                                <ToggleButton Height="30" Margin="0,2" Content="PLC Vacuum" Command="{Binding Service.CommandTogglePlcVacuumState, Mode=OneWay}" IsChecked="{Binding Service.CylinderController.PlcVacuumState, Converter={StaticResource OutputStateToBoolean}, Mode=OneWay}" Grid.Row="2" Grid.Column="1" />
-                                <ToggleButton Height="30" Margin="0,2" Content="POD Vacuum" Command="{Binding Service.CommandTogglePodVacuumState, Mode=OneWay}" IsChecked="{Binding Service.CylinderController.PodVacuumState, Converter={StaticResource OutputStateToBoolean}, Mode=OneWay}" Grid.Row="3" Grid.Column="1" />
+                                <CheckBox 
+                                    IsChecked="{Binding Service.CylinderController.FiberClampState, Converter={StaticResource OutputStateToBoolean}, Mode=OneWay}"
+                                    Style="{DynamicResource CheckBoxStyle1}" />
+                                <CheckBox 
+                                    Grid.Row="1" 
+                                    IsChecked="{Binding Service.CylinderController.LensVacuumState, Converter={StaticResource OutputStateToBoolean}, Mode=OneWay}" 
+                                    Style="{DynamicResource CheckBoxStyle1}" />
+                                <CheckBox 
+                                    Grid.Row="2" 
+                                    IsChecked="{Binding Service.CylinderController.PlcVacuumState, Converter={StaticResource OutputStateToBoolean}, Mode=OneWay}"
+                                    Style="{DynamicResource CheckBoxStyle1}" />
+                                <CheckBox 
+                                    Grid.Row="3" 
+                                    IsChecked="{Binding Service.CylinderController.PodVacuumState, Converter={StaticResource OutputStateToBoolean}, Mode=OneWay}"
+                                    Style="{DynamicResource CheckBoxStyle1}" />
+                                <ToggleButton 
+                                    Grid.Column="1"
+                                    Height="30" 
+                                    Margin="0,2" 
+                                    Content="Fiber Clamp" 
+                                    Command="{Binding Service.CommandToggleFiberClampState, Mode=OneWay}" 
+                                    IsChecked="{Binding Service.CylinderController.FiberClampState, Converter={StaticResource OutputStateToBoolean}, Mode=OneWay}" />
+                                <ToggleButton 
+                                    Grid.Row="1" 
+                                    Grid.Column="1"
+                                    Height="30" 
+                                    Margin="0,2" 
+                                    Content="Lens Vacuum" 
+                                    Command="{Binding Service.CommandToggleLensVacuumState, Mode=OneWay}" 
+                                    IsChecked="{Binding Service.CylinderController.LensVacuumState, Converter={StaticResource OutputStateToBoolean}, Mode=OneWay}" />
+                                <ToggleButton 
+                                    Grid.Row="2" 
+                                    Grid.Column="1"
+                                    Height="30" 
+                                    Margin="0,2" 
+                                    Content="PLC Vacuum" 
+                                    Command="{Binding Service.CommandTogglePlcVacuumState, Mode=OneWay}" 
+                                    IsChecked="{Binding Service.CylinderController.PlcVacuumState, Converter={StaticResource OutputStateToBoolean}, Mode=OneWay}" />
+                                <ToggleButton 
+                                    Grid.Row="3" 
+                                    Grid.Column="1"
+                                    Height="30" 
+                                    Margin="0,2" 
+                                    Content="POD Vacuum" 
+                                    Command="{Binding Service.CommandTogglePodVacuumState, Mode=OneWay}" 
+                                    IsChecked="{Binding Service.CylinderController.PodVacuumState, Converter={StaticResource OutputStateToBoolean}, Mode=OneWay}" />
                             </Grid>
                         </dxd:DocumentPanel>
 

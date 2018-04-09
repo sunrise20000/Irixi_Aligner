@@ -5,12 +5,17 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Irixi_Aligner_Common.DialogService"
         xmlns:InputDialogService="clr-namespace:Irixi_Aligner_Common.DialogService.InputDialog"
+        xmlns:HomeConfirmDialogService="clr-namespace:Irixi_Aligner_Common.DialogService.HomeConfirmDialog"
         mc:Ignorable="d"
         Title="{Binding DialogTitle}" 
-        Height="450" Width="800" WindowStartupLocation="CenterScreen">
+        Height="450" Width="800" 
+        WindowStartupLocation="CenterScreen">
     <Window.Resources>
         <DataTemplate DataType="{x:Type InputDialogService:InputDialogViewModel}">
             <InputDialogService:InputDialogView/>
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type HomeConfirmDialogService:HomeConfirmDialogViewModel}">
+            <HomeConfirmDialogService:HomeConfirmDialogView/>
         </DataTemplate>
     </Window.Resources>
     <ContentPresenter x:Name="ContentPresenter" Content="{Binding}"/>

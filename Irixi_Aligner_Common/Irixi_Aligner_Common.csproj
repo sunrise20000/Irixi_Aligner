@@ -203,6 +203,10 @@
     <Compile Include="DialogService\DialogWindow.xaml.cs">
       <DependentUpon>DialogWindow.xaml</DependentUpon>
     </Compile>
+    <Compile Include="DialogService\HomeConfirmDialog\HomeConfirmDialogView.xaml.cs">
+      <DependentUpon>HomeConfirmDialogView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="DialogService\HomeConfirmDialog\HomeConfirmDialogViewModel.cs" />
     <Compile Include="DialogService\InputDialog\InputDialogView.xaml.cs">
       <DependentUpon>InputDialogView.xaml</DependentUpon>
     </Compile>
@@ -350,6 +354,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="DialogService\HomeConfirmDialog\HomeConfirmDialogView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="DialogService\InputDialog\InputDialogView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -454,6 +462,8 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <Resource Include="Resources\Images\Icons\home_32x32.png" />
+    <Resource Include="Resources\Images\Icons\list_32x32.png" />
     <Resource Include="Resources\Images\Icons\alignmentnd_32x32.png" />
     <Resource Include="Resources\Images\Icons\alignmentnd_512x512.png" />
     <Resource Include="Resources\Images\Icons\centralalign_32x32.png" />
