@@ -48,7 +48,11 @@
                         <dxb:BarButtonItem x:Name="btnStart" Content="Start" RibbonStyle="Large"  Glyph="{DynamicResource IconPlay_256x256}" LargeGlyph="{StaticResource IconPlay_256x256}" IsEnabled="{Binding Service.State, Converter={StaticResource SystemStatusToStartButtonEnable}}" />
                         <dxb:BarButtonItem x:Name="btnStop" Content="Stop" Glyph="{StaticResource IconStop_256x256}" LargeGlyph="{StaticResource IconStop_256x256}" IsEnabled="{Binding Service.State, Converter={StaticResource SystemStatusToStopButtonEnable}}" Command="{Binding Service.CommandStop}" RibbonStyle="Large" />
                     </dxr:RibbonPageGroup>
-                    <dxr:RibbonPageGroup x:Name="rpgPresetPositionButtonsHost" Caption="Preset Position">
+                    <dxr:RibbonPageGroup Caption="Tools">
+                        <dxb:BarButtonItem 
+                            x:Name="btnOpenPositionPresetPanel" 
+                            Content="Position Preset" 
+                            ItemClick="btnOpenPositionPresetPanel_ItemClick" />
                     </dxr:RibbonPageGroup>
                     <dxr:RibbonPageGroup Caption="Alignment">
                         <dxb:BarButtonItem x:Name="btnBlindSearch" Content="Blind Search" LargeGlyph="{StaticResource IconSpiral_32x32}" Glyph="{StaticResource IconSpiral_512x512}" ItemClick="btnBlindSearch_ItemClick" />
@@ -221,16 +225,21 @@
 
                         <!-- The position preset panel -->
                         <dxd:DocumentPanel 
-                            x:Name="PositionPresetPanel" 
+                            x:Name="panelPositionPreset" 
                             Caption="Position Preset" 
-                            MDISize="700,400" 
+                            MDISize="650,450"
+                            MinHeight="450"
+                            MaxHeight="700"
+                            MinWidth="650"
+                            MaxWidth="650"
                             ShowMaximizeButton="False" 
                             AllowFloat="False" 
                             AllowRename="False" 
                             AllowDock="False" 
                             AllowMaximize="False" 
                             AllowContextMenu="False"
-                            AllowDockToDocumentGroup="False">
+                            AllowDockToDocumentGroup="False"
+                            Visibility="Hidden">
                             <Grid>
                                 <Grid.Resources>
                                     <Style TargetType="TextBlock">
@@ -245,24 +254,28 @@
                                     </Style>
                                 </Grid.Resources>
                                 <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="270" />
+                                    <ColumnDefinition Width="230" />
                                     <ColumnDefinition />
                                 </Grid.ColumnDefinitions>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="*"/>
+                                    <RowDefinition Height="100"/>
+                                    <RowDefinition Height="30"/>
+                                </Grid.RowDefinitions>
+                                <!-- Settings panel -->
                                 <GroupBox Header="Settings">
                                     <Grid>
                                         <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="120"/>
+                                            <ColumnDefinition Width="80"/>
                                             <ColumnDefinition/>
                                         </Grid.ColumnDefinitions>
                                         <Grid.RowDefinitions>
                                             <RowDefinition Height="30"/>
                                             <RowDefinition Height="30"/>
                                             <RowDefinition Height="*"/>
-                                            <RowDefinition Height="60"/>
-                                            <RowDefinition />
                                         </Grid.RowDefinitions>
-                                        <TextBlock Text="Motion Component"/>
-                                        <TextBlock Grid.Row="1" Text="Profile"/>
+                                        <TextBlock Text="Component"/>
+                                        <TextBlock Grid.Row="1" Text="Preset"/>
                                         <!-- Logical Motion Controller selector -->
                                         <ComboBox 
                                             IsEditable="False"
@@ -274,32 +287,60 @@
                                             IsEditable="False"
                                             Grid.Row="1" 
                                             ItemsSource="{Binding PositionPresetManager.ProfileList, Mode=OneWay}"
-                                            SelectedItem="{Binding PositionPresetManager.SelectedProfile, Mode=OneWayToSource}"/>
-                                        <Grid Grid.Column="2">
-                                            <Grid.ColumnDefinitions>
-                                                <ColumnDefinition/>
-                                                <ColumnDefinition/>
-                                            </Grid.ColumnDefinitions>
-                                            <Grid.RowDefinitions>
-                                                <RowDefinition/>
-                                                <RowDefinition/>
-                                            </Grid.RowDefinitions>
-                                            <Button 
-                                                Content="Load Current" 
-                                                Command="{Binding PositionPresetManager.GetCurrentPositions, Mode=OneWay}"
-                                                CommandParameter="{Binding PositionPresetManager.SelectedMotionComponent}"/>
-                                            <Button 
-                                                Grid.Column="1"
-                                                Content="Save" 
-                                                Command="{Binding PositionPresetManager.Save, Mode=OneWay}"
-                                                CommandParameter="{Binding PositionPresetManager.SelectedMotionComponent}"/>
-                                        </Grid>
+                                            SelectedItem="{Binding PositionPresetManager.SelectedProfile, Mode=TwoWay}"/>
                                     </Grid>
                                 </GroupBox>
-                                <!-- Arguments displayer -->
-                                <UserControls:PresetPositionPanel 
+                                <!-- Buttons -->
+                                <Grid Grid.Row="1" Margin="0,10,0,0">
+                                    <Grid Grid.Row="3" Grid.ColumnSpan="2">
+                                        <Grid.Resources>
+                                            <Style TargetType="Button">
+                                                <Setter Property="Margin" Value="5"/>
+                                            </Style>
+                                        </Grid.Resources>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition/>
+                                            <ColumnDefinition/>
+                                        </Grid.ColumnDefinitions>
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition/>
+                                            <RowDefinition/>
+                                        </Grid.RowDefinitions>
+                                        <!-- click the button to reload the current position -->
+                                        <Button 
+                                                Content="Reload" 
+                                                Command="{Binding PositionPresetManager.ReloadCurrentPositions, Mode=OneWay}"/>
+                                        <!-- clicke button to save the current position -->
+                                        <Button 
+                                                Grid.Column="1"
+                                                Content="Save" 
+                                                Command="{Binding PositionPresetManager.Save, Mode=OneWay}"/>
+                                    </Grid>
+                                </Grid>
+                                <!-- Arguments display panels -->
+                                <GroupBox Grid.RowSpan="2" Grid.Column="1" Header="Arguments" Margin="10,0,0,0">
+                                    <UserControls:PresetPositionPanel 
                                     Grid.Column="1" 
                                     DataContext="{Binding PositionPresetManager.MoveArgsCollection, Mode=OneWay}"/>
+                                </GroupBox>
+                                <!-- Status bar -->
+                                <StackPanel 
+                                    Margin="0,5,0,0"
+                                    Grid.Row="2" 
+                                    Grid.ColumnSpan="2" 
+                                    Orientation="Horizontal" 
+                                    Background="{StaticResource Color_IrixiYellow}">
+                                    <StackPanel.Resources>
+                                        <Style TargetType="TextBlock">
+                                            <Setter Property="VerticalAlignment" Value="Center"/>
+                                            <Setter Property="Foreground" Value="White"/>
+                                            <Setter Property="Margin" Value="5,0,0,0"/>
+                                        </Style>
+                                    </StackPanel.Resources>
+                                    <TextBlock Text="{Binding PositionPresetManager.MoveArgsCollection.LogicalMotionComponent}"/>
+                                    <TextBlock Text="|"/>
+                                    <TextBlock Text="{Binding PositionPresetManager.SelectedProfile, Mode=OneWay}"/>
+                                </StackPanel>
                             </Grid>
                         </dxd:DocumentPanel>
 

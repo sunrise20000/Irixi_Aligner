@@ -2,10 +2,13 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
+using System.Runtime.Serialization;
+using System.Text;
 
 namespace Irixi_Aligner_Common.Classes.BaseClass
 {
-    public class AxisMoveArgs : EventArgs, INotifyPropertyChanged, ICloneable
+    [Serializable]
+    public class AxisMoveArgs : EventArgs, INotifyPropertyChanged, ICloneable, ISerializable
     {
         #region Variables
 
@@ -16,7 +19,7 @@ namespace Irixi_Aligner_Common.Classes.BaseClass
         bool isMoveable = false;
         int moveOrder = 0;
         int maxMoveOrder = 0;
-        string[] moveOrderList = null;
+        int[] moveOrderList = null;
         string unit = "um";
 
         #endregion
@@ -34,6 +37,20 @@ namespace Irixi_Aligner_Common.Classes.BaseClass
             this.Speed = Speed;
             this.Distance = Distance;
             this.Unit = Unit;
+        }
+
+        public AxisMoveArgs(SerializationInfo info, StreamingContext context)
+        {
+            this.LogicalAxisHashString = (string)info.GetValue("LogicalAxisHashString", typeof(string));
+            this.AxisCaption = (string)info.GetValue("AxisCaption", typeof(string));
+            this.Speed = (int)info.GetValue("Speed", typeof(int));
+            this.Distance = (double)info.GetValue("Distance", typeof(double));
+            this.Mode = (MoveMode)info.GetValue("Mode", typeof(MoveMode));
+            this.IsMoveable = (bool)info.GetValue("IsMoveable", typeof(bool));
+            this.MoveOrder = (int)info.GetValue("MoveOrder", typeof(int));
+            this.MaxMoveOrder = (int)info.GetValue("MaxMoveOrder", typeof(int));
+            this.MoveOrderList = (int[])info.GetValue("MoveOrderList", typeof(int[]));
+            this.Unit = (string)info.GetValue("Unit", typeof(string));
         }
 
         //public AxisMoveArgs(MoveMode Mode, int Speed, double Distance, bool Moveable, int MoveOrder, int MaxMoveOrder)
@@ -55,7 +72,7 @@ namespace Irixi_Aligner_Common.Classes.BaseClass
 
         /// <summary>
         /// Get or set the caption of axis which is defined in the config file
-        /// <see cref="Irixi_Aligner_Common.Configuration.MotionController.ConfigLogicalAxis.DisplayName"/>
+        /// <see cref="Configuration.MotionController.ConfigLogicalAxis.DisplayName"/>
         /// </summary>
         public string AxisCaption
         {
@@ -155,9 +172,9 @@ namespace Irixi_Aligner_Common.Classes.BaseClass
             }
             set
             {
-                List<string> list = new List<string>();
+                List<int> list = new List<int>();
                 for (int i = 1; i <= value; i++)
-                    list.Add(i.ToString());
+                    list.Add(i);
 
                 MoveOrderList = list.ToArray();
 
@@ -165,7 +182,7 @@ namespace Irixi_Aligner_Common.Classes.BaseClass
             }
         }
 
-        public string[] MoveOrderList
+        public int[] MoveOrderList
         {
             set
             {
@@ -197,6 +214,29 @@ namespace Irixi_Aligner_Common.Classes.BaseClass
 
         #region Methods
 
+        public string GetHashString()
+        {
+            var factor = String.Join(";", new object[]
+            {
+                LogicalAxisHashString,
+                AxisCaption,
+                Speed,
+                Distance,
+                Mode,
+                IsMoveable,
+                MoveOrder,
+                MaxMoveOrder,
+                Unit
+            });
+
+            return HashGenerator.GetHashSHA256(factor);
+        }
+
+        public override int GetHashCode()
+        {
+            return GetHashString().GetHashCode();
+        }
+
         public object Clone()
         {
             var obj = new AxisMoveArgs()
@@ -214,14 +254,21 @@ namespace Irixi_Aligner_Common.Classes.BaseClass
 
         public override string ToString()
         {
-            return string.Format("{0}/{1}/{2}{3}",
-                new object[]
-                {
-                    Mode,
-                    Speed,
-                    Distance,
-                    Unit
-                });
+            return $"{AxisCaption}/{Mode}/{Speed}/{Distance}/{Unit}";
+        }
+
+        public void GetObjectData(SerializationInfo info, StreamingContext context)
+        {
+            info.AddValue("LogicalAxisHashString", LogicalAxisHashString, typeof(string));
+            info.AddValue("AxisCaption", AxisCaption, typeof(string));
+            info.AddValue("Speed", Speed, typeof(int));
+            info.AddValue("Distance", Distance, typeof(double));
+            info.AddValue("Mode", Mode, typeof(MoveMode));
+            info.AddValue("IsMoveable", IsMoveable, typeof(bool));
+            info.AddValue("MoveOrder", MoveOrder, typeof(int));
+            info.AddValue("MaxMoveOrder", MaxMoveOrder, typeof(int));
+            info.AddValue("MoveOrderList", MoveOrderList, typeof(int[]));
+            info.AddValue("Unit", Unit, typeof(string));
         }
 
         #endregion

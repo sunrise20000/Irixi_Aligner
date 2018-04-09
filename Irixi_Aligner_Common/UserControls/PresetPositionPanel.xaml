@@ -34,15 +34,17 @@
         </DataTemplate>
     </UserControl.Resources>
     <Grid>
-        <StackPanel>
-            <ContentControl ContentTemplate="{StaticResource PanelTitleLayout}"/>
-            <ItemsControl ItemsSource="{Binding}">
-                <ItemsControl.ItemTemplate>
-                    <DataTemplate>
-                        <local:AxisForMassMove Style="{StaticResource AxisStyle}"/>
-                    </DataTemplate>
-                </ItemsControl.ItemTemplate>
-            </ItemsControl>
-        </StackPanel>
+        <ScrollViewer Padding="0,0,5,0" VerticalScrollBarVisibility="Auto">
+            <StackPanel>
+                <ContentControl ContentTemplate="{StaticResource PanelTitleLayout}"/>
+                <ItemsControl ItemsSource="{Binding}">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <local:AxisForMassMove Style="{StaticResource AxisStyle}"/>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </StackPanel>
+        </ScrollViewer>
     </Grid>
 </UserControl>

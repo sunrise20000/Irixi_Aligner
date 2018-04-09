@@ -378,6 +378,12 @@ namespace Irixi_Aligner_Common
             panelCentralAlign.Visibility = Visibility.Visible;
             dockLayoutManager.MDIController.Activate(panelCentralAlign);
         }
+
+        private void btnOpenPositionPresetPanel_ItemClick(object sender, ItemClickEventArgs e)
+        {
+            panelPositionPreset.Visibility = Visibility.Visible;
+            dockLayoutManager.MDIController.Activate(panelPositionPreset);
+        }
     }
 
 }

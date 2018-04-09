@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Windows;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
 using GalaSoft.MvvmLight.Messaging;
@@ -30,14 +31,18 @@ namespace Irixi_Aligner_Common.MotionControllers.Base
         {
             set
             {
-               
-                MoveArgsCollection = LoadCurrentPositions(value);
+                if (value != null)
+                {
+                    SelectedProfile = null;
 
-                // load profiles belong to the selected motion component
-                ProfileList = LoadPresetPositionProfiles(value);
+                    MoveArgsCollection = LoadCurrentPositions(value);
+                    
+                    // load profiles belong to the selected motion component
+                    LoadProfilesList(value);
 
-                motionComponent = value;
-                RaisePropertyChanged();
+                    motionComponent = value;
+                    RaisePropertyChanged();
+                }
             }
             get
             {
@@ -69,9 +74,28 @@ namespace Irixi_Aligner_Common.MotionControllers.Base
         {
             set
             {
-                selectedProfile = value;
+                try
+                {
+                    if (value == null || value == "")
+                        MoveArgsCollection = null;
+                    else
+                        MoveArgsCollection = LoadProfile(SelectedMotionComponent, value);
 
-                //TODO Load preset positions
+                    selectedProfile = value;
+                }
+                catch(Exception ex)
+                {
+                    PostErrorMessage($"Unable to load profile {value}, {ex.Message}");
+                    MoveArgsCollection = null;
+                    selectedProfile = null;
+                }
+
+                
+                RaisePropertyChanged();
+            }
+            get
+            {
+                return selectedProfile;
             }
         }
 
@@ -125,10 +149,11 @@ namespace Irixi_Aligner_Common.MotionControllers.Base
                 var a = laxis.MoveArgs.Clone() as AxisMoveArgs;
                 a.IsMoveable = true;
                 a.MaxMoveOrder = MotionComponent.Count;
-
-
+                a.MoveOrder = 1;
                 arg.Add(a);
             }
+
+            arg.LogicalMotionComponent = MotionComponent.GetHashString();
 
             return arg;
         }
@@ -137,7 +162,7 @@ namespace Irixi_Aligner_Common.MotionControllers.Base
         /// Load the profiles which belong to the selected logical motion component
         /// </summary>
         /// <returns></returns>
-        private string[] LoadPresetPositionProfiles(LogicalMotionComponent MotionComponent)
+        private void LoadProfilesList(LogicalMotionComponent MotionComponent)
         {
             var dir = PRESET_FOLDER + "\\" + MotionComponent.GetHashString();
 
@@ -148,17 +173,17 @@ namespace Irixi_Aligner_Common.MotionControllers.Base
                 DirectoryInfo info = new DirectoryInfo(dir);
                 foreach(var file in info.GetFiles())
                 {
-                    if(file.Extension == "json")
+                    if(file.Extension == ".json")
                     {
-                        profiles.Add(file.Name);
+                        profiles.Add(Path.GetFileNameWithoutExtension(file.FullName));
                     }
                 }
 
-                return profiles.ToArray();
+                ProfileList = profiles.ToArray();
             }
             else
             {
-                return null;
+                ProfileList = null;
             }
         }
 
@@ -167,21 +192,57 @@ namespace Irixi_Aligner_Common.MotionControllers.Base
         /// </summary>
         /// <param name="LogicalMotionController"></param>
         /// <param name="FileName"></param>
-        public MassMoveArgs LoadPresetPositionProfile(LogicalMotionComponent MotionComponent, string FileName)
+        public MassMoveArgs LoadProfile(LogicalMotionComponent MotionComponent, string FileName)
         {
             // the full file path where we should find the preset profiles
             var fullFilePath = PRESET_FOLDER + "\\" + MotionComponent.GetHashString() + "\\" + FileName + ".json";
 
             if (File.Exists(fullFilePath) == true)
             {
-                var jsonString = File.ReadAllText(fullFilePath);
-                var profile = JsonConvert.DeserializeObject<MassMoveArgs>(jsonString);
-                return profile;
+                var json = File.ReadAllText(fullFilePath);
+
+                JsonSerializerSettings settings = new JsonSerializerSettings();
+                settings.Converters.Add(new MassMoveArgsConverter());
+                var args = JsonConvert.DeserializeObject<MassMoveArgs>(json, new MassMoveArgsConverter());
+
+                if (args.LogicalMotionComponent != MotionComponent.GetHashString())
+                {
+                    throw new FormatException("it does not match with the selected motion component.");
+                }
+                else if (args.HashString != args.GetHashString())
+                {
+                    throw new FormatException("it might be modified unexpectedly.");
+                }
+                else
+                {
+                    return args;
+                }
+
+                //using (FileStream fs = File.Open(fullFilePath, FileMode.Open, FileAccess.Read))
+                //{
+                //    BinaryFormatter formatter = new BinaryFormatter();
+                //    var profile = formatter.Deserialize(fs) as MassMoveArgs;
+
+                //    fs.Close();
+
+                //    if (profile.LogicalMotionComponent != MotionComponent.GetHashString())
+                //    {
+                //        throw new FormatException("it does not match with the selected motion component.");
+                //    }
+                //    else if (profile.HashString != profile.GetHashString())
+                //    {
+                //        throw new FormatException("it might be modified unexpectedly.");
+                //    }
+                //    else
+                //    {
+                //        return profile;
+                //    }
+                //}
             }
             else
             {
                 // the folder does not exist
-                throw new FileNotFoundException(string.Format("the file {0} does not exist.", fullFilePath));
+                throw new FileNotFoundException($"{fullFilePath} does not exist.");
             }
         }
 
@@ -190,25 +251,44 @@ namespace Irixi_Aligner_Common.MotionControllers.Base
         /// </summary>
         /// <param name="Args"></param>
         /// <param name="FileName"></param>
-        private void SavePresetPositionProfile(LogicalMotionComponent MotionComponent, MassMoveArgs Args, string FileName)
+        private void SaveProfile(LogicalMotionComponent MotionComponent, MassMoveArgs Args, string FileName)
         {
             if (MotionComponent == null)
                 throw new InvalidDataException("the logical motion controller is empty.");
 
+            // if the directory does not exist, create it.
+            var dir = PRESET_FOLDER + "\\" + MotionComponent.GetHashString();
+            if (Directory.Exists(dir) == false)
+                Directory.CreateDirectory(dir);
+
             // the full file path where we should find the preset profiles
             var fullFilePath = PRESET_FOLDER + "\\" + MotionComponent.GetHashString() + "\\" + FileName + ".json";
 
-            var jsonString = JsonConvert.SerializeObject(Args);
+            // calculate the hash string which is used to check whether the profile is modified 
+            Args.HashString = Args.GetHashString();
+
+            JsonSerializerSettings settings = new JsonSerializerSettings();
+            settings.Converters.Add(new MassMoveArgsConverter());
+            var json = JsonConvert.SerializeObject(Args, settings);
+
             using (FileStream fs = File.Open(fullFilePath, FileMode.OpenOrCreate, FileAccess.Write))
             {
-                using (StreamWriter wr = new StreamWriter(fs))
+                //BinaryFormatter formatter = new BinaryFormatter();
+                //formatter.Serialize(fs, Args);
+
+                using (StreamWriter sw = new StreamWriter(fs))
                 {
-                    wr.Write(jsonString);
-                    wr.Close();
+                    sw.Write(json);
+                    sw.Close();
                 }
 
-                fs.Close();
+                    fs.Close();
             }
+
+            // reload the position preset profile list
+            LoadProfilesList(MotionComponent);
+
+            new DialogService.DialogService().ShowMessage($"{FileName} has been saved!", "Success");
 
         }
 
@@ -224,35 +304,52 @@ namespace Irixi_Aligner_Common.MotionControllers.Base
 
         #region Commands
 
-        public RelayCommand<LogicalMotionComponent> GetCurrentPositions
+        public RelayCommand ReloadCurrentPositions
         {
             get
             {
-                return new RelayCommand<LogicalMotionComponent>(lmc =>
+                return new RelayCommand(() =>
                 {
-                    if (lmc == null)
+                    SelectedProfile = null;
+
+                    if (SelectedMotionComponent == null)
+                    {
+                        PostErrorMessage("You should select the motion component.");
                         MoveArgsCollection = null;
+                    }
                     else
-                        MoveArgsCollection = LoadCurrentPositions(lmc);
+                    { 
+                        MoveArgsCollection = LoadCurrentPositions(SelectedMotionComponent);
+                        
+                    }
                 });
             }
         }
 
-        public RelayCommand<string> Save
+        public RelayCommand Save
         {
             get
             {
-                return new RelayCommand<string>(filename =>
+                return new RelayCommand(() =>
                 {
                     try
                     {
-                        if (CheckProfileExistance(SelectedMotionComponent, filename))
+                        DialogService.DialogService ds = new DialogService.DialogService();
+                        ds.OpenInputDialog("Position Preset", "Please input the position preset profile name:", null, new Action<string>(filename => 
                         {
-                        }
-                        else
-                        {
-                            SavePresetPositionProfile(SelectedMotionComponent, MoveArgsCollection, filename);
-                        }
+                            if (CheckProfileExistance(SelectedMotionComponent, filename) == true) // if the file has existed
+                            {
+                                if(MessageBox.Show($"The profile {filename} has existed, overwrite it?", "Warning", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
+                                {
+                                    SaveProfile(SelectedMotionComponent, MoveArgsCollection, filename);
+                                }
+                            }
+                            else
+                            {
+                                SaveProfile(SelectedMotionComponent, MoveArgsCollection, filename);
+                            }
+
+                        }));                        
                     }
                     catch(Exception ex)
                     {

@@ -15,6 +15,7 @@
 using CommonServiceLocator;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Ioc;
+using GalaSoft.MvvmLight.Views;
 using Irixi_Aligner_Common.Classes;
 using Irixi_Aligner_Common.Configuration.Common;
 using Irixi_Aligner_Common.MotionControllers.Base;

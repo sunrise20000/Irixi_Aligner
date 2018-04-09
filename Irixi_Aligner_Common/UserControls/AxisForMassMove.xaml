@@ -19,7 +19,7 @@
             <ColumnDefinition Width="60"/>
             <ColumnDefinition Width="50"/>
         </Grid.ColumnDefinitions>
-        <CheckBox VerticalAlignment="Center" HorizontalAlignment="Center" IsChecked="{Binding MoveArgs.IsMoveable}"/>
+        <CheckBox VerticalAlignment="Center" HorizontalAlignment="Center" IsChecked="{Binding IsMoveable}"/>
         <TextBlock Grid.Column="1" Text="{Binding AxisCaption}" VerticalAlignment="Center"/>
         <TextBox Grid.Column="2" Text="{Binding Distance}" IsReadOnly="True" VerticalAlignment="Center" Margin="5,0" HorizontalContentAlignment="Right" />
         <TextBlock Grid.Column="3" Text="{Binding Unit}" VerticalAlignment="Center" Margin="5,0" />
