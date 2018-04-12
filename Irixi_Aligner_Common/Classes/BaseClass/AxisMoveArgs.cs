@@ -1,9 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Runtime.Serialization;
-using System.Text;
 
 namespace Irixi_Aligner_Common.Classes.BaseClass
 {
@@ -15,11 +13,9 @@ namespace Irixi_Aligner_Common.Classes.BaseClass
         string axisCaption = "null";
         int speed = 50;
         double distance = 0;
-        MoveMode mode = MoveMode.ABS;
+        MoveMode mode = MoveMode.REL;
         bool isMoveable = false;
         int moveOrder = 0;
-        int maxMoveOrder = 0;
-        int[] moveOrderList = null;
         string unit = "um";
 
         #endregion
@@ -48,24 +44,14 @@ namespace Irixi_Aligner_Common.Classes.BaseClass
             this.Mode = (MoveMode)info.GetValue("Mode", typeof(MoveMode));
             this.IsMoveable = (bool)info.GetValue("IsMoveable", typeof(bool));
             this.MoveOrder = (int)info.GetValue("MoveOrder", typeof(int));
-            this.MaxMoveOrder = (int)info.GetValue("MaxMoveOrder", typeof(int));
-            this.MoveOrderList = (int[])info.GetValue("MoveOrderList", typeof(int[]));
             this.Unit = (string)info.GetValue("Unit", typeof(string));
         }
-
-        //public AxisMoveArgs(MoveMode Mode, int Speed, double Distance, bool Moveable, int MoveOrder, int MaxMoveOrder)
-        //{
-        //    this.Mode = Mode;
-        //    this.Speed = Speed;
-        //    this.Distance = Distance;
-        //    this.IsMoveable = Moveable;
-        //    this.MoveOrder = MoveOrder;
-        //    this.MaxMoveOrder = MaxMoveOrder;
-        //}
 
         #endregion
 
         #region Properties
+
+        public MassMoveArgs Container { get; set; }
 
         public string LogicalAxisHashString { get; set; }
 
@@ -160,41 +146,7 @@ namespace Irixi_Aligner_Common.Classes.BaseClass
                 UpdateProperty(ref moveOrder, value);
             }
         }
-
-        /// <summary>
-        /// How many axes to be moved in the queue. The property is specically used in Mass Move Functions
-        /// </summary>
-        public int MaxMoveOrder
-        {
-            get
-            {
-                return maxMoveOrder;
-            }
-            set
-            {
-                List<int> list = new List<int>();
-                for (int i = 1; i <= value; i++)
-                    list.Add(i);
-
-                MoveOrderList = list.ToArray();
-
-                UpdateProperty(ref maxMoveOrder, value);
-            }
-        }
-
-        public int[] MoveOrderList
-        {
-            set
-            {
-                UpdateProperty(ref moveOrderList, value);
-
-            }
-            get
-            {
-                return moveOrderList;
-            }
-        }
-
+        
         /// <summary>
         /// Get the unit of the distance to move
         /// </summary>
@@ -219,13 +171,12 @@ namespace Irixi_Aligner_Common.Classes.BaseClass
             var factor = String.Join(";", new object[]
             {
                 LogicalAxisHashString,
-                AxisCaption,
+                //AxisCaption,
                 Speed,
                 Distance,
                 Mode,
                 IsMoveable,
                 MoveOrder,
-                MaxMoveOrder,
                 Unit
             });
 
@@ -241,8 +192,10 @@ namespace Irixi_Aligner_Common.Classes.BaseClass
         {
             var obj = new AxisMoveArgs()
             {
+                Container = this.Container,
                 LogicalAxisHashString = this.LogicalAxisHashString,
                 AxisCaption = this.AxisCaption,
+                MoveOrder = this.MoveOrder,
                 Speed = this.Speed,
                 Distance = this.Distance,
                 Mode = this.Mode,
@@ -266,8 +219,8 @@ namespace Irixi_Aligner_Common.Classes.BaseClass
             info.AddValue("Mode", Mode, typeof(MoveMode));
             info.AddValue("IsMoveable", IsMoveable, typeof(bool));
             info.AddValue("MoveOrder", MoveOrder, typeof(int));
-            info.AddValue("MaxMoveOrder", MaxMoveOrder, typeof(int));
-            info.AddValue("MoveOrderList", MoveOrderList, typeof(int[]));
+            //info.AddValue("MaxMoveOrder", MaxMoveOrder, typeof(int));
+            //info.AddValue("MoveOrderList", MoveOrderList, typeof(int[]));
             info.AddValue("Unit", Unit, typeof(string));
         }
 
@@ -286,19 +239,12 @@ namespace Irixi_Aligner_Common.Classes.BaseClass
         /// <param name="PropertyName"></param>
         protected void UpdateProperty<T>(ref T OldValue, T NewValue, [CallerMemberName]string PropertyName = "")
         {
-            //if (object.Equals(OldValue, NewValue))  // To save resource, if the value is not changed, do not raise the notify event
-            //    return;
-
             OldValue = NewValue;                // Set the property value to the new value
             OnPropertyChanged(PropertyName);    // Raise the notify event
         }
 
         protected void OnPropertyChanged([CallerMemberName]string PropertyName = "")
         {
-            //PropertyChangedEventHandler handler = PropertyChanged;
-            //if (handler != null)
-            //    handler(this, new PropertyChangedEventArgs(PropertyName));
-            //RaisePropertyChanged(PropertyName);
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(PropertyName));
 
         }

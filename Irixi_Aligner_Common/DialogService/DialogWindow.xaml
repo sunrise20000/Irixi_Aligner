@@ -8,7 +8,7 @@
         xmlns:HomeConfirmDialogService="clr-namespace:Irixi_Aligner_Common.DialogService.HomeConfirmDialog"
         mc:Ignorable="d"
         Title="{Binding DialogTitle}" 
-        Height="450" Width="800" 
+        Height="350" Width="400" 
         WindowStartupLocation="CenterScreen">
     <Window.Resources>
         <DataTemplate DataType="{x:Type InputDialogService:InputDialogViewModel}">

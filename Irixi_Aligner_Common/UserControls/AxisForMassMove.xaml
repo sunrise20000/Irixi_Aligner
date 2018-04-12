@@ -25,6 +25,6 @@
         <TextBlock Grid.Column="3" Text="{Binding Unit}" VerticalAlignment="Center" Margin="5,0" />
         <TextBox Grid.Column="4" Text="{Binding Mode}" IsReadOnly="True" VerticalAlignment="Center" Margin="0,0,5,0"/>
         <TextBox Grid.Column="5" Text="{Binding Speed}" IsReadOnly="True" VerticalAlignment="Center" Margin="0,0,5,0" HorizontalContentAlignment="Center"/>
-        <ComboBox Grid.Column="6" ItemsSource="{Binding MoveOrderList}" SelectedItem="{Binding MoveOrder}" VerticalAlignment="Center"/>
+        <ComboBox Grid.Column="6" ItemsSource="{Binding Container.MoveOrderList}" SelectedItem="{Binding MoveOrder}" VerticalAlignment="Center"/>
     </Grid>
 </UserControl>

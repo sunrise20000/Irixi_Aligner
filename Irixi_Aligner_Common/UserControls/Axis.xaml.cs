@@ -114,11 +114,12 @@ namespace Irixi_Aligner_Common.UserControls
             MoveMode mode = (MoveMode)value;
             if (mode == MoveMode.REL)
             {
-                return new SolidColorBrush(Color.FromRgb(0xFF, 0x7A, 0x1E));
+                return new SolidColorBrush(Colors.Black);
             }
             else
             {
-                return new SolidColorBrush(Colors.Black);
+                
+                return new SolidColorBrush(Color.FromRgb(0xFF, 0x7A, 0x1E));
             }
         }
 

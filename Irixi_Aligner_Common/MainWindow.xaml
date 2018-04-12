@@ -392,15 +392,27 @@
                                             <RowDefinition/>
                                             <RowDefinition/>
                                         </Grid.RowDefinitions>
-                                        <!-- click the button to reload the current position -->
+                                        <!-- button to reload the current position -->
                                         <Button 
-                                                Content="Reload" 
-                                                Command="{Binding PositionPresetManager.ReloadCurrentPositions, Mode=OneWay}"/>
-                                        <!-- clicke button to save the current position -->
+                                            Content="Reload" 
+                                            Command="{Binding PositionPresetManager.ReloadCurrentPositions}"/>
+                                        <!-- button to save the current position -->
                                         <Button 
-                                                Grid.Column="1"
-                                                Content="Save" 
-                                                Command="{Binding PositionPresetManager.Save, Mode=OneWay}"/>
+                                            Grid.Column="1"
+                                            Content="Save" 
+                                            Command="{Binding PositionPresetManager.Save}"/>
+                                        <!-- button to start to move -->
+                                        <Button
+                                            Grid.Row="1"
+                                            Content="Start"
+                                            Command="{Binding Service.CommandMassMove}"
+                                            CommandParameter="{Binding PositionPresetManager.MoveArgsCollection}" />
+                                        <!-- button to stop -->
+                                        <Button
+                                            Grid.Column="1"
+                                            Grid.Row="1"
+                                            Content="Stop"
+                                            Command="{Binding Service.CommandStop}" />
                                     </Grid>
                                 </Grid>
                                 <!-- Arguments display panels -->

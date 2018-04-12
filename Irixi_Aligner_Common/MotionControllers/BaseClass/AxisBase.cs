@@ -21,7 +21,7 @@ namespace Irixi_Aligner_Common.MotionControllers.Base
             isAligner = true,
             isHomed = false,
             isManualEnabled = false,
-            isAbsMode = true,
+            isAbsMode = false,
             isBusy = false;
         
         ManualResetEvent _axis_lock;

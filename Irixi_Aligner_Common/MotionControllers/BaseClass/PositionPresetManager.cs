@@ -148,7 +148,7 @@ namespace Irixi_Aligner_Common.MotionControllers.Base
             {
                 var a = laxis.MoveArgs.Clone() as AxisMoveArgs;
                 a.IsMoveable = true;
-                a.MaxMoveOrder = MotionComponent.Count;
+                //a.MaxMoveOrder = MotionComponent.Count;
                 a.MoveOrder = 1;
                 arg.Add(a);
             }
@@ -216,28 +216,7 @@ namespace Irixi_Aligner_Common.MotionControllers.Base
                 else
                 {
                     return args;
-                }
-
-                //using (FileStream fs = File.Open(fullFilePath, FileMode.Open, FileAccess.Read))
-                //{
-                //    BinaryFormatter formatter = new BinaryFormatter();
-                //    var profile = formatter.Deserialize(fs) as MassMoveArgs;
-
-                //    fs.Close();
-
-                //    if (profile.LogicalMotionComponent != MotionComponent.GetHashString())
-                //    {
-                //        throw new FormatException("it does not match with the selected motion component.");
-                //    }
-                //    else if (profile.HashString != profile.GetHashString())
-                //    {
-                //        throw new FormatException("it might be modified unexpectedly.");
-                //    }
-                //    else
-                //    {
-                //        return profile;
-                //    }
-                //}
+                }                                                                                                                                 
             }
             else
             {

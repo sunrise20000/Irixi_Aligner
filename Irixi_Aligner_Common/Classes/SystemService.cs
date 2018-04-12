@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
@@ -153,14 +154,14 @@ namespace Irixi_Aligner_Common.Classes
             }
 
             // create the instance of the Logical Motion Components
-            foreach (var cfgLogicalMC in configMgr.ConfSystemSetting.LogicalMotionComponents)
+            foreach (var cfgLMC in configMgr.ConfSystemSetting.LogicalMotionComponents)
             {
-                LogicalMotionComponent comp = new LogicalMotionComponent(cfgLogicalMC.Caption, cfgLogicalMC.Icon, cfgLogicalMC.IsAligner);
+                LogicalMotionComponent comp = new LogicalMotionComponent(cfgLMC.Caption, cfgLMC.Icon, cfgLMC.IsAligner);
                 
-                foreach (var cfgLogicalAxis in cfgLogicalMC.LogicalAxisArray)
+                foreach (var cfgLogicalAxis in cfgLMC.LogicalAxisArray)
                 {
                     // new logical axis object will be added to the Logical Motion Component
-                    LogicalAxis axis = new LogicalAxis(cfgLogicalAxis, cfgLogicalMC.Caption);
+                    LogicalAxis axis = new LogicalAxis(cfgLogicalAxis, cfgLMC.Caption);
 
                     axis.OnHomeRequsted += LogicalAxis_OnHomeRequsted;
                     axis.OnMoveRequsted += LogicalAxis_OnMoveRequsted;
@@ -803,80 +804,142 @@ namespace Irixi_Aligner_Common.Classes
         /// </remarks>
         public async void MassMoveLogicalAxis(MassMoveArgs Args)
         {
+            /*
+             *  Operation Sequence
+             *  1. find logical motion component
+             *  2. check logical axis
+             *  3. get move sequence
+             *  4. move
+             */
+
             if (GetSystemState() != SystemState.BUSY)
             {
                 SetSystemState(SystemState.BUSY);
 
-                // how many axes to be moved
-                int _total_to_move = Args.Count;
+                #region Find the LMC by the hash string
 
-                // how many axes have been moved
-                int _moved_cnt = 0;
+                LogicalMotionComponent lmc;
+                var colle = LogicalMotionComponentCollection.Where(a => a.GetHashString() == Args.LogicalMotionComponent);
 
-                int _present_order = 1;
+                if (colle.Any())
+                    lmc = colle.First();
+                else
+                {
+                    this.LastMessage = new MessageItem(MessageType.Error, $"Unable to find the target motion component with the ID {Args.LogicalMotionComponent}");
+                    return;
+                }
+
+                #endregion
+
+                #region Validate arguments and arrange the logical to ready to move
+
+                List<LogicalAxis> axesToMove = new List<LogicalAxis>();
+
+                if (Args.Count != lmc.Count)
+                {
+                    this.LastMessage = new MessageItem(MessageType.Error, $"The argument of mass-move does not match with the target motion component");
+                    return;
+                }
+                else
+                {
+                    foreach (var perArg in Args)
+                    {
+                        var laVali = lmc.Where(la => la.GetHashString() == perArg.LogicalAxisHashString);
+                        if (laVali.Count() > 1)
+                        {
+                            this.LastMessage = new MessageItem(MessageType.Error, $"Multiple axes {perArg.LogicalAxisHashString} are found in the argument");
+                            return;
+                        }
+                        else if (laVali.Count() == 0)
+                        {
+                            this.LastMessage = new MessageItem(MessageType.Error, $"Axis {perArg.LogicalAxisHashString} are not found");
+                            return;
+                        }
+                        else
+                        {
+                            var _la = laVali.First();
+                            if (perArg.IsMoveable) 
+                            {
+                                // Only the moveable axis will be added
+                                _la.MoveArgsTemp = perArg.Clone() as AxisMoveArgs;
+                                axesToMove.Add(_la);
+                            }
+                        }
+                    }
+                }
+
+                #endregion
+
+                #region Get move order
+
+                var moveOrder = Args.GetDistinctMoveOrder();
+                if (moveOrder == null)
+                {
+                    this.LastMessage = new MessageItem(MessageType.Error, $"Unable to get the list of the move order");
+                    return;
+                }
+
+                #endregion
 
 
                 // generate a list which contains the movement tasks
                 // this is used by the Task.WhenAll() function
-                List<Task<bool>> _move_tasks = new List<Task<bool>>();
-                List<MotionControllers.Base.LogicalAxis> _axis_moving = new List<MotionControllers.Base.LogicalAxis>();
+                List<Task<bool>> movingTasks = new List<Task<bool>>();
+                List<LogicalAxis> movingAxes = new List<LogicalAxis>();
 
-                this.LastMessage = new MessageItem(MessageType.Normal, "Executing mass move ...");
+                this.LastMessage = new MessageItem(MessageType.Normal, "Mass-Move is running ...");
 
-                do
+                foreach (var order in moveOrder)
                 {
                     // clear the previous tasks
-                    _move_tasks.Clear();
-                    _axis_moving.Clear();
+                    movingTasks.Clear();
+                    movingAxes.Clear();
 
-                    // find the axes which belong to current order
-                    foreach (var item in Args)
+                    var ready2move = axesToMove.Where(a => a.MoveArgsTemp.MoveOrder == order).Select(b => b).ToArray();
+                    if (ready2move.Any())
                     {
-                        if (item.MoveOrder == _present_order)
+                        foreach (var la in ready2move)
                         {
+                            this.LastMessage = new MessageItem(MessageType.Normal, $"Start to move axis {la} ...");
+
                             var t = new Task<bool>(() =>
                             {
-                                return _axis.PhysicalAxisInst.Move(_arg.Mode, _arg.Speed, _arg.Distance);
+                                return la.PhysicalAxisInst.Move(
+                                    la.MoveArgsTemp.Mode,
+                                    la.MoveArgsTemp.Speed,
+                                    la.MoveArgsTemp.Distance);
                             });
                             t.Start();
-                            _move_tasks.Add(t);
-                            _axis_moving.Add(_axis);
+                            movingTasks.Add(t);
+                            movingAxes.Add(la);
                         }
-                    }
 
-                    // if no axes to be moved, move to the next loop
-                    if (_move_tasks.Count > 0)
-                    {
-                        while (_move_tasks.Count > 0)
+                        // if no axes to be moved, move to the next loop
+                        if (movingTasks.Count > 0)
                         {
-                            // wait until all the axes are moved
-                            Task<bool> t = await Task.WhenAny(_move_tasks);
-                            int id = _move_tasks.IndexOf(t);
+                            while (movingTasks.Count > 0)
+                            {
+                                // wait until all the axes are moved
+                                Task<bool> t = await Task.WhenAny(movingTasks);
+                                int id = movingTasks.IndexOf(t);
 
-                            if (t.Result)
-                                this.LastMessage = new MessageItem(MessageType.Good, "{0} Move is completed.", _axis_moving[id]);
-                            else
-                                this.LastMessage = new MessageItem(MessageType.Error, "{0} Move is failed, {1}", _axis_moving[id], _axis_moving[id].PhysicalAxisInst.LastError);
+                                if (t.Result)
+                                    this.LastMessage = new MessageItem(MessageType.Normal, $"{movingAxes[id]} has moved to the position.");
+                                else
+                                    this.LastMessage = new MessageItem(MessageType.Error, $"{movingAxes[id]} was moved incorrectly, {movingAxes[id].PhysicalAxisInst.LastError}");
 
-                            _move_tasks.RemoveAt(id);
-                            _move_tasks.RemoveAt(id);
-
-                            // save the sum of homed axes in order to check if all axes have been homed
-                            _moved_cnt++;
+                                movingTasks.RemoveAt(id);
+                                movingAxes.RemoveAt(id);
+                            }
                         }
                     }
+                }
 
-                    // set the order of next loop
-                    _present_order++;
-
-                } while (_moved_cnt < _total_to_move); // loop until all axes were moved
-
-
-
-                this.LastMessage = new MessageItem(MessageType.Good, "Simultanenous Movement is completed");
-
-                SetSystemState(SystemState.IDLE);
             }
+
+            this.LastMessage = new MessageItem(MessageType.Good, "Mass-Move Done.");
+
+            SetSystemState(SystemState.IDLE);
         }
 
         /// <summary>
@@ -1018,10 +1081,6 @@ namespace Irixi_Aligner_Common.Classes
             StartAlignmentProc(new CentralAlign(Args));
         }
 
-        #region Cylinder Control
-
-        #region Fiber Clamp Control
-
         public void FiberClampON()
         {
             if (GetSystemState() == SystemState.IDLE)
@@ -1064,10 +1123,6 @@ namespace Irixi_Aligner_Common.Classes
             }
         }
 
-        #endregion
-
-        #region Lens Vacuum Control
-
         public void LensVacuumON()
         {
             if (GetSystemState() == SystemState.IDLE)
@@ -1108,10 +1163,6 @@ namespace Irixi_Aligner_Common.Classes
                 SetSystemState(SystemState.IDLE);
             }
         }
-
-        #endregion
-
-        #region PLC Vacuum Control
 
         public void PlcVacuumON()
         {
@@ -1154,10 +1205,6 @@ namespace Irixi_Aligner_Common.Classes
             }
         }
 
-        #endregion
-
-        #region POD Vacuum Control
-
         public void PodVacuumON()
         {
             if (GetSystemState() == SystemState.IDLE)
@@ -1198,10 +1245,6 @@ namespace Irixi_Aligner_Common.Classes
                 SetSystemState(SystemState.IDLE);
             }
         }
-
-        #endregion
-
-        #endregion
 
         public void Dispose()
         {
@@ -1259,7 +1302,7 @@ namespace Irixi_Aligner_Common.Classes
             {
                 return new RelayCommand<MassMoveArgs>(args =>
                 {
-
+                    MassMoveLogicalAxis(args);
                 });
             }
         }

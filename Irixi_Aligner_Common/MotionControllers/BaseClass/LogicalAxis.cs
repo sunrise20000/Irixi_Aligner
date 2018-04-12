@@ -34,6 +34,8 @@ namespace Irixi_Aligner_Common.MotionControllers.Base
             {
                 AxisCaption = AxisName
             };
+
+            this.MoveArgsTemp = new AxisMoveArgs();
         } 
 
         #endregion
@@ -76,6 +78,12 @@ namespace Irixi_Aligner_Common.MotionControllers.Base
         /// Get or set the arguments to move the physical axis, which is also bound to the window
         /// </summary>
         public AxisMoveArgs MoveArgs { get; set; }
+
+        /// <summary>
+        /// The property is specically used for the mass move function
+        /// <see cref="Irixi_Aligner_Common.Classes.SystemService.MassMoveLogicalAxis(MassMoveArgs)"/>
+        /// </summary>
+        public AxisMoveArgs MoveArgsTemp { get; set; }
 
         #endregion
 

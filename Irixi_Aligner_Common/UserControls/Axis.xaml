@@ -59,7 +59,7 @@
                 Height="27" 
                 Margin="3,0"
                 VerticalAlignment="Center"
-                Content="{Binding MoveArgs.Mode, Converter={StaticResource ConvertAbsModeToCaption}, Mode=OneWay}" 
+                Content="{Binding MoveArgs.Mode}" 
                 Click="tbtnAbsMode_Click" 
                 Foreground="{Binding MoveArgs.Mode, Converter={StaticResource ConvertMoveModeToSolidColorBrush}, Mode=OneWay}"/>
         <Button x:Name="tbtnManualEnable" 

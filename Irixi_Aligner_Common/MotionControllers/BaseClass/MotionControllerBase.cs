@@ -154,7 +154,7 @@ namespace Irixi_Aligner_Common.MotionControllers.Base
             }
             if (!this.IsInitialized)
             {
-                Axis.LastError = "the controller has not been initialized";
+                Axis.LastError = "the controller is not initialized";
             }
             else if (!Axis.IsEnabled)
             {

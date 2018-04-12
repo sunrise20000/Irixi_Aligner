@@ -298,13 +298,13 @@ namespace IrixiStepperControllerHelper
                         {
                             Close();
 
-                            lastError = "cannot obtain the firmware information";
+                            lastError = "cannot get the firmware information";
                             OnConnectionStatusChanged?.Invoke(this, new ConnectionEventArgs(ConnectionEventArgs.EventType.ConnectionFailure, LastError));
                         }
                     }
                     else
                     {
-                        LastError = "cannot obtain the total axes";
+                        LastError = "cannot get the total axes";
                         OnConnectionStatusChanged?.Invoke(this, new ConnectionEventArgs(ConnectionEventArgs.EventType.ConnectionFailure, LastError));
                     }
                 }
