@@ -241,7 +241,7 @@ namespace Irixi_Aligner_Common.MotionControllers.Base
                     Config.MotorizedStageProfile.TravelDistance,
                     Config.MotorizedStageProfile.Resolution,
                     Config.MotorizedStageProfile.Unit,
-                    Config.ScaleDisplayed);
+                    Config.DecimalPlacesDisplayed);
 
                 this.SCCWL = 0;
                 this.SCWL = this.UnitHelper.MaxSteps;

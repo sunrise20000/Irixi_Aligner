@@ -1,6 +1,7 @@
 ﻿using System;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
+using System.IO;
 using System.Windows.Media.Media3D;
 using GalaSoft.MvvmLight;
 using Irixi_Aligner_Common.Classes;
@@ -228,6 +229,29 @@ namespace Irixi_Aligner_Common.Alignment.BaseClasses
         /// <see cref="PauseInstruments"/>
         /// </summary>
         public virtual void ResumeInstruments()
+        {
+            throw new NotImplementedException();
+        }
+
+        protected void WriteCVS(string FileName, string Content)
+        {
+            var path = Path.GetFullPath(FileName);
+
+            if(Directory.Exists(path))
+            {
+                File.WriteAllText(FileName, Content);
+            }
+            else
+            {
+                throw new DirectoryNotFoundException($"{path} does not exist.");
+            }
+        }
+
+        /// <summary>
+        /// Export raw data to cvs file
+        /// </summary>
+        /// <returns></returns>
+        public virtual string ExportToCVS(string FileName)
         {
             throw new NotImplementedException();
         }

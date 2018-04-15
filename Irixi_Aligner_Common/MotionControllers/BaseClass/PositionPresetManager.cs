@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Text;
 using System.Windows;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
@@ -199,7 +200,7 @@ namespace Irixi_Aligner_Common.MotionControllers.Base
 
             if (File.Exists(fullFilePath) == true)
             {
-                var json = File.ReadAllText(fullFilePath);
+                var json = File.ReadAllText(fullFilePath, new UTF8Encoding());
 
                 JsonSerializerSettings settings = new JsonSerializerSettings();
                 settings.Converters.Add(new MassMoveArgsConverter());
@@ -253,25 +254,10 @@ namespace Irixi_Aligner_Common.MotionControllers.Base
             settings.Converters.Add(new MassMoveArgsConverter());
             var json = JsonConvert.SerializeObject(Args, settings);
 
-            using (FileStream fs = File.Open(fullFilePath, FileMode.OpenOrCreate, FileAccess.Write))
-            {
-                //BinaryFormatter formatter = new BinaryFormatter();
-                //formatter.Serialize(fs, Args);
-
-                using (StreamWriter sw = new StreamWriter(fs))
-                {
-                    sw.Write(json);
-                    sw.Close();
-                }
-
-                    fs.Close();
-            }
+            File.WriteAllText(fullFilePath, json, new UTF8Encoding());
 
             // reload the position preset profile list
             LoadProfilesList(MotionComponent);
-
-            new DialogService.DialogService().ShowMessage($"{FileName} has been saved!", "Success");
-
         }
 
         private bool CheckProfileExistance(LogicalMotionComponent MotionComponent, string FileName)
@@ -324,11 +310,13 @@ namespace Irixi_Aligner_Common.MotionControllers.Base
                                 if(MessageBox.Show($"The profile {filename} has existed, overwrite it?", "Warning", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
                                 {
                                     SaveProfile(SelectedMotionComponent, MoveArgsCollection, filename);
+                                    new DialogService.DialogService().ShowMessage($"{filename} has been saved!", "Success");
                                 }
                             }
                             else
                             {
                                 SaveProfile(SelectedMotionComponent, MoveArgsCollection, filename);
+                                new DialogService.DialogService().ShowMessage($"{filename} has been saved!", "Success");
                             }
 
                         }));                        

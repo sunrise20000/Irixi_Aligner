@@ -23,9 +23,16 @@ namespace Irixi_Aligner_Common.MotionControllers.Base
         double _rel_pos = 0;
         #endregion
 
-        public RealworldUnitManager(double TravelDistance, double Resolution, UnitType Unit = UnitType.mm, int ScaleDisplayed = 2)
+        /// <summary>
+        /// This class is used to manage the unit system, it allows user to change unit and conveter distance to move to steps, vice verse
+        /// </summary>
+        /// <param name="TravelDistance">The max distance of the positioner in real world unit</param>
+        /// <param name="Resolution">How long it moves in real world unit per step</param>
+        /// <param name="Unit">The real world unit it works on</param>
+        /// <param name="DecimalPlacesDisplayed">How many decimal places will be displayed on the window</param>
+        public RealworldUnitManager(double TravelDistance, double Resolution, UnitType Unit = UnitType.mm, int DecimalPlacesDisplayed = 2)
         {
-            this.ScaleDisplayed = ScaleDisplayed;
+            this.DecimalPlacesDisplayed = this.DecimalPlacesDisplayed;
             this.Unit = Unit;
             this.TravelDistance = TravelDistance;
             this.Resolution = Resolution;
@@ -81,7 +88,7 @@ namespace Irixi_Aligner_Common.MotionControllers.Base
             }
             get
             {
-                return Math.Round(_abs_pos, this.ScaleDisplayed);
+                return Math.Round(_abs_pos, this.DecimalPlacesDisplayed);
             }
         }
 
@@ -97,14 +104,14 @@ namespace Irixi_Aligner_Common.MotionControllers.Base
 
             get
             {
-                return Math.Round(_rel_pos, this.ScaleDisplayed);
+                return Math.Round(_rel_pos, this.DecimalPlacesDisplayed);
             }
         }
 
         /// <summary>
-        /// Get the scale of the number that displayed on the screen
+        /// Get how many decimal places will be displayed on the screen
         /// </summary>
-        public int ScaleDisplayed
+        public int DecimalPlacesDisplayed
         {
             internal set;
             get;

@@ -12,6 +12,5 @@ namespace Irixi_Aligner_Common.Interfaces
 
         Point FindMaximalPosition();
         Point3D FindMaximalPosition3D();
-
     }
 }

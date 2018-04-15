@@ -134,7 +134,7 @@ namespace Irixi_Aligner_Common.UserControls
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
             var v = (bool)value;
-            if (v)
+            if (v == true)
             {
                 return new SolidColorBrush(Color.FromRgb(0xFF, 0x7A, 0x1E));
             }
@@ -163,11 +163,11 @@ namespace Irixi_Aligner_Common.UserControls
             // if IsChecked == true, the axis is locked
             if (ret)
             {
-                return "Y";
+                return "N";
             }
             else
             {
-                return "N";
+                return "Y";
             }
         }
 

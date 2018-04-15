@@ -22,9 +22,9 @@ namespace Irixi_Aligner_Common.Message
                 var msg = e.NewItems[0] as MessageItem;
                 LogHelper.WriteLine(msg.Message, msg.Type == MessageType.Error ? LogHelper.LogType.ERROR : LogHelper.LogType.NORMAL);
 
-                if (Items.Count > 200)
+                if (Items.Count > 100)
                 {
-                    for (int i = 0; i < 100; i++)
+                    for (int i = 0; i < 50; i++)
                     {
                         Items.RemoveAt(0);
                     }

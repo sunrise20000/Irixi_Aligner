@@ -64,6 +64,7 @@ namespace Irixi_Aligner_Common.Classes
 
             // read version from AssemblyInfo.cs
             Version version = Assembly.GetExecutingAssembly().GetName().Version;
+            SysVersion = version.ToString();
 
             // force to enable the log, otherwise the initial message could not be recored
             LogHelper.LogEnabled = true;
@@ -247,6 +248,8 @@ namespace Irixi_Aligner_Common.Classes
         #endregion
 
         #region Properties
+
+        public string SysVersion { get; private set; }
 
         /// <summary>
         /// Get or set the list of the busy devices/processes, this list is used to stop the busy devices or processes such as alignment process, user-process, etc.

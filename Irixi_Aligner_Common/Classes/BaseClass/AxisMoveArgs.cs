@@ -9,9 +9,9 @@ namespace Irixi_Aligner_Common.Classes.BaseClass
     public class AxisMoveArgs : EventArgs, INotifyPropertyChanged, ICloneable, ISerializable
     {
         #region Variables
-
+        
         string axisCaption = "null";
-        int speed = 50;
+        int speed = 100;
         double distance = 0;
         MoveMode mode = MoveMode.REL;
         bool isMoveable = false;
@@ -54,8 +54,7 @@ namespace Irixi_Aligner_Common.Classes.BaseClass
         public MassMoveArgs Container { get; set; }
 
         public string LogicalAxisHashString { get; set; }
-
-
+        
         /// <summary>
         /// Get or set the caption of axis which is defined in the config file
         /// <see cref="Configuration.MotionController.ConfigLogicalAxis.DisplayName"/>
@@ -171,7 +170,6 @@ namespace Irixi_Aligner_Common.Classes.BaseClass
             var factor = String.Join(";", new object[]
             {
                 LogicalAxisHashString,
-                //AxisCaption,
                 Speed,
                 Distance,
                 Mode,
@@ -207,7 +205,7 @@ namespace Irixi_Aligner_Common.Classes.BaseClass
 
         public override string ToString()
         {
-            return $"{AxisCaption}/{Mode}/{Speed}/{Distance}/{Unit}";
+            return $"{Mode}/{Speed}/{Distance}{Unit}";
         }
 
         public void GetObjectData(SerializationInfo info, StreamingContext context)
@@ -219,8 +217,6 @@ namespace Irixi_Aligner_Common.Classes.BaseClass
             info.AddValue("Mode", Mode, typeof(MoveMode));
             info.AddValue("IsMoveable", IsMoveable, typeof(bool));
             info.AddValue("MoveOrder", MoveOrder, typeof(int));
-            //info.AddValue("MaxMoveOrder", MaxMoveOrder, typeof(int));
-            //info.AddValue("MoveOrderList", MoveOrderList, typeof(int[]));
             info.AddValue("Unit", Unit, typeof(string));
         }
 

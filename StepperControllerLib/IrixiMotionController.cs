@@ -340,7 +340,11 @@ namespace IrixiStepperControllerHelper
         /// </summary>
         public void Close()
         {
-            hidPort.DisconnectDevice();
+            if (this.IsConnected == true)
+            {
+                StopObtainHidReport();
+                hidPort.DisconnectDevice();
+            }
         }
         
         /// <summary>
@@ -832,8 +836,11 @@ namespace IrixiStepperControllerHelper
 
         public void Dispose()
         {
-            StopObtainHidReport();
-            hidPort.DisconnectDevice();
+            if (this.IsConnected == true)
+            {
+                StopObtainHidReport();
+                hidPort.DisconnectDevice();
+            }
         }
 
         #endregion

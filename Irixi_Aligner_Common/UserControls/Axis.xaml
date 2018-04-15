@@ -15,7 +15,7 @@
         <local:ConvertManualEnabledToCaption x:Key="ConvertManualEnabledToCaption"/>
         <local:ConvertAbsModeToCaption x:Key="ConvertAbsModeToCaption"/>
     </UserControl.Resources>
-    <Grid>
+    <Grid IsEnabled="{Binding PhysicalAxisInst.IsHomed}">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="50"/>
             <ColumnDefinition Width="*"/>
@@ -51,9 +51,36 @@
                  Margin="1,0,0,0"
                  FontSize="16" 
                  Text="{Binding MoveArgs.Speed}"/>
-        <TextBox x:Name="txtDistance" Grid.Column="6" VerticalAlignment="Center" TextAlignment="Center" MaxLength="10" Margin="1,0,0,0" FontSize="16" Text="0"/>
-        <Button x:Name="btnMoveCCW" Content="-" Grid.Column="8" Margin="1,0" Click="btnMove_Click" Tag="CCW" FontWeight="Bold" VerticalAlignment="Center" Height="27"/>
-        <Button x:Name="btnMoveCW" Content="+" Grid.Column="9" Margin="1,0" Tag="CW" Click="btnMove_Click" FontWeight="Bold" VerticalAlignment="Center" Height="27"/>
+        <TextBox 
+            x:Name="txtDistance" 
+            Grid.Column="6" 
+            VerticalAlignment="Center"
+            TextAlignment="Center" 
+            MaxLength="10" 
+            Margin="1,0,0,0" 
+            FontSize="16" 
+            Text="{Binding MoveArgs.Distance}"/>
+        <Button 
+            x:Name="btnMoveCCW" 
+            Height="27"
+            Content="-" 
+            Grid.Column="8" 
+            Margin="1,0" 
+            FontWeight="Bold" 
+            VerticalAlignment="Center" 
+            Tag="CCW" 
+            Click="btnMove_Click" 
+            />
+        <Button 
+            x:Name="btnMoveCW" 
+            Content="+" 
+            Grid.Column="9" 
+            Margin="1,0" 
+            Tag="CW" 
+            Click="btnMove_Click" 
+            FontWeight="Bold" 
+            VerticalAlignment="Center" 
+            Height="27"/>
         <Button x:Name="tbtnAbsMode" 
                 Grid.Column="5"
                 Height="27" 

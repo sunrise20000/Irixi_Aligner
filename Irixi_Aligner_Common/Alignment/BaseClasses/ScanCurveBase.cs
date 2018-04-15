@@ -1,6 +1,5 @@
 ﻿using System;
 using System.ComponentModel;
-using System.Runtime.CompilerServices;
 using System.Windows;
 using System.Windows.Media;
 using System.Windows.Media.Media3D;
@@ -10,7 +9,7 @@ using Irixi_Aligner_Common.Interfaces;
 
 namespace Irixi_Aligner_Common.Alignment.BaseClasses
 {
-    public class ScanCurveBase<T>: ObservableCollectionThreadSafe<T>, IScanCurve, INotifyPropertyChanged
+    public class ScanCurveBase<T>: ObservableCollectionThreadSafe<T>, IScanCurve //, INotifyPropertyChanged
         where T:struct
     {
         string displayName = "-", prefix = "", suffix = "";
@@ -44,7 +43,9 @@ namespace Irixi_Aligner_Common.Alignment.BaseClasses
         {
             set
             {
-                UpdateProperty(ref displayName, value);
+                displayName = value;
+                OnPropertyChanged(new PropertyChangedEventArgs("DisplayName"));
+                // UpdateProperty(ref displayName, value);
             }
             get
             {
@@ -56,8 +57,11 @@ namespace Irixi_Aligner_Common.Alignment.BaseClasses
         {
             set
             {
-                UpdateProperty(ref prefix, value);
-                OnPropertyChanged("DisplayName");
+                // UpdateProperty(ref prefix, value);
+                // OnPropertyChanged("DisplayName");
+                prefix = value;
+                OnPropertyChanged(new PropertyChangedEventArgs("Prefix"));
+                OnPropertyChanged(new PropertyChangedEventArgs("DisplayName"));
             }
             get
             {
@@ -69,8 +73,12 @@ namespace Irixi_Aligner_Common.Alignment.BaseClasses
         {
             set
             {
-                UpdateProperty(ref suffix, value);
-                OnPropertyChanged("DisplayName");
+                //UpdateProperty(ref suffix, value);
+                //OnPropertyChanged("DisplayName");
+
+                suffix = value;
+                OnPropertyChanged(new PropertyChangedEventArgs("Suffix"));
+                OnPropertyChanged(new PropertyChangedEventArgs("DisplayName"));
             }
             get
             {
@@ -92,8 +100,10 @@ namespace Irixi_Aligner_Common.Alignment.BaseClasses
         {
             get => isVisible;
             set
-            { 
-                UpdateProperty(ref isVisible, value);
+            {
+                // UpdateProperty(ref isVisible, value);
+                isVisible = value;
+                OnPropertyChanged(new PropertyChangedEventArgs("Visible"));
             }
 
         }
@@ -134,25 +144,25 @@ namespace Irixi_Aligner_Common.Alignment.BaseClasses
 
         #region RaisePropertyChangedEvent
 
-        public event PropertyChangedEventHandler PropertyChanged;
+        //public event PropertyChangedEventHandler PropertyChanged;
         
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="OldValue"></param>
-        /// <param name="NewValue"></param>
-        /// <param name="PropertyName"></param>
-        protected void UpdateProperty<X>(ref X OldValue, X NewValue, [CallerMemberName]string PropertyName = "")
-        {
-            OldValue = NewValue;                // Set the property value to the new value
-            OnPropertyChanged(PropertyName);    // Raise the notify event
-        }
+        ///// <summary>
+        ///// 
+        ///// </summary>
+        ///// <typeparam name="T"></typeparam>
+        ///// <param name="OldValue"></param>
+        ///// <param name="NewValue"></param>
+        ///// <param name="PropertyName"></param>
+        //protected void UpdateProperty<X>(ref X OldValue, X NewValue, [CallerMemberName]string PropertyName = "")
+        //{
+        //    OldValue = NewValue;                // Set the property value to the new value
+        //    OnPropertyChanged(PropertyName);    // Raise the notify event
+        //}
 
-        protected void OnPropertyChanged([CallerMemberName]string PropertyName = "")
-        {
-           PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(PropertyName));
-        }
+        //protected void OnPropertyChanged([CallerMemberName]string PropertyName = "")
+        //{
+        //   PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(PropertyName));
+        //}
         
         #endregion
     }

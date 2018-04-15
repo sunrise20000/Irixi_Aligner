@@ -8,7 +8,7 @@ using Irixi_Aligner_Common.DialogService.InputDialog;
 
 namespace Irixi_Aligner_Common.DialogService
 {
-    public class DialogService : IDialogService
+    public class DialogService
     {
 
         private bool? ShowDialog(DialogViewBase vm, Window Owner)
@@ -41,48 +41,34 @@ namespace Irixi_Aligner_Common.DialogService
             }
         }
 
-        public Task ShowError(string message, string title, string buttonText, Action afterHideCallback)
+        public void ShowError(string message, string title, string buttonText, Action afterHideCallback)
         {
-            return Task.Run(() =>
-            {
-                System.Windows.Forms.MessageBox.Show(message, title, MessageBoxButtons.OK, MessageBoxIcon.Error);
-                afterHideCallback.Invoke();
-
-            });
+            System.Windows.Forms.MessageBox.Show(message, title, MessageBoxButtons.OK, MessageBoxIcon.Error);
+            afterHideCallback.Invoke();
         }
 
-        public Task ShowError(Exception error, string title, string buttonText, Action afterHideCallback)
+        public void ShowError(Exception error, string title, string buttonText, Action afterHideCallback)
         {
-            return Task.Run(() =>
-            {
-                System.Windows.Forms.MessageBox.Show(error.Message, title, MessageBoxButtons.OK, MessageBoxIcon.Error);
-                afterHideCallback.Invoke();
-
-            });
+            System.Windows.Forms.MessageBox.Show(error.Message, title, MessageBoxButtons.OK, MessageBoxIcon.Error);
+            afterHideCallback.Invoke();
         }
 
-        public Task ShowMessage(string message, string title)
+        public void ShowMessage(string message, string title)
         {
-            return Task.Run(() =>
-            {
-                System.Windows.Forms.MessageBox.Show(message, title, MessageBoxButtons.OK, MessageBoxIcon.Information);
-            });
+            System.Windows.Forms.MessageBox.Show(message, title, MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
 
-        public Task ShowMessage(string message, string title, string buttonText, Action afterHideCallback)
+        public void ShowMessage(string message, string title, string buttonText, Action afterHideCallback)
         {
-            return Task.Run(() =>
-            {
-                System.Windows.Forms.MessageBox.Show(message, title, MessageBoxButtons.OK, MessageBoxIcon.Information);
-            });
+            System.Windows.Forms.MessageBox.Show(message, title, MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
 
-        public Task<bool> ShowMessage(string message, string title, string buttonConfirmText, string buttonCancelText, Action<bool> afterHideCallback)
+        public void ShowMessage(string message, string title, string buttonConfirmText, string buttonCancelText, Action<bool> afterHideCallback)
         {
             throw new NotImplementedException();
         }
 
-        public Task ShowMessageBox(string message, string title)
+        public void ShowMessageBox(string message, string title)
         {
             throw new NotImplementedException();
         }

@@ -66,7 +66,8 @@ namespace Irixi_Aligner_Common.Configuration
         /// <param name="TargetUnit"></param>
         public void ChangeUnit(RealworldUnitManager.UnitType TargetUnit)
         {
-            // Convert to nm & sec
+            // STEP 1
+            //  Convert to nm & sec
             switch (this.Unit)
             {
                 case RealworldUnitManager.UnitType.mm:
@@ -90,7 +91,8 @@ namespace Irixi_Aligner_Common.Configuration
                     break;
             }
 
-            // Convert to the specified unit
+            // STEP 2
+            //  Convert to the specified unit
             switch (TargetUnit)
             {
                 case RealworldUnitManager.UnitType.mm:

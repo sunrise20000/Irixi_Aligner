@@ -84,21 +84,21 @@ namespace Irixi_Aligner_Common.Configuration.Common
 
             #region Bind actuator profile to physical axis
             bool allfound = true;
-            foreach(var confcontroller in ConfSystemSetting.PhysicalMotionControllers)
+            foreach(var cfgMC in ConfSystemSetting.PhysicalMotionControllers)
             {
-                foreach(var confaxis in confcontroller.AxisCollection)
+                foreach(var cfgAxis in cfgMC.AxisCollection)
                 {
-                    var profile = this.ProfileManager.FindProfile(confaxis.Vendor, confaxis.Model);
+                    var profile = this.ProfileManager.FindProfile(cfgAxis.Vendor, cfgAxis.Model);
 
                     if (profile == null)
                     {
-                        LogHelper.WriteLine("Unable to find the motorized stage profile of vendor:{0}/model:{1}", confaxis.Vendor, confaxis.Model, LogHelper.LogType.ERROR);
+                        LogHelper.WriteLine("Unable to find the motorized stage profile of vendor:{0}/model:{1}", cfgAxis.Vendor, cfgAxis.Model, LogHelper.LogType.ERROR);
 
                         allfound = false;
                     }
                     else
                     {
-                        confaxis.SetProfile(profile.Clone() as MotorizedStageProfile);
+                        cfgAxis.SetProfile(profile.Clone() as MotorizedStageProfile);
                     }
                 }
             }

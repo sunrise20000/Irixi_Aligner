@@ -42,9 +42,9 @@ namespace Irixi_Aligner_Common.Configuration.MotionController
         public int SubDivision { get; set; }
 
         /// <summary>
-        /// Get the decimal digits of the real world distance displayed on the window
+        /// Get how many decimal places will be displayed on the screen
         /// </summary>
-        public int ScaleDisplayed { get; set; }
+        public int DecimalPlacesDisplayed { get; set; }
 
         /// <summary>
         /// Get the vendor of the motorized actuator
