@@ -28,29 +28,39 @@
             <ColumnDefinition Width="40"/>
             <ColumnDefinition Width="40"/>
         </Grid.ColumnDefinitions>
-        <TextBlock Text="{Binding AxisName}" VerticalAlignment="Center" HorizontalAlignment="Center"/>
-        <TextBlock x:Name="txtPosUnit" 
-                   Text="{Binding PhysicalAxisInst.UnitHelper.Unit, Mode=OneWay}"
-                   Grid.Column="2"
-                   HorizontalAlignment="Center" 
-                   VerticalAlignment="Center"/>
-        <TextBlock Text="{Binding Text, ElementName=txtPosUnit}" Grid.Column="7" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-        <TextBox x:Name="txtCurrentPosition" 
-                 Text="{Binding PhysicalAxisInst.UnitHelper.RelPosition, Mode=OneWay}" 
-                 Grid.Column="1" 
-                 VerticalAlignment="Center" 
-                 TextAlignment="Right" 
-                 IsReadOnly="True" 
-                 Margin="1,0,0,0" 
-                 FontSize="16"/>
-        <TextBox x:Name="txtMoveSpeed" 
-                 Grid.Column="4" 
-                 VerticalAlignment="Center" 
-                 TextAlignment="Center" 
-                 MaxLength="3" 
-                 Margin="1,0,0,0"
-                 FontSize="16" 
-                 Text="{Binding MoveArgs.Speed}"/>
+        <TextBlock 
+            Text="{Binding AxisName}" 
+            VerticalAlignment="Center" 
+            HorizontalAlignment="Center"/>
+        <TextBlock 
+            x:Name="txtPosUnit"
+            Text="{Binding PhysicalAxisInst.UnitHelper.Unit, Mode=OneWay}"
+            Grid.Column="2"
+            HorizontalAlignment="Center" 
+            VerticalAlignment="Center"/>
+        <TextBlock
+            Grid.Column="7" 
+            HorizontalAlignment="Center" 
+            VerticalAlignment="Center"
+            Text="{Binding Text, ElementName=txtPosUnit}" />
+        <TextBox 
+            x:Name="txtCurrentPosition" 
+            Text="{Binding PhysicalAxisInst.UnitHelper.RelPosition, Mode=OneWay}" 
+            Grid.Column="1" 
+            VerticalAlignment="Center" 
+            TextAlignment="Right" 
+            IsReadOnly="True" 
+            Margin="1,0,0,0" 
+            FontSize="16"/>
+        <TextBox 
+            x:Name="txtMoveSpeed" 
+            Grid.Column="4" 
+            VerticalAlignment="Center" 
+            TextAlignment="Center" 
+            MaxLength="3" 
+            Margin="1,0,0,0"
+            FontSize="16" 
+            Text="{Binding MoveArgs.Speed}"/>
         <TextBox 
             x:Name="txtDistance" 
             Grid.Column="6" 
@@ -69,8 +79,7 @@
             FontWeight="Bold" 
             VerticalAlignment="Center" 
             Tag="CCW" 
-            Click="btnMove_Click" 
-            />
+            Click="btnMove_Click" />
         <Button 
             x:Name="btnMoveCW" 
             Content="+" 
@@ -81,21 +90,23 @@
             FontWeight="Bold" 
             VerticalAlignment="Center" 
             Height="27"/>
-        <Button x:Name="tbtnAbsMode" 
-                Grid.Column="5"
-                Height="27" 
-                Margin="3,0"
-                VerticalAlignment="Center"
-                Content="{Binding MoveArgs.Mode}" 
-                Click="tbtnAbsMode_Click" 
-                Foreground="{Binding MoveArgs.Mode, Converter={StaticResource ConvertMoveModeToSolidColorBrush}, Mode=OneWay}"/>
-        <Button x:Name="tbtnManualEnable" 
-                Content="{Binding PhysicalAxisInst.IsManualEnabled, Converter={StaticResource ConvertManualEnabledToCaption}}" 
-                Grid.Column="3" 
-                Margin="3,0" 
-                HorizontalContentAlignment="Center" 
-                VerticalAlignment="Center" 
-                Height="27" 
-                Foreground="{Binding PhysicalAxisInst.IsManualEnabled, Converter={StaticResource ConvertBoolToSolidColorBrush}, Mode=OneWay}"/>
+        <Button 
+            x:Name="tbtnAbsMode" 
+            Grid.Column="5"
+            Height="27" 
+            Margin="3,0"
+            VerticalAlignment="Center"
+            Content="{Binding MoveArgs.Mode}" 
+            Click="tbtnAbsMode_Click" 
+            Foreground="{Binding MoveArgs.Mode, Converter={StaticResource ConvertMoveModeToSolidColorBrush}, Mode=OneWay}"/>
+        <Button 
+            x:Name="tbtnManualEnable" 
+            Content="{Binding PhysicalAxisInst.IsManualEnabled, Converter={StaticResource ConvertManualEnabledToCaption}}" 
+            Grid.Column="3" 
+            Margin="3,0" 
+            HorizontalContentAlignment="Center" 
+            VerticalAlignment="Center" 
+            Height="27" 
+            Foreground="{Binding PhysicalAxisInst.IsManualEnabled, Converter={StaticResource ConvertBoolToSolidColorBrush}, Mode=OneWay}"/>
     </Grid>
 </UserControl>

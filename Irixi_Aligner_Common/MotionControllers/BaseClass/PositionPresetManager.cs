@@ -148,8 +148,8 @@ namespace Irixi_Aligner_Common.MotionControllers.Base
             foreach (var laxis in MotionComponent)
             {
                 var a = laxis.MoveArgs.Clone() as AxisMoveArgs;
+                a.Distance = laxis.PhysicalAxisInst.UnitHelper.RelPosition;
                 a.IsMoveable = true;
-                //a.MaxMoveOrder = MotionComponent.Count;
                 a.MoveOrder = 1;
                 arg.Add(a);
             }

@@ -32,7 +32,7 @@ namespace Irixi_Aligner_Common.MotionControllers.Base
         /// <param name="DecimalPlacesDisplayed">How many decimal places will be displayed on the window</param>
         public RealworldUnitManager(double TravelDistance, double Resolution, UnitType Unit = UnitType.mm, int DecimalPlacesDisplayed = 2)
         {
-            this.DecimalPlacesDisplayed = this.DecimalPlacesDisplayed;
+            this.DecimalPlacesDisplayed = DecimalPlacesDisplayed;
             this.Unit = Unit;
             this.TravelDistance = TravelDistance;
             this.Resolution = Resolution;
