@@ -1,11 +1,9 @@
-﻿using Irixi_Aligner_Common.Classes.BaseClass;
-using Irixi_Aligner_Common.Configuration;
-using Irixi_Aligner_Common.Configuration.MotionController;
-using System.Threading.Tasks;
+﻿using Irixi_Aligner_Common.Configuration.MotionController;
+using Irixi_Aligner_Common.MotionControllers.Base;
 
 namespace Irixi_Aligner_Common.Interfaces
 {
-    public interface IAxis
+    public interface IAxis : IHashable
     {
         #region Properties
         /// <summary>
@@ -20,6 +18,7 @@ namespace Irixi_Aligner_Common.Interfaces
 
         /// <summary>
         /// Indicates that whether the axis is used to align the components
+        /// If it's true, it will be shown in the window like AlignmentnD, Blind Search, etc.
         /// </summary>
         bool IsAligner { get; }
 
@@ -82,7 +81,7 @@ namespace Irixi_Aligner_Common.Interfaces
         /// <summary>
         /// Get the unithelper to convert position in step to position to real-world unit
         /// </summary>
-        RealworldPositionManager UnitHelper { get; }
+        RealworldUnitManager UnitHelper { get; }
 
         /// <summary>
         /// Get the last error
@@ -92,10 +91,18 @@ namespace Irixi_Aligner_Common.Interfaces
         /// <summary>
         /// Get the parent motiong controller
         /// </summary>
-        IMotionController ParentController { get; }
+        IMotionController Parent { get; }
         #endregion
 
         #region Methods
+        /// <summary>
+        /// Set the parameters defined in the setting file
+        /// </summary>
+        /// <param name="AxisIndex"></param>
+        /// <param name="Config"></param>
+        /// <param name="Controller"></param>
+        void SetParameters(int AxisIndex, ConfigPhysicalAxis Config, IMotionController Controller);
+
         /// <summary>
         /// Lock the axis before any operation
         /// </summary>
@@ -106,29 +113,11 @@ namespace Irixi_Aligner_Common.Interfaces
         /// Unlock the axis after any operation
         /// </summary>
         void Unlock();
-
-        /// <summary>
-        /// Set the parameters once the class is instantiated
-        /// </summary>
-        /// <param name="AxisIndex"></param>
-        /// <param name="Config"></param>
-        /// <param name="Controller"></param>
-        void SetParameters(int AxisIndex, ConfigPhysicalAxis Config, IMotionController Controller);
-
         /// <summary>
         /// Start a task to home the axis
         /// </summary>
         /// <returns></returns>
         bool Home();
-
-        /// <summary>
-        /// Start to move the axis by steps
-        /// </summary>
-        /// <param name="Mode">ABS/REL</param>
-        /// <param name="Speed">1 ~ 100</param>
-        /// <param name="Steps">The steps to move</param>
-        /// <returns></returns>
-        bool Move(MoveMode Mode, int Speed, int Steps);
 
         /// <summary>
         /// Start to move the axis by real world distance
@@ -144,33 +133,11 @@ namespace Irixi_Aligner_Common.Interfaces
         /// </summary>
         /// <param name="Mode">ABS/REL</param>
         /// <param name="Speed">1 ~ 100</param>
-        /// <param name="Steps">The steps to move</param>
-        /// <param name="Interval">The steps between adjacent trigger pulse, in steps</param>
-        /// <param name="Channel">The trigger channel</param>
-        /// <returns></returns>
-        bool MoveWithTrigger(MoveMode Mode, int Speed, int Steps, int Interval, int Channel);
-
-        /// <summary>
-        /// Start a task to move the axis and output a series of trigger pulses on the specified channel(I/O)
-        /// </summary>
-        /// <param name="Mode">ABS/REL</param>
-        /// <param name="Speed">1 ~ 100</param>
         /// <param name="Distance">The real world distance to move</param>
         /// <param name="Interval">The distance between adjacent trigger pulse</param>
         /// <param name="Channel">The trigger channel</param>
         /// <returns></returns>
         bool MoveWithTrigger(MoveMode Mode, int Speed, double Distance, double Interval, int Channel);
-
-        /// <summary>
-        /// Start a task to move the axis and activate a series of conversion with the specified adc
-        /// </summary>
-        /// <param name="Mode">ABS/REL</param>
-        /// <param name="Speed">1 ~ 100</param>
-        /// <param name="Steps">The steps to move</param>
-        /// <param name="Interval">The steps between adjacent ADC conversion</param>
-        /// <param name="AdcIndex">The channle of ADC</param>
-        /// <returns></returns>
-        bool MoveWithInnerADC(MoveMode Mode, int Speed, int Steps, int Interval, int Channel);
 
         /// <summary>
         /// Start a task to move the axis and activate a series of conversion with the specified adc

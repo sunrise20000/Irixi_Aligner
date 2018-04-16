@@ -9,7 +9,7 @@ using System.Windows;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Irixi")]
 [assembly: AssemblyProduct("Irixi_Aligner_Common")]
-[assembly: AssemblyCopyright("Copyright © 2016 - 2017 Irixi")]
+[assembly: AssemblyCopyright("Copyright © 2016 - 2018 Irixi")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 // Setting ComVisible to false makes the types in this assembly not visible 
@@ -41,5 +41,5 @@ using System.Windows;
 // You can specify all the values or you can default the Build and Revision Numbers 
 // by using the '*' as shown below:
 // [assembly: AssemblyVersion("1.0.*")]
-[assembly: AssemblyVersion("1.1.1.8")]
-[assembly: AssemblyFileVersion("1.1.1.8")]
+[assembly: AssemblyVersion("1.1.2.9")]
+[assembly: AssemblyFileVersion("1.1.2.9")]

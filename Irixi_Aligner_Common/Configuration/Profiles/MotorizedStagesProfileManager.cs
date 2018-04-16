@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Linq;
-using static Irixi_Aligner_Common.Classes.BaseClass.RealworldPositionManager;
+using Irixi_Aligner_Common.MotionControllers.Base;
 
 namespace Irixi_Aligner_Common.Configuration
 {
@@ -56,7 +56,7 @@ namespace Irixi_Aligner_Common.Configuration
     public class MotorizedStageProfile : ICloneable
     {
         public string Model { set; get; }
-        public UnitType Unit { set; get; }
+        public RealworldUnitManager.UnitType Unit { set; get; }
         public double Resolution { set; get; }
         public double TravelDistance { set; get; }
 
@@ -64,51 +64,53 @@ namespace Irixi_Aligner_Common.Configuration
         /// recalculate the parameters if the unit is changed
         /// </summary>
         /// <param name="TargetUnit"></param>
-        public void ChangeUnit(UnitType TargetUnit)
+        public void ChangeUnit(RealworldUnitManager.UnitType TargetUnit)
         {
-            // Convert to nm & sec
+            // STEP 1
+            //  Convert to nm & sec
             switch (this.Unit)
             {
-                case UnitType.mm:
+                case RealworldUnitManager.UnitType.mm:
                     TravelDistance *= 1000000.0;
                     Resolution *= 1000000.0;
                     break;
 
-                case UnitType.um:
+                case RealworldUnitManager.UnitType.um:
                     TravelDistance *= 1000.0;
                     Resolution *= 1000.0;
                     break;
 
-                case UnitType.deg:
+                case RealworldUnitManager.UnitType.deg:
                     TravelDistance *= 3600.0;
                     Resolution *= 3600.0;
                     break;
 
-                case UnitType.min:
+                case RealworldUnitManager.UnitType.min:
                     TravelDistance *= 60.0;
                     Resolution *= 60.0;
                     break;
             }
 
-            // Convert to the specified unit
+            // STEP 2
+            //  Convert to the specified unit
             switch (TargetUnit)
             {
-                case UnitType.mm:
+                case RealworldUnitManager.UnitType.mm:
                     TravelDistance /= 1000000.0;
                     Resolution /= 1000000.0;
                     break;
 
-                case UnitType.um:
+                case RealworldUnitManager.UnitType.um:
                     TravelDistance /= 1000.0;
                     Resolution /= 1000.0;
                     break;
 
-                case UnitType.deg:
+                case RealworldUnitManager.UnitType.deg:
                     TravelDistance /= 3600.0;
                     Resolution /= 3600.0;
                     break;
 
-                case UnitType.min:
+                case RealworldUnitManager.UnitType.min:
                     TravelDistance /= 60.0;
                     Resolution /= 60.0;
                     break;

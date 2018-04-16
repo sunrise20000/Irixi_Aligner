@@ -16,13 +16,22 @@ namespace Irixi_Aligner_Common.Message
     {
         protected override void OnCollectionChanged(NotifyCollectionChangedEventArgs e)
         {
-            
             base.OnCollectionChanged(e);
             if(e.Action == NotifyCollectionChangedAction.Add)
             {
                 var msg = e.NewItems[0] as MessageItem;
                 LogHelper.WriteLine(msg.Message, msg.Type == MessageType.Error ? LogHelper.LogType.ERROR : LogHelper.LogType.NORMAL);
+
+                if (Items.Count > 100)
+                {
+                    for (int i = 0; i < 50; i++)
+                    {
+                        Items.RemoveAt(0);
+                    }
+                    OnCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset));
+                }
             }
+            
         }
     }
 

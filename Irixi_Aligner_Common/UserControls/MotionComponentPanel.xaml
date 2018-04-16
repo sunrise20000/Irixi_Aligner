@@ -48,12 +48,10 @@
             <!-- binding ItemsSourct to UserControl's DataContext 
             the type of datacontext is LogicalMotionComponent-->
             
-            <ItemsControl ItemsSource="{Binding LogicalAxisCollection}">
+            <ItemsControl ItemsSource="{Binding}">
                 <ItemsControl.ItemTemplate>
                     <DataTemplate>
-                        <local:Axis 
-                            Style="{StaticResource AxisStyle}"
-                            LogicalAxis="{Binding}"/>
+                        <local:Axis Style="{StaticResource AxisStyle}"/>
                     </DataTemplate>
                 </ItemsControl.ItemTemplate>
             </ItemsControl>

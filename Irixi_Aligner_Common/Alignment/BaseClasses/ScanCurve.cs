@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
+using System.ComponentModel;
 using System.Linq;
+using System.Text;
 using System.Windows;
 using System.Windows.Media;
 using MathNet.Numerics;
@@ -101,7 +103,9 @@ namespace Irixi_Aligner_Common.Alignment.BaseClasses
             {
                 FittingCurve.DisplayName = value;
                 MaxPowerConstantLine.DisplayName = value;
-                UpdateProperty(ref displayName, value);
+                // UpdateProperty(ref displayName, value);
+                displayName = value;
+                OnPropertyChanged(new PropertyChangedEventArgs("DisplayName"));
             }
             get
             {
@@ -315,6 +319,7 @@ namespace Irixi_Aligner_Common.Alignment.BaseClasses
 
             return maxPoint;
         }
+        
 
         #endregion
 

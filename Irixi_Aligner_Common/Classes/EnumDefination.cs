@@ -1,11 +1,5 @@
 ﻿namespace Irixi_Aligner_Common
 {
-    public enum MoveDirection
-    {
-        FORWARD,
-        BACKWARD
-    }
-
     public enum MoveMode
     {
         ABS,
@@ -16,5 +10,12 @@
     {
         IDLE,
         BUSY
+    }
+
+    public enum MotionControllerType
+    {
+        LUMINOS_P6A,
+        THORLABS_TDC001,
+        IRIXI_EE0017
     }
 }

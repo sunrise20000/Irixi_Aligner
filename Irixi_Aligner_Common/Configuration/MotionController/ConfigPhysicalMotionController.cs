@@ -13,7 +13,7 @@ namespace Irixi_Aligner_Common.Configuration.MotionController
         /// <summary>
         /// Get the model of controller defined by ControllerType
         /// </summary>
-        public MotionControllerModel Model { get; set; }
+        public MotionControllerType Model { get; set; }
 
         /// <summary>
         /// Get the communication port of the controller.

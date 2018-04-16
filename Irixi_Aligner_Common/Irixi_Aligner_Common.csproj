@@ -59,8 +59,8 @@
     <ApplicationIcon>AlignerLogo.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="CommonServiceLocator, Version=2.0.1.0, Culture=neutral, PublicKeyToken=489b6accfaf20ef0, processorArchitecture=MSIL">
-      <HintPath>..\packages\CommonServiceLocator.2.0.1\lib\net45\CommonServiceLocator.dll</HintPath>
+    <Reference Include="CommonServiceLocator, Version=2.0.3.0, Culture=neutral, PublicKeyToken=489b6accfaf20ef0, processorArchitecture=MSIL">
+      <HintPath>..\packages\CommonServiceLocator.2.0.3\lib\net45\CommonServiceLocator.dll</HintPath>
     </Reference>
     <Reference Include="DevExpress.Charts.v17.1.Core, Version=17.1.3.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL" />
     <Reference Include="DevExpress.Data.v17.1, Version=17.1.3.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL" />
@@ -111,51 +111,42 @@
       <Private>False</Private>
     </Reference>
     <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
-      <HintPath>..\packages\EntityFramework.6.1.3\lib\net45\EntityFramework.dll</HintPath>
+      <HintPath>..\packages\EntityFramework.6.2.0\lib\net45\EntityFramework.dll</HintPath>
     </Reference>
     <Reference Include="EntityFramework.SqlServer, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
-      <HintPath>..\packages\EntityFramework.6.1.3\lib\net45\EntityFramework.SqlServer.dll</HintPath>
+      <HintPath>..\packages\EntityFramework.6.2.0\lib\net45\EntityFramework.SqlServer.dll</HintPath>
     </Reference>
-    <Reference Include="GalaSoft.MvvmLight, Version=5.3.0.19026, Culture=neutral, PublicKeyToken=e7570ab207bcb616, processorArchitecture=MSIL">
-      <HintPath>..\packages\MvvmLightLibs.5.3.0.0\lib\net45\GalaSoft.MvvmLight.dll</HintPath>
+    <Reference Include="GalaSoft.MvvmLight, Version=5.4.1.0, Culture=neutral, PublicKeyToken=e7570ab207bcb616, processorArchitecture=MSIL">
+      <HintPath>..\packages\MvvmLightLibs.5.4.1\lib\net45\GalaSoft.MvvmLight.dll</HintPath>
     </Reference>
-    <Reference Include="GalaSoft.MvvmLight.Extras, Version=5.3.0.19032, Culture=neutral, PublicKeyToken=669f0b5e8f868abf, processorArchitecture=MSIL">
-      <HintPath>..\packages\MvvmLightLibs.5.3.0.0\lib\net45\GalaSoft.MvvmLight.Extras.dll</HintPath>
+    <Reference Include="GalaSoft.MvvmLight.Extras, Version=5.4.1.0, Culture=neutral, PublicKeyToken=669f0b5e8f868abf, processorArchitecture=MSIL">
+      <HintPath>..\packages\MvvmLightLibs.5.4.1\lib\net45\GalaSoft.MvvmLight.Extras.dll</HintPath>
     </Reference>
-    <Reference Include="GalaSoft.MvvmLight.Platform, Version=5.3.0.19032, Culture=neutral, PublicKeyToken=5f873c45e98af8a1, processorArchitecture=MSIL">
-      <HintPath>..\packages\MvvmLightLibs.5.3.0.0\lib\net45\GalaSoft.MvvmLight.Platform.dll</HintPath>
+    <Reference Include="GalaSoft.MvvmLight.Platform, Version=5.4.1.0, Culture=neutral, PublicKeyToken=5f873c45e98af8a1, processorArchitecture=MSIL">
+      <HintPath>..\packages\MvvmLightLibs.5.4.1\lib\net45\GalaSoft.MvvmLight.Platform.dll</HintPath>
     </Reference>
     <Reference Include="log4net, Version=1.2.9.0, Culture=neutral, PublicKeyToken=b32731d11ce58905">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>ExtDlls\log4net.dll</HintPath>
     </Reference>
-    <Reference Include="MathNet.Numerics, Version=3.20.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\MathNet.Numerics.3.20.0\lib\net40\MathNet.Numerics.dll</HintPath>
+    <Reference Include="MathNet.Numerics, Version=4.4.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\MathNet.Numerics.4.4.0\lib\net40\MathNet.Numerics.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="Microsoft.Practices.ServiceLocation, Version=1.3.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35" />
-    <Reference Include="Newtonsoft.Json, Version=10.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <HintPath>..\packages\Newtonsoft.Json.10.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
+    <Reference Include="Newtonsoft.Json, Version=11.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.11.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Configuration" />
     <Reference Include="System.Data" />
-    <Reference Include="System.Data.SQLite, Version=1.0.105.2, Culture=neutral, PublicKeyToken=db937bc2d44ff139, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.Data.SQLite.Core.1.0.105.2\lib\net451\System.Data.SQLite.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Data.SQLite.EF6, Version=1.0.105.2, Culture=neutral, PublicKeyToken=db937bc2d44ff139, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.Data.SQLite.EF6.1.0.105.2\lib\net451\System.Data.SQLite.EF6.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="System.Data.SQLite.Linq, Version=1.0.105.2, Culture=neutral, PublicKeyToken=db937bc2d44ff139, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.Data.SQLite.Linq.1.0.105.2\lib\net451\System.Data.SQLite.Linq.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
     <Reference Include="System.Drawing" />
+    <Reference Include="System.Numerics" />
+    <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Windows.Interactivity, Version=4.5.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\packages\MvvmLightLibs.5.3.0.0\lib\net45\System.Windows.Interactivity.dll</HintPath>
+      <HintPath>..\packages\MvvmLightLibs.5.4.1\lib\net45\System.Windows.Interactivity.dll</HintPath>
     </Reference>
     <Reference Include="System.Xml" />
     <Reference Include="System.Core" />
@@ -201,11 +192,28 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Classes\BaseClass\HashGenerator.cs" />
+    <Compile Include="Classes\BaseClass\MassMoveArgs.cs" />
+    <Compile Include="Classes\BaseClass\MassMoveArgsConverter.cs" />
     <Compile Include="Classes\BaseClass\ObservableCollectionEx2.cs" />
     <Compile Include="Classes\BaseClass\ObservableCollectionThreadSafe.cs" />
     <Compile Include="Classes\BaseClass\Property.cs" />
-    <Compile Include="Classes\BaseClass\RealworldPositionManager.cs" />
-    <Compile Include="Classes\BaseClass\PresetPosition.cs" />
+    <Compile Include="DialogService\DialogService.cs" />
+    <Compile Include="DialogService\DialogViewBase.cs" />
+    <Compile Include="DialogService\DialogWindow.xaml.cs">
+      <DependentUpon>DialogWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="DialogService\HomeConfirmDialog\HomeConfirmDialogView.xaml.cs">
+      <DependentUpon>HomeConfirmDialogView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="DialogService\HomeConfirmDialog\HomeConfirmDialogViewModel.cs" />
+    <Compile Include="DialogService\InputDialog\InputDialogView.xaml.cs">
+      <DependentUpon>InputDialogView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="DialogService\InputDialog\InputDialogViewModel.cs" />
+    <Compile Include="Interfaces\IHashable.cs" />
+    <Compile Include="MotionControllers\BaseClass\PositionPresetManager.cs" />
+    <Compile Include="MotionControllers\BaseClass\RealworldUnitManager.cs" />
     <Compile Include="Classes\Converters\BooleanToVisibility.cs" />
     <Compile Include="Classes\Converters\LogicalComponentToAxisCollection.cs" />
     <Compile Include="Classes\Converters\EnumToInt.cs" />
@@ -221,11 +229,10 @@
     </Compile>
     <Compile Include="UserControls\AlignmentFunc\ChartTypeSelector.cs" />
     <Compile Include="UserControls\AlignmentFunc\PropertyDefinitionTemplateSelector.cs" />
-    <Compile Include="Classes\SqliteDb.cs" />
     <Compile Include="Configuration\Equipments\ConfigurationNewport2832C.cs" />
     <Compile Include="Docs\How to add new instrument to system.cs" />
-    <Compile Include="Windows\TestPurposeOnly.xaml.cs">
-      <DependentUpon>TestPurposeOnly.xaml</DependentUpon>
+    <Compile Include="UserControls\PresetPositionPanel.xaml.cs">
+      <DependentUpon>PresetPositionPanel.xaml</DependentUpon>
     </Compile>
     <None Include="Docs\Templates\new_instrument.cs.tmpl" />
     <Compile Include="Equipments\BaseClass\InstrumentBase.cs" />
@@ -246,9 +253,8 @@
     <Compile Include="MotionControllers\BaseClass\LogicalMotionComponent.cs" />
     <Compile Include="MotionControllers\BaseClass\LogicalAxis.cs" />
     <Compile Include="MotionControllers\BaseClass\MotionControllerBase.cs" />
-    <Compile Include="Classes\BaseClass\MoveArgs.cs" />
+    <Compile Include="Classes\BaseClass\AxisMoveArgs.cs" />
     <Compile Include="Classes\BaseClass\ObservableCollectionEx.cs" />
-    <Compile Include="Classes\CLSIDCheck.cs" />
     <Compile Include="Classes\Converters\MessageTypeToColor.cs" />
     <Compile Include="Classes\Converters\MessageTypeToImage.cs" />
     <Compile Include="Classes\Converters\JogPositionModeToText.cs" />
@@ -279,8 +285,8 @@
     <Compile Include="UserControls\AlignmentParamEditPanel.xaml.cs">
       <DependentUpon>AlignmentParamEditPanel.xaml</DependentUpon>
     </Compile>
-    <Compile Include="UserControls\Axis4MassMove.xaml.cs">
-      <DependentUpon>Axis4MassMove.xaml</DependentUpon>
+    <Compile Include="UserControls\AxisForMassMove.xaml.cs">
+      <DependentUpon>AxisForMassMove.xaml</DependentUpon>
     </Compile>
     <Compile Include="UserControls\Keithley2400ControlPanel.xaml.cs">
       <DependentUpon>Keithley2400ControlPanel.xaml</DependentUpon>
@@ -295,15 +301,8 @@
       <DependentUpon>TestPurposeOnly.xaml</DependentUpon>
     </Compile>
     <Compile Include="ViewModel\ViewKeithley2400.cs" />
-    <Compile Include="ViewModel\ViewMassMove.cs" />
     <Compile Include="ViewModel\ViewModelLocator.cs" />
     <Compile Include="ViewModel\ViewNewport2832c.cs" />
-    <Compile Include="Windows\InputBox.xaml.cs">
-      <DependentUpon>InputBox.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Windows\MassMoveWindow.xaml.cs">
-      <DependentUpon>MassMoveWindow.xaml</DependentUpon>
-    </Compile>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Classes\EnumDefination.cs" />
@@ -343,7 +342,6 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="install.bat" />
-    <None Include="my.db" />
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
@@ -352,6 +350,18 @@
     <AppDesigner Include="Properties\" />
   </ItemGroup>
   <ItemGroup>
+    <Page Include="DialogService\DialogWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="DialogService\HomeConfirmDialog\HomeConfirmDialogView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="DialogService\InputDialog\InputDialogView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Resources\ControlThemes.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -408,7 +418,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="UserControls\Axis4MassMove.xaml">
+    <Page Include="UserControls\AxisForMassMove.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -424,19 +434,11 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="UserControls\PresetPositionPanel.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="UserControls\TestPurposeOnly.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Windows\InputBox.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Windows\MassMoveWindow.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Windows\TestPurposeOnly.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -460,6 +462,8 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <Resource Include="Resources\Images\Icons\home_32x32.png" />
+    <Resource Include="Resources\Images\Icons\list_32x32.png" />
     <Resource Include="Resources\Images\Icons\alignmentnd_32x32.png" />
     <Resource Include="Resources\Images\Icons\alignmentnd_512x512.png" />
     <Resource Include="Resources\Images\Icons\centralalign_32x32.png" />
@@ -505,13 +509,6 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <ProjectExtensions />
-  <Import Project="..\packages\System.Data.SQLite.Core.1.0.105.2\build\net451\System.Data.SQLite.Core.targets" Condition="Exists('..\packages\System.Data.SQLite.Core.1.0.105.2\build\net451\System.Data.SQLite.Core.targets')" />
-  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
-    <PropertyGroup>
-      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
-    </PropertyGroup>
-    <Error Condition="!Exists('..\packages\System.Data.SQLite.Core.1.0.105.2\build\net451\System.Data.SQLite.Core.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\System.Data.SQLite.Core.1.0.105.2\build\net451\System.Data.SQLite.Core.targets'))" />
-  </Target>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it.
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">

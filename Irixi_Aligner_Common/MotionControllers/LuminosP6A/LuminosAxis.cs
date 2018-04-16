@@ -1,4 +1,6 @@
-﻿using Irixi_Aligner_Common.Message;
+﻿using Irixi_Aligner_Common.Configuration.MotionController;
+using Irixi_Aligner_Common.Interfaces;
+using Irixi_Aligner_Common.Message;
 using Irixi_Aligner_Common.MotionControllers.Base;
 using Zaber;
 
@@ -7,6 +9,7 @@ namespace Irixi_Aligner_Common.MotionControllers.Luminos
     public class LuminosAxis : AxisBase
     {
         #region Constructors
+
 
         #endregion
 

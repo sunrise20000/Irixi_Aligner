@@ -23,10 +23,6 @@ namespace Irixi_Aligner_Common.Interfaces
 
         double Fetch(int Channel);
 
-        Task<double> FetchAsync();
-
-        Task<double> FetchAsync(int Channel);
-
         void StartAutoFetching();
 
         void StopAutoFetching();

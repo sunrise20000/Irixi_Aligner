@@ -23,7 +23,6 @@ namespace Irixi_Aligner_Common.MotionControllers.Luminos
 
             if (Config.Enabled)
             {
-
                 _zaber_port_facade = new ZaberPortFacade()
                 {
                     DefaultDeviceType = new DeviceType() { Commands = new List<CommandInfo>() },
@@ -53,7 +52,7 @@ namespace Irixi_Aligner_Common.MotionControllers.Luminos
             // if the command relative to position is received, flush the AbsPosition of axis 
             int device = e.DeviceMessage.DeviceNumber;
 
-            if (FindAxisByName(device.ToString()) is LuminosAxis axis)
+            if (this[device.ToString()] is LuminosAxis axis)
             {
                 switch (e.DeviceMessage.Command)
                 {
@@ -77,13 +76,13 @@ namespace Irixi_Aligner_Common.MotionControllers.Luminos
         #endregion
 
         #region Methods
-        protected override bool CustomInitProcess()
+        protected override bool InitProcess()
         {
-            bool _init_ret = true;
+            bool initRet = true;
 
             try
             {
-                _zaber_port_facade.Open(_config.Port);
+                _zaber_port_facade.Open(Port);
                 Thread.Sleep(1000);
 
                 if (_zaber_port_facade.Conversations.Count > 1)
@@ -92,14 +91,15 @@ namespace Irixi_Aligner_Common.MotionControllers.Luminos
                     // The axes of the luminos p6a have been found
                     foreach (var conversation in _zaber_port_facade.Conversations)
                     {
-
                         if (conversation is ConversationCollection) // this conversation with device number 0 is used to control all axis
                         {
                             _zaber_conversation_collection = conversation as ConversationCollection;
                         }
                         else
                         {
-                            if (FindAxisByName(conversation.Device.DeviceNumber.ToString()) is LuminosAxis _axis)
+                            string axisID = conversation.Device.DeviceNumber.ToString();
+                            
+                            if (this[conversation.Device.DeviceNumber.ToString()] is LuminosAxis _axis)
                             {
                                 _axis.RegisterZaberConversation(conversation);
 
@@ -108,7 +108,7 @@ namespace Irixi_Aligner_Common.MotionControllers.Luminos
                             else
                             {
                                 LogHelper.WriteLine("**ERROR** The device number {0} reported by luminos sdk is not defined in the config file.", conversation.Device.DeviceNumber);
-                                _init_ret = false;
+                                initRet = false;
                             }
                         }
                     }
@@ -116,17 +116,17 @@ namespace Irixi_Aligner_Common.MotionControllers.Luminos
                 else // no axis was found by the sdk
                 {
                     _zaber_port_facade.Close();
-                    LogHelper.WriteLine("**ERROR** No axis was found by the zaber sdk.");
-                    _init_ret = false;
+                    LogHelper.WriteLine("**ERROR** No axis was found.");
+                    initRet = false;
                 }
 
 
-                if (_init_ret == false)
+                if (initRet == false)
                     this.LastError = "we encountered some problem while initializing the device, please see the log file for detail information.";
                 else
                     this.IsInitialized = true;
 
-                return _init_ret;
+                return initRet;
 
             }
             catch (Exception ex)
@@ -136,7 +136,7 @@ namespace Irixi_Aligner_Common.MotionControllers.Luminos
             }
         }
         
-        protected override bool CustomHomeProcess(Interfaces.IAxis Axis)
+        protected override bool HomeProcess(Interfaces.IAxis Axis)
         {
             bool ret = false;
             LuminosAxis _axis = Axis as LuminosAxis;
@@ -182,7 +182,7 @@ namespace Irixi_Aligner_Common.MotionControllers.Luminos
             return ret;
         }
 
-        protected override bool CustomMoveProcess(Interfaces.IAxis Axis, MoveMode Mode, int Speed, int Distance)
+        protected override bool MoveProcess(Interfaces.IAxis Axis, MoveMode Mode, int Speed, int Distance)
         {
             LuminosAxis axis = Axis as LuminosAxis;
 

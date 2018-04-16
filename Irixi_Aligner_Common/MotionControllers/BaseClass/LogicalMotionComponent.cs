@@ -1,17 +1,26 @@
-﻿using System.Collections.ObjectModel;
+﻿using System;
+using System.Collections.ObjectModel;
+using System.Text;
+using Irixi_Aligner_Common.Classes.BaseClass;
+using Irixi_Aligner_Common.Interfaces;
 
 namespace Irixi_Aligner_Common.MotionControllers.Base
 {
 
-    public class LogicalMotionComponent
+    public class LogicalMotionComponent : ObservableCollection<LogicalAxis>, IHashable
     {
+        #region Constructors
+
         public LogicalMotionComponent(string Caption, string Icon, bool IsAligner)
         {
             this.Caption = Caption;
             this.Icon = Icon;
             this.IsAligner = IsAligner;
-            LogicalAxisCollection = new ObservableCollection<LogicalAxis>();
         }
+
+        #endregion
+        
+        #region Properties
 
         /// <summary>
         /// Get the component name displayed caption of document panel
@@ -27,32 +36,37 @@ namespace Irixi_Aligner_Common.MotionControllers.Base
         /// Get whether the motion component is the alignment component
         /// </summary>
         public bool IsAligner { private set; get; }
-   
+
+        #endregion
+
+        #region Methods
+
         /// <summary>
-        /// Get the collection contains logical axes, 
-        /// these axes are defined in the json file.
+        /// Move a set of axes
         /// </summary>
-        public ObservableCollection<LogicalAxis> LogicalAxisCollection
+        /// <returns></returns>
+        public void MoveToPresetPosition(MassMoveArgs Args)
         {
-            private set;
-            get;
+            throw new NotImplementedException();
         }
 
-        public override int GetHashCode()
+        public string GetHashString()
         {
-            int _hashcode = 0;
-            foreach(var axis in LogicalAxisCollection)
+            StringBuilder factor = new StringBuilder();
+
+            foreach(var axis in this)
             {
-                _hashcode ^= axis.GetHashCode();
+                factor.Append(axis.GetHashString());
             }
 
-            _hashcode ^= this.LogicalAxisCollection.Count.GetHashCode();
-            return _hashcode;
+            return HashGenerator.GetHashSHA256(factor.ToString());
         }
 
         public override string ToString()
         {
             return this.Caption;
-        }
+        } 
+
+        #endregion
     }
 }

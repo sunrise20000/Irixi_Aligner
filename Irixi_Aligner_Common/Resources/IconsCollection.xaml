@@ -18,4 +18,6 @@
     <BitmapImage x:Key="IconSnake_32x32">Images/Icons/snake_32x32.png</BitmapImage>
     <BitmapImage x:Key="IconPlay_256x256">Images/Icons/play_256x256.png</BitmapImage>
     <BitmapImage x:Key="IconStop_256x256">Images/Icons/stop_256x256.png</BitmapImage>
+    <BitmapImage x:Key="IconList_32x32">Images/Icons/list_32x32.png</BitmapImage>
+    <BitmapImage x:Key="IconHome_32x32">Images/Icons/home_32x32.png</BitmapImage>
 </ResourceDictionary>

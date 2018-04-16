@@ -298,13 +298,13 @@ namespace IrixiStepperControllerHelper
                         {
                             Close();
 
-                            lastError = "cannot obtain the firmware information";
+                            lastError = "cannot get the firmware information";
                             OnConnectionStatusChanged?.Invoke(this, new ConnectionEventArgs(ConnectionEventArgs.EventType.ConnectionFailure, LastError));
                         }
                     }
                     else
                     {
-                        LastError = "cannot obtain the total axes";
+                        LastError = "cannot get the total axes";
                         OnConnectionStatusChanged?.Invoke(this, new ConnectionEventArgs(ConnectionEventArgs.EventType.ConnectionFailure, LastError));
                     }
                 }
@@ -340,7 +340,11 @@ namespace IrixiStepperControllerHelper
         /// </summary>
         public void Close()
         {
-            hidPort.DisconnectDevice();
+            if (this.IsConnected == true)
+            {
+                StopObtainHidReport();
+                hidPort.DisconnectDevice();
+            }
         }
         
         /// <summary>
@@ -832,8 +836,11 @@ namespace IrixiStepperControllerHelper
 
         public void Dispose()
         {
-            StopObtainHidReport();
-            hidPort.DisconnectDevice();
+            if (this.IsConnected == true)
+            {
+                StopObtainHidReport();
+                hidPort.DisconnectDevice();
+            }
         }
 
         #endregion

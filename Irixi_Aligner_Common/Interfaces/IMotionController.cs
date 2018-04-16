@@ -3,15 +3,7 @@ using System.Collections.Generic;
 
 namespace Irixi_Aligner_Common.Interfaces
 {
-
-    public enum MotionControllerModel
-    {
-        LUMINOS_P6A,
-        THORLABS_TDC001,
-        IRIXI_EE0017
-    }
-
-    public interface IMotionController : IEquipmentBase, IServiceSystem
+    public interface IMotionController : IEquipmentBase, IServiceSystem, IHashable
     {
         /// <summary>
         /// Raise the event after the Home/Move/etc. action begins
@@ -28,21 +20,23 @@ namespace Irixi_Aligner_Common.Interfaces
         /// <summary>
         /// Get the model of this controller.
         /// </summary>
-        MotionControllerModel Model { get; }
+        MotionControllerType Model { get; }
 
         /// <summary>
-        /// See <see cref="MotionControllers.MotionControllerBase{T}"/> for the detail of the usage
+        /// See <see cref="MotionControllers.MotionControllerBase"/> for the detail of the usage
         /// </summary>
         int BusyAxesCount { get; }
-
-        /// <summary>
-        /// Get or set the collection of axes
-        /// </summary>
-        Dictionary<string, IAxis> AxisCollection { get; }
 
         #endregion
 
         #region Methods
+
+        /// <summary>
+        /// Get the instance of physical axis object by axis name
+        /// </summary>
+        /// <param name="AxisName"></param>
+        /// <returns></returns>
+        IAxis GetAxisByName(string AxisName);
         
         /// <summary>
         /// <see cref="IAxis.Home"/> for more infomation
@@ -93,14 +87,6 @@ namespace Irixi_Aligner_Common.Interfaces
         /// <see cref="IAxis.Stop"/> for more infomation
         /// </summary>
         //void Stop();
-        
-
-        /// <summary>
-        /// Find the axis with the specified name
-        /// </summary>
-        /// <param name="Name"></param>
-        /// <returns></returns>
-        IAxis FindAxisByName(string Name);
 
         #endregion
     }

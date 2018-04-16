@@ -1,4 +1,14 @@
-﻿using GalaSoft.MvvmLight;
+﻿using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.ComponentModel;
+using System.Linq;
+using System.Reflection;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows;
+using System.Windows.Data;
+using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
 using GalaSoft.MvvmLight.Ioc;
 using GalaSoft.MvvmLight.Messaging;
@@ -19,15 +29,6 @@ using Irixi_Aligner_Common.MotionControllers.Base;
 using Irixi_Aligner_Common.MotionControllers.Irixi;
 using Irixi_Aligner_Common.MotionControllers.Luminos;
 using IrixiStepperControllerHelper;
-using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.ComponentModel;
-using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Data;
 
 namespace Irixi_Aligner_Common.Classes
 {
@@ -39,12 +40,16 @@ namespace Irixi_Aligner_Common.Classes
         MessageItem _lastmsg = null;
         MessageHelper _msg_helper = new MessageHelper();
         bool isInitialized = false;
-        readonly object _lock = new object();
 
         /// <summary>
         /// lock while set or get this.State
         /// </summary>
         readonly object lockSystemStatus = new object();
+
+        /// <summary>
+        /// Output put initialization messages
+        /// </summary>
+        public event EventHandler<string> InitProgressChanged;
 
         #endregion
 
@@ -59,6 +64,7 @@ namespace Irixi_Aligner_Common.Classes
 
             // read version from AssemblyInfo.cs
             Version version = Assembly.GetExecutingAssembly().GetName().Version;
+            SysVersion = version.ToString();
 
             // force to enable the log, otherwise the initial message could not be recored
             LogHelper.LogEnabled = true;
@@ -78,10 +84,10 @@ namespace Irixi_Aligner_Common.Classes
 
             // read the configuration from the file named SystemCfg.json
             // the file is located in \Configuration
-            ConfigManager conf_manager = SimpleIoc.Default.GetInstance<ConfigManager>();
+            ConfigManager configMgr = SimpleIoc.Default.GetInstance<ConfigManager>();
 
             // whether output the log
-            LogHelper.LogEnabled = conf_manager.ConfSystemSetting.LogEnabled;
+            LogHelper.LogEnabled = configMgr.ConfSystemSetting.LogEnabled;
 
             // initialize the properties
             BusyComponents = new List<IServiceSystem>();
@@ -93,7 +99,7 @@ namespace Irixi_Aligner_Common.Classes
             LogicalAlignerCollection = new ObservableCollectionEx<LogicalMotionComponent>();
             MeasurementInstrumentCollection = new ObservableCollectionEx<InstrumentBase>();
             orgActiveInstrumentCollection = new ObservableCollectionEx2<InstrumentBase>();
-            BindingOperations.EnableCollectionSynchronization(orgActiveInstrumentCollection, _lock);
+            BindingOperations.EnableCollectionSynchronization(orgActiveInstrumentCollection, lockSystemStatus);
 
             State = SystemState.BUSY;
 
@@ -107,26 +113,23 @@ namespace Irixi_Aligner_Common.Classes
              * enumerate all physical motion controllers defined in the config file,
              * and create the instance of the motion controller class.
              */
-            foreach (var conf in conf_manager.ConfSystemSetting.PhysicalMotionControllers)
+            foreach (var conf in configMgr.ConfSystemSetting.PhysicalMotionControllers)
             {
                 IMotionController motion_controller = null;
 
                 switch (conf.Model)
                 {
-                    case MotionControllerModel.LUMINOS_P6A:
+                    case MotionControllerType.LUMINOS_P6A:
                         motion_controller = new LuminosP6A(conf);
-                        motion_controller.OnMoveBegin += PhysicalMotionController_OnMoveBegin;
-                        motion_controller.OnMoveEnd += PhysicalMotionController_OnMoveEnd;
                         break;
 
-                    case MotionControllerModel.THORLABS_TDC001:
+                    case MotionControllerType.THORLABS_TDC001:
                         //TODO create the instance of thorlabs TDC001
                         break;
 
-                    case MotionControllerModel.IRIXI_EE0017:
+                    case MotionControllerType.IRIXI_EE0017:
                         motion_controller = new IrixiEE0017(conf);
-                        motion_controller.OnMoveBegin += PhysicalMotionController_OnMoveBegin;
-                        motion_controller.OnMoveEnd += PhysicalMotionController_OnMoveEnd;
+                        
                         ((IrixiEE0017)motion_controller).OnMessageReported += ((sender, message) =>
                         {
                             Application.Current.Dispatcher.Invoke(() =>
@@ -141,6 +144,9 @@ namespace Irixi_Aligner_Common.Classes
                         break;
                 }
 
+                motion_controller.OnMoveBegin += PhysicalMotionController_OnMoveBegin;
+                motion_controller.OnMoveEnd += PhysicalMotionController_OnMoveEnd;
+
                 // Add the controller to the dictionary<Guid, Controller>
                 if (motion_controller != null)
                 {
@@ -149,29 +155,26 @@ namespace Irixi_Aligner_Common.Classes
             }
 
             // create the instance of the Logical Motion Components
-            foreach (var cfg_motion_comp in conf_manager.ConfSystemSetting.LogicalMotionComponents)
+            foreach (var cfgLMC in configMgr.ConfSystemSetting.LogicalMotionComponents)
             {
-                LogicalMotionComponent comp = new LogicalMotionComponent(cfg_motion_comp.Caption, cfg_motion_comp.Icon, cfg_motion_comp.IsAligner);
-
-                int axis_id = 0;
-                foreach (var cfg_axis in cfg_motion_comp.LogicalAxisArray)
+                LogicalMotionComponent comp = new LogicalMotionComponent(cfgLMC.Caption, cfgLMC.Icon, cfgLMC.IsAligner);
+                
+                foreach (var cfgLogicalAxis in cfgLMC.LogicalAxisArray)
                 {
                     // new logical axis object will be added to the Logical Motion Component
-                    LogicalAxis axis = new LogicalAxis(this, cfg_axis, cfg_motion_comp.Caption, axis_id);
+                    LogicalAxis axis = new LogicalAxis(cfgLogicalAxis, cfgLMC.Caption);
 
                     axis.OnHomeRequsted += LogicalAxis_OnHomeRequsted;
                     axis.OnMoveRequsted += LogicalAxis_OnMoveRequsted;
                     axis.OnStopRequsted += LogicalAxis_OnStopRequsted;
 
-                    // bind the physical axis instance to logical axis object
+                    // bind the physical axis instance to logical axis
                     BindPhysicalAxis(axis);
 
-                    comp.LogicalAxisCollection.Add(axis);
+                    comp.Add(axis);
                     this.LogicalAxisCollection.Add(axis);
                     if (comp.IsAligner)
                         this.LogicalAxisInAlignerCollection.Add(axis);
-
-                    axis_id++;
                 }
 
                 this.LogicalMotionComponentCollection.Add(comp);
@@ -180,29 +183,28 @@ namespace Irixi_Aligner_Common.Classes
                     this.LogicalAlignerCollection.Add(comp);
             }
 
-            // create the instance of the cylinder
+            // create the instance of the cylinder controller
+            IrixiEE0017 controller = null;
             try
             {
-                if (conf_manager.ConfSystemSetting.Cylinder.Enabled)
-                {
-                    IrixiEE0017 ctrl = PhysicalMotionControllerCollection[Guid.Parse(conf_manager.ConfSystemSetting.Cylinder.Port)] as IrixiEE0017;
-                    CylinderController = new CylinderController(conf_manager.ConfSystemSetting.Cylinder, ctrl);
-                }
+                controller =  PhysicalMotionControllerCollection[Guid.Parse(configMgr.ConfSystemSetting.Cylinder.Port)] as IrixiEE0017;
             }
-            catch (Exception e)
+            catch
             {
-                this.LastMessage = new MessageItem(MessageType.Error, "Unable to initialize the cylinder controller, {0}", e.Message);
+                this.LastMessage = new MessageItem(MessageType.Error, "Unable to find the attached motion controller as the cylinder controller");
             }
 
+            CylinderController = new CylinderController(configMgr.ConfSystemSetting.Cylinder, controller);
+
             // create instance of the keithley 2400
-            foreach (var cfg in conf_manager.ConfSystemSetting.Keithley2400s)
+            foreach (var cfg in configMgr.ConfSystemSetting.Keithley2400s)
             {
                 if(cfg.Enabled)
                     MeasurementInstrumentCollection.Add(new Keithley2400(cfg));
             }
 
             // create instance of the newport 2832C
-            foreach (var cfg in conf_manager.ConfSystemSetting.Newport2832Cs)
+            foreach (var cfg in configMgr.ConfSystemSetting.Newport2832Cs)
             {
                 if (cfg.Enabled)
                     MeasurementInstrumentCollection.Add(new Newport2832C(cfg));
@@ -215,37 +217,39 @@ namespace Irixi_Aligner_Common.Classes
 
         void LogicalAxis_OnHomeRequsted(object sender, EventArgs args)
         {
-            var s = sender as MotionControllers.Base.LogicalAxis;
+            var s = sender as LogicalAxis;
             Home(s.PhysicalAxisInst);
         }
 
-        void LogicalAxis_OnMoveRequsted(object sender, MoveByDistanceArgs args)
+        void LogicalAxis_OnMoveRequsted(object sender, AxisMoveArgs args)
         {
-            var s = sender as MotionControllers.Base.LogicalAxis;
+            var s = sender as LogicalAxis;
             MoveLogicalAxis(s, args);
         }
 
         void LogicalAxis_OnStopRequsted(object sender, EventArgs args)
         {
-            var s = sender as MotionControllers.Base.LogicalAxis;
+            var s = sender as LogicalAxis;
             s.PhysicalAxisInst.Stop();
         }
 
         void PhysicalMotionController_OnMoveBegin(object sender, EventArgs args)
         {
-            var obj = (IServiceSystem)sender;
-            RegisterBusyComponent(obj);
+            var imbusy = (IServiceSystem)sender;
+            RegisterBusyComponent(imbusy);
         }
 
         void PhysicalMotionController_OnMoveEnd(object sender, EventArgs args)
         {
-            var obj = (IServiceSystem)sender;
-            DeregisterBusyComponent(obj);
+            var imfree = (IServiceSystem)sender;
+            UnregisterBusyComponent(imfree);
         }
 
         #endregion
 
         #region Properties
+
+        public string SysVersion { get; private set; }
 
         /// <summary>
         /// Get or set the list of the busy devices/processes, this list is used to stop the busy devices or processes such as alignment process, user-process, etc.
@@ -422,24 +426,40 @@ namespace Irixi_Aligner_Common.Classes
 
         #region Private Methods
 
-        /// <summary>
-        /// Add the busy object to the list to stop it
-        /// </summary>
-        /// <param name="Obj"></param>
-        void RegisterBusyComponent(IServiceSystem Obj)
+        private void SetSystemState(SystemState State)
         {
-            if (!BusyComponents.Contains(Obj))
-                BusyComponents.Add(Obj);
+            lock (lockSystemStatus)
+            {
+                this.State = State;
+            }
+        }
+
+        private SystemState GetSystemState()
+        {
+            lock (lockSystemStatus)
+            {
+                return this.State;
+            }
         }
 
         /// <summary>
-        /// Remove the busy object from the list which has been stopped
+        /// Indicates which components should be stoped if #STOP button clicked
         /// </summary>
-        /// <param name="Obj"></param>
-        void DeregisterBusyComponent(IServiceSystem Obj)
+        /// <param name="BusyGuy"></param>
+        private void RegisterBusyComponent(IServiceSystem BusyGuy)
         {
-            if (BusyComponents.Contains(Obj))
-                BusyComponents.Remove(Obj);
+            if (!BusyComponents.Contains(BusyGuy))
+                BusyComponents.Add(BusyGuy);
+        }
+
+        /// <summary>
+        /// Remove the busy component
+        /// </summary>
+        /// <param name="BusyGuy"></param>
+        private void UnregisterBusyComponent(IServiceSystem BusyGuy)
+        {
+            if (BusyComponents.Contains(BusyGuy))
+                BusyComponents.Remove(BusyGuy);
         }
 
         /// <summary>
@@ -448,7 +468,7 @@ namespace Irixi_Aligner_Common.Classes
         /// <param name="ParentAligner">which logical aligner belongs to</param>
         /// <param name="Axis"></param>
         /// <returns></returns>
-        bool BindPhysicalAxis(MotionControllers.Base.LogicalAxis Axis)
+        private bool BindPhysicalAxis(LogicalAxis Axis)
         {
             bool ret = false;
 
@@ -457,7 +477,7 @@ namespace Irixi_Aligner_Common.Classes
             {
                 // find the axis in the specified controller by the axis name
                 // and bind the physical axis to the logical axis
-                Axis.PhysicalAxisInst = this.PhysicalMotionControllerCollection[Axis.Config.DeviceClass].FindAxisByName(Axis.Config.AxisName);
+                Axis.PhysicalAxisInst = this.PhysicalMotionControllerCollection[Axis.Config.DeviceClass].GetAxisByName(Axis.Config.AxisName);
 
                 if (Axis.PhysicalAxisInst == null) // if the physical axis was not found
                 {
@@ -484,27 +504,11 @@ namespace Irixi_Aligner_Common.Classes
 
             return ret;
         }
-
-        void SetSystemState(SystemState State)
-        {
-            lock (lockSystemStatus)
-            {
-                this.State = State;
-            }
-        }
-
-        SystemState GetSystemState()
-        {
-            lock (lockSystemStatus)
-            {
-                return this.State;
-            }
-        }
-
+        
         /// <summary>
         /// Start running user program
         /// </summary>
-        void Start()
+        private void Start()
         {
             //TODO here we should judge whether the auto-program is paused or not
             // if the auto-program is not worked and an auto-program has been selected, run it;
@@ -514,7 +518,7 @@ namespace Irixi_Aligner_Common.Classes
         /// <summary>
         /// Stop the moving axes or stop running the user program
         /// </summary>
-        void Stop()
+        private void Stop()
         {
             List<Task> tasks = new List<Task>();
 
@@ -544,7 +548,7 @@ namespace Irixi_Aligner_Common.Classes
         /// Start a specified alignment process asynchronously, all alignment process will be started by this common function
         /// </summary>
         /// <param name="AlignHandler"></param>
-        async void StartAlignmentProc(AlignmentBase AlignHandler)
+        private async void StartAlignmentProc(AlignmentBase AlignHandler)
         {
             if (GetSystemState() == SystemState.IDLE)
             {
@@ -565,7 +569,7 @@ namespace Irixi_Aligner_Common.Classes
                         this.LastMessage = new MessageItem(
                             MessageType.Error,
                             string.Format("{0} Error, {1}", AlignHandler, "the argument can not be null."));
-                        PostErrorMessageToFrontEnd(this.LastMessage.Message);
+                        PostErrorMessage(this.LastMessage.Message);
                     }
                     else
                     {
@@ -585,7 +589,7 @@ namespace Irixi_Aligner_Common.Classes
                 catch (Exception ex)
                 {
                     this.LastMessage = new MessageItem(MessageType.Error, string.Format("{0} Error, {1}", AlignHandler, ex.Message));
-                    PostErrorMessageToFrontEnd(this.LastMessage.Message);
+                    PostErrorMessage(this.LastMessage.Message);
                 }
                 finally
                 {
@@ -607,17 +611,25 @@ namespace Irixi_Aligner_Common.Classes
             }
         }
 
-
         /// <summary>
-        /// Post the error message by Mvvmlight.Messenger class
+        /// Post the error message to the UI
         /// </summary>
         /// <param name="Message"></param>
-        void PostErrorMessageToFrontEnd(string Message)
+        private void PostErrorMessage(string Message)
         {
             Messenger.Default.Send<NotificationMessage<string>>(new NotificationMessage<string>(
                         this,
                         Message,
                         "ERROR"));
+        }
+
+        /// <summary>
+        /// Output init messages
+        /// </summary>
+        /// <param name="Message"></param>
+        private void PostInitMessage(string Message)
+        {
+            InitProgressChanged?.Invoke(this, Message);
         }
 
         #endregion
@@ -635,6 +647,8 @@ namespace Irixi_Aligner_Common.Classes
             SetSystemState(SystemState.BUSY);
 
             #region Initialize motion controllers
+
+            PostInitMessage("Initializing motion controllers ...");
 
             // initialize all motion controllers simultaneously
             foreach (var controller in this.PhysicalMotionControllerCollection.Values)
@@ -685,27 +699,25 @@ namespace Irixi_Aligner_Common.Classes
 
             #region Initialize the other equipments
 
-            // initialize the cylinder controller
-            if (CylinderController.IsEnabled)
-            {
-                _tasks.Add(Task.Factory.StartNew(this.CylinderController.Init));
-                _equipments.Add(this.CylinderController);
+            PostInitMessage("Initializing cylinder controller ...");
 
-                this.LastMessage = new MessageItem(MessageType.Normal, "{0} Initializing ...", this.CylinderController);
-            }
+            // initialize the cylinder controller
+            _tasks.Add(Task.Factory.StartNew(this.CylinderController.Init));
+            _equipments.Add(this.CylinderController);
+            this.LastMessage = new MessageItem(MessageType.Normal, "{0} Initializing ...", this.CylinderController);
+
+
+            PostInitMessage("Initializing measurement instruments ...");
 
             // initizlize the measurement instruments defined in the config file
             // the instruments initialized successfully will be added to the collection #ActiveInstrumentCollection
             foreach (var instr in this.MeasurementInstrumentCollection)
             {
-                if (instr.IsEnabled)
-                {
-                    _tasks.Add(Task.Factory.StartNew(instr.Init));
-                    _equipments.Add(instr);
-
-                    this.LastMessage = new MessageItem(MessageType.Normal, "{0} Initializing ...", instr);
-                }
+                _tasks.Add(Task.Factory.StartNew(instr.Init));
+                _equipments.Add(instr);
+                this.LastMessage = new MessageItem(MessageType.Normal, "{0} Initializing ...", instr);
             }
+
 
             while (_tasks.Count > 0)
             {
@@ -747,16 +759,13 @@ namespace Irixi_Aligner_Common.Classes
         /// </summary>
         /// <param name="Axis"></param>
         /// <param name="Args"></param>
-        public async void MoveLogicalAxis(LogicalAxis Axis, MoveByDistanceArgs Args)
+        public async void MoveLogicalAxis(LogicalAxis Axis, AxisMoveArgs Args)
         {
             if (GetSystemState() != SystemState.BUSY)
             {
                 SetSystemState(SystemState.BUSY);
 
-                this.LastMessage = new MessageItem(MessageType.Normal, "{0} Move with argument {1}{2} ...",
-                    Axis,
-                    Args,
-                    Axis.PhysicalAxisInst.UnitHelper.Unit);
+                this.LastMessage = new MessageItem(MessageType.Normal, "{0} Move with argument {1} ...", Axis, Args);
 
                 var ret = await Task.Run(() =>
                 {
@@ -767,7 +776,7 @@ namespace Irixi_Aligner_Common.Classes
                 {
                     this.LastMessage = new MessageItem(MessageType.Error, "{0} Unable to move, {1}", Axis, Axis.PhysicalAxisInst.LastError);
 
-                    PostErrorMessageToFrontEnd(this.LastMessage.Message);
+                    PostErrorMessage(this.LastMessage.Message);
                 }
                 else
                 {
@@ -796,86 +805,144 @@ namespace Irixi_Aligner_Common.Classes
         /// <remarks>
         /// An args is consisted of 3 elements: Move Order, Logical Axis, How to Move
         /// </remarks>
-        public async void MassMoveLogicalAxis(Tuple<int, MotionControllers.Base.LogicalAxis, MoveByDistanceArgs>[] AxesGroup)
+        public async void MassMoveLogicalAxis(MassMoveArgs Args)
         {
+            /*
+             *  Operation Sequence
+             *  1. find logical motion component
+             *  2. check logical axis
+             *  3. get move sequence
+             *  4. move
+             */
+
             if (GetSystemState() != SystemState.BUSY)
             {
                 SetSystemState(SystemState.BUSY);
 
-                // how many axes to be moved
-                int _total_to_move = AxesGroup.Length;
+                #region Find the LMC by the hash string
 
-                // how many axes have been moved
-                int _moved_cnt = 0;
+                LogicalMotionComponent lmc;
+                var colle = LogicalMotionComponentCollection.Where(a => a.GetHashString() == Args.LogicalMotionComponent);
 
-                int _present_order = 0;
+                if (colle.Any())
+                    lmc = colle.First();
+                else
+                {
+                    this.LastMessage = new MessageItem(MessageType.Error, $"Unable to find the target motion component with the ID {Args.LogicalMotionComponent}");
+                    return;
+                }
+
+                #endregion
+
+                #region Validate arguments and arrange the logical to ready to move
+
+                List<LogicalAxis> axesToMove = new List<LogicalAxis>();
+
+                if (Args.Count != lmc.Count)
+                {
+                    this.LastMessage = new MessageItem(MessageType.Error, $"The argument of mass-move does not match with the target motion component");
+                    return;
+                }
+                else
+                {
+                    foreach (var perArg in Args)
+                    {
+                        var laVali = lmc.Where(la => la.GetHashString() == perArg.LogicalAxisHashString);
+                        if (laVali.Count() > 1)
+                        {
+                            this.LastMessage = new MessageItem(MessageType.Error, $"Multiple axes {perArg.LogicalAxisHashString} are found in the argument");
+                            return;
+                        }
+                        else if (laVali.Count() == 0)
+                        {
+                            this.LastMessage = new MessageItem(MessageType.Error, $"Axis {perArg.LogicalAxisHashString} are not found");
+                            return;
+                        }
+                        else
+                        {
+                            var _la = laVali.First();
+                            if (perArg.IsMoveable) 
+                            {
+                                // Only the moveable axis will be added
+                                _la.MoveArgsTemp = perArg.Clone() as AxisMoveArgs;
+                                axesToMove.Add(_la);
+                            }
+                        }
+                    }
+                }
+
+                #endregion
+
+                #region Get move order
+
+                var moveOrder = Args.GetDistinctMoveOrder();
+                if (moveOrder == null)
+                {
+                    this.LastMessage = new MessageItem(MessageType.Error, $"Unable to get the list of the move order");
+                    return;
+                }
+
+                #endregion
 
 
                 // generate a list which contains the movement tasks
                 // this is used by the Task.WhenAll() function
-                List<Task<bool>> _move_tasks = new List<Task<bool>>();
-                List<MotionControllers.Base.LogicalAxis> _axis_moving = new List<MotionControllers.Base.LogicalAxis>();
+                List<Task<bool>> movingTasks = new List<Task<bool>>();
+                List<LogicalAxis> movingAxes = new List<LogicalAxis>();
 
-                this.LastMessage = new MessageItem(MessageType.Normal, "Executing mass move ...");
+                this.LastMessage = new MessageItem(MessageType.Normal, "Mass-Move is running ...");
 
-                do
+                foreach (var order in moveOrder)
                 {
                     // clear the previous tasks
-                    _move_tasks.Clear();
-                    _axis_moving.Clear();
+                    movingTasks.Clear();
+                    movingAxes.Clear();
 
-                    // find the axes which belong to current order
-                    foreach (var item in AxesGroup)
+                    var ready2move = axesToMove.Where(a => a.MoveArgsTemp.MoveOrder == order).Select(b => b).ToArray();
+                    if (ready2move.Any())
                     {
-                        var _order = item.Item1;
-                        var _axis = item.Item2;
-                        var _arg = item.Item3;
-
-                        if (_order == _present_order)
+                        foreach (var la in ready2move)
                         {
+                            this.LastMessage = new MessageItem(MessageType.Normal, $"Start to move axis {la} ...");
+
                             var t = new Task<bool>(() =>
                             {
-                                return _axis.PhysicalAxisInst.Move(_arg.Mode, _arg.Speed, _arg.Distance);
+                                return la.PhysicalAxisInst.Move(
+                                    la.MoveArgsTemp.Mode,
+                                    la.MoveArgsTemp.Speed,
+                                    la.MoveArgsTemp.Distance);
                             });
                             t.Start();
-                            _move_tasks.Add(t);
-                            _axis_moving.Add(_axis);
+                            movingTasks.Add(t);
+                            movingAxes.Add(la);
                         }
-                    }
 
-                    // if no axes to be moved, move to the next loop
-                    if (_move_tasks.Count > 0)
-                    {
-                        while (_move_tasks.Count > 0)
+                        // if no axes to be moved, move to the next loop
+                        if (movingTasks.Count > 0)
                         {
-                            // wait until all the axes are moved
-                            Task<bool> t = await Task.WhenAny(_move_tasks);
-                            int id = _move_tasks.IndexOf(t);
+                            while (movingTasks.Count > 0)
+                            {
+                                // wait until all the axes are moved
+                                Task<bool> t = await Task.WhenAny(movingTasks);
+                                int id = movingTasks.IndexOf(t);
 
-                            if (t.Result)
-                                this.LastMessage = new MessageItem(MessageType.Good, "{0} Move is completed.", _axis_moving[id]);
-                            else
-                                this.LastMessage = new MessageItem(MessageType.Error, "{0} Move is failed, {1}", _axis_moving[id], _axis_moving[id].PhysicalAxisInst.LastError);
+                                if (t.Result)
+                                    this.LastMessage = new MessageItem(MessageType.Normal, $"{movingAxes[id]} has moved to the position.");
+                                else
+                                    this.LastMessage = new MessageItem(MessageType.Error, $"{movingAxes[id]} was moved incorrectly, {movingAxes[id].PhysicalAxisInst.LastError}");
 
-                            _move_tasks.RemoveAt(id);
-                            _move_tasks.RemoveAt(id);
-
-                            // save the sum of homed axes in order to check if all axes have been homed
-                            _moved_cnt++;
+                                movingTasks.RemoveAt(id);
+                                movingAxes.RemoveAt(id);
+                            }
                         }
                     }
+                }
 
-                    // set the order of next loop
-                    _present_order++;
-
-                } while (_moved_cnt < _total_to_move); // loop until all axes were moved
-
-
-
-                this.LastMessage = new MessageItem(MessageType.Good, "Simultanenous Movement is completed");
-
-                SetSystemState(SystemState.IDLE);
             }
+
+            this.LastMessage = new MessageItem(MessageType.Good, "Mass-Move Done.");
+
+            SetSystemState(SystemState.IDLE);
         }
 
         /// <summary>
@@ -903,7 +970,7 @@ namespace Irixi_Aligner_Common.Classes
                 int _homed_cnt = 0;
                 int _total_axis = this.LogicalAxisCollection.Count;
                 List<Task<bool>> _tasks = new List<Task<bool>>();
-                List<MotionControllers.Base.LogicalAxis> _axis_homing = new List<MotionControllers.Base.LogicalAxis>();
+                List<LogicalAxis> _axis_homing = new List<LogicalAxis>();
 
                 SetSystemState(SystemState.BUSY);
 
@@ -1017,10 +1084,6 @@ namespace Irixi_Aligner_Common.Classes
             StartAlignmentProc(new CentralAlign(Args));
         }
 
-        #region Cylinder Control
-
-        #region Fiber Clamp Control
-
         public void FiberClampON()
         {
             if (GetSystemState() == SystemState.IDLE)
@@ -1063,10 +1126,6 @@ namespace Irixi_Aligner_Common.Classes
             }
         }
 
-        #endregion
-
-        #region Lens Vacuum Control
-
         public void LensVacuumON()
         {
             if (GetSystemState() == SystemState.IDLE)
@@ -1107,10 +1166,6 @@ namespace Irixi_Aligner_Common.Classes
                 SetSystemState(SystemState.IDLE);
             }
         }
-
-        #endregion
-
-        #region PLC Vacuum Control
 
         public void PlcVacuumON()
         {
@@ -1153,10 +1208,6 @@ namespace Irixi_Aligner_Common.Classes
             }
         }
 
-        #endregion
-
-        #region POD Vacuum Control
-
         public void PodVacuumON()
         {
             if (GetSystemState() == SystemState.IDLE)
@@ -1198,10 +1249,6 @@ namespace Irixi_Aligner_Common.Classes
             }
         }
 
-        #endregion
-
-        #endregion
-
         public void Dispose()
         {
             // dispose motion controllers
@@ -1238,7 +1285,27 @@ namespace Irixi_Aligner_Common.Classes
             {
                 return new RelayCommand(() =>
                 {
-                    MassHome();
+                    DialogService.DialogService ds = new DialogService.DialogService();
+                    ds.OpenHomeConfirmDialog(null, ret =>
+                    {
+                        if(ret == true)
+                        {
+                            MassHome();
+                        }
+                    });
+
+                   
+                });
+            }
+        }
+
+        public RelayCommand<MassMoveArgs> CommandMassMove
+        {
+            get
+            {
+                return new RelayCommand<MassMoveArgs>(args =>
+                {
+                    MassMoveLogicalAxis(args);
                 });
             }
         }

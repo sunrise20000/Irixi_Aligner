@@ -5,12 +5,12 @@ namespace Irixi_Aligner_Common.Configuration.MotionController
     public class ConfigLogicalAxis
     {
         /// <summary>
-        /// Determine which motion contoller is used
+        /// Get or set which motion contoller is used
         /// </summary>
         public Guid DeviceClass { get; set; }
 
         /// <summary>
-        /// Determine the axis name used in the specified motion controller
+        /// Get or set the physical axis name
         /// </summary>
         public string AxisName { get; set; }
 
