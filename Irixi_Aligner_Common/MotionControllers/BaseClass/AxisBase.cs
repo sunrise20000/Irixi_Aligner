@@ -32,7 +32,7 @@ namespace Irixi_Aligner_Common.MotionControllers.Base
 
         private void DoConstruct()
         {
-            _axis_lock = new ManualResetEvent(false);
+            _axis_lock = new ManualResetEvent(true);
 
             this.IsEnabled = false;
             this.AxisName = "N/A";
