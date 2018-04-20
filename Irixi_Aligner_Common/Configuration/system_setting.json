@@ -50,7 +50,7 @@
     {
       "DeviceClass": "5013d013-f167-4dcb-86d9-599a325744b8",
       "Model": "LUMINOS_P6A",
-      "Port": "COM4",
+      "Port": "COM9",
       "Enabled": true,
       "Comment": "For VGroove Aligner",
       "AxisCollection": [
@@ -132,7 +132,7 @@
       "DeviceClass": "412e55e4-ceae-4eb4-8798-e8de7b5b5669",
       "Model": "LUMINOS_P6A",
       "Port": "COM1",
-      "Enabled": true,
+      "Enabled": false,
       "Comment": "Lens Aligner",
       "AxisCollection": [
         {

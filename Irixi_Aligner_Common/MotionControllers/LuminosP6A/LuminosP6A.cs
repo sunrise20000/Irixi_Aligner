@@ -258,6 +258,11 @@ namespace Irixi_Aligner_Common.MotionControllers.Luminos
                 axis.Unlock();
                 
             }
+            else
+            {
+                axis.LastError = "the axis is locked.";
+                ret = false;
+            }
 
             return ret;
         }

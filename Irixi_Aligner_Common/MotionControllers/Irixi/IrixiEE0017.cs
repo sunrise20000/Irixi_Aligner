@@ -174,66 +174,74 @@ namespace Irixi_Aligner_Common.MotionControllers.Irixi
         protected override bool MoveProcess(IAxis Axis, MoveMode Mode, int Speed, int Steps)
         {
             bool ret = false;
-            IrixiAxis _axis = Axis as IrixiAxis;
+            IrixiAxis axis = Axis as IrixiAxis;
 
             int target_pos = 0;
 
-            if (_axis.IsHomed == false)
+            if (axis.IsHomed == false)
             {
-                _axis.LastError = "the axis is not homed";
+                axis.LastError = "the axis is not homed";
                 return false;
             }
 
-            try
+            if (axis.Lock())
             {
-
-                // Set the move speed
-                if (Mode == MoveMode.ABS)
+                try
                 {
-                    target_pos = Math.Abs(Steps);
-                }
-                else
-                {
-                    target_pos = _axis.AbsPosition + Steps;
-                }
 
-                // Move the the target position
-                if (_axis.CheckSoftLimitation(target_pos))
-                {
-                    ret = _controller.Move(_axis.AxisIndex, Speed, target_pos, IrixiStepperControllerHelper.MoveMode.ABS);
-
-                    if (!ret)
+                    // Set the move speed
+                    if (Mode == MoveMode.ABS)
                     {
-                        if (_controller.LastError.EndsWith("31"))
+                        target_pos = Math.Abs(Steps);
+                    }
+                    else
+                    {
+                        target_pos = axis.AbsPosition + Steps;
+                    }
+
+                    // Move the the target position
+                    if (axis.CheckSoftLimitation(target_pos))
+                    {
+                        ret = _controller.Move(axis.AxisIndex, Speed, target_pos, IrixiStepperControllerHelper.MoveMode.ABS);
+
+                        if (!ret)
                         {
-                            // ignore the error 31 which indicates that uesr interrupted the movement
-                            ret = true;
-                        }
-                        else
-                        {
-                            _axis.LastError = string.Format("sdk reported error code {0}", _controller.LastError);
-                            ret = false;
+                            if (_controller.LastError.EndsWith("31"))
+                            {
+                                // ignore the error 31 which indicates that uesr interrupted the movement
+                                ret = true;
+                            }
+                            else
+                            {
+                                axis.LastError = string.Format("sdk reported error code {0}", _controller.LastError);
+                                ret = false;
+                            }
                         }
                     }
-                }
-                else
-                {
-                    _axis.LastError = "target position exceeds the limitation.";
+                    else
+                    {
+                        axis.LastError = "target position exceeds the limitation.";
 
+                        ret = false;
+                    }
+
+                }
+                catch (Exception ex)
+                {
+                    axis.LastError = ex.Message;
                     ret = false;
                 }
 
+                finally
+                {
+                    // release the axis
+                    //_axis.Unlock();
+                }
             }
-            catch (Exception ex)
+            else
             {
-                _axis.LastError = ex.Message;
+                axis.LastError = "the axis is locked.";
                 ret = false;
-            }
-
-            finally
-            {
-                // release the axis
-                //_axis.Unlock();
             }
 
             return ret;
