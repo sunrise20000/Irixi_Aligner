@@ -7,7 +7,6 @@ using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
 using GalaSoft.MvvmLight.Messaging;
 using Irixi_Aligner_Common.Classes.BaseClass;
-using Newtonsoft.Json;
 
 namespace Irixi_Aligner_Common.MotionControllers.Base
 {
@@ -36,7 +35,7 @@ namespace Irixi_Aligner_Common.MotionControllers.Base
                 {
                     SelectedProfile = null;
 
-                    MoveArgsCollection = LoadCurrentPositions(value);
+                    MoveArgsCollection = LoadRealtimePosition(value);
                     
                     // load profiles belong to the selected motion component
                     LoadProfilesList(value);
@@ -137,13 +136,10 @@ namespace Irixi_Aligner_Common.MotionControllers.Base
         /// </summary>
         /// <param name="MotionComponent"></param>
         /// <returns></returns>
-        private MassMoveArgs LoadCurrentPositions(LogicalMotionComponent MotionComponent)
+        private MassMoveArgs LoadRealtimePosition(LogicalMotionComponent MotionComponent)
         {
-            // generate the move args list to bind to the window
-            MassMoveArgs arg = new MassMoveArgs()
-            {
-                
-            };
+            // generate the mass move argument as the binding source of the preset window.
+            MassMoveArgs arg = new MassMoveArgs();
 
             foreach (var laxis in MotionComponent)
             {
@@ -154,7 +150,7 @@ namespace Irixi_Aligner_Common.MotionControllers.Base
                 arg.Add(a);
             }
 
-            arg.LogicalMotionComponent = MotionComponent.GetHashString();
+            arg.LogicalMotionComponent = MotionComponent.HashString;
 
             return arg;
         }
@@ -165,7 +161,7 @@ namespace Irixi_Aligner_Common.MotionControllers.Base
         /// <returns></returns>
         private void LoadProfilesList(LogicalMotionComponent MotionComponent)
         {
-            var dir = PRESET_FOLDER + "\\" + MotionComponent.GetHashString();
+            var dir = PRESET_FOLDER + "\\" + MotionComponent.HashString;
 
             if(Directory.Exists(dir))
             {
@@ -196,42 +192,38 @@ namespace Irixi_Aligner_Common.MotionControllers.Base
         public MassMoveArgs LoadProfile(LogicalMotionComponent MotionComponent, string FileName)
         {
             // the full file path where we should find the preset profiles
-            var fullFilePath = PRESET_FOLDER + "\\" + MotionComponent.GetHashString() + "\\" + FileName + ".json";
+            var fullFilePath = PRESET_FOLDER + "\\" + MotionComponent.HashString + "\\" + FileName + ".json";
 
             if (File.Exists(fullFilePath) == true)
             {
                 var json = File.ReadAllText(fullFilePath, new UTF8Encoding());
 
-                JsonSerializerSettings settings = new JsonSerializerSettings();
-                settings.Converters.Add(new MassMoveArgsConverter());
-                var args = JsonConvert.DeserializeObject<MassMoveArgs>(json, new MassMoveArgsConverter());
+                var arg = MassMoveArgs.FromJsonString(json);
 
-                if (args.LogicalMotionComponent != MotionComponent.GetHashString())
+                if (arg.LogicalMotionComponent != MotionComponent.HashString)
                 {
+                    // if the logical motion component of the loaded preset profile does not 
+                    // match the one selected on the window.
                     throw new FormatException("it does not match with the selected motion component.");
-                }
-                else if (args.HashString != args.GetHashString())
-                {
-                    throw new FormatException("it might be modified unexpectedly.");
                 }
                 else
                 {
-                    return args;
-                }                                                                                                                                 
+                    return arg;
+                }                            
             }
             else
             {
                 // the folder does not exist
-                throw new FileNotFoundException($"{fullFilePath} does not exist.");
+                throw new FileNotFoundException($"the preset profile {FileName} is not found.");
             }
         }
 
         /// <summary>
         /// Save the preset position profile
         /// </summary>
-        /// <param name="Args"></param>
+        /// <param name="Arg"></param>
         /// <param name="FileName"></param>
-        private void SaveProfile(LogicalMotionComponent MotionComponent, MassMoveArgs Args, string FileName)
+        private void SaveProfile(LogicalMotionComponent MotionComponent, MassMoveArgs Arg, string FileName)
         {
             if (MotionComponent == null)
                 throw new InvalidDataException("the logical motion controller is empty.");
@@ -240,21 +232,17 @@ namespace Irixi_Aligner_Common.MotionControllers.Base
                 throw new InvalidDataException("the name of profile contains invalid chars.");
 
             // if the directory does not exist, create it.
-            var dir = PRESET_FOLDER + "\\" + MotionComponent.GetHashString();
+            var dir = PRESET_FOLDER + "\\" + MotionComponent.HashString;
             if (Directory.Exists(dir) == false)
                 Directory.CreateDirectory(dir);
 
             // the full file path where we should find the preset profiles
-            var fullFilePath = PRESET_FOLDER + "\\" + MotionComponent.GetHashString() + "\\" + FileName + ".json";
+            //var fullFilePath = PRESET_FOLDER + "\\" + MotionComponent.HashString + "\\" + FileName + ".json";
+            
+            var jsonstr = MassMoveArgs.ToJsonString(Arg);
+           
 
-            // calculate the hash string which is used to check whether the profile is modified 
-            Args.HashString = Args.GetHashString();
-
-            JsonSerializerSettings settings = new JsonSerializerSettings();
-            settings.Converters.Add(new MassMoveArgsConverter());
-            var json = JsonConvert.SerializeObject(Args, settings);
-
-            File.WriteAllText(fullFilePath, json, new UTF8Encoding());
+            File.WriteAllText($"{dir}\\{FileName}.json", jsonstr, new UTF8Encoding());
 
             // reload the position preset profile list
             LoadProfilesList(MotionComponent);
@@ -263,7 +251,7 @@ namespace Irixi_Aligner_Common.MotionControllers.Base
         private bool CheckProfileExistance(LogicalMotionComponent MotionComponent, string FileName)
         {
             // the full file path where we should find the preset profiles
-            var fullFilePath = PRESET_FOLDER + "\\" + MotionComponent.GetHashString() + "\\" + FileName + ".json";
+            var fullFilePath = PRESET_FOLDER + "\\" + MotionComponent.HashString + "\\" + FileName + ".json";
 
             return File.Exists(fullFilePath);
         }
@@ -287,7 +275,7 @@ namespace Irixi_Aligner_Common.MotionControllers.Base
                     }
                     else
                     { 
-                        MoveArgsCollection = LoadCurrentPositions(SelectedMotionComponent);
+                        MoveArgsCollection = LoadRealtimePosition(SelectedMotionComponent);
                         
                     }
                 });

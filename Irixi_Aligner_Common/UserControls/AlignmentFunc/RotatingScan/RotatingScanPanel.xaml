@@ -51,7 +51,7 @@
 
                 <dxprg:PropertyDefinition Path="Instrument" IsReadOnly="False">
                     <dxprg:PropertyDefinition.EditSettings>
-                        <dxe:ComboBoxEditSettings ItemsSource="{Binding ActiveInstrumentCollection}" IsTextEditable="False"/>
+                        <dxe:ComboBoxEditSettings ItemsSource="{Binding AvailableInstrumentCollection}" IsTextEditable="False"/>
                     </dxprg:PropertyDefinition.EditSettings>
                 </dxprg:PropertyDefinition>
                 
@@ -63,7 +63,7 @@
 
                 <dxprg:PropertyDefinition Path="Instrument2" IsReadOnly="False">
                     <dxprg:PropertyDefinition.EditSettings>
-                        <dxe:ComboBoxEditSettings ItemsSource="{Binding ActiveInstrumentCollection}" IsTextEditable="False"/>
+                        <dxe:ComboBoxEditSettings ItemsSource="{Binding AvailableInstrumentCollection}" IsTextEditable="False"/>
                     </dxprg:PropertyDefinition.EditSettings>
                 </dxprg:PropertyDefinition>
 

@@ -39,7 +39,7 @@
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
     <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>TRACE;DEBUG</DefineConstants>
+    <DefineConstants>TRACE;DEBUG;FAKE_ME</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <Prefer32Bit>true</Prefer32Bit>
@@ -171,18 +171,23 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="Alignment\00_Template_AlignmentArgs.cs" />
+    <Compile Include="Alignment\AlignmentXD\Alignment1DArgsProfile.cs" />
+    <Compile Include="Alignment\AlignmentXD\AlignmentXDArgsProfile.cs" />
+    <Compile Include="Alignment\BaseClasses\AlignmentArgsPresetProfileBase.cs" />
+    <Compile Include="Alignment\BaseClasses\AlignmentArgsPresetProfileManager.cs" />
     <Compile Include="Alignment\BaseClasses\ScanCurve.cs" />
     <Compile Include="Alignment\BaseClasses\ScanCurve3D.cs" />
     <Compile Include="Alignment\BaseClasses\ScanCurveBase.cs" />
     <Compile Include="Alignment\BaseClasses\ScanCurveGroup.cs" />
     <Compile Include="Alignment\CentralAlign\CentralAlign.cs" />
     <Compile Include="Alignment\CentralAlign\CentralAlignArgs.cs" />
+    <Compile Include="Alignment\Interfaces\IAlignmentArgsProfile.cs" />
     <Compile Include="Alignment\Rotating\RotatingScanArgs.cs" />
     <Compile Include="Alignment\Rotating\RotatingScan.cs" />
-    <Compile Include="Alignment\AligmentXD\Alignment1DArgs.cs" />
+    <Compile Include="Alignment\AlignmentXD\Alignment1DArgs.cs" />
     <Compile Include="Alignment\BaseClasses\AlignmentBase.cs" />
-    <Compile Include="Alignment\AligmentXD\AlignmentXD.cs" />
-    <Compile Include="Alignment\AligmentXD\AlignmentXDArgs.cs" />
+    <Compile Include="Alignment\AlignmentXD\AlignmentXD.cs" />
+    <Compile Include="Alignment\AlignmentXD\AlignmentXDArgs.cs" />
     <Compile Include="Alignment\BaseClasses\AlignmentArgsBase.cs" />
     <Compile Include="Alignment\SnakeRouteScan\SnakeRouteScan.cs" />
     <Compile Include="Alignment\SnakeRouteScan\SnakeRouteScanArgs.cs" />
@@ -192,10 +197,9 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Classes\BaseClass\HashIgnoreAttribute.cs" />
     <Compile Include="Classes\BaseClass\HashGenerator.cs" />
     <Compile Include="Classes\BaseClass\MassMoveArgs.cs" />
-    <Compile Include="Classes\BaseClass\MassMoveArgsConverter.cs" />
-    <Compile Include="Classes\BaseClass\ObservableCollectionEx2.cs" />
     <Compile Include="Classes\BaseClass\ObservableCollectionThreadSafe.cs" />
     <Compile Include="Classes\BaseClass\Property.cs" />
     <Compile Include="DialogService\DialogService.cs" />
@@ -211,9 +215,9 @@
       <DependentUpon>InputDialogView.xaml</DependentUpon>
     </Compile>
     <Compile Include="DialogService\InputDialog\InputDialogViewModel.cs" />
-    <Compile Include="Interfaces\IHashable.cs" />
-    <Compile Include="MotionControllers\BaseClass\PositionPresetManager.cs" />
-    <Compile Include="MotionControllers\BaseClass\RealworldUnitManager.cs" />
+    <Compile Include="Equipments\BaseClass\EquipmentCollection.cs" />
+    <Compile Include="Equipments\Equipments\MotionControllers\Base\PositionPresetManager.cs" />
+    <Compile Include="Equipments\Equipments\MotionControllers\Base\RealworldUnitManager.cs" />
     <Compile Include="Classes\Converters\BooleanToVisibility.cs" />
     <Compile Include="Classes\Converters\LogicalComponentToAxisCollection.cs" />
     <Compile Include="Classes\Converters\EnumToInt.cs" />
@@ -223,6 +227,8 @@
     <Compile Include="Classes\Converters\EnumToBoolean.cs" />
     <Compile Include="Classes\Converters\OutputStateToBoolean.cs" />
     <Compile Include="Equipments\Instruments\Keithliey2400ProgressReportArgs.cs" />
+    <Compile Include="Interfaces\IAlignmentArgs.cs" />
+    <Compile Include="Interfaces\IHashable.cs" />
     <Compile Include="Interfaces\IScanCurve.cs" />
     <Compile Include="UserControls\AlignmentFunc\AlignmentPanel.xaml.cs">
       <DependentUpon>AlignmentPanel.xaml</DependentUpon>
@@ -230,11 +236,9 @@
     <Compile Include="UserControls\AlignmentFunc\ChartTypeSelector.cs" />
     <Compile Include="UserControls\AlignmentFunc\PropertyDefinitionTemplateSelector.cs" />
     <Compile Include="Configuration\Equipments\ConfigurationNewport2832C.cs" />
-    <Compile Include="Docs\How to add new instrument to system.cs" />
     <Compile Include="UserControls\PresetPositionPanel.xaml.cs">
       <DependentUpon>PresetPositionPanel.xaml</DependentUpon>
     </Compile>
-    <None Include="Docs\Templates\new_instrument.cs.tmpl" />
     <Compile Include="Equipments\BaseClass\InstrumentBase.cs" />
     <Compile Include="Configuration\BaseClasses\ConfigurationBase.cs" />
     <Compile Include="Configuration\Equipments\ConfigurationCylinder.cs" />
@@ -249,12 +253,11 @@
     <Compile Include="Interfaces\IEquipmentBase.cs" />
     <Compile Include="Interfaces\IMeasurementInstrument.cs" />
     <Compile Include="Interfaces\IServiceSystem.cs" />
-    <Compile Include="MotionControllers\BaseClass\AxisBase.cs" />
-    <Compile Include="MotionControllers\BaseClass\LogicalMotionComponent.cs" />
-    <Compile Include="MotionControllers\BaseClass\LogicalAxis.cs" />
-    <Compile Include="MotionControllers\BaseClass\MotionControllerBase.cs" />
+    <Compile Include="Equipments\Equipments\MotionControllers\Base\AxisBase.cs" />
+    <Compile Include="Equipments\Equipments\MotionControllers\Base\LogicalMotionComponent.cs" />
+    <Compile Include="Equipments\Equipments\MotionControllers\Base\LogicalAxis.cs" />
+    <Compile Include="Equipments\Equipments\MotionControllers\Base\MotionControllerBase.cs" />
     <Compile Include="Classes\BaseClass\AxisMoveArgs.cs" />
-    <Compile Include="Classes\BaseClass\ObservableCollectionEx.cs" />
     <Compile Include="Classes\Converters\MessageTypeToColor.cs" />
     <Compile Include="Classes\Converters\MessageTypeToImage.cs" />
     <Compile Include="Classes\Converters\JogPositionModeToText.cs" />
@@ -263,10 +266,10 @@
     <Compile Include="Classes\Converters\SystemStatusToStopButtonEnable.cs" />
     <Compile Include="Classes\ListBosBehavior.cs" />
     <Compile Include="Classes\MessageSystem\LogHelper.cs" />
-    <Compile Include="MotionControllers\Irixi\IrixiAxis.cs" />
-    <Compile Include="MotionControllers\Irixi\IrixiEE0017.cs" />
-    <Compile Include="MotionControllers\LuminosP6A\LuminosAxis.cs" />
-    <Compile Include="MotionControllers\LuminosP6A\LuminosP6A.cs" />
+    <Compile Include="Equipments\Equipments\MotionControllers\Irixi\IrixiAxis.cs" />
+    <Compile Include="Equipments\Equipments\MotionControllers\Irixi\IrixiEE0017.cs" />
+    <Compile Include="Equipments\Equipments\MotionControllers\LuminosP6A\LuminosAxis.cs" />
+    <Compile Include="Equipments\Equipments\MotionControllers\LuminosP6A\LuminosP6A.cs" />
     <Compile Include="Classes\SystemService.cs" />
     <Compile Include="Classes\MessageSystem\MessageHelper.cs" />
     <Compile Include="Configuration\Common\ConfigManager.cs" />

@@ -2,7 +2,7 @@
   "LogEnabled": true,
   "NewPort2832Cs": [
     {
-      "Enabled": false,
+      "Enabled": true,
       "DeviceClass": "927FF004-8672-44B7-A1BA-73D6FC6A04B8",
       "Desc": "NEWPORT 2832C",
       "Port": "COM5",

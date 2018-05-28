@@ -4,6 +4,8 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media.Media3D;
 using GalaSoft.MvvmLight.Command;
+using Irixi_Aligner_Common.Alignment.BaseClasses;
+using Irixi_Aligner_Common.Alignment.Interfaces;
 
 namespace Irixi_Aligner_Common.UserControls.AlignmentFunc
 {

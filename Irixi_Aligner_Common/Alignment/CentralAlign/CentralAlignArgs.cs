@@ -87,6 +87,12 @@ namespace Irixi_Aligner_Common.Alignment.CentralAlign
             }
         }
 
+        [Browsable(false)]
+        public string AxisHashString
+        {
+            private get; set;
+        }
+
         [Display(
             Name = "H Interval",
             GroupName = PROP_GRP_H_AXIS,
@@ -129,6 +135,12 @@ namespace Irixi_Aligner_Common.Alignment.CentralAlign
             }
         }
 
+        [Browsable(false)]
+        public string Axis2HashString
+        {
+            private get; set;
+        }
+
         [Display(
             Name = "V Interval",
             GroupName = PROP_GRP_V_AXIS,
@@ -163,7 +175,7 @@ namespace Irixi_Aligner_Common.Alignment.CentralAlign
             Name = "Instrument 1",
             GroupName = PROP_GRP_COMMON,
             Description = "The valid instrument like powermeter, keithley 2400, etc.")]
-        new public virtual IInstrument Instrument
+        new public IInstrument Instrument
         {
             get => instrument;
             set
@@ -180,7 +192,7 @@ namespace Irixi_Aligner_Common.Alignment.CentralAlign
             Name = "Instrument 2",
             GroupName = PROP_GRP_COMMON,
             Description = "The valid instrument like powermeter, keithley 2400, etc.")]
-        public virtual IInstrument Instrument2
+        public IInstrument Instrument2
         {
             get => instrument2;
             set
@@ -190,6 +202,13 @@ namespace Irixi_Aligner_Common.Alignment.CentralAlign
 
                 ScanCurve2.DisplayName = ((InstrumentBase)instrument2).Config.Caption;
             }
+        }
+
+
+        [Browsable(false)]
+        public string Instrument2HashString
+        { 
+             private get; set;
         }
 
         #endregion

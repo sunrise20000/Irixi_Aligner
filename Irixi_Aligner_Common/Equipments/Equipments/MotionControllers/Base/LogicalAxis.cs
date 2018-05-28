@@ -4,6 +4,7 @@ using GalaSoft.MvvmLight.Command;
 using Irixi_Aligner_Common.Classes.BaseClass;
 using Irixi_Aligner_Common.Configuration.MotionController;
 using Irixi_Aligner_Common.Interfaces;
+using Newtonsoft.Json;
 
 namespace Irixi_Aligner_Common.MotionControllers.Base
 {
@@ -36,27 +37,28 @@ namespace Irixi_Aligner_Common.MotionControllers.Base
             };
 
             this.MoveArgsTemp = new AxisMoveArgs();
-        } 
+        }
 
         #endregion
 
         #region Properties
+        
         /// <summary>
         /// Get the configuration of logical axis
         /// </summary>
         public ConfigLogicalAxis Config { private set; get; }
-
+        
         /// <summary>
         /// Get the name display on the window
         /// <see cref="Irixi_Aligner_Common.Configuration.MotionController.ConfigLogicalAxis.DisplayName"/>
         /// </summary>
         public string AxisName { private set; get; }
-
+        
         /// <summary>
         /// Get the name of parent aliger
         /// </summary>
         public string ParentName { private set; get; }
-
+        
         /// <summary>
         /// Get the instance of physical axis
         /// </summary>
@@ -69,21 +71,33 @@ namespace Irixi_Aligner_Common.MotionControllers.Base
             set
             {
                 physicalAxis = value;
-                MoveArgs.LogicalAxisHashString = GetHashString();
+                MoveArgs.LogicalAxisHashString = HashString;
                 MoveArgs.Unit = value.UnitHelper.ToString();
             }
         }
-
+        
         /// <summary>
         /// Get or set the arguments to move the physical axis, which is also bound to the window
         /// </summary>
         public AxisMoveArgs MoveArgs { get; set; }
-
+        
         /// <summary>
         /// The property is specically used for the mass move function
         /// <see cref="Irixi_Aligner_Common.Classes.SystemService.MassMoveLogicalAxis(MassMoveArgs)"/>
         /// </summary>
         public AxisMoveArgs MoveArgsTemp { get; set; }
+
+        public string HashString
+        {
+            get
+            {
+                return PhysicalAxisInst.HashString;
+            }
+            set
+            {
+                throw new NotImplementedException();
+            }
+        }
 
         #endregion
 
@@ -96,11 +110,6 @@ namespace Irixi_Aligner_Common.MotionControllers.Base
                 MoveArgs.Mode = MoveMode.ABS;
             else
                 MoveArgs.Mode = MoveMode.REL;
-        }
-
-        public string GetHashString()
-        {
-            return PhysicalAxisInst.GetHashString();
         }
 
         public override string ToString()
@@ -122,7 +131,7 @@ namespace Irixi_Aligner_Common.MotionControllers.Base
                 });
             }
         }
-
+        
         public RelayCommand<AxisMoveArgs> Move
         {
             get
@@ -133,7 +142,7 @@ namespace Irixi_Aligner_Common.MotionControllers.Base
                 });
             }
         }
-
+        
         public RelayCommand Stop
         {
             get

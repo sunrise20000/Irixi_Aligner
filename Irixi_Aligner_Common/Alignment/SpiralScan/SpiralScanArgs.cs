@@ -55,6 +55,12 @@ namespace Irixi_Aligner_Common.Alignment.SpiralScan
             }
         }
 
+        [Browsable(false)]
+        public string AxisHashString
+        {
+            private get; set;
+        }
+
         [Display(
             Name = "V Axis",
             GroupName = PROP_GRP_AXIS,
@@ -67,6 +73,12 @@ namespace Irixi_Aligner_Common.Alignment.SpiralScan
                 axis2 = value;
                 RaisePropertyChanged();
             }
+        }
+
+        [Browsable(false)]
+        public string Axis2HashString
+        {
+            private get; set;
         }
 
         [Display(

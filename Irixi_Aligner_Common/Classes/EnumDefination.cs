@@ -8,6 +8,8 @@
 
     public enum SystemState
     {
+        USER_SCRIPT_RUN,
+        USER_SCRIPT_PAUSE,
         IDLE,
         BUSY
     }

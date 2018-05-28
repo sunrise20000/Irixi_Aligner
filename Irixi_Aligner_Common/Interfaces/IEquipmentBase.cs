@@ -2,8 +2,12 @@
 
 namespace Irixi_Aligner_Common.Interfaces
 {
-    public interface IEquipmentBase : IDisposable, IHashable
+    public interface IEquipmentBase : IDisposable
     {
+        /// <summary>
+        /// Get the hash string based on the values of properties
+        /// </summary>
+        string HashString { get; }
 
         /// <summary>
         /// Get the device class which makes this controller exclusively in the system.

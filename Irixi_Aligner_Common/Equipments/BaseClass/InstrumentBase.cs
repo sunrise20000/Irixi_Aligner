@@ -5,6 +5,7 @@ using System.Diagnostics;
 using System.IO.Ports;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Windows;
 
 namespace Irixi_Aligner_Common.Equipments.Base
 {
@@ -86,7 +87,7 @@ namespace Irixi_Aligner_Common.Equipments.Base
                 LastError = "the device is disabled";
                 return false;
             }
-
+#if !FAKE_ME
             try
             {
                 serialport.Open();
@@ -99,7 +100,7 @@ namespace Irixi_Aligner_Common.Equipments.Base
                 this.IsInitialized = true;
                 return true;
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 try
                 {
@@ -113,6 +114,14 @@ namespace Irixi_Aligner_Common.Equipments.Base
                 LastError = ex.Message;
                 return false;
             }
+#else
+            Application.Current.Dispatcher.Invoke(() =>
+            {
+                this.IsInitialized = true;
+            });
+            
+            return true;
+#endif
         }
         
         public virtual double Fetch()
@@ -212,9 +221,9 @@ namespace Irixi_Aligner_Common.Equipments.Base
             }
         }
 
-        #endregion
+#endregion
 
-        #region Methods implemented by user
+#region Methods implemented by user
 
         protected virtual void UserInitProc()
         {
@@ -236,9 +245,9 @@ namespace Irixi_Aligner_Common.Equipments.Base
             throw new NotImplementedException();
         }
 
-        #endregion
+#endregion
 
-        #region Private Methods
+#region Private Methods
 
         protected virtual void Send(string Command)
         {
@@ -301,6 +310,6 @@ namespace Irixi_Aligner_Common.Equipments.Base
             }
         }
         
-        #endregion
+#endregion
     }
 }

@@ -6,7 +6,7 @@ using Irixi_Aligner_Common.Interfaces;
 
 namespace Irixi_Aligner_Common.MotionControllers.Base
 {
-    public class RealworldUnitManager : INotifyPropertyChanged, IHashable
+    public class RealworldUnitManager : INotifyPropertyChanged
     {
         public enum UnitType
         {
@@ -117,6 +117,21 @@ namespace Irixi_Aligner_Common.MotionControllers.Base
             get;
         }
 
+        public string HashString
+        {
+            get
+            {
+                var factor = String.Join("", new object[]
+                {
+                Resolution,
+                MaxSteps,
+                Unit
+                });
+
+                return HashGenerator.GetHashSHA256(factor);
+            }
+        }
+
         #endregion
 
         #region Methods
@@ -149,20 +164,7 @@ namespace Irixi_Aligner_Common.MotionControllers.Base
             // if the property was set, the related properties must be recalculated
             this.Resolution = this.TravelDistance / this.MaxSteps;
         }
-
-
-        public string GetHashString()
-        {
-            var factor = String.Join("", new object[]
-            {
-                Resolution,
-                MaxSteps,
-                Unit
-            });
-
-            return HashGenerator.GetHashSHA256(factor);
-        }
-
+        
         public override string ToString()
         {
             return this.Unit.ToString();

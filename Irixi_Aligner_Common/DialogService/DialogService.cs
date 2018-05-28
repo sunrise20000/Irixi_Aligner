@@ -41,6 +41,12 @@ namespace Irixi_Aligner_Common.DialogService
             }
         }
 
+        public void ShowYesNoMessage(string message, string title, Action afterHideCallback)
+        {
+            if (System.Windows.Forms.MessageBox.Show(message, title, MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+                afterHideCallback.Invoke();
+        }
+
         public void ShowError(string message, string title, string buttonText, Action afterHideCallback)
         {
             System.Windows.Forms.MessageBox.Show(message, title, MessageBoxButtons.OK, MessageBoxIcon.Error);

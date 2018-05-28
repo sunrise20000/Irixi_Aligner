@@ -3,7 +3,10 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.Linq;
+using System.Reflection;
 using System.Text;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace Irixi_Aligner_Common.Classes.BaseClass
 {
@@ -33,11 +36,37 @@ namespace Irixi_Aligner_Common.Classes.BaseClass
         
         #endregion
 
+
         #region Properties
 
         public string LogicalMotionComponent { get; set; }
-        
-        public string HashString { get; set; }
+
+        /// <summary>
+        /// Get the hash string calculated in realtime
+        /// the property is used for the write method of json converter object
+        /// </summary>
+        public string HashString
+        {
+            get
+            {
+                StringBuilder sb = new StringBuilder();
+
+                sb.Append(LogicalMotionComponent);
+
+                foreach (var axisArgs in this)
+                {
+                    sb.Append(axisArgs.HashString);
+                }
+
+                return HashGenerator.GetHashSHA256(sb.ToString());
+            }
+        }
+
+        /// <summary>
+        /// Get the hash string saved in the preset profile.
+        /// the property is used for the read
+        /// </summary>
+        public string HashStringInPresetProfile { private get; set; }
 
         public int[] MoveOrderList
         {
@@ -96,33 +125,101 @@ namespace Irixi_Aligner_Common.Classes.BaseClass
             }
         }
 
-
-        public string GetHashString()
+        /// <summary>
+        /// Convert the json string to the instance of MassMoveArgs
+        /// </summary>
+        /// <param name="JsonString"></param>
+        /// <returns></returns>
+        public static MassMoveArgs FromJsonString(string JsonString)
         {
-            StringBuilder sb = new StringBuilder();
+            JsonSerializerSettings settings = new JsonSerializerSettings();
+            settings.Converters.Add(new MassMoveArgsJsonConverter());
+            var args = JsonConvert.DeserializeObject<MassMoveArgs>(JsonString, new MassMoveArgsJsonConverter());
 
-            sb.Append(LogicalMotionComponent);
-
-            foreach (var axisArgs in this)
+            // check if the preset profile was modified
+            if (args.HashString != args.HashStringInPresetProfile)
             {
-                sb.Append(axisArgs.GetHashString());
+                throw new FormatException("the preset profile might be modified unexpectedly.");
             }
-
-            return HashGenerator.GetHashSHA256(sb.ToString());
+            else
+            {
+                return args;
+            }
         }
 
-        public override int GetHashCode()
+        /// <summary>
+        /// Convert the instance of MassMoveArgs to json string
+        /// </summary>
+        /// <param name="Arg">The instance of MassMovrArgs object</param>
+        /// <returns></returns>
+        public static string ToJsonString(MassMoveArgs Arg)
         {
-            return GetHashString().GetHashCode();
+            JsonSerializerSettings settings = new JsonSerializerSettings();
+            settings.Converters.Add(new MassMoveArgsJsonConverter());
+            var json = JsonConvert.SerializeObject(Arg, settings);
+            return json;
         }
-        
-        #endregion
-
-        #region Commands
-
-
 
         #endregion
+    }
 
+
+    /// <summary>
+    /// The customized converter to serialize and deserialize the MassMoveArgs
+    /// <see cref="https://www.jerriepelser.com/blog/custom-converters-in-json-net-case-study-1/"/>
+    /// </summary>
+    internal class MassMoveArgsJsonConverter : JsonConverter
+    {
+        public override bool CanConvert(Type objectType)
+        {
+            return typeof(MassMoveArgs).GetTypeInfo().IsAssignableFrom(objectType.GetTypeInfo());
+        }
+
+        public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
+        {
+            var inst = value as MassMoveArgs;
+            IEnumerable<AxisMoveArgs> array = (IEnumerable<AxisMoveArgs>)value;
+
+            writer.WriteStartObject();
+            writer.WritePropertyName("LogicalMotionComponent");
+            writer.WriteValue(inst.LogicalMotionComponent);
+            writer.WritePropertyName("HashString");
+            writer.WriteValue(inst.HashString);
+            writer.WritePropertyName("Args");
+            writer.WriteStartArray();
+            foreach (var item in array)
+            {
+                serializer.Serialize(writer, item);
+            }
+            writer.WriteEndArray();
+            writer.WriteEndObject();
+        }
+
+        public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
+        {
+            if (reader.TokenType == JsonToken.StartObject)
+            {
+                JObject item = JObject.Load(reader);
+                if (item["Args"] != null)
+                {
+                    var argsList = item["Args"].ToObject<IEnumerable<AxisMoveArgs>>(serializer);
+                    var obj = new MassMoveArgs(argsList)
+                    {
+                        LogicalMotionComponent = item["LogicalMotionComponent"].Value<string>(),
+                        HashStringInPresetProfile = item["HashString"].Value<string>()
+                    };
+
+                    return obj;
+                }
+                else
+                {
+                    throw new JsonReaderException("the move args array can not be null.");
+                }
+            }
+            else
+            {
+                throw new JsonReaderException("the token type is not StartObject.");
+            }
+        }
     }
 }

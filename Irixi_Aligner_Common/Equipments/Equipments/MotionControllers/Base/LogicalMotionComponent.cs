@@ -1,5 +1,6 @@
 ﻿using System;
-using System.Collections.ObjectModel;
+using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using Irixi_Aligner_Common.Classes.BaseClass;
 using Irixi_Aligner_Common.Interfaces;
@@ -7,7 +8,7 @@ using Irixi_Aligner_Common.Interfaces;
 namespace Irixi_Aligner_Common.MotionControllers.Base
 {
 
-    public class LogicalMotionComponent : ObservableCollection<LogicalAxis>, IHashable
+    public class LogicalMotionComponent : List<LogicalAxis>, IHashable
     {
         #region Constructors
 
@@ -37,9 +38,40 @@ namespace Irixi_Aligner_Common.MotionControllers.Base
         /// </summary>
         public bool IsAligner { private set; get; }
 
+        public string HashString
+        {
+            get
+            {
+                StringBuilder factor = new StringBuilder();
+
+                foreach (var axis in this)
+                {
+                    factor.Append(axis.HashString);
+                }
+
+                return HashGenerator.GetHashSHA256(factor.ToString());
+            }
+            set
+            {
+                throw new NotImplementedException();
+            }
+        }
+
         #endregion
 
         #region Methods
+
+        public LogicalAxis FindAxisByHashString(string HashString)
+        {
+            var ret = this.Where(la => la.HashString == HashString);
+            var cnt = ret.Count();
+            if(cnt <= 0)
+                throw new Exception("not axis was found in LMC.");
+            else if (cnt > 1)
+                throw new Exception("too many axes have been found in LMC with the same hash string.");
+            else
+                return ret.First();
+        }
 
         /// <summary>
         /// Move a set of axes
@@ -48,18 +80,6 @@ namespace Irixi_Aligner_Common.MotionControllers.Base
         public void MoveToPresetPosition(MassMoveArgs Args)
         {
             throw new NotImplementedException();
-        }
-
-        public string GetHashString()
-        {
-            StringBuilder factor = new StringBuilder();
-
-            foreach(var axis in this)
-            {
-                factor.Append(axis.GetHashString());
-            }
-
-            return HashGenerator.GetHashSHA256(factor.ToString());
         }
 
         public override string ToString()

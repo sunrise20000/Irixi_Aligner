@@ -1,64 +1,64 @@
 ﻿using System;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.IO;
-using System.Windows.Media.Media3D;
 using GalaSoft.MvvmLight;
 using Irixi_Aligner_Common.Classes;
 using Irixi_Aligner_Common.Classes.BaseClass;
 using Irixi_Aligner_Common.Interfaces;
 using Irixi_Aligner_Common.MotionControllers.Base;
+using Newtonsoft.Json;
 
 namespace Irixi_Aligner_Common.Alignment.BaseClasses
 {
-    public class AlignmentArgsBase : ViewModelBase
+    public class AlignmentArgsBase : ViewModelBase, IAlignmentArgs
     {
         #region Variables
+
         protected const string PROP_GRP_COMMON = "Common";
         protected const string PROP_GRP_TARGET = "Goal";
 
-        IInstrument instrument;
-        LogicalMotionComponent motionComponent;
-        int moveSpeed = 100;
-        string axisXTitle = "", axisYTitle = "", axisY2Title = "", axisZTitle = "";
+        private IInstrument instrument;
+        private LogicalMotionComponent motionComponent;
+        private int moveSpeed = 100;
+        private string axisXTitle = "", axisYTitle = "", axisY2Title = "", axisZTitle = "";
 
-        #endregion
+        #endregion Variables
 
         #region Constructors
-        
+
         public AlignmentArgsBase(SystemService Service)
         {
-
             Log = new ObservableCollectionThreadSafe<string>();
             ScanCurveGroup = new ScanCurveGroup();
 
-            Properties = new ObservableCollectionEx<Property>();
+            Properties = new ObservableCollection<Property>();
             this.Service = Service;
         }
 
-        #endregion
+        #endregion Constructors
 
         #region Properties
+
+        /// <summary>
+        /// Get the sub path of the preset profile where it saved
+        /// </summary>
+        [Browsable(false)]
+        public virtual string SubPath { get => throw new NotImplementedException(); }
 
         /// <summary>
         /// Get what properties are allowed to edit
         /// </summary>
         [Browsable(false)]
-        public ObservableCollectionEx<Property> Properties
-        {
-            private set;
-            get;
-        }
+        public ObservableCollection<Property> Properties { private set; get; }
 
         /// <summary>
-        /// The instance of System Service Class
+        /// The instance of System Service class
+        /// This property is the binding source of the Logical Motion Components and instruments
         /// </summary>
         [Browsable(false)]
-        public SystemService Service
-        {
-            private set;
-            get;
-        }
+        public SystemService Service { private set; get; }
 
         /// <summary>
         /// Get the title of the Axis X for both 2D&3D chart
@@ -139,16 +139,12 @@ namespace Irixi_Aligner_Common.Alignment.BaseClasses
         /// Get the messages of the alignment process
         /// </summary>
         [Browsable(false)]
-        public ObservableCollectionThreadSafe<string> Log
-        {
-            get;
-        }
-        
+        public ObservableCollectionThreadSafe<string> Log { get; }
 
-        [Display( 
-            Order = 100, 
-            Name = "Motion Component", 
-            GroupName = PROP_GRP_COMMON, 
+        [Display(
+            Order = 100,
+            Name = "Motion Component",
+            GroupName = PROP_GRP_COMMON,
             Description = "Which motion component belongs to of the axes to align.")]
         public LogicalMotionComponent MotionComponent
         {
@@ -165,7 +161,8 @@ namespace Irixi_Aligner_Common.Alignment.BaseClasses
             Name = "Instrument",
             GroupName = PROP_GRP_COMMON,
             Description = "The valid instrument like powermeter, keithley 2400, etc.")]
-        public virtual IInstrument Instrument
+        [JsonIgnore]
+        public IInstrument Instrument
         {
             get => instrument;
             set
@@ -177,8 +174,8 @@ namespace Irixi_Aligner_Common.Alignment.BaseClasses
 
         [Display(
             Order = 300,
-            Name = "Move Speed(%)", 
-            GroupName = PROP_GRP_COMMON, 
+            Name = "Move Speed(%)",
+            GroupName = PROP_GRP_COMMON,
             Description = "The move speed while aligning which is in %, the range is 1 - 100.")]
         public int MoveSpeed
         {
@@ -190,22 +187,11 @@ namespace Irixi_Aligner_Common.Alignment.BaseClasses
             }
         }
 
-        #endregion
+        #endregion Properties
 
         #region Methods
 
-        /// <summary>
-        /// Validate the parameters
-        /// </summary>
-        public virtual void Validate()
-        {
-            if(MoveSpeed < 1 || MoveSpeed > 100)
-                throw new ArgumentException("move speed must be between 1 ~ 100");
-
-            if(Instrument == null)
-                throw new ArgumentException(string.Format("you must specify the {0}",
-                    ((DisplayAttribute)TypeDescriptor.GetProperties(this)["Instrument"].Attributes[typeof(DisplayAttribute)]).Name) ?? "instrument");
-        }
+        public virtual void Validate() => throw new NotImplementedException();
 
         /// <summary>
         /// Clear the previous points scan curve
@@ -237,7 +223,7 @@ namespace Irixi_Aligner_Common.Alignment.BaseClasses
         {
             var path = Path.GetFullPath(FileName);
 
-            if(Directory.Exists(path))
+            if (Directory.Exists(path))
             {
                 File.WriteAllText(FileName, Content);
             }
@@ -256,6 +242,6 @@ namespace Irixi_Aligner_Common.Alignment.BaseClasses
             throw new NotImplementedException();
         }
 
-        #endregion
+        #endregion Methods
     }
 }

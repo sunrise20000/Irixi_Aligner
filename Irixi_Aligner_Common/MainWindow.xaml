@@ -233,7 +233,6 @@
                                            AllowMaximize="true" 
                                            AllowDockToDocumentGroup="False" 
                                            Visibility="Hidden">
-                            <!--<UserControls:AlignmentPanelAlignmentXD DataContext="{Binding Service}"/>-->
                             <apanel:AlignmentPanel 
                                 DataContext="{Binding Service.AlignmentXDArgs}" 
                                 PropertiesTemplate="UserControls/AlignmentFunc/AlignmentND/Template.xaml" 

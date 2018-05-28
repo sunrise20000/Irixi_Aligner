@@ -3,7 +3,7 @@ using Irixi_Aligner_Common.MotionControllers.Base;
 
 namespace Irixi_Aligner_Common.Interfaces
 {
-    public interface IAxis : IHashable
+    public interface IAxis
     {
         #region Properties
         /// <summary>
@@ -92,6 +92,12 @@ namespace Irixi_Aligner_Common.Interfaces
         /// Get the parent motiong controller
         /// </summary>
         IMotionController Parent { get; }
+
+        /// <summary>
+        /// Get the hash string based on the values of properties 
+        /// </summary>
+        string HashString { get; }
+
         #endregion
 
         #region Methods

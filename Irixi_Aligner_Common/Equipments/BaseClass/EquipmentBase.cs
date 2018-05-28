@@ -7,7 +7,7 @@ using System.Runtime.CompilerServices;
 
 namespace Irixi_Aligner_Common.Equipments.Base
 {
-    public class EquipmentBase : IDisposable, IEquipmentBase, INotifyPropertyChanged
+    public class EquipmentBase : IDisposable, IHashable, IEquipmentBase, INotifyPropertyChanged
     {
         #region Variables
 
@@ -90,6 +90,12 @@ namespace Irixi_Aligner_Common.Equipments.Base
         {
             protected set;
             get;
+        }
+
+        public string HashString
+        {
+            get => throw new NotImplementedException();
+            set => throw new NotImplementedException();
         }
 
         #endregion

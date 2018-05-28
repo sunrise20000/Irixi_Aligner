@@ -215,6 +215,21 @@ namespace Irixi_Aligner_Common.MotionControllers.Base
         
         public string LastError { set; get; }
 
+        public string HashString
+        {
+            get
+            {
+                var factor = string.Join("", new object[]
+                {
+                AxisName,
+                UnitHelper.HashString,
+                Parent.DeviceClass
+                });
+
+                return HashGenerator.GetHashSHA256(factor);
+            }
+        }
+
         #endregion
 
         #region Methods
@@ -326,18 +341,6 @@ namespace Irixi_Aligner_Common.MotionControllers.Base
         public override string ToString()
         {
             return string.Format("*{0}@{1}*", this.AxisName, this.Parent.DeviceClass);
-        }
-
-        public string GetHashString()
-        {
-            var factor = string.Join("", new object[]
-            {
-                AxisName,
-                UnitHelper.GetHashString(),
-                Parent.DeviceClass
-            });
-
-            return HashGenerator.GetHashSHA256(factor);
         }
 
         #endregion

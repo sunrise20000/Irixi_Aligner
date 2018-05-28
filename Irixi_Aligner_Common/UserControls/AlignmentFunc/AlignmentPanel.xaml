@@ -4,6 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:Irixi_Aligner_Common.UserControls.AlignmentFunc"
+             xmlns:dx="http://schemas.devexpress.com/winfx/2008/xaml/core" 
              xmlns:dxe="http://schemas.devexpress.com/winfx/2008/xaml/editors" 
              xmlns:dxc="http://schemas.devexpress.com/winfx/2008/xaml/charts"
              xmlns:dxprg="http://schemas.devexpress.com/winfx/2008/xaml/propertygrid" 
@@ -194,22 +195,51 @@
             </Grid.ColumnDefinitions>
             <Grid Grid.RowSpan="3" Margin="0,0,5,0">
                 <Grid.RowDefinitions>
+                    <RowDefinition Height="30"/>
                     <RowDefinition Height="300" MaxHeight="1000" MinHeight="200"/>
                     <RowDefinition Height="5"/>
                     <RowDefinition Height="*"/>
                     <RowDefinition Height="50"/>
                 </Grid.RowDefinitions>
-
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="42"/>
+                        <ColumnDefinition Width="42"/>
+                    </Grid.ColumnDefinitions>
+                    <ComboBox 
+                        VerticalAlignment="Center" 
+                        Margin="0,0,5,0" 
+                        ItemsSource="{Binding PresetProfileManager.PresetProfileList}" 
+                        SelectedItem="{Binding PresetProfileManager.SelectedPresetProfile}"/>
+                    <Button 
+                        Grid.Column="1" 
+                        VerticalAlignment="Center"
+                        Command="{Binding PresetProfileManager.CommandSave}" ToolTip="Save">
+                        <Button.Content>
+                            <Image Source="{dx:DXImageOffice2013 Image=Save_16x16.png}"/>
+                        </Button.Content>
+                    </Button>
+                    <Button 
+                        Grid.Column="2" 
+                        VerticalAlignment="Center"
+                        Command="{Binding PresetProfileManager.CommandSaveAs}" ToolTip="Save As, save the settings to a new file">
+                        <Button.Content>
+                            <Image Source="{dx:DXImageOffice2013 Image=SaveAs_32x32.png}"/>
+                        </Button.Content>
+                    </Button>
+                </Grid>
                 <dxprg:PropertyGridControl
+                    Grid.Row="1"
                     PropertyDefinitionsSource="{Binding Properties}"
                     PropertyDefinitionTemplateSelector="{StaticResource PropDefTemplSelector}"
                     SelectedObject="{Binding}" 
                     Margin="0,0,0,5"/>
 
-                <GridSplitter Grid.Row="1" HorizontalAlignment="Stretch" VerticalAlignment="Center" Margin="0" />
+                <GridSplitter Grid.Row="2" HorizontalAlignment="Stretch" VerticalAlignment="Center" Margin="0" />
 
-                <ListBox Grid.Row="2" localAssm:ListBoxBehavior.ScrollOnNewItem="True" IsSynchronizedWithCurrentItem="True" ItemsSource="{Binding Log}" Margin="0,5,0,0" BorderBrush="{x:Null}"/>
-                <Grid Grid.Row="3">
+                <ListBox Grid.Row="3" localAssm:ListBoxBehavior.ScrollOnNewItem="True" IsSynchronizedWithCurrentItem="True" ItemsSource="{Binding Log}" Margin="0,5,0,0" BorderBrush="{x:Null}"/>
+                <Grid Grid.Row="4">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition />
                         <ColumnDefinition />

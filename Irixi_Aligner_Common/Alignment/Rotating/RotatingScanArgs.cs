@@ -95,6 +95,11 @@ namespace Irixi_Aligner_Common.Alignment.Rotating
             }
         }
 
+        [Browsable(false)]
+        public string Instrument2HashString
+        {
+            private get; set;
+        }
 
         [Display(
             Name = "Axis Rotating", 
@@ -110,6 +115,11 @@ namespace Irixi_Aligner_Common.Alignment.Rotating
             }
         }
 
+        [Browsable(false)]
+        public string AxisRotatingHashString
+        {
+            private get; set;
+        }
         
 
         [Display(Name = "Rotating Interval", GroupName = PROP_GRP_ROTATING)]
@@ -148,7 +158,10 @@ namespace Irixi_Aligner_Common.Alignment.Rotating
             }
         }
         
-        
+        public string AxisLinearHashString
+        {
+            private get; set;
+        }
         
 
         [Display(Name = "Linear Interval", GroupName = PROP_GRP_LINEAR, Description = "The step size to align straightly.")]

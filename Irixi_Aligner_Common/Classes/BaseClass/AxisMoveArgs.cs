@@ -161,14 +161,12 @@ namespace Irixi_Aligner_Common.Classes.BaseClass
             }
         }
 
-        #endregion
-
-        #region Methods
-
-        public string GetHashString()
+        public string HashString
         {
-            var factor = String.Join(";", new object[]
+            get
             {
+                var factor = String.Join(";", new object[]
+                {
                 LogicalAxisHashString,
                 Speed,
                 Distance,
@@ -176,16 +174,17 @@ namespace Irixi_Aligner_Common.Classes.BaseClass
                 IsMoveable,
                 MoveOrder,
                 Unit
-            });
+                });
 
-            return HashGenerator.GetHashSHA256(factor);
+                return HashGenerator.GetHashSHA256(factor);
+            }
         }
 
-        public override int GetHashCode()
-        {
-            return GetHashString().GetHashCode();
-        }
 
+        #endregion
+
+        #region Methods
+        
         public object Clone()
         {
             var obj = new AxisMoveArgs()

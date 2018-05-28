@@ -1,10 +1,11 @@
 ﻿using System.Collections;
+using System.Collections.ObjectModel;
 using Irixi_Aligner_Common.Classes.BaseClass;
 using Irixi_Aligner_Common.Interfaces;
 
 namespace Irixi_Aligner_Common.Alignment.BaseClasses
 {
-    public class ScanCurveGroup : ObservableCollectionEx<IScanCurve>
+    public class ScanCurveGroup : ObservableCollection<IScanCurve>
     {
         public void ClearCurvesContent()
         {

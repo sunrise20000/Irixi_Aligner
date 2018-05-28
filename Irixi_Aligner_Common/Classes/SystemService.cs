@@ -21,6 +21,7 @@ using Irixi_Aligner_Common.Alignment.SpiralScan;
 using Irixi_Aligner_Common.Classes.BaseClass;
 using Irixi_Aligner_Common.Configuration.Common;
 using Irixi_Aligner_Common.Equipments.Base;
+using Irixi_Aligner_Common.Equipments.BaseClass;
 using Irixi_Aligner_Common.Equipments.Equipments;
 using Irixi_Aligner_Common.Equipments.Instruments;
 using Irixi_Aligner_Common.Interfaces;
@@ -93,13 +94,12 @@ namespace Irixi_Aligner_Common.Classes
             BusyComponents = new List<IServiceSystem>();
 
             PhysicalMotionControllerCollection = new Dictionary<Guid, IMotionController>();
-            LogicalAxisCollection = new ObservableCollectionEx<LogicalAxis>();
-            LogicalAxisInAlignerCollection = new ObservableCollectionEx<LogicalAxis>();
-            LogicalMotionComponentCollection = new ObservableCollectionEx<LogicalMotionComponent>();
-            LogicalAlignerCollection = new ObservableCollectionEx<LogicalMotionComponent>();
-            MeasurementInstrumentCollection = new ObservableCollectionEx<InstrumentBase>();
-            orgActiveInstrumentCollection = new ObservableCollectionEx2<InstrumentBase>();
-            BindingOperations.EnableCollectionSynchronization(orgActiveInstrumentCollection, lockSystemStatus);
+            LogicalAxisCollection = new EquipmentCollection<LogicalAxis>();
+            LogicalAxisInAlignerCollection = new EquipmentCollection<LogicalAxis>();
+            LogicalMotionComponentCollection = new EquipmentCollection<LogicalMotionComponent>();
+            LogicalAlignerCollection = new EquipmentCollection<LogicalMotionComponent>();
+            MeasurementInstrumentCollection = new EquipmentCollection<InstrumentBase>();
+            BindingOperations.EnableCollectionSynchronization(MeasurementInstrumentCollection, lockSystemStatus);
 
             State = SystemState.BUSY;
 
@@ -108,7 +108,7 @@ namespace Irixi_Aligner_Common.Classes
             AlignmentXDArgs = new AlignmentXDArgs(this);
             RotatingScanArgs = new RotatingScanArgs(this);
             CentralAlignArgs = new CentralAlignArgs(this);
-
+            
             /*
              * enumerate all physical motion controllers defined in the config file,
              * and create the instance of the motion controller class.
@@ -157,7 +157,7 @@ namespace Irixi_Aligner_Common.Classes
             // create the instance of the Logical Motion Components
             foreach (var cfgLMC in configMgr.ConfSystemSetting.LogicalMotionComponents)
             {
-                LogicalMotionComponent comp = new LogicalMotionComponent(cfgLMC.Caption, cfgLMC.Icon, cfgLMC.IsAligner);
+                LogicalMotionComponent lmc = new LogicalMotionComponent(cfgLMC.Caption, cfgLMC.Icon, cfgLMC.IsAligner);
                 
                 foreach (var cfgLogicalAxis in cfgLMC.LogicalAxisArray)
                 {
@@ -171,16 +171,16 @@ namespace Irixi_Aligner_Common.Classes
                     // bind the physical axis instance to logical axis
                     BindPhysicalAxis(axis);
 
-                    comp.Add(axis);
+                    lmc.Add(axis);
                     this.LogicalAxisCollection.Add(axis);
-                    if (comp.IsAligner)
+                    if (lmc.IsAligner)
                         this.LogicalAxisInAlignerCollection.Add(axis);
                 }
 
-                this.LogicalMotionComponentCollection.Add(comp);
+                this.LogicalMotionComponentCollection.Add(lmc);
 
-                if (comp.IsAligner)
-                    this.LogicalAlignerCollection.Add(comp);
+                if (lmc.IsAligner)
+                    this.LogicalAlignerCollection.Add(lmc);
             }
 
             // create the instance of the cylinder controller
@@ -306,10 +306,10 @@ namespace Irixi_Aligner_Common.Classes
         }
 
         /// <summary>
-        /// Create a collection that contains all logical axes defined in the config file.
+        /// Get the list of the overall logical axes defined in the system setting file.
         /// this list enable users to operate each axis independently without knowing which physical motion controller it belongs to
         /// </summary>
-        public ObservableCollectionEx<LogicalAxis> LogicalAxisCollection
+        public EquipmentCollection<LogicalAxis> LogicalAxisCollection
         {
             get;
         }
@@ -317,38 +317,22 @@ namespace Irixi_Aligner_Common.Classes
         /// <summary>
         /// Get the collection of the logical motion components, this property should be used to generate the motion control panel for each aligner
         /// </summary>
-        public ObservableCollectionEx<LogicalMotionComponent> LogicalMotionComponentCollection { get; }
-
-        /// <summary>
-        /// Get the collection contains the logical axis which belongs to the logical aligner
-        /// </summary>
-        public ObservableCollectionEx<LogicalAxis> LogicalAxisInAlignerCollection { get; }
+        public EquipmentCollection<LogicalMotionComponent> LogicalMotionComponentCollection { get; }
 
         /// <summary>
         /// Get the logical motion components which is marked as logical aligner
         /// </summary>
-        public ObservableCollectionEx<LogicalMotionComponent> LogicalAlignerCollection { get; }
+        public EquipmentCollection<LogicalMotionComponent> LogicalAlignerCollection { get; }
+        
+        /// <summary>
+        /// Get the collection contains the logical axes those belong to the logical aligner
+        /// </summary>
+        public EquipmentCollection<LogicalAxis> LogicalAxisInAlignerCollection { get; }
 
         /// <summary>
         /// Get the collection of instruments that defined in the configuration file
         /// </summary>
-        public ObservableCollectionEx<InstrumentBase> MeasurementInstrumentCollection { get; }
-
-        /// <summary>
-        /// Get the collection of the active instruments which are initialized successfully, the property should be used to represent the valid instruments in the alignment control panel
-        /// </summary>
-        public ObservableCollectionEx2<InstrumentBase> orgActiveInstrumentCollection
-        {
-            get;
-        }
-
-        public ICollectionView ActiveInstrumentCollection
-        {
-            get
-            {
-                return CollectionViewSource.GetDefaultView(orgActiveInstrumentCollection);
-            }
-        }
+        public EquipmentCollection<InstrumentBase> MeasurementInstrumentCollection { get; }
 
         /// <summary>
         /// Set or get the last message.
@@ -405,6 +389,7 @@ namespace Irixi_Aligner_Common.Classes
         {
             get;
         }
+
 
         /// <summary>
         /// Get argument of rotating alignment, the properties in the class are bound to the UI
@@ -567,8 +552,9 @@ namespace Irixi_Aligner_Common.Classes
                     if (AlignHandler.Args == null)
                     {
                         this.LastMessage = new MessageItem(
-                            MessageType.Error,
-                            string.Format("{0} Error, {1}", AlignHandler, "the argument can not be null."));
+                            MessageType.Error, 
+                            $"{AlignHandler} Error, the argument can not be null.");
+
                         PostErrorMessage(this.LastMessage.Message);
                     }
                     else
@@ -733,7 +719,7 @@ namespace Irixi_Aligner_Common.Classes
                     // add the instruments which are initialized successfully to the acitve collection
                     if (_equipments[ended_id] is InstrumentBase)
                     {
-                        orgActiveInstrumentCollection.Add((InstrumentBase)_equipments[ended_id]);
+                        MeasurementInstrumentCollection.Add((InstrumentBase)_equipments[ended_id]);
                     }
                 }
                 else
@@ -821,14 +807,15 @@ namespace Irixi_Aligner_Common.Classes
 
                 #region Find the LMC by the hash string
 
-                LogicalMotionComponent lmc;
-                var colle = LogicalMotionComponentCollection.Where(a => a.GetHashString() == Args.LogicalMotionComponent);
 
-                if (colle.Any())
-                    lmc = colle.First();
-                else
+                LogicalMotionComponent lmc;
+                try
                 {
-                    this.LastMessage = new MessageItem(MessageType.Error, $"Unable to find the target motion component with the ID {Args.LogicalMotionComponent}");
+                    lmc = this.LogicalMotionComponentCollection.FindItemByHashString(Args.LogicalMotionComponent);
+                }
+                catch(Exception ex)
+                { 
+                    this.LastMessage = new MessageItem(MessageType.Error, $"Unable to run the mass-move process, {ex}");
                     return;
                 }
 
@@ -840,33 +827,28 @@ namespace Irixi_Aligner_Common.Classes
 
                 if (Args.Count != lmc.Count)
                 {
-                    this.LastMessage = new MessageItem(MessageType.Error, $"The argument of mass-move does not match with the target motion component");
+                    this.LastMessage = new MessageItem(MessageType.Error, $"The axis count is different between argument and LMC.");
                     return;
                 }
                 else
                 {
                     foreach (var perArg in Args)
                     {
-                        var laVali = lmc.Where(la => la.GetHashString() == perArg.LogicalAxisHashString);
-                        if (laVali.Count() > 1)
+                        LogicalAxis la;
+                        try
                         {
-                            this.LastMessage = new MessageItem(MessageType.Error, $"Multiple axes {perArg.LogicalAxisHashString} are found in the argument");
-                            return;
-                        }
-                        else if (laVali.Count() == 0)
-                        {
-                            this.LastMessage = new MessageItem(MessageType.Error, $"Axis {perArg.LogicalAxisHashString} are not found");
-                            return;
-                        }
-                        else
-                        {
-                            var _la = laVali.First();
-                            if (perArg.IsMoveable) 
+                            la = lmc.FindAxisByHashString(perArg.LogicalAxisHashString);
+                            if (perArg.IsMoveable)
                             {
                                 // Only the moveable axis will be added
-                                _la.MoveArgsTemp = perArg.Clone() as AxisMoveArgs;
-                                axesToMove.Add(_la);
+                                la.MoveArgsTemp = perArg.Clone() as AxisMoveArgs;
+                                axesToMove.Add(la);
                             }
+                        }
+                        catch(Exception ex)
+                        {
+                            this.LastMessage = new MessageItem(MessageType.Error, $"Unable to run the mass-move process, {ex}");
+                            return;
                         }
                     }
                 }

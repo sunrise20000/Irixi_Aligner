@@ -20,15 +20,15 @@ namespace Irixi_Aligner_Common.Equipments.Instruments
     {
         #region Definitions
 
-        const double PROT_AMPS_DEF = 0.000105; // default compliance current is set to 105uA
-        const double PROT_AMPS_MIN = 0.00000105; // maximum compliance current is set to 1.05uA
-        const double PROT_AMPS_MAX = 1.05; // minimum compliance current is set to 1.05A
+        const double PROT_AMPS_DEF = 0.000105; // default compliance of current is 105uA
+        const double PROT_AMPS_MIN = 0.00000105; // minimum compliance of current is 1.05uA
+        const double PROT_AMPS_MAX = 1.05; // maximum compliance of current is 1.05A
 
-        const double PROT_VOLT_DEF = 21; // default compliance voltage is set to 21V
-        const double PROT_VOLT_MIN = 0.21; // maximum compliance voltage is set to 210mV
-        const double PROT_VOLT_MAX = 210; // minmum compliance voltage is set to 210V
+        const double PROT_VOLT_DEF = 21; // default compliance of voltage is 21V
+        const double PROT_VOLT_MIN = 0.21; // minimum compliance of voltage is 210mV
+        const double PROT_VOLT_MAX = 210; // maximum compliance of voltage is 210V
 
-        const double MEAS_SPEED_DEF = 1; // default measurement speed is set to 1 for 60Hz power line cycling
+        const double MEAS_SPEED_DEF = 1; // default measurement speed is 1 to fit 60Hz power line cycling
 
         public enum EnumInOutTerminal
         {

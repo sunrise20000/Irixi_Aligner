@@ -87,6 +87,15 @@ namespace Irixi_Aligner_Common.MotionControllers.Base
         /// </summary>
         public int BusyAxesCount { private set; get; }
 
+
+        public string HashString
+        {
+            get
+            {
+                return HashGenerator.GetHashSHA256(DeviceClass.ToString());
+            }
+        }
+
         #endregion Properties
 
         #region Methods
@@ -228,11 +237,6 @@ namespace Irixi_Aligner_Common.MotionControllers.Base
         protected virtual bool MoveProcess(IAxis Axis, MoveMode Mode, int Speed, int Distance)
         {
             throw new NotImplementedException();
-        }
-        
-        public string GetHashString()
-        {
-            return HashGenerator.GetHashSHA256(DeviceClass.ToString());
         }
 
         public sealed override string ToString()

@@ -7,6 +7,8 @@ using System.Linq;
 using System.Collections.ObjectModel;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel;
+using System.Text;
+using Newtonsoft.Json;
 
 namespace Irixi_Aligner_Common.Alignment.AlignmentXD
 {
@@ -17,7 +19,7 @@ namespace Irixi_Aligner_Common.Alignment.AlignmentXD
         double target;
         int maxCycles;
         int maxOrder;
-        ObservableCollectionEx<int> listScanOrder;
+        ObservableCollection<int> listScanOrder;
 
        ObservableCollection<Alignment1DArgs> axisParamCollection;
        ReadOnlyObservableCollection<Alignment1DArgs> readonlyAxisParamCollection;
@@ -25,13 +27,13 @@ namespace Irixi_Aligner_Common.Alignment.AlignmentXD
 
         #region Constructors
 
-        public AlignmentXDArgs(SystemService Service):base(Service)
+        public AlignmentXDArgs(SystemService Service) :base(Service)
         {
             this.target = 0;
             this.maxCycles = 1;
 
             // build valid scan order
-            listScanOrder = new ObservableCollectionEx<int>();
+            listScanOrder = new ObservableCollection<int>();
 
             // build list contains each single axis parameter object
             axisParamCollection = new ObservableCollection<Alignment1DArgs>();
@@ -46,16 +48,33 @@ namespace Irixi_Aligner_Common.Alignment.AlignmentXD
             AxisXTitle = "Position";
             AxisYTitle = "Indensity";
 
+            this.PresetProfileManager = new AlignmentArgsPresetProfileManager<AlignmentXDArgs, AlignmentXDArgsProfile>(this);
+
         }
 
         #endregion
 
         #region Properties
+        
+        public override string SubPath
+        {
+            get
+            {
+                return "AlignmentnD";
+            }
+        }
+
+        public AlignmentArgsPresetProfileManager<AlignmentXDArgs, AlignmentXDArgsProfile> PresetProfileManager
+        {
+            get;
+        }
+
 
         [Display(
             Name = "Motion Component",
             GroupName = PROP_GRP_COMMON,
             Description = "Which motion component belongs to of the axes to align.")]
+        [JsonIgnore]
         new public LogicalMotionComponent MotionComponent
         {
             get => motionComponent;
@@ -81,7 +100,6 @@ namespace Irixi_Aligner_Common.Alignment.AlignmentXD
 
                     axisParamCollection.Add(arg);
                     ScanCurveGroup.Add(arg.ScanCurve);
-                    //ScanCurveGroup.Add(arg.ScanCurve.MaxPowerConstantLine);
                 }
 
                 this.MaxOrder = value.Count;
@@ -117,7 +135,7 @@ namespace Irixi_Aligner_Common.Alignment.AlignmentXD
         }
 
         [Display(
-            Name = "Axes Setting",
+            Name = "Axis Group",
             GroupName = PROP_GRP_COMMON,
             Description = "")]
         public ReadOnlyObservableCollection<Alignment1DArgs> AxisParamCollection
@@ -142,7 +160,7 @@ namespace Irixi_Aligner_Common.Alignment.AlignmentXD
         }
 
         [Browsable(false)]
-        public ObservableCollectionEx<int> ListScanOrder
+        public ObservableCollection<int> ListScanOrder
         {
             get => listScanOrder;
         }

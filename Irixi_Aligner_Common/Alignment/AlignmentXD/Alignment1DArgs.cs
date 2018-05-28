@@ -1,5 +1,4 @@
-﻿using System;
-using System.ComponentModel;
+﻿using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using Irixi_Aligner_Common.Alignment.BaseClasses;
 using Irixi_Aligner_Common.Classes;
@@ -25,6 +24,7 @@ namespace Irixi_Aligner_Common.Alignment.AlignmentXD
             Name = "Axis",
             GroupName = PROP_GRP_COMMON,
             Description = "")]
+        
         public LogicalAxis Axis
         {
             get => axis;
@@ -36,7 +36,6 @@ namespace Irixi_Aligner_Common.Alignment.AlignmentXD
                 this.ScanCurve.DisplayName = Axis.AxisName;
             }
         }
-
 
         [Display(
             Name = "Enabled",

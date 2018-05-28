@@ -162,6 +162,8 @@ namespace Irixi_Aligner_Common.Equipments.Instruments
         
         public override double Fetch()
         {
+
+#if !FAKE_ME
             var retgrp = Read("RWS?");
 
             var ret = retgrp.Split(',');
@@ -187,6 +189,9 @@ namespace Irixi_Aligner_Common.Equipments.Instruments
             }
             
             return MetaProperties[ActiveChannel].MeasurementValue;
+#else
+            return new Random((int)DateTime.Now.Ticks).NextDouble() * 10;
+#endif
         }
 
         public override double Fetch(int Channel)
@@ -204,9 +209,9 @@ namespace Irixi_Aligner_Common.Equipments.Instruments
             }
         }
 
-        #endregion
+#endregion
 
-        #region Appropriative Methods of Newport 2832C
+#region Appropriative Methods of Newport 2832C
 
         public void SetDisplayChannel(EnumChannel CH)
         {
@@ -301,7 +306,7 @@ namespace Irixi_Aligner_Common.Equipments.Instruments
             }
         }
 
-        #endregion
+#endregion
 
     }
 
