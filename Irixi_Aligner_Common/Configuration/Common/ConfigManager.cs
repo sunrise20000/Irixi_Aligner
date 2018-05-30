@@ -1,6 +1,7 @@
 ﻿
 using Irixi_Aligner_Common.Configuration.Layout;
 using Irixi_Aligner_Common.Message;
+using Irixi_Aligner_Common.Configuration.ScriptCfg;
 using Newtonsoft.Json;
 using System;
 using System.IO;
@@ -13,7 +14,7 @@ namespace Irixi_Aligner_Common.Configuration.Common
         const string FILE_PROFILE = @"Configuration\profile_motorized_stages.json";
         const string FILE_LAYOUT = @"Configuration\layout.json";
         const string FILE_DEFAULTLAYOUT = @"Configuration\defaultlayout.json";
-
+        const string FILE_SCRIPT_CONFIG = @"Configuration\script_key_words.json";
 
         public ConfigManager()
         {
@@ -98,7 +99,7 @@ namespace Irixi_Aligner_Common.Configuration.Common
                     }
                     else
                     {
-                        cfgAxis.SetProfile(profile.Clone() as MotorizedStageProfile);
+                        cfgAxis.SetProfile(profile.Clone() as MotorizedStageProfile);   
                     }
                 }
             }
@@ -110,13 +111,27 @@ namespace Irixi_Aligner_Common.Configuration.Common
 
 
             #endregion
+
+            #region ReadConfig of script editer
+            try
+            {
+                string json_string = File.ReadAllText(FILE_SCRIPT_CONFIG);
+                this.FuncManager = JsonConvert.DeserializeObject<FuncManager>(json_string);
         }
+            catch (Exception ex)
+            {
+                LogHelper.WriteLine("Unable to load config file {0}, {1}", FILE_SCRIPT_CONFIG, ex.Message, LogHelper.LogType.ERROR);
+                throw new Exception(ex.Message);
+    }
+    #endregion
+}
 
         public ConfigurationSystemSetting ConfSystemSetting { get; }
 
         public MotorizedStagesProfileManager ProfileManager { get; }
 
         public LayoutManager ConfWSLayout { get; set; }
+        public FuncManager FuncManager { get; set; } 
 
         /// <summary>
         /// Save the layout of document group

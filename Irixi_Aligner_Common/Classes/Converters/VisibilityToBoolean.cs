@@ -11,9 +11,9 @@ namespace Irixi_Aligner_Common.Classes.Converters
         {
             bool? ret = null;
             if ((Visibility)value == Visibility.Visible)
-                ret = false;
-            else
                 ret = true;
+            else
+                ret = false;
 
             return ret;
         }
@@ -22,9 +22,9 @@ namespace Irixi_Aligner_Common.Classes.Converters
         {
             bool? v = (bool?)value;
             if (v.HasValue && v.Value == true)
-                return Visibility.Hidden;
-            else
                 return Visibility.Visible;
+            else
+                return Visibility.Hidden;
         }
     }
 }

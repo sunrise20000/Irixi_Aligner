@@ -12,20 +12,8 @@ namespace Irixi_Aligner_Common.Classes.Converters
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            bool ret = false;
-            SystemState state = (SystemState)value;
-            switch (state)
-            {
-                case SystemState.IDLE:
-                    ret = false;
-                    break;
-
-                default:
-                    ret = true;
-                    break;
-            }
-
-            return ret;
+            ScriptState state = (ScriptState)value;
+            return state != ScriptState.IDLE;
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)

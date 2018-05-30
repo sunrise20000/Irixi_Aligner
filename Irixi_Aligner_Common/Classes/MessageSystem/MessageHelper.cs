@@ -34,7 +34,6 @@ namespace Irixi_Aligner_Common.Message
             
         }
     }
-
     public class MessageItem
     {
         #region Constructors

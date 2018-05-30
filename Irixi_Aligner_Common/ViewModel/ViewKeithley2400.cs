@@ -164,7 +164,6 @@ namespace Irixi_Aligner_Common.ViewModel
                 {
                     try
                     {
-
                         K2400.SetMeasRangeOfAmps(target);
                     }
                     catch (Exception ex)

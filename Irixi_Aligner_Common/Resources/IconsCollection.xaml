@@ -20,4 +20,31 @@
     <BitmapImage x:Key="IconStop_256x256">Images/Icons/stop_256x256.png</BitmapImage>
     <BitmapImage x:Key="IconList_32x32">Images/Icons/list_32x32.png</BitmapImage>
     <BitmapImage x:Key="IconHome_32x32">Images/Icons/home_32x32.png</BitmapImage>
+    <BitmapImage x:Key="IconScript_64x64">Images/Icons/script_editor64x64.png</BitmapImage>
+    <BitmapImage x:Key="IconScriptOpen_64x64">Images/Icons/ScriptOpen64x64.png</BitmapImage>
+    <BitmapImage x:Key="IconScriptSave_64x64">Images/Icons/ScriptSave64x64.png</BitmapImage>
+    <BitmapImage x:Key="IconScriptSaveAs_64x64">Images/Icons/ScriptSaveAs64x64.png</BitmapImage>
+    <BitmapImage x:Key="IconScriptClose_64x64">Images/Icons/ScriptClose64x64.png</BitmapImage>
+    
+    <BitmapImage x:Key="Axis_24x24">Images/Icons/axis_24x24.png</BitmapImage>
+    <BitmapImage x:Key="System_24x24">Images/Icons/system_24x24.png</BitmapImage>
+    <BitmapImage x:Key="Io_24x24">Images/Icons/io_24x24.png</BitmapImage>
+    <BitmapImage x:Key="Equipment_24x24">Images/Icons/equipment_24x24.png</BitmapImage>
+    <BitmapImage x:Key="Enum_24x24">Images/Icons/enum_24x24.png</BitmapImage>
+    <BitmapImage x:Key="Function_16x16">Images/Icons/function_16x16.png</BitmapImage>
+    
+    
+    <BitmapImage x:Key="Camera_64x64">Images/Icons/camera_64x64.png</BitmapImage>
+    <BitmapImage x:Key="Scriptstart_32x32">Images/Icons/Scriptstart_32x32.png</BitmapImage>
+    <BitmapImage x:Key="Scriptcompile_32x32">Images/Icons/Scriptcompile_32x32.png</BitmapImage>
+    <BitmapImage x:Key="Scriptstop_32x32">Images/Icons/Scriptstop_32x32.png</BitmapImage>
+    <BitmapImage x:Key="Scriptstart_dis32x32">Images/Icons/Scriptstart_dis32x32.png</BitmapImage>
+    <BitmapImage x:Key="Scriptstop_dis32x32">Images/Icons/Scriptstop_dis32x32.png</BitmapImage>
+    <BitmapImage x:Key="Scriptcompile_dis32x32">Images/Icons/Scriptcompile_dis32x32.png</BitmapImage>
+   
+
+    <BitmapImage x:Key="Toolbaropen_32x32">Images/Icons/open32x32.png</BitmapImage>
+    <BitmapImage x:Key="Toolbarsave_32x32">Images/Icons/save32x32.png</BitmapImage>
+    <BitmapImage x:Key="Toolbarsaveas_32x32">Images/Icons/saveas32x32.png</BitmapImage>
+    <BitmapImage x:Key="Toolbarclose_32x32">Images/Icons/close32x32.png</BitmapImage>
 </ResourceDictionary>

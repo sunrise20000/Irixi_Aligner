@@ -19,13 +19,10 @@
                     xmlns:local="clr-namespace:Irixi_Aligner_Common" 
                     xmlns:Converters="clr-namespace:Irixi_Aligner_Common.Classes.Converters" 
                     xmlns:UserControls="clr-namespace:Irixi_Aligner_Common.UserControls"
-                    xmlns:apanel="clr-namespace:Irixi_Aligner_Common.UserControls.AlignmentFunc">       
+                    xmlns:apanel="clr-namespace:Irixi_Aligner_Common.UserControls.AlignmentFunc">
     <dxr:DXRibbonWindow.Resources>
-
         <Converters:VisibilityToBoolean x:Key="VisibilityToBoolean" />
         <Converters:OutputStateToBoolean x:Key="OutputStateToBoolean" />
-        <Converters:SystemStatusToStartButtonEnable x:Key="SystemStatusToStartButtonEnable" />
-    
     </dxr:DXRibbonWindow.Resources>
     <DockPanel DataContext="{Binding Source={StaticResource Locator}}">
         <dxr:RibbonControl x:Name="ribbonControl1" DockPanel.Dock="Top" AllowCustomization="False" ToolbarShowCustomizationButton="False" RibbonStyle="Office2010">
@@ -49,21 +46,23 @@
                             RibbonStyle="Large"
                             LargeGlyph="{StaticResource IconHome_32x32}" 
                             Command="{Binding Service.CommandHomeAllAxes}" 
-                            IsEnabled="{Binding Service.State, Converter={StaticResource SystemStatusToStartButtonEnable}}" />
+                            IsEnabled="{Binding Service.State, Converter={StaticResource SystemStatusToStartButtonEnable}, Mode=OneWay}" />
                         <dxb:BarButtonItem 
                             x:Name="btnStart" 
                             Content="Start" 
                             RibbonStyle="Large"
                             Glyph="{StaticResource IconPlay_256x256}" 
+                            Command="{Binding Service.CommandStart}"
                             LargeGlyph="{StaticResource IconPlay_256x256}" 
-                            IsEnabled="{Binding Service.State, Converter={StaticResource SystemStatusToStartButtonEnable}}" />
+                            IsEnabled="{Binding Service.ScriptState, Converter={StaticResource SystemStatusToStartButtonEnable}, Mode=OneWay}" />
                         <dxb:BarButtonItem 
                             x:Name="btnStop"
                             Content="Stop" 
                             RibbonStyle="Large"
                             Glyph="{StaticResource IconStop_256x256}" 
+                            Command="{Binding Service.CommandStop}"
                             LargeGlyph="{StaticResource IconStop_256x256}" 
-                            IsEnabled="{Binding Service.State, Converter={StaticResource SystemStatusToStopButtonEnable}}" />
+                            IsEnabled="{Binding Service.ScriptState, Converter={StaticResource SystemStatusToStopButtonEnable}, Mode=OneWay}" />
                     </dxr:RibbonPageGroup>
                     <dxr:RibbonPageGroup Caption="Tools">
                         <dxb:BarButtonItem 
@@ -105,6 +104,7 @@
                             Glyph="{StaticResource IconRotating_512x512}" 
                             ItemClick="btnRotatingScan_ItemClick" />
                     </dxr:RibbonPageGroup>
+                  
                 </dxr:RibbonPage>
                 <dxr:RibbonPage x:Name="rpgView" Caption="View">
                     <dxr:RibbonPageGroup x:Name="rpgView_MotionComponent" Caption="Motion Control">
@@ -119,8 +119,28 @@
                             LargeGlyph="{dx:DXImageOffice2013 Image=Solution_32x32.png}" 
                             RibbonStyle="Default" 
                             IsChecked="{Binding Visibility, ElementName=CylinderControlPanel, Mode=TwoWay, Converter={StaticResource VisibilityToBoolean}}" />
+                       
+                    </dxr:RibbonPageGroup>
+                    <dxr:RibbonPageGroup Caption="Script">
+                        <dxb:BarCheckItem           
+                            Content="Script"
+                            RibbonStyle="Default" 
+                            LargeGlyph="{StaticResource IconScript_64x64}" 
+                            Glyph="{StaticResource IconScript_64x64}"
+                            IsChecked="{Binding Visibility, ElementName=ScriptControlPanel, Mode=TwoWay, Converter={StaticResource VisibilityToBoolean}}"
+                            />
+                    </dxr:RibbonPageGroup>
+                    <dxr:RibbonPageGroup Caption="Vision">
+                        <dxb:BarCheckItem
+                            Content="Camera"  
+                             RibbonStyle="Default" 
+                            LargeGlyph="{StaticResource Camera_64x64}" 
+                            Glyph="{StaticResource Camera_64x64}"
+                            IsChecked="{Binding Visibility, ElementName=VisionControlPanel, Mode=TwoWay, Converter={StaticResource VisibilityToBoolean}}"
+                        />
                     </dxr:RibbonPageGroup>
                 </dxr:RibbonPage>
+         
             </dxr:RibbonDefaultPageCategory>
         </dxr:RibbonControl>
         <dxr:RibbonStatusBarControl DockPanel.Dock="Bottom">
@@ -162,7 +182,8 @@
                             AllowDock="False" 
                             AllowMaximize="False" 
                             AllowDockToDocumentGroup="False">
-                            <Grid IsEnabled="{Binding Service.CylinderController.IsInitialized}">
+                            <Grid IsEnabled="{Binding Service.ScriptState, Converter={StaticResource ScriptStateToGridEnable}}">
+                                <Grid IsEnabled="{Binding Service.CylinderController.IsInitialized}">
                                 <Grid.RowDefinitions>
                                     <RowDefinition />
                                     <RowDefinition />
@@ -219,9 +240,44 @@
                                     Content="POD Vacuum" 
                                     Command="{Binding Service.CommandTogglePodVacuumState, Mode=OneWay}" 
                                     IsChecked="{Binding Service.CylinderController.PodVacuumState, Converter={StaticResource OutputStateToBoolean}, Mode=OneWay}" />
+                                </Grid>
+                            </Grid>
+                        </dxd:DocumentPanel>
+                        
+                        <!--The control panel of script-->
+                        <dxd:DocumentPanel x:Name="ScriptControlPanel"                        
+                            MDISize="1000,600" 
+                            ShowMaximizeButton="False" 
+                            AllowFloat="False" 
+                            AllowSizing="true" 
+                            AllowRename="False" 
+                            AllowDock="true" 
+                            AllowMaximize="true" 
+                            AllowDockToDocumentGroup="False"
+                            Visibility="Hidden"
+                            Caption="{Binding StrFilePath,ElementName=ScriptEditer1, Mode=OneWay}">
+                            <Grid>
+                                <UserControls:UC_ScriptEditer x:Name="ScriptEditer1"/>
                             </Grid>
                         </dxd:DocumentPanel>
 
+
+                        <!--The control panel of vision-->
+                        <dxd:DocumentPanel x:Name="VisionControlPanel" 
+                            Caption="VisionEditer" 
+                            MDISize="1000,600" 
+                            ShowMaximizeButton="False" 
+                            AllowFloat="False" 
+                            AllowSizing="true" 
+                            AllowRename="False" 
+                            AllowDock="true" 
+                            AllowMaximize="true" 
+                            AllowDockToDocumentGroup="False"
+                            Visibility="Hidden">
+                            <Grid>
+                                <UserControls:UC_VisionCtrl/>
+                            </Grid>
+                        </dxd:DocumentPanel>
                         <!-- AlignmentnD Panel -->
                         <dxd:DocumentPanel x:Name="panelAlignmentXD" 
                                            Caption="Alignment nD" 
@@ -233,11 +289,14 @@
                                            AllowMaximize="true" 
                                            AllowDockToDocumentGroup="False" 
                                            Visibility="Hidden">
-                            <apanel:AlignmentPanel 
+
+                            <Grid IsEnabled="{Binding Service.ScriptState , Converter={StaticResource ScriptStateToGridEnable}}">
+                                    <apanel:AlignmentPanel 
                                 DataContext="{Binding Service.AlignmentXDArgs}" 
                                 PropertiesTemplate="UserControls/AlignmentFunc/AlignmentND/Template.xaml" 
                                 StartCommand="{Binding Service.CommandDoAlignmentXD}"
                                 StopCommand="{Binding Service.CommandStop}"/>
+                            </Grid>
                         </dxd:DocumentPanel>
                         
                         <!-- Blind Search Panel -->
@@ -251,11 +310,13 @@
                                            AllowMaximize="true" 
                                            AllowDockToDocumentGroup="False"
                                            Visibility="Hidden">
-                            <apanel:AlignmentPanel 
+                            <Grid IsEnabled="{Binding Service.ScriptState , Converter={StaticResource ScriptStateToGridEnable}}">
+                                <apanel:AlignmentPanel 
                                 DataContext="{Binding Service.SpiralScanArgs}" 
                                 PropertiesTemplate="UserControls/AlignmentFunc/SprialScan/Template.xaml" 
                                 StartCommand="{Binding Service.CommandDoBlindSearch}"
                                 StopCommand="{Binding Service.CommandStop}"/>
+                            </Grid>
                         </dxd:DocumentPanel>
 
                         <!-- Blind Search 2 Panel -->
@@ -269,11 +330,13 @@
                                            AllowMaximize="true" 
                                            AllowDockToDocumentGroup="False"
                                            Visibility="Hidden">
-                            <apanel:AlignmentPanel 
+                            <Grid IsEnabled="{Binding Service.ScriptState , Converter={StaticResource ScriptStateToGridEnable}}">
+                                <apanel:AlignmentPanel 
                                 DataContext="{Binding Service.SnakeRouteScanArgs}" 
                                 PropertiesTemplate="UserControls/AlignmentFunc/SnakeRouteScan/Template.xaml" 
                                 StartCommand="{Binding Service.CommandDoSnakeRouteScan}"
                                 StopCommand="{Binding Service.CommandStop}"/>
+                            </Grid>
                         </dxd:DocumentPanel>
 
                         <!-- Rotating Scan Panel -->
@@ -287,11 +350,13 @@
                                            AllowMaximize="true" 
                                            AllowDockToDocumentGroup="False"
                                            Visibility="Hidden">
-                            <apanel:AlignmentPanel 
+                            <Grid IsEnabled="{Binding Service.ScriptState , Converter={StaticResource ScriptStateToGridEnable}}">
+                                <apanel:AlignmentPanel 
                                 DataContext="{Binding Service.RotatingScanArgs}" 
                                 PropertiesTemplate="UserControls/AlignmentFunc/RotatingScan/Template.xaml" 
                                 StartCommand="{Binding Service.CommandDoRotatingScan}"
                                 StopCommand="{Binding Service.CommandStop}"/>
+                            </Grid>
                         </dxd:DocumentPanel>
 
                         <!-- Central Align Panel -->
@@ -305,11 +370,13 @@
                                            AllowMaximize="true" 
                                            AllowDockToDocumentGroup="False"
                                            Visibility="Hidden">
-                            <apanel:AlignmentPanel 
+                            <Grid IsEnabled="{Binding Service.ScriptState , Converter={StaticResource ScriptStateToGridEnable}}">
+                                <apanel:AlignmentPanel 
                                 DataContext="{Binding Service.CentralAlignArgs}" 
                                 PropertiesTemplate="UserControls/AlignmentFunc/CentralAlign/Template.xaml" 
                                 StartCommand="{Binding Service.CommandDoCentralAlign}"
                                 StopCommand="{Binding Service.CommandStop}"/>
+                            </Grid>
                         </dxd:DocumentPanel>
 
                         <!-- The position preset panel -->
@@ -329,7 +396,7 @@
                             AllowContextMenu="False"
                             AllowDockToDocumentGroup="False"
                             Visibility="Hidden">
-                            <Grid>
+                            <Grid IsEnabled="{Binding Service.ScriptState , Converter={StaticResource ScriptStateToGridEnable}}">
                                 <Grid.Resources>
                                     <Style TargetType="TextBlock">
                                         <Setter Property="HorizontalAlignment" Value="Left"/>
@@ -444,7 +511,7 @@
                                 </StackPanel>
                             </Grid>
                         </dxd:DocumentPanel>
-
+                        
                     </dxd:DocumentGroup>
                 </dxd:LayoutGroup>
                 <dxd:TabbedGroup x:Name="bottomInfoPanelsHost">

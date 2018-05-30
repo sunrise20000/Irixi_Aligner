@@ -23,15 +23,15 @@ namespace Irixi_Aligner_Common.Alignment.BaseClasses
         {
             cts = new CancellationTokenSource();
             cts_token = cts.Token;
-
+                
             Args.Validate();
-
             Args.ClearScanCurve();
         }
 
         public virtual void Stop()
         {
-            cts.Cancel();
+            if(cts!=null)
+                cts.Cancel();
         }
         
     }

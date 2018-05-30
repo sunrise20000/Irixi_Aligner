@@ -11,9 +11,15 @@
         USER_SCRIPT_RUN,
         USER_SCRIPT_PAUSE,
         IDLE,
-        BUSY
+        BUSY,
+        PAUSE
     }
-
+    public enum ScriptState
+    {
+        IDLE,
+        BUSY,
+        PAUSE
+    }
     public enum MotionControllerType
     {
         LUMINOS_P6A,

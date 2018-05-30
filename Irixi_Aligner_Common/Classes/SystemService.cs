@@ -30,6 +30,10 @@ using Irixi_Aligner_Common.MotionControllers.Base;
 using Irixi_Aligner_Common.MotionControllers.Irixi;
 using Irixi_Aligner_Common.MotionControllers.Luminos;
 using IrixiStepperControllerHelper;
+using System.Threading;
+using System.Collections.Specialized;
+using System.Windows.Forms;
+using System.IO;
 
 namespace Irixi_Aligner_Common.Classes
 {
@@ -49,18 +53,25 @@ namespace Irixi_Aligner_Common.Classes
         readonly EquipmentCollection<LogicalMotionComponent> listLogicalAligner;
         readonly EquipmentCollection<InstrumentBase> listAvaliableInstrument;
         readonly EquipmentCollection<InstrumentBase> listDefinedInstrument;
+    
+        ScriptState _scriptState = ScriptState.IDLE;
+        MessageItem _lastmsg = null;
+        MessageHelper _msg_helper = new MessageHelper();
+        private AutoResetEvent PauseResetEvent = new AutoResetEvent(true);
 
         /// <summary>
         /// lock while set or get this.State
         /// </summary>
         readonly object lockSystemStatus = new object();
-
+        readonly object lockSystemOpStatus = new object();
         /// <summary>
         /// Output put initialization messages
         /// </summary>
         public event EventHandler<string> InitProgressChanged;
 
-
+        public Dictionary<string, Dictionary<string, Dictionary<string, string>>> Enums { set; get; }
+        private Task taskMonitor = null;
+        private CancellationTokenSource cts = new CancellationTokenSource();
         #endregion
 
         #region Constructor
@@ -68,7 +79,14 @@ namespace Irixi_Aligner_Common.Classes
         public SystemService()
         {
 
+
             initStartTime = DateTime.Now;
+
+            initStarts = DateTime.Now;
+            Messenger.Default.Register<string>(this, "ScriptCompileError", msg => System.Windows.Application.Current.Dispatcher.Invoke(() => LastMessage = new MessageItem(MessageType.Error, msg)));
+            Messenger.Default.Register<string>(this, "ScriptRunTimeError", msg => System.Windows.Application.Current.Dispatcher.Invoke(() => LastMessage = new MessageItem(MessageType.Error, msg)));
+            Messenger.Default.Register<string>(this, "ScriptCompileOk", msg => System.Windows.Application.Current.Dispatcher.Invoke(() => LastMessage = new MessageItem(MessageType.Good, msg)));
+            Messenger.Default.Register<string>(this, "ScriptFinish", m => { ScriptState = ScriptState.IDLE; });
 
             //ThreadPool.SetMinThreads(50, 50);
 
@@ -86,9 +104,7 @@ namespace Irixi_Aligner_Common.Classes
             sb.Append("> =                Copyright (C) 2017 - 2018 Irixi                =\r\n");
             sb.Append("> =================================================================\r\n");
             LogHelper.WriteLine(sb.ToString());
-
             this.LastMessage = new MessageItem(MessageType.Normal, "System startup ...");
-
             this.LastMessage = new MessageItem(MessageType.Normal, "Application Version {0}", version);
 
 
@@ -145,10 +161,10 @@ namespace Irixi_Aligner_Common.Classes
 
                     case MotionControllerType.IRIXI_EE0017:
                         motion_controller = new IrixiEE0017(conf);
-                        
+
                         ((IrixiEE0017)motion_controller).OnMessageReported += ((sender, message) =>
                         {
-                            Application.Current.Dispatcher.Invoke(() =>
+                            System.Windows.Application.Current.Dispatcher.Invoke(() =>
                             {
                                 this.LastMessage = new MessageItem(MessageType.Normal, string.Format("{0} {1}", sender, message));
                             });
@@ -174,7 +190,7 @@ namespace Irixi_Aligner_Common.Classes
             foreach (var cfgLMC in configMgr.ConfSystemSetting.LogicalMotionComponents)
             {
                 LogicalMotionComponent lmc = new LogicalMotionComponent(cfgLMC.Caption, cfgLMC.Icon, cfgLMC.IsAligner);
-                
+               
                 foreach (var cfgLogicalAxis in cfgLMC.LogicalAxisArray)
                 {
                     // new logical axis object will be added to the Logical Motion Component
@@ -205,7 +221,7 @@ namespace Irixi_Aligner_Common.Classes
             IrixiEE0017 controller = null;
             try
             {
-                controller =  PhysicalMotionControllerCollection[Guid.Parse(configMgr.ConfSystemSetting.Cylinder.Port)] as IrixiEE0017;
+                controller = PhysicalMotionControllerCollection[Guid.Parse(configMgr.ConfSystemSetting.Cylinder.Port)] as IrixiEE0017;
             }
             catch
             {
@@ -217,8 +233,10 @@ namespace Irixi_Aligner_Common.Classes
             // create instance of the keithley 2400
             foreach (var cfg in configMgr.ConfSystemSetting.Keithley2400s)
             {
+
                 if(cfg.Enabled)
                     listDefinedInstrument.Add(new Keithley2400(cfg));
+
             }
 
             // create instance of the newport 2832C
@@ -227,8 +245,17 @@ namespace Irixi_Aligner_Common.Classes
                 if (cfg.Enabled)
                     listDefinedInstrument.Add(new Newport2832C(cfg));
             }
+            //
         }
-
+        ~SystemService()
+        {
+            Messenger.Default.Unregister<string>(this, "ScriptCompileError");
+            Messenger.Default.Unregister<string>(this, "ScriptRunTimeError");
+            Messenger.Default.Unregister<string>(this, "ScriptCompileOk");
+            Messenger.Default.Unregister<string>(this, "ScriptFinish");
+            foreach (var it in MeasurementInstrumentCollection) //Stop fetch
+                it.StopAutoFetching();
+        }
         #endregion
 
         #region Events
@@ -306,7 +333,18 @@ namespace Irixi_Aligner_Common.Classes
                 return sysState;
             }
         }
-
+        public ScriptState ScriptState
+        {
+            set
+            {
+                _scriptState = value;
+                RaisePropertyChanged();
+            }
+            get
+            {
+                return _scriptState;
+            }
+        }
         /// <summary>
         /// Get the instance of the Cylinder Controller Class
         /// </summary>
@@ -333,6 +371,13 @@ namespace Irixi_Aligner_Common.Classes
             {
                 return CollectionViewSource.GetDefaultView(listLogicalAxis);
             }
+        }
+        /// <summary>
+        /// Get all enum infomations,it'll be used in binding
+        /// </summary>
+        public Dictionary<string, List<KeyValuePair<string, List<KeyValuePair<string, int>>>>> EnumInfos
+        {
+            get { return GetAllEnumsInfo(); }
         }
 
         /// <summary>
@@ -396,7 +441,7 @@ namespace Irixi_Aligner_Common.Classes
         /// </summary>
         public MessageItem LastMessage
         {
-            private set
+            set
             {
                 lastMessage = value;
                 MessageCollection.Add(lastMessage);
@@ -461,14 +506,13 @@ namespace Irixi_Aligner_Common.Classes
 
         #region Private Methods
 
-        private void SetSystemState(SystemState State)
+        public void SetSystemState(SystemState State)
         {
             lock (lockSystemStatus)
             {
                 this.State = State;
             }
         }
-
         private SystemState GetSystemState()
         {
             lock (lockSystemStatus)
@@ -477,6 +521,28 @@ namespace Irixi_Aligner_Common.Classes
             }
         }
 
+        private Dictionary<string, List<KeyValuePair<string, List<KeyValuePair<string, int>>>>> GetAllEnumsInfo()
+        {
+            var dic = ScriptHelpMgr.Instance.GetAllEnuminfo();
+            var axisList = new List<KeyValuePair<string, List<KeyValuePair<string, int>>>>();
+            var instrumentList = new List<KeyValuePair<string, List<KeyValuePair<string, int>>>>();
+            //Axis
+            foreach (LogicalAxis axis in LogicalAxisCollection) //Axisname list
+            {
+                var kp = new KeyValuePair<string, List<KeyValuePair<string, int>>>(axis.ToString().Replace(" ", "").Replace("*", "").Replace("@", "_").ToUpper(), null);
+                axisList.Add(kp);
+            }
+            dic.Add("AXIS", axisList);
+
+            //Instrument
+            foreach (var instrument in MeasurementInstrumentCollection)
+            {
+                var kp = new KeyValuePair<string, List<KeyValuePair<string, int>>>(instrument.Config.Caption.Replace(" ", "_").ToUpper(), null);
+                instrumentList.Add(kp);
+            }
+            dic.Add("INST", axisList);
+            return dic;
+        }
         /// <summary>
         /// Indicates which components should be stoped if #STOP button clicked
         /// </summary>
@@ -539,7 +605,7 @@ namespace Irixi_Aligner_Common.Classes
 
             return ret;
         }
-        
+
         /// <summary>
         /// Start running user program
         /// </summary>
@@ -548,15 +614,16 @@ namespace Irixi_Aligner_Common.Classes
             //TODO here we should judge whether the auto-program is paused or not
             // if the auto-program is not worked and an auto-program has been selected, run it;
             // otherwise, continue to run the last paused auto-program
+            Messenger.Default.Send("", "ScriptStart");
         }
 
         /// <summary>
         /// Stop the moving axes or stop running the user program
         /// </summary>
+
         private void Stop()
         {
             List<Task> tasks = new List<Task>();
-
             foreach (var item in BusyComponents)
             {
                 tasks.Add(Task.Run(() =>
@@ -568,6 +635,7 @@ namespace Irixi_Aligner_Common.Classes
             try
             {
                 Task.WaitAll(tasks.ToArray());
+
             }
             catch (AggregateException ex)
             {
@@ -583,12 +651,12 @@ namespace Irixi_Aligner_Common.Classes
         /// Start a specified alignment process asynchronously, all alignment process will be started by this common function
         /// </summary>
         /// <param name="AlignHandler"></param>
+
         private async void StartAlignmentProc(AlignmentBase AlignHandler)
         {
             if (GetSystemState() == SystemState.IDLE)
             {
                 SetSystemState(SystemState.BUSY);
-
                 LastMessage = new MessageItem(MessageType.Normal, string.Format("Start running {0}...", AlignHandler));
 
                 // to calculate time costs
@@ -606,12 +674,13 @@ namespace Irixi_Aligner_Common.Classes
                             $"{AlignHandler} Error, the argument can not be null.");
 
                         PostErrorMessage(this.LastMessage.Message);
+
                     }
                     else
                     {
                         // validate the parameters
                         AlignHandler.Args.Validate();
-                        
+
                         // pause the auto-fetching process of instrument
                         AlignHandler.Args.PauseInstruments();
 
@@ -625,7 +694,7 @@ namespace Irixi_Aligner_Common.Classes
                 catch (Exception ex)
                 {
                     this.LastMessage = new MessageItem(MessageType.Error, string.Format("{0} Error, {1}", AlignHandler, ex.Message));
-                    PostErrorMessage(this.LastMessage.Message);
+                    PostErrorMessage(this.LastMessage.Message);   //????
                 }
                 finally
                 {
@@ -642,7 +711,6 @@ namespace Irixi_Aligner_Common.Classes
                 LastMessage = new MessageItem(MessageType.Normal, string.Format("{0} complete, costs {1}s", AlignHandler, (DateTime.Now - alignStarts).TotalSeconds));
 
                 BusyComponents.Remove(AlignHandler);
-                
                 SetSystemState(SystemState.IDLE);
             }
         }
@@ -658,6 +726,7 @@ namespace Irixi_Aligner_Common.Classes
                         Message,
                         "ERROR"));
         }
+     
 
         /// <summary>
         /// Output init messages
@@ -668,6 +737,8 @@ namespace Irixi_Aligner_Common.Classes
             InitProgressChanged?.Invoke(this, Message);
         }
 
+
+ 
         #endregion
 
         #region Public Methods
@@ -779,6 +850,7 @@ namespace Irixi_Aligner_Common.Classes
                 idFinishedTask = _tasks.IndexOf(t);
                 var equipment = _equipments[idFinishedTask];
 
+
                 if (t.IsFaulted)
                 {
                     if(t.Exception != null)
@@ -801,6 +873,7 @@ namespace Irixi_Aligner_Common.Classes
                     if (_equipments[idFinishedTask] is InstrumentBase)
                     {
                         listAvaliableInstrument.Add((InstrumentBase)_equipments[idFinishedTask]);
+
                     }
                 }
                 else
@@ -823,15 +896,61 @@ namespace Irixi_Aligner_Common.Classes
                 string.Format("The initialization has finished, costs {0:F2}s", (DateTime.Now - initStartTime).TotalSeconds));
 
         }
+        /// <summary>
+        /// Just for monitor IO, Axis position and Instrument data etc...
+        /// 
+        /// </summary>
+        public void StartMonitor()
+        {
+            long i = 0;
+            taskMonitor = new Task(() =>
+            {
+                while (!cts.Token.IsCancellationRequested)
+                {
+                    //Read IO
 
+                    //Read AxisPos
+
+                    //Read Instument Data
+
+
+                    Console.WriteLine(i++);
+                    Thread.Sleep(20);
+                }
+            }, cts.Token);
+
+            //taskMonitor.Start();
+        }
+        /// <summary>
+        /// 
+        /// </summary>
+        public void StopMonitor()
+        {
+            cts.Cancel();
+            Stop();
+            cts = null;
+            taskMonitor = null;
+
+
+        }
         /// <summary>
         /// Move the specified axis with specified args
         /// </summary>
         /// <param name="Axis"></param>
         /// <param name="Args"></param>
+        public void Pause()
+        {
+            PauseResetEvent.Reset();
+            ScriptState = ScriptState.PAUSE;
+            PauseResetEvent.WaitOne();
+        }
+        public void Resume()
+        {
+            PauseResetEvent.Set();
+        }
         public async void MoveLogicalAxis(LogicalAxis Axis, AxisMoveArgs Args)
         {
-            if (GetSystemState() != SystemState.BUSY)
+            if (GetSystemState() == SystemState.IDLE)
             {
                 SetSystemState(SystemState.BUSY);
 
@@ -845,7 +964,6 @@ namespace Irixi_Aligner_Common.Classes
                 if (ret == false)
                 {
                     this.LastMessage = new MessageItem(MessageType.Error, "{0} Unable to move, {1}", Axis, Axis.PhysicalAxisInst.LastError);
-
                     PostErrorMessage(this.LastMessage.Message);
                 }
                 else
@@ -919,6 +1037,7 @@ namespace Irixi_Aligner_Common.Classes
                         try
                         {
                             la = lmc.FindAxisByHashString(perArg.LogicalAxisHashString);
+
                             if (perArg.IsMoveable)
                             {
                                 // Only the moveable axis will be added
@@ -933,11 +1052,9 @@ namespace Irixi_Aligner_Common.Classes
                         }
                     }
                 }
-
                 #endregion
 
                 #region Get move order
-
                 var moveOrder = Args.GetDistinctMoveOrder();
                 if (moveOrder == null)
                 {
@@ -1002,9 +1119,7 @@ namespace Irixi_Aligner_Common.Classes
                 }
 
             }
-
             this.LastMessage = new MessageItem(MessageType.Good, "Mass-Move Done.");
-
             SetSystemState(SystemState.IDLE);
         }
 
@@ -1034,9 +1149,7 @@ namespace Irixi_Aligner_Common.Classes
                 int _total_axis = listLogicalAxis.Count;
                 List<Task<bool>> _tasks = new List<Task<bool>>();
                 List<LogicalAxis> _axis_homing = new List<LogicalAxis>();
-
                 SetSystemState(SystemState.BUSY);
-
                 // update UI immediately
                 await Task.Delay(50);
 
@@ -1112,7 +1225,7 @@ namespace Irixi_Aligner_Common.Classes
         /// Toggle the move mode between ABS and REL
         /// </summary>
         /// <param name="Axis">The instance of physical axis</param>
-        public void ToggleAxisMoveMode(IAxis Axis)
+        public void ToggleAxisMoveMode(IAxis Axis)  //切换运动方式
         {
             if (GetSystemState() == SystemState.IDLE)
             {
@@ -1201,7 +1314,7 @@ namespace Irixi_Aligner_Common.Classes
             }
         }
 
-        public void ToggleFiberClampState()
+        public void ToggleFiberClampState() //气缸
         {
             if (GetSystemState() == SystemState.IDLE)
             {
@@ -1220,7 +1333,7 @@ namespace Irixi_Aligner_Common.Classes
             }
         }
 
-        public void LensVacuumON()
+        public void LensVacuumON()  
         {
             if (GetSystemState() == SystemState.IDLE)
             {
@@ -1283,7 +1396,7 @@ namespace Irixi_Aligner_Common.Classes
             }
         }
 
-        public void TogglePlcVacuumState()
+        public void TogglePlcVacuumState()  //切换PLC真空状态
         {
             if (GetSystemState() == SystemState.IDLE)
             {
@@ -1357,9 +1470,26 @@ namespace Irixi_Aligner_Common.Classes
                 k2400.Dispose();
             }
         }
+        public void SetLastMessage(MessageType msgType, string strMsgInfo)
+        {
+            this.LastMessage = new MessageItem(msgType, strMsgInfo);
+        }
 
+        public void StopAllInstrument()
+        {
+            foreach (var instr in this.MeasurementInstrumentCollection)
+                instr.StopAutoFetching();
+
+        }
+        public void PopWindow(string windowName)
+        {
+            Messenger.Default.Send<NotificationMessage<string>>(new NotificationMessage<string>(
+                        this,
+                        windowName,
+                        "POSTWINDOW"));
+        }
         #endregion
-        
+
         #region Commands
 
         public RelayCommand<IAxis> CommandHome
@@ -1382,13 +1512,13 @@ namespace Irixi_Aligner_Common.Classes
                     DialogService.DialogService ds = new DialogService.DialogService();
                     ds.OpenHomeConfirmDialog(null, ret =>
                     {
-                        if(ret == true)
+                        if (ret == true)
                         {
                             MassHome();
                         }
                     });
 
-                   
+
                 });
             }
         }
@@ -1525,7 +1655,23 @@ namespace Irixi_Aligner_Common.Classes
             }
         }
 
-        #endregion
+        public RelayCommand ScriptStartCommand
+        {
+            get { return new RelayCommand(() => {
+                ScriptState=ScriptState.BUSY;
+            }); }
+        }
+        public RelayCommand ScriptFinishCommand
+        {
+            get
+            {
+                return new RelayCommand(() => {
+                ScriptState = ScriptState.IDLE;
+                });
+            }
+        }
 
+       
+        #endregion
     }
 }

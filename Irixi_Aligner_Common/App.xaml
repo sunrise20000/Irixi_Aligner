@@ -7,6 +7,9 @@
       </ResourceDictionary.MergedDictionaries>
       <Converters:BooleanToVisibility x:Key="BooleanToVisibility" />
       <Converters:SystemStatusToStopButtonEnable x:Key="SystemStatusToStopButtonEnable" />
+      <Converters:SystemStatusToStartButtonEnable x:Key="SystemStatusToStartButtonEnable" />
+      <Converters:SystemStatusToCompileButtonEnable x:Key="SystemStatusToCompileButtonEnable"/>
+      <Converters:ScriptStateToGridEnable x:Key="ScriptStateToGridEnable"/>
       <Converters:ConvertToLogicalAxisCollection x:Key="CvtLogicalAxisCollection" />
       <Converters:JogPositionModeToBoolean x:Key="JogPositionModeToBoolean" />
       <Converters:JogPositionModeToText x:Key="JogPositionModeToText" />
@@ -16,6 +19,11 @@
       <Converters:EnumToInt x:Key="EnumToInt" />
       <Converters:TextToDouble x:Key="TextToDouble" />
       <Converters:TextToInt x:Key="TextToInt" />
+      <Converters:TextToImage x:Key="TextToImage"/>
+      <Converters:SystemStatusToScriptStartButtonImage x:Key="SystemStatusToScriptStartButtonImage"/>
+      <Converters:SystemStatusToScriptStopButtonImage x:Key="SystemStatusToScriptStopButtonImage"/>
+      <Converters:SystemStatusToScriptCompileButtonImage x:Key="SystemStatusToScriptCompileButtonImage"/>
+       
       <DataTemplate x:Key="MessageItemTemplate" DataType="{x:Type msg:MessageItem}" xmlns:msg="clr-namespace:Irixi_Aligner_Common.Message">
         <Border Padding="3">
           <Grid>

@@ -29,7 +29,7 @@ namespace Irixi_Aligner_Common
     {
         // splash screen instance
         Splash splashscreen;
-
+        Dictionary<string, Control> windowDic = new Dictionary<string, Control>();
         // thread to open splash screen
         Thread SplashThread;
 
@@ -37,7 +37,7 @@ namespace Irixi_Aligner_Common
         ManualResetEvent ResetSplashCreated;
 
         public MainWindow()
-        {
+        {          
             #region Show Splash Screen
             // show splash screen
             ResetSplashCreated = new ManualResetEvent(false);
@@ -57,7 +57,6 @@ namespace Irixi_Aligner_Common
             InitializeComponent();
 
             DevExpress.Xpf.Core.DXGridDataController.DisableThreadingProblemsDetection = true;
-
 
             Messenger.Default.Register<NotificationMessage<string>>(this, PopNotificationMessage);
 
@@ -128,16 +127,19 @@ namespace Irixi_Aligner_Common
             foreach (IInstrument instr in service.CollectionViewDefinedInstruments)
             {
                 UserControl uctrl = null;
-
                 //TODO The following codes is not elegant, the code must be expanded if new type of instrument added into the system
                 if (instr is Keithley2400)
                 {
                     // create the user control for k2400
                     viewInstr = new ViewKeithley2400(instr as Keithley2400);
+
                     uctrl = new Keithley2400ControlPanel()
                     {
-                        DataContext = viewInstr
+                        DataContext = viewInstr,
+                        
                     };
+                    
+
                 }
                 else if(instr is Newport2832C)
                 {
@@ -147,7 +149,9 @@ namespace Irixi_Aligner_Common
                     {
                         DataContext = viewInstr
                     };
+                   
                 }
+                
 
                 splashscreen.ShowMessage(string.Format("Initializing {0} panel ...", instr));
 
@@ -161,14 +165,13 @@ namespace Irixi_Aligner_Common
                     AllowDock = false,
                     AllowFloat = false,
                     ClosingBehavior = ClosingBehavior.HideToClosedPanelsCollection,
-
                     // put the user control into the panel
                     Content = uctrl
                 };
-
+                
                 // add the documentpanel to the documentgroup
                 MotionComponentPanelHost.Items.Add(panel);
-
+                
                 // find the icon shown in the button
                 var image = (BitmapFrame)TryFindResource(instr.Config.Icon);
 
@@ -178,6 +181,14 @@ namespace Irixi_Aligner_Common
                     Content = instr.Config.Caption,
                     LargeGlyph = image
                 };
+                windowDic.Add(instr.Config.Caption.Replace(" ", "_"), panel);
+                windowDic.Add(panelAlignmentXD.Name, panelAlignmentXD);
+                windowDic.Add(panelBlindSearch.Name, panelBlindSearch);
+                windowDic.Add(panelCentralAlign.Name, panelCentralAlign);
+                windowDic.Add(panelRotatingScan.Name, panelRotatingScan);
+                windowDic.Add(panelSnakeRouteScan.Name, panelSnakeRouteScan);
+
+
 
                 // bind the IsCheck property to the document panel's Closed property
                 Binding b = new Binding()
@@ -239,16 +250,18 @@ namespace Irixi_Aligner_Common
 
         private void PopNotificationMessage(NotificationMessage<string> message)
         {
-            //if (message.Sender is SystemService)
-            //{
-                switch (message.Notification.ToLower())
-                {
-                    case "error":
-                        MessageBox.Show(message.Content, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                        
-                        break;
-                }
-            //}
+
+            switch (message.Notification.ToLower())
+            {
+                case "error":
+                    MessageBox.Show(message.Content, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                    break;
+                case "postwindow":
+                    if (windowDic.Keys.Contains<string>(message.Content))
+                        Application.Current.Dispatcher.Invoke(() => windowDic[message.Content].Visibility = Visibility.Visible);
+                    break;
+            }
+           
         }
 
         private void DXRibbonWindow_Loaded(object sender, RoutedEventArgs e)
@@ -263,6 +276,8 @@ namespace Irixi_Aligner_Common
 
                 // close the splash screen
                 splashscreen.LoadComplete();
+
+                service.StartMonitor();
             }
             catch (Exception ex)
             {
@@ -300,6 +315,7 @@ namespace Irixi_Aligner_Common
             #region System Service            
             // close all devices in the system service object
             var service = SimpleIoc.Default.GetInstance<SystemService>();
+            service.StopMonitor();
             service.Dispose();
             #endregion
 

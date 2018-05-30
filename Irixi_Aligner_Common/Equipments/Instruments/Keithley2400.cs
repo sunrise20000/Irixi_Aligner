@@ -172,7 +172,8 @@ namespace Irixi_Aligner_Common.Equipments.Instruments
         double measured_val = 0;
         double cmpl_voltage = PROT_VOLT_DEF, cmpl_current = PROT_AMPS_DEF;
         bool is_in_range_cmpl = false, is_meas_over_range = false;
-
+        bool bStopFetch = true;
+        AutoResetEvent StopFetchEvent = new AutoResetEvent(false);
         #endregion
 
         #region Constructor
@@ -184,8 +185,13 @@ namespace Irixi_Aligner_Common.Equipments.Instruments
             {
                 ReadTimeout = 2000
             };
-        }
 
+        }
+        ~Keithley2400()
+        {
+            StopFetchEvent.Set();
+            StopAutoFetching();
+        }
         #endregion
 
         #region Properties
@@ -485,21 +491,27 @@ namespace Irixi_Aligner_Common.Equipments.Instruments
         
         public void SetOutputState(bool IsEnabled)
         {
-            if (IsEnabled)
+            lock (serialport)
             {
-                Send("OUTP ON");
-            }
-            else
-            {
-                // the fetching loop MUST be stopped before turn off the output
-                StopAutoFetching();
+                if (IsEnabled)
+                {
+                    Send("OUTP ON");
+                    StopFetchEvent.Set();
+                    bStopFetch = false;
+                }
+                else
+                {
+                    // the fetching loop MUST be stopped before turn off the output
+                    //StopAutoFetching();       ///??????
+                    bStopFetch = true;
+                    StopFetchEvent.Reset();
+                    Send("OUTP OFF");
+                    // SetBeep(700, 0.2);
+                    this.MeasurementValue = 0;
+                }
 
-                Send("OUTP OFF");
-                // SetBeep(700, 0.2);
-                this.MeasurementValue = 0;
+                this.IsOutputEnabled = IsEnabled;
             }
-
-            this.IsOutputEnabled = IsEnabled;
         }
 
         public void GetOutputState()
@@ -1149,11 +1161,7 @@ namespace Irixi_Aligner_Common.Equipments.Instruments
                         }
                     }
                 }
-
                 prgChgArgs.MeasurementValue = meas_val;
-
-
-
                 return meas_val;
             }
             else
@@ -1165,13 +1173,13 @@ namespace Irixi_Aligner_Common.Equipments.Instruments
         {
             // disable display to speed up instrument operation
             // SetDisplayCircuitry(false);
-
             while (!token.IsCancellationRequested)
             {
                 try
                 {
+                    if (bStopFetch)
+                        StopFetchEvent.WaitOne();
                     Fetch();
-
                     progress.Report(prgChgArgs);
                 }
                 catch(Exception ex)
@@ -1181,7 +1189,7 @@ namespace Irixi_Aligner_Common.Equipments.Instruments
                 
 
 
-                Thread.Sleep(20);
+                Thread.Sleep(100);
             }
 
             // resume display
@@ -1236,7 +1244,7 @@ namespace Irixi_Aligner_Common.Equipments.Instruments
                     }
                     else
                     {
-                        throw new InvalidCastException(string.Format("unable to convert error count {0} to number", err_count));
+                        //throw new InvalidCastException(string.Format("unable to convert error count {0} to number", err_count));
                     }
                 }
             }
