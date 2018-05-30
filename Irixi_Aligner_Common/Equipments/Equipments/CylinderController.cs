@@ -192,7 +192,7 @@ namespace Irixi_Aligner_Common.Equipments.Equipments
             }
             else
             {
-                this.LastError = "it is configured to be disabled";
+                this.LastError = "it is disabled in the config file.";
                 return false;
             }
         }

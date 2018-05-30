@@ -11,7 +11,8 @@ namespace Irixi_Aligner_Common.Alignment.SnakeRouteScan
     public class SnakeRouteScanArgs: AlignmentArgsBase
     {
         #region Variables
-        const string PROP_GRP_AXIS = "Axis Settings";
+        const string PROP_GRP_H = "Horizontal Settings";
+        const string PROP_GRP_V = "Vertical Settings";
 
         LogicalAxis axis, axis2;
         double scanInterval = 1, axisRestriction = 100, axis2Restriction = 100;
@@ -27,7 +28,7 @@ namespace Irixi_Aligner_Common.Alignment.SnakeRouteScan
 
             AxisXTitle = "Horizontal";
             AxisYTitle = "Verical";
-            AxisZTitle = "Indensity";
+            AxisZTitle = "Intensity";
 
             Properties.Add(new Property("Instrument"));
             Properties.Add(new Property("Axis"));
@@ -36,12 +37,29 @@ namespace Irixi_Aligner_Common.Alignment.SnakeRouteScan
             Properties.Add(new Property("Axis2Restriction"));
             Properties.Add(new Property("ScanInterval"));
             Properties.Add(new Property("MoveSpeed"));
+
+            this.PresetProfileManager =
+                new AlignmentArgsPresetProfileManager<SnakeRouteScanArgs, SnakeRouteScanArgsProfile>(this);
         }
 
         #endregion
 
-
         #region Properties
+        
+        public override string SubPath
+        {
+            get
+            {
+                return "SnakeScan";
+            }
+        }
+
+        [Browsable(false)]
+        public AlignmentArgsPresetProfileManager<SnakeRouteScanArgs, SnakeRouteScanArgsProfile> PresetProfileManager
+        {
+            get;
+        }
+
         [Browsable(false)]
         public ScanCurve3D ScanCurve
         {
@@ -50,9 +68,9 @@ namespace Irixi_Aligner_Common.Alignment.SnakeRouteScan
         }
 
         [Display(
-            Name = "H Axis",
-            GroupName = PROP_GRP_AXIS,
-            Description = "The scan process starts along the horizontal axis first.")]
+            Name = "Axis",
+            GroupName = PROP_GRP_H,
+            Description = "The axis is the first one moved at the beginning of scan.")]
         public LogicalAxis Axis
         {
             get => axis;
@@ -64,23 +82,9 @@ namespace Irixi_Aligner_Common.Alignment.SnakeRouteScan
         }
 
         [Display(
-            Name = "V Axis",
-            GroupName = PROP_GRP_AXIS,
-            Description = "The V-Axis moves to positive direction after the H-Axis scanning.")]
-        public LogicalAxis Axis2
-        {
-            get => axis2;
-            set
-            {
-                axis2 = value;
-                RaisePropertyChanged();
-            }
-        }
-
-        [Display(
-            Name = "H Restri.",
-            GroupName = PROP_GRP_AXIS,
-            Description = "The scan scope restriction of the horizontal axis.")]
+            Name = "Range",
+            GroupName = PROP_GRP_H,
+            Description = "The scan range of horizontal axis.")]
         public double AxisRestriction
         {
             get => axisRestriction;
@@ -91,11 +95,24 @@ namespace Irixi_Aligner_Common.Alignment.SnakeRouteScan
             }
         }
 
-
         [Display(
-            Name = "V Restri.",
-            GroupName = PROP_GRP_AXIS,
-            Description = "The scan scope restriction of the vertical axis.")]
+            Name = "Vertical",
+            GroupName = PROP_GRP_V,
+            Description = "The axis is the second one moved.")]
+        public LogicalAxis Axis2
+        {
+            get => axis2;
+            set
+            {
+                axis2 = value;
+                RaisePropertyChanged();
+            }
+        }
+        
+        [Display(
+            Name = "Range",
+            GroupName = PROP_GRP_V,
+            Description = "The scan range of vertical axis.")]
         public double Axis2Restriction
         {
             get => axis2Restriction;
@@ -108,8 +125,8 @@ namespace Irixi_Aligner_Common.Alignment.SnakeRouteScan
 
         [Display(
             Name = "Interval",
-            GroupName = PROP_GRP_AXIS,
-            Description = "The scan interval for both H-Axis and V-Axis.")]
+            GroupName = PROP_GRP_COMMON,
+            Description = "")]
         public double ScanInterval
         {
             get => scanInterval;
@@ -126,8 +143,6 @@ namespace Irixi_Aligner_Common.Alignment.SnakeRouteScan
 
         public override void Validate()
         {
-            base.Validate();
-
             if(Axis == null)
                 throw new ArgumentException("You must specify the horizontal axis.");
 

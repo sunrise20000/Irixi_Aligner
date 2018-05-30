@@ -19,9 +19,8 @@ namespace Irixi_Aligner_Common.Alignment.Rotating
 
 
         LogicalAxis axisRotating = null, axisLinear = null;
-        double targetPositionDifferentialOfMaxPower = 5, targetPosDiffChangeRate = 10, 
-            gapRotating = 1, gapLinear = 1, 
-            rangeRotating = 5, rangeLinear = 100, lenghtOfChannelStartToEnd = 750 * 3;
+        //double targetPositionDifferentialOfMaxPower = 5, targetPosDiffChangeRate = 10, gapRotating = 1;
+        double _linearInterval = 1, _linearRange = 100, _pitch = 750 * 3;
 
         //2 channel should be detected at the same time, so we need 2 keithley2400s
         IInstrument instrument, instrument2;
@@ -53,9 +52,9 @@ namespace Irixi_Aligner_Common.Alignment.Rotating
             Properties.Add(new Property("MoveSpeed"));
 
             AxisXTitle = "ΔPosition";
-            AxisYTitle = "Indensity";
+            AxisYTitle = "Intensity";
 
-            //PresetProfileManager = new AlignmentArgsPresetProfileManager<RotatingScanArgs, RotatingScanArgsProfile>(this);
+            PresetProfileManager = new AlignmentArgsPresetProfileManager<RotatingScanArgs, RotatingScanArgsProfile>(this);
 
         }
 
@@ -63,18 +62,21 @@ namespace Irixi_Aligner_Common.Alignment.Rotating
 
         #region Properties
 
-        //[Browsable(false)]
-        //public AlignmentArgsPresetProfileManager<RotatingScanArgs, RotatingScanArgsProfile> PresetProfileManager
-        //{
-        //    get;
-        //}
+        public override string SubPath
+        {
+            get
+            {
+                return "RotatingScan";
+            }
+        }
 
+        [Browsable(false)]
+        public AlignmentArgsPresetProfileManager<RotatingScanArgs, RotatingScanArgsProfile> PresetProfileManager
+        {
+            get;
+        }
 
-        [Display(
-            Name = "Instrument 1",
-            GroupName = PROP_GRP_COMMON,
-            Description = "The feedback instrument of the first channel")]
-        new public IInstrument Instrument
+        public override IInstrument Instrument
         {
             get => instrument;
             set
@@ -87,7 +89,7 @@ namespace Irixi_Aligner_Common.Alignment.Rotating
         }
 
         /// <summary>
-        /// The instrument to detmonitor the secondary channel
+        /// The instrument to monitor the secondary feedback channel
         /// </summary>
         [Display(Name = "Instrument 2", 
             GroupName = PROP_GRP_COMMON, 
@@ -104,16 +106,10 @@ namespace Irixi_Aligner_Common.Alignment.Rotating
             }
         }
 
-        [Browsable(false)]
-        public string Instrument2HashString
-        {
-            private get; set;
-        }
-
         [Display(
-            Name = "Axis Rotating", 
+            Name = "Axis", 
             GroupName = PROP_GRP_ROTATING, 
-            Description = "The axis to rotate.")]
+            Description = "")]
         public LogicalAxis AxisRotating
         {
             get => axisRotating;
@@ -124,39 +120,32 @@ namespace Irixi_Aligner_Common.Alignment.Rotating
             }
         }
 
-        [Browsable(false)]
-        public string AxisRotatingHashString
-        {
-            private get; set;
-        }
-        
-
-        [Display(Name = "Rotating Interval", GroupName = PROP_GRP_ROTATING)]
-        [Obsolete("The property is meaningless in  the latest alignment logic."), Browsable(false)]
-        public double RotatingInterval
-        {
-            get => gapRotating;
-            set
-            {
-                gapRotating = value;
-                RaisePropertyChanged();
-            }
-        }
+        //[Display(Name = "Interval", GroupName = PROP_GRP_ROTATING)]
+        //[Obsolete("The property is meaningless in the latest alignment logic."), Browsable(false)]
+        //public double RotatingInterval
+        //{
+        //    get => gapRotating;
+        //    set
+        //    {
+        //        gapRotating = value;
+        //        RaisePropertyChanged();
+        //    }
+        //}
 
 
-        [Display(Name = "Rotating Restriction", GroupName = PROP_GRP_ROTATING)]
-        [Obsolete("The property is meaningless in  the latest alignment logic."), Browsable(false)]
-        public double RotatingRestriction
-        {
-            get => rangeRotating;
-            set
-            {
-                rangeRotating = value;
-                RaisePropertyChanged();
-            }
-        }
+        //[Display(Name = "Rotating Restriction", GroupName = PROP_GRP_ROTATING)]
+        //[Obsolete("The property is meaningless in  the latest alignment logic."), Browsable(false)]
+        //public double RotatingRestriction
+        //{
+        //    get => rangeRotating;
+        //    set
+        //    {
+        //        rangeRotating = value;
+        //        RaisePropertyChanged();
+        //    }
+        //}
 
-        [Display(Name = "Axis Linear", GroupName = PROP_GRP_LINEAR, Description = "The axis to move straightly.")]
+        [Display(Name = "Axis", GroupName = PROP_GRP_LINEAR, Description = "")]
         public LogicalAxis AxisLinear
         {
             get => axisLinear;
@@ -166,43 +155,37 @@ namespace Irixi_Aligner_Common.Alignment.Rotating
                 RaisePropertyChanged();
             }
         }
-        
-        public string AxisLinearHashString
-        {
-            private get; set;
-        }
-        
 
-        [Display(Name = "Linear Interval", GroupName = PROP_GRP_LINEAR, Description = "The step size to align straightly.")]
+        [Display(Name = "Interval", GroupName = PROP_GRP_LINEAR, Description = "")]
         public double LinearInterval
         {
-            get => gapLinear;
+            get => _linearInterval;
             set
             {
-                gapLinear = value;
+                _linearInterval = value;
                 RaisePropertyChanged();
             }
         }
 
 
-        [Display(Name = "Linear Restriction", GroupName = PROP_GRP_LINEAR, Description = "The maximum range align straightly.")]
+        [Display(Name = "Range", GroupName = PROP_GRP_LINEAR, Description = "")]
         public double LinearRestriction
         {
-            get => rangeLinear;
+            get => _linearRange;
             set
             {
-                rangeLinear = value;
+                _linearRange = value;
                 RaisePropertyChanged();
             }
         }
 
-        [Display(Name = "Pitch", GroupName = PROP_GRP_COMMON, Description = "The pitch of channels used to scan.")]
-        public double LengthOfChannelStartToEnd
+        [Display(Name = "Pitch", GroupName = PROP_GRP_COMMON, Description = "The pitch of the two channels used to scan.")]
+        public double Pitch
         {
-            get => lenghtOfChannelStartToEnd;
+            get => _pitch;
             set
             {
-                lenghtOfChannelStartToEnd = value;
+                _pitch = value;
                 RaisePropertyChanged();
             }
         }
@@ -211,33 +194,33 @@ namespace Irixi_Aligner_Common.Alignment.Rotating
         /// <summary>
         /// The target differential of the two positions at the max power of each channel
         /// </summary>
-        [Display(Name = "Target ΔPosition", GroupName = PROP_GRP_TARGET)]
-        [Obsolete("The property is meaningless in  the latest alignment logic."), Browsable(false)]
-        public double TargetPositionDifferentialOfMaxPower
-        {
-            get => targetPositionDifferentialOfMaxPower;
-            set
-            {
-                targetPositionDifferentialOfMaxPower = value;
-                RaisePropertyChanged();
-            }
-        }
+        //[Display(Name = "Target ΔPosition", GroupName = PROP_GRP_TARGET)]
+        //[Obsolete("The property is meaningless in  the latest alignment logic."), Browsable(false)]
+        //public double TargetPositionDifferentialOfMaxPower
+        //{
+        //    get => targetPositionDifferentialOfMaxPower;
+        //    set
+        //    {
+        //        targetPositionDifferentialOfMaxPower = value;
+        //        RaisePropertyChanged();
+        //    }
+        //}
 
         /// <summary>
         /// If the Pos. Diff. change rate is less than this value, exit alignment loop, 
         /// the value is in %.
         /// </summary>
-        [Display(Name = "ΔPos Changing Rate", GroupName = PROP_GRP_TARGET)]
-        [Obsolete("The property is meaningless in  the latest alignment logic."), Browsable(false)]
-        public double TargetPosDiffChangeRate
-        {
-            get => targetPosDiffChangeRate;
-            set
-            {
-                targetPosDiffChangeRate = value;
-                RaisePropertyChanged();
-            }
-        }
+        //[Display(Name = "ΔPos Changing Rate", GroupName = PROP_GRP_TARGET)]
+        //[Obsolete("The property is meaningless in  the latest alignment logic."), Browsable(false)]
+        //public double TargetPosDiffChangeRate
+        //{
+        //    get => targetPosDiffChangeRate;
+        //    set
+        //    {
+        //        targetPosDiffChangeRate = value;
+        //        RaisePropertyChanged();
+        //    }
+        //}
 
         /// <summary>
         /// Scan curve of instrument
@@ -256,8 +239,6 @@ namespace Irixi_Aligner_Common.Alignment.Rotating
         #region Methods
         public override void Validate()
         {
-            //base.Validate();
-
             if(AxisLinear == null)
                 throw new ArgumentException("you must specify the linear axis.");
 

@@ -46,7 +46,7 @@ namespace Irixi_Aligner_Common.Alignment.AlignmentXD
             Properties.Add(new Property() { CollectionName = "AxisParamCollection" });
 
             AxisXTitle = "Position";
-            AxisYTitle = "Indensity";
+            AxisYTitle = "Intensity";
 
             this.PresetProfileManager = new AlignmentArgsPresetProfileManager<AlignmentXDArgs, AlignmentXDArgsProfile>(this);
 

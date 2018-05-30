@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
+using System.Windows.Threading;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
 using GalaSoft.MvvmLight.Messaging;
@@ -13,7 +14,7 @@ using Newtonsoft.Json;
 namespace Irixi_Aligner_Common.Alignment.BaseClasses
 {
     public class AlignmentArgsPresetProfileManager<T, P> : ViewModelBase
-        where T: AlignmentArgsBase where P: AlignmentArgsPresetProfileBase
+        where T: AlignmentArgsBase where P: AlignmentArgsPresetProfileBase, new()
     {
         private const string PROFILE_PATH = "AlignmentProfiles";
 
@@ -48,31 +49,35 @@ namespace Irixi_Aligner_Common.Alignment.BaseClasses
             }
         }
 
-        private string selectedPresetProfile = "";
+        private string _selectedPresetProfile = "";
 
         public string SelectedPresetProfile
         {
             get
             {
-                return selectedPresetProfile;
+                return _selectedPresetProfile;
             }
             set
             {
-                selectedPresetProfile = value;
-                RaisePropertyChanged();
-
-                if (value != null)
+                if (value != "")
                 {
-                    // load preset profile from json file
+                    var olditem = _selectedPresetProfile;
+                    _selectedPresetProfile = value;
+                    RaisePropertyChanged();
+
+                    // try to load the content of the specified preset profile
                     try
                     {
-                        var profile = LoadPresetProfile(value);
+                        var profile = LoadContent(value);
                         ((IAlignmentArgsProfile)profile).ToArgsInstance(Arg);
                     }
                     catch (Exception ex)
                     {
                         PostErrorMessage(ex.Message);
-                        selectedPresetProfile = "";
+                        Dispatcher.CurrentDispatcher.BeginInvoke(new Action(() =>
+                        {
+                            SelectedPresetProfile = olditem;
+                        }), DispatcherPriority.ApplicationIdle);
                     }
                 }
             }
@@ -149,7 +154,7 @@ namespace Irixi_Aligner_Common.Alignment.BaseClasses
             if (Directory.Exists(dir) == false)
                 Directory.CreateDirectory(dir);
 
-            var profile = new AlignmentXDArgsProfile();
+            var profile = new P();
             profile.FromArgsInstance(this.Arg as AlignmentArgsBase);
 
             var jsonstr = JsonConvert.SerializeObject(profile);
@@ -163,7 +168,7 @@ namespace Irixi_Aligner_Common.Alignment.BaseClasses
         }
 
 
-        private P LoadPresetProfile(string filename)
+        private P LoadContent(string filename)
         {
             var fullpath = String.Join("\\", new object[]
             {
@@ -219,14 +224,7 @@ namespace Irixi_Aligner_Common.Alignment.BaseClasses
                     }
                     else
                     {
-                        try
-                        {
-                            this.SavePresetProfile(SelectedPresetProfile);
-                        }
-                        catch (Exception ex)
-                        {
-                            PostErrorMessage($"Unable to save the preset profile, {ex.Message}");
-                        }
+                        CommandSaveAs.Execute(null);
                     }
                 });
             }

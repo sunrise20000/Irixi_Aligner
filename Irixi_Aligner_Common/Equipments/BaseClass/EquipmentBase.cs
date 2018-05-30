@@ -154,7 +154,7 @@ namespace Irixi_Aligner_Common.Equipments.Base
 
         #endregion
 
-        #region IDisposable Support
+        #region IDisposable
         protected bool disposedValue = false; // 要检测冗余调用
 
         protected virtual void Dispose(bool disposing)

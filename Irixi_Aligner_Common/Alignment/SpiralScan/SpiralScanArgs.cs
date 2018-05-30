@@ -27,7 +27,7 @@ namespace Irixi_Aligner_Common.Alignment.SpiralScan
 
             AxisXTitle = "Horizontal";
             AxisYTitle = "Verical";
-            AxisZTitle = "Indensity";
+            AxisZTitle = "Intensity";
 
             Properties.Add(new Property("Instrument"));
             Properties.Add(new Property("Axis"));

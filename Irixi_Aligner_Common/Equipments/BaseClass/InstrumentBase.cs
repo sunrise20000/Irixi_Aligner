@@ -15,8 +15,8 @@ namespace Irixi_Aligner_Common.Equipments.Base
 
         protected SerialPort serialport;
         protected CancellationTokenSource cts_fetching;
-        protected Progress<EventArgs> prgchg_fetching;
-        protected Task task_fetch_loop = null;
+        protected Progress<EventArgs> autoFetchProgressChangedHandler;
+        protected Task taskAutoFetch = null;
         int activeChannel;
 
         #endregion
@@ -26,7 +26,7 @@ namespace Irixi_Aligner_Common.Equipments.Base
         public InstrumentBase(ConfigurationBase Config) : base(Config)
         {
             IsMultiChannel = false;
-            ActiveChannel = 0;
+            ActivedChannel = 0;
         }
 
         #endregion
@@ -45,7 +45,7 @@ namespace Irixi_Aligner_Common.Equipments.Base
         /// <summary>
         /// Get which channel is the active one that represents the return value of fetch() function
         /// </summary>
-        public int ActiveChannel
+        public int ActivedChannel
         {
             protected set
             {
@@ -60,7 +60,7 @@ namespace Irixi_Aligner_Common.Equipments.Base
         /// <summary>
         /// Get what is the unit of the active channel
         /// </summary>
-        public int ActiveUnit { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+        //public int ActiveUnit { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
 
         #endregion
 
@@ -79,8 +79,8 @@ namespace Irixi_Aligner_Common.Equipments.Base
             Send("*RST"); // reset device to default setting
             Thread.Sleep(200);
         }
-        
-        public sealed override bool Init()
+
+        public override bool Init()
         {
             if (this.IsEnabled == false)
             {
@@ -115,85 +115,74 @@ namespace Irixi_Aligner_Common.Equipments.Base
                 return false;
             }
 #else
-            //Application.Current.Dispatcher.Invoke(() =>
-            //{
-                this.IsInitialized = true;
-            //});
-            
+            UserInitProc();
+            this.IsInitialized = true;
+
+
             return true;
 #endif
         }
-        
-        public virtual double Fetch()
-        {
-            throw new NotImplementedException();
-        }
 
-        public virtual double Fetch(int Channel)
-        {
-            throw new NotImplementedException();
-        }
-
-        public virtual void StartAutoFetching()
+        public void StartAutoFetching()
         {
             // check whether the task had been started
-            if (task_fetch_loop == null || task_fetch_loop.IsCompleted)
+            if (taskAutoFetch == null || taskAutoFetch.IsCompleted)
             {
                 // token source to cancel the task
                 cts_fetching = new CancellationTokenSource();
-                prgchg_fetching = new Progress<EventArgs>(AutoFetchingProgressChanged);
+                autoFetchProgressChangedHandler = new Progress<EventArgs>(AutoFetchReport);
 
                 var token = cts_fetching.Token;
 
                 // start the loop task
-                task_fetch_loop = Task.Run(() =>
+                taskAutoFetch = Task.Run(() =>
                 {
-                    DoAutoFetching(token, prgchg_fetching);
+                    DoAutoFecth(token, autoFetchProgressChangedHandler);
                 });
 
                 // if error, throw it
-                task_fetch_loop.ContinueWith(t =>
+                taskAutoFetch.ContinueWith(t =>
                 {
-                   throw t.Exception;
+                    throw t.Exception;
                 }, TaskContinuationOptions.OnlyOnFaulted);
             }
         }
 
-        public virtual void PauseAutoFetching()
+        public void PauseAutoFetching()
         {
-            if (task_fetch_loop != null && task_fetch_loop.IsCompleted == false)
+            if (taskAutoFetch != null && taskAutoFetch.IsCompleted == false)
             {
                 // cancel the task of fetching loop
                 cts_fetching.Cancel();
 
                 TimeSpan ts = TimeSpan.FromMilliseconds(2000);
-                if (!task_fetch_loop.Wait(ts))
+                if (!taskAutoFetch.Wait(ts))
                     throw new TimeoutException("unable to stop the fetching loop task");
 
             }
         }
-        
-        public virtual void ResumeAutoFetching()
+
+        public void ResumeAutoFetching()
         {
-            if (task_fetch_loop != null)
+            if (taskAutoFetch != null)
                 StartAutoFetching();
         }
 
-        public virtual void StopAutoFetching()
+        public void StopAutoFetching()
         {
-            if (task_fetch_loop != null)
+            if (taskAutoFetch != null)
             {
-                if (task_fetch_loop.IsCompleted == false)
+                if (taskAutoFetch.IsCompleted == false)
                 {
                     PauseAutoFetching();
                 }
 
                 // destory the objects
-                task_fetch_loop = null;
+                taskAutoFetch = null;
                 cts_fetching = null;
             }
         }
-        
+
         protected override void Dispose(bool disposing)
         {
             if (!disposedValue)
@@ -216,26 +205,36 @@ namespace Irixi_Aligner_Common.Equipments.Base
                         serialport = null;
                     }
                 }
-                
+
                 disposedValue = true;
             }
         }
 
-#endregion
+        #endregion
 
-#region Methods implemented by user
+        #region Methods implemented by user
 
         protected virtual void UserInitProc()
         {
             throw new NotImplementedException();
         }
 
-        protected virtual void DoAutoFetching(CancellationToken token, IProgress<EventArgs> progress)
+        public virtual double Fetch()
         {
             throw new NotImplementedException();
         }
 
-        protected virtual void AutoFetchingProgressChanged(EventArgs Args)
+        public virtual double Fetch(int Channel)
+        {
+            throw new NotImplementedException();
+        }
+
+        protected virtual void DoAutoFecth(CancellationToken token, IProgress<EventArgs> progress)
+        {
+            throw new NotImplementedException();
+        }
+
+        protected virtual void AutoFetchReport(EventArgs Args)
         {
             throw new NotImplementedException();
         }
@@ -245,9 +244,9 @@ namespace Irixi_Aligner_Common.Equipments.Base
             throw new NotImplementedException();
         }
 
-#endregion
+        #endregion
 
-#region Private Methods
+        #region Private Methods
 
         protected virtual void Send(string Command)
         {
@@ -309,7 +308,7 @@ namespace Irixi_Aligner_Common.Equipments.Base
                 throw ex;
             }
         }
-        
-#endregion
+
+        #endregion
     }
 }

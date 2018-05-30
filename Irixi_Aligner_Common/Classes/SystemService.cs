@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using System.Text;
@@ -706,10 +707,26 @@ namespace Irixi_Aligner_Common.Classes
             {
                 Task<bool> t = await Task.WhenAny(_tasks);
                 int id = _tasks.IndexOf(t);
-                if (t.Result)
-                    this.LastMessage = new MessageItem(MessageType.Good, "{0} Initialization is completed.", _equipments[id]);
+                var controller = _equipments[id];
+
+                if(t.IsFaulted)
+                {
+                    if (t.Exception != null)
+                    {
+                        foreach (var ex in t.Exception.Flatten().InnerExceptions)
+                        {
+                            this.LastMessage = new MessageItem(MessageType.Error, $"{controller} Initialization is failed, {ex.Message}");
+                        }
+                    }
+                    else
+                    {
+                        this.LastMessage = new MessageItem(MessageType.Error, $"{controller} Initialization is failed, unable to get the inner exceptions.");
+                    }
+                }
+                else if (t.Result)
+                    this.LastMessage = new MessageItem(MessageType.Good, "{0} Initialization is completed.", controller);
                 else
-                    this.LastMessage = new MessageItem(MessageType.Error, "{0} Initialization is failed, {1}", _equipments[id], _equipments[id].LastError);
+                    this.LastMessage = new MessageItem(MessageType.Error, "{0} Initialization is failed, {1}", controller, controller.LastError);
 
                 _tasks.RemoveAt(id);
                 _equipments.RemoveAt(id);
@@ -746,36 +763,54 @@ namespace Irixi_Aligner_Common.Classes
 
             // initizlize the measurement instruments defined in the config file
             // the instruments initialized successfully will be added to the collection #ActiveInstrumentCollection
-            foreach (var instr in listDefinedInstrument)
+            foreach (var device in listDefinedInstrument)
             {
-                _tasks.Add(Task.Factory.StartNew(instr.Init));
-                _equipments.Add(instr);
-                this.LastMessage = new MessageItem(MessageType.Normal, "{0} Initializing ...", instr);
+                //_tasks.Add(Task.Factory.StartNew(instr.Init));
+                _tasks.Add(Task.Factory.StartNew(device.Init));
+                _equipments.Add(device);
+                this.LastMessage = new MessageItem(MessageType.Normal, "{0} Initializing ...", device);
             }
 
 
             while (_tasks.Count > 0)
             {
+                int idFinishedTask = 0;
                 Task<bool> t = await Task.WhenAny(_tasks);
-                
-                int ended_id = _tasks.IndexOf(t);
+                idFinishedTask = _tasks.IndexOf(t);
+                var equipment = _equipments[idFinishedTask];
 
-
-                if (t.Result)
+                if (t.IsFaulted)
                 {
-                    this.LastMessage = new MessageItem(MessageType.Good, "{0} Initialization is completed.", _equipments[ended_id]);
+                    if(t.Exception != null)
+                    {
+                        foreach(var ex in t.Exception.Flatten().InnerExceptions)
+                        {
+                            this.LastMessage = new MessageItem(MessageType.Error, $"{equipment} Initialization is failed, {ex.Message}");
+                        }
+                    }
+                    else
+                    {
+                        this.LastMessage = new MessageItem(MessageType.Error, $"{equipment} Initialization is failed, unable to get the inner exceptions.");
+                    }
+                }
+                else if(t.Result)
+                { 
+                    this.LastMessage = new MessageItem(MessageType.Good, "{0} Initialization is completed.", equipment);
 
                     // add the instruments which are initialized successfully to the acitve collection
-                    if (_equipments[ended_id] is InstrumentBase)
+                    if (_equipments[idFinishedTask] is InstrumentBase)
                     {
-                        listAvaliableInstrument.Add((InstrumentBase)_equipments[ended_id]);
+                        listAvaliableInstrument.Add((InstrumentBase)_equipments[idFinishedTask]);
                     }
                 }
                 else
-                    this.LastMessage = new MessageItem(MessageType.Error, "{0} Initialization is failed, {1}", _equipments[ended_id], _equipments[ended_id].LastError);
+                    this.LastMessage = new MessageItem(MessageType.Error, $"{equipment} Initialization is failed, {equipment.LastError}");
 
-                _tasks.RemoveAt(ended_id);
-                _equipments.RemoveAt(ended_id);
+
+                _tasks.RemoveAt(idFinishedTask);
+                _equipments.RemoveAt(idFinishedTask);
+
+
             }
 
             //ActiveInstrumentCollection.DisableNotifications();

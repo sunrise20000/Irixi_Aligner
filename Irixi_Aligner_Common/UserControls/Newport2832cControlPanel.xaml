@@ -40,7 +40,7 @@
                     <RowDefinition Height="5"/>
                     <RowDefinition Height="*"/>
                 </Grid.RowDefinitions>
-                <RadioButton Content="Active" HorizontalAlignment="Left" IsChecked="{Binding InstrInstance.ActiveChannel, Converter={StaticResource ActiveChannelToBool}, ConverterParameter=ChA, Mode=OneWay}">
+                <RadioButton Content="Active" HorizontalAlignment="Left" IsChecked="{Binding InstrInstance.ActivedChannel, Converter={StaticResource ActiveChannelToBool}, ConverterParameter=ChA, Mode=OneWay}">
                     <i:Interaction.Triggers>
                         <i:EventTrigger EventName="Checked">
                             <i:InvokeCommandAction Command="{Binding SetActiveChannelToA}"/>
@@ -57,15 +57,15 @@
                 FontWeight="Bold">
                     <TextBox.Text>
                         <MultiBinding Converter="{StaticResource Format2832CMeasValue}" Mode="OneWay">
-                            <Binding Path="InstrInstance.MetaProperties[0].MeasurementValue"/>
-                            <Binding Path="InstrInstance.MetaProperties[0].Unit" />
+                            <Binding Path="InstrInstance.MetaProperty[0].MeasurementValue"/>
+                            <Binding Path="InstrInstance.MetaProperty[0].Unit" />
                         </MultiBinding>
                     </TextBox.Text>
                 </TextBox>
                 <StackPanel Grid.Row="1" Margin="5,0,0,0">
-                    <TextBlock Text="OL" Grid.Row="1" VerticalAlignment="Top" HorizontalAlignment="Left" Foreground="Red" FontWeight="Bold" Visibility="{Binding InstrInstance.MetaProperties[0].IsOverRange, Converter={StaticResource BooleanToVisibility}}"/>
-                    <TextBlock Text="SA" Grid.Row="1" VerticalAlignment="Top" HorizontalAlignment="Left" Foreground="Red" FontWeight="Bold" Visibility="{Binding InstrInstance.MetaProperties[0].IsSaturated, Converter={StaticResource BooleanToVisibility}}"/>
-                    <TextBlock Text="DATA ERR" Grid.Row="1" VerticalAlignment="Top" HorizontalAlignment="Left" Foreground="Red" FontWeight="Bold" Visibility="{Binding InstrInstance.MetaProperties[0].IsDataError, Converter={StaticResource BooleanToVisibility}}"/>
+                    <TextBlock Text="OL" Grid.Row="1" VerticalAlignment="Top" HorizontalAlignment="Left" Foreground="Red" FontWeight="Bold" Visibility="{Binding InstrInstance.MetaProperty[0].IsOverRange, Converter={StaticResource BooleanToVisibility}}"/>
+                    <TextBlock Text="SA" Grid.Row="1" VerticalAlignment="Top" HorizontalAlignment="Left" Foreground="Red" FontWeight="Bold" Visibility="{Binding InstrInstance.MetaProperty[0].IsSaturated, Converter={StaticResource BooleanToVisibility}}"/>
+                    <TextBlock Text="DATA ERR" Grid.Row="1" VerticalAlignment="Top" HorizontalAlignment="Left" Foreground="Red" FontWeight="Bold" Visibility="{Binding InstrInstance.MetaProperty[0].IsDataError, Converter={StaticResource BooleanToVisibility}}"/>
                 </StackPanel>
                 <dx:GroupFrame Grid.Row="3" Header="Setting">
                     <Grid>
@@ -87,13 +87,13 @@
                             <RowDefinition/>
                         </Grid.RowDefinitions>
                         <TextBlock Text="Lambda(nm)"/>
-                        <dxe:ButtonEdit x:Name="txtLambdaA" Grid.Column="1" Text="{Binding InstrInstance.MetaProperties[0].Lambda, StringFormat=####, Mode=OneWay}">
+                        <dxe:ButtonEdit x:Name="txtLambdaA" Grid.Column="1" Text="{Binding InstrInstance.MetaProperty[0].Lambda, StringFormat=####, Mode=OneWay}">
                             <dxe:ButtonInfo 
                         Command="{Binding SetLambdaA}"
                         CommandParameter="{Binding ElementName=txtLambdaA, Path=Text, Converter={StaticResource TextToInt}}"/>
                         </dxe:ButtonEdit>
                         <TextBlock Text="RangeA" Grid.Row="1"/>
-                        <ComboBox x:Name="cbxRangeA" Grid.Column="1" Grid.Row="1" ItemsSource="{Binding Ranges}" SelectedIndex="{Binding InstrInstance.MetaProperties[0].Range, Converter={StaticResource EnumToInt}, Mode=OneWay}">
+                        <ComboBox x:Name="cbxRangeA" Grid.Column="1" Grid.Row="1" ItemsSource="{Binding Ranges}" SelectedIndex="{Binding InstrInstance.MetaProperty[0].Range, Converter={StaticResource EnumToInt}, Mode=OneWay}">
                             <i:Interaction.Triggers>
                                 <i:EventTrigger EventName="SelectionChanged">
                                     <i:InvokeCommandAction 
@@ -103,7 +103,7 @@
                             </i:Interaction.Triggers>
                         </ComboBox>
                         <TextBlock Text="Unit" Grid.Row="2"/>
-                        <ComboBox x:Name="cbxUnitA" Grid.Column="1" Grid.Row="2" ItemsSource="{Binding Units}" SelectedIndex="{Binding InstrInstance.MetaProperties[0].Unit, Converter={StaticResource EnumToInt}}">
+                        <ComboBox x:Name="cbxUnitA" Grid.Column="1" Grid.Row="2" ItemsSource="{Binding Units}" SelectedIndex="{Binding InstrInstance.MetaProperty[0].Unit, Converter={StaticResource EnumToInt}}">
                             <i:Interaction.Triggers>
                                 <i:EventTrigger EventName="SelectionChanged">
                                     <i:InvokeCommandAction 
@@ -126,7 +126,7 @@
                     <RowDefinition Height="5"/>
                     <RowDefinition Height="*"/>
                 </Grid.RowDefinitions>
-                <RadioButton Content="Active" HorizontalAlignment="Left" IsChecked="{Binding InstrInstance.ActiveChannel, Converter={StaticResource ActiveChannelToBool}, ConverterParameter=ChB, Mode=OneWay}">
+                <RadioButton Content="Active" HorizontalAlignment="Left" IsChecked="{Binding InstrInstance.ActivedChannel, Converter={StaticResource ActiveChannelToBool}, ConverterParameter=ChB, Mode=OneWay}">
                     <i:Interaction.Triggers>
                         <i:EventTrigger EventName="Checked">
                             <i:InvokeCommandAction Command="{Binding SetActiveChannelToB}"/>
@@ -143,15 +143,15 @@
                 FontWeight="Bold">
                     <TextBox.Text>
                         <MultiBinding Converter="{StaticResource Format2832CMeasValue}" Mode="OneWay">
-                            <Binding Path="InstrInstance.MetaProperties[1].MeasurementValue"/>
-                            <Binding Path="InstrInstance.MetaProperties[1].Unit" />
+                            <Binding Path="InstrInstance.MetaProperty[1].MeasurementValue"/>
+                            <Binding Path="InstrInstance.MetaProperty[1].Unit" />
                         </MultiBinding>
                     </TextBox.Text>
                 </TextBox>
                 <StackPanel Grid.Row="1" Margin="5,0,0,0">
-                    <TextBlock Text="OL" Grid.Row="1" VerticalAlignment="Top" HorizontalAlignment="Left" Foreground="Red" FontWeight="Bold" Visibility="{Binding InstrInstance.MetaProperties[1].IsOverRange, Converter={StaticResource BooleanToVisibility}}"/>
-                    <TextBlock Text="SA" Grid.Row="1" VerticalAlignment="Top" HorizontalAlignment="Left" Foreground="Red" FontWeight="Bold" Visibility="{Binding InstrInstance.MetaProperties[1].IsSaturated, Converter={StaticResource BooleanToVisibility}}"/>
-                    <TextBlock Text="DATA ERR" Grid.Row="1" VerticalAlignment="Top" HorizontalAlignment="Left" Foreground="Red" FontWeight="Bold" Visibility="{Binding InstrInstance.MetaProperties[1].IsDataError, Converter={StaticResource BooleanToVisibility}}"/>
+                    <TextBlock Text="OL" Grid.Row="1" VerticalAlignment="Top" HorizontalAlignment="Left" Foreground="Red" FontWeight="Bold" Visibility="{Binding InstrInstance.MetaProperty[1].IsOverRange, Converter={StaticResource BooleanToVisibility}}"/>
+                    <TextBlock Text="SA" Grid.Row="1" VerticalAlignment="Top" HorizontalAlignment="Left" Foreground="Red" FontWeight="Bold" Visibility="{Binding InstrInstance.MetaProperty[1].IsSaturated, Converter={StaticResource BooleanToVisibility}}"/>
+                    <TextBlock Text="DATA ERR" Grid.Row="1" VerticalAlignment="Top" HorizontalAlignment="Left" Foreground="Red" FontWeight="Bold" Visibility="{Binding InstrInstance.MetaProperty[1].IsDataError, Converter={StaticResource BooleanToVisibility}}"/>
                 </StackPanel>
                 <dx:GroupFrame Grid.Row="3" Header="Setting">
                     <Grid>
@@ -173,13 +173,13 @@
                             <RowDefinition/>
                         </Grid.RowDefinitions>
                         <TextBlock Text="Lambda(nm)"/>
-                        <dxe:ButtonEdit x:Name="txtLambdaB" Grid.Column="1" Text="{Binding InstrInstance.MetaProperties[1].Lambda, StringFormat=####, Mode=OneWay}">
+                        <dxe:ButtonEdit x:Name="txtLambdaB" Grid.Column="1" Text="{Binding InstrInstance.MetaProperty[1].Lambda, StringFormat=####, Mode=OneWay}">
                             <dxe:ButtonInfo 
                         Command="{Binding SetLambdaB}"
                         CommandParameter="{Binding ElementName=txtLambdaB, Path=Text, Converter={StaticResource TextToInt}}"/>
                         </dxe:ButtonEdit>
                         <TextBlock Text="Range" Grid.Row="1"/>
-                        <ComboBox x:Name="cbxRangeB" Grid.Column="1" Grid.Row="1" ItemsSource="{Binding Ranges}" SelectedIndex="{Binding InstrInstance.MetaProperties[1].Range, Converter={StaticResource EnumToInt}, Mode=OneWay}">
+                        <ComboBox x:Name="cbxRangeB" Grid.Column="1" Grid.Row="1" ItemsSource="{Binding Ranges}" SelectedIndex="{Binding InstrInstance.MetaProperty[1].Range, Converter={StaticResource EnumToInt}, Mode=OneWay}">
                             <i:Interaction.Triggers>
                                 <i:EventTrigger EventName="SelectionChanged">
                                     <i:InvokeCommandAction 
@@ -189,7 +189,7 @@
                             </i:Interaction.Triggers>
                         </ComboBox>
                         <TextBlock Text="Unit" Grid.Row="2"/>
-                        <ComboBox x:Name="cbxUnitB" Grid.Column="1" Grid.Row="2" ItemsSource="{Binding Units}" SelectedIndex="{Binding InstrInstance.MetaProperties[1].Unit, Converter={StaticResource EnumToInt}}">
+                        <ComboBox x:Name="cbxUnitB" Grid.Column="1" Grid.Row="2" ItemsSource="{Binding Units}" SelectedIndex="{Binding InstrInstance.MetaProperty[1].Unit, Converter={StaticResource EnumToInt}}">
                             <i:Interaction.Triggers>
                                 <i:EventTrigger EventName="SelectionChanged">
                                     <i:InvokeCommandAction 

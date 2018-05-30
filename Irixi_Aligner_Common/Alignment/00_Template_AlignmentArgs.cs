@@ -1,6 +1,7 @@
 ﻿using Irixi_Aligner_Common.Alignment.BaseClasses;
 using Irixi_Aligner_Common.Classes;
 using System;
+using System.ComponentModel;
 
 namespace Irixi_Aligner_Common.Alignment
 { 
@@ -18,7 +19,13 @@ namespace Irixi_Aligner_Common.Alignment
         #endregion
 
         #region Properties
+        public override string SubPath => base.SubPath;
 
+        [Browsable(false)]
+        public AlignmentArgsPresetProfileManager<AlignmentArgsBase, AlignmentArgsPresetProfileBase> PresetProfileManager
+        {
+            get;
+        }
         #endregion
 
         #region Methods

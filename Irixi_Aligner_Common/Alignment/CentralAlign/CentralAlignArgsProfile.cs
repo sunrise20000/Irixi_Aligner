@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Irixi_Aligner_Common.Alignment.BaseClasses;
+﻿using Irixi_Aligner_Common.Alignment.BaseClasses;
 
 namespace Irixi_Aligner_Common.Alignment.CentralAlign
 {
@@ -20,6 +15,8 @@ namespace Irixi_Aligner_Common.Alignment.CentralAlign
         public string Instrument { get; set; }
         public string Instrument2 { get; set; }
 
+        public int MoveSpeed { get; set; }
+
         public override void FromArgsInstance(AlignmentArgsBase arg)
         {
             var targ = arg as CentralAlignArgs;
@@ -33,6 +30,8 @@ namespace Irixi_Aligner_Common.Alignment.CentralAlign
 
             this.Instrument = targ.Instrument.HashString;
             this.Instrument2 = targ.Instrument2.HashString;
+
+            this.MoveSpeed = targ.MoveSpeed;
 
             this.HashString = this.GetHashString();
         }
@@ -50,7 +49,9 @@ namespace Irixi_Aligner_Common.Alignment.CentralAlign
             targ.ScanIntervalVertical = this.VerticalInterval;
 
             targ.Instrument = targ.Service.FindInstrumentByHashString(this.Instrument);
-            targ.Instrument2 = targ.Service.FindInstrumentByHashString(this.Instrument);
+            targ.Instrument2 = targ.Service.FindInstrumentByHashString(this.Instrument2);
+
+            targ.MoveSpeed = this.MoveSpeed;
         }
     }
 }

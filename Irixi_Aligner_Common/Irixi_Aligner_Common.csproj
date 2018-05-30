@@ -190,8 +190,10 @@
     <Compile Include="Alignment\AlignmentXD\AlignmentXD.cs" />
     <Compile Include="Alignment\AlignmentXD\AlignmentXDArgs.cs" />
     <Compile Include="Alignment\BaseClasses\AlignmentArgsBase.cs" />
+    <Compile Include="Alignment\Rotating\RotatingScanArgsProfile.cs" />
     <Compile Include="Alignment\SnakeRouteScan\SnakeRouteScan.cs" />
     <Compile Include="Alignment\SnakeRouteScan\SnakeRouteScanArgs.cs" />
+    <Compile Include="Alignment\SnakeRouteScan\SnakeRouteScanArgsProfile.cs" />
     <Compile Include="Alignment\SpiralScan\SpiralScan.cs" />
     <Compile Include="Alignment\SpiralScan\SpiralScanArgs.cs" />
     <Compile Include="App.xaml.cs">
@@ -228,6 +230,7 @@
     <Compile Include="Classes\Converters\EnumToBoolean.cs" />
     <Compile Include="Classes\Converters\OutputStateToBoolean.cs" />
     <Compile Include="Equipments\Instruments\Keithliey2400ProgressReportArgs.cs" />
+    <Compile Include="Equipments\Instruments\Newport2832CMetaProperty.cs" />
     <Compile Include="Interfaces\IAlignmentArgs.cs" />
     <Compile Include="Interfaces\IHashable.cs" />
     <Compile Include="Interfaces\IScanCurve.cs" />
@@ -331,7 +334,6 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
-    <EmbeddedResource Include="Properties\licenses.licx" />
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>

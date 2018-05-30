@@ -9,7 +9,7 @@ namespace Irixi_Aligner_Common.Interfaces
 
         bool IsMultiChannel { get; }
 
-        int ActiveChannel { get; }
+        int ActivedChannel { get; }
 
         #endregion
 

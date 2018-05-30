@@ -1065,6 +1065,7 @@ namespace Irixi_Aligner_Common.Equipments.Instruments
         
         protected override void UserInitProc()
         {
+#if !FAKE_ME
             string desc = this.GetDescription();
             if (desc.ToUpper().IndexOf("MODEL 2400") > -1 || desc.ToUpper().IndexOf("MODEL 2401") > -1)
             {
@@ -1104,6 +1105,9 @@ namespace Irixi_Aligner_Common.Equipments.Instruments
             {
                 throw new Exception("the identification is error");
             }
+#else
+            return;
+#endif
         }
 
         public override double Fetch()
@@ -1157,7 +1161,7 @@ namespace Irixi_Aligner_Common.Equipments.Instruments
 
         }
 
-        protected override void DoAutoFetching(CancellationToken token, IProgress<EventArgs> progress)
+        protected override void DoAutoFecth(CancellationToken token, IProgress<EventArgs> progress)
         {
             // disable display to speed up instrument operation
             // SetDisplayCircuitry(false);
@@ -1184,7 +1188,7 @@ namespace Irixi_Aligner_Common.Equipments.Instruments
             //SetDisplayCircuitry(true);
         }
 
-        protected override void AutoFetchingProgressChanged(EventArgs Args)
+        protected override void AutoFetchReport(EventArgs Args)
         {
             var args = Args as Keithliey2400ProgressReportArgs;
 
@@ -1268,9 +1272,9 @@ namespace Irixi_Aligner_Common.Equipments.Instruments
             }
         }
 
-        #endregion
+#endregion
 
-        #region Private Methods
+#region Private Methods
         
         double ConvertMeasRangeAmpsToDouble(EnumMeasRangeAmps Range)
         {
@@ -1298,6 +1302,6 @@ namespace Irixi_Aligner_Common.Equipments.Instruments
             return (EnumMeasRangeVolts)(digital + 2);
         }
         
-        #endregion
+#endregion
     }
 }

@@ -14,6 +14,7 @@ namespace Irixi_Aligner_Common.Equipments.Instruments
     {
         #region Definition
 
+        // for 2832C, the maximum channel is always 2
         const int MAX_CH = 2;
 
         public enum EnumChannel
@@ -85,7 +86,7 @@ namespace Irixi_Aligner_Common.Equipments.Instruments
         #endregion
 
         #region Variables
-        
+
         #endregion
 
         #region Constructor
@@ -96,10 +97,10 @@ namespace Irixi_Aligner_Common.Equipments.Instruments
             IsMultiChannel = true;
 
             // create meta properties for each channel
-            MetaProperties = new Newport2832C_MetaProperies[MAX_CH];
+            MetaProperty = new Newport2832CMetaProperty[MAX_CH];
             for (int i = 0; i < MAX_CH; i++)
             {
-                MetaProperties[i] = new Newport2832C_MetaProperies();
+                MetaProperty[i] = new Newport2832CMetaProperty();
             }
 
             serialport = new SerialPort(Config.Port, Config.BaudRate)
@@ -114,8 +115,8 @@ namespace Irixi_Aligner_Common.Equipments.Instruments
         #region Properties
 
         public new ConfigurationNewport2832C Config { get; }
-        
-        public Newport2832C_MetaProperies[] MetaProperties
+
+        public Newport2832CMetaProperty[] MetaProperty
         {
             get;
         }
@@ -127,6 +128,7 @@ namespace Irixi_Aligner_Common.Equipments.Instruments
 
         protected override void UserInitProc()
         {
+#if !FAKE_ME
             string desc = this.GetDescription();
             if (desc.ToUpper().IndexOf("2832-C") > -1)
             {
@@ -156,11 +158,13 @@ namespace Irixi_Aligner_Common.Equipments.Instruments
             }
             else
             {
-                throw new Exception("the identification is error");
+                throw new Exception("the description string is error");
             }
-
+#else
+            StartAutoFetching();
+#endif
         }
-        
+
         public override double Fetch()
         {
 
@@ -191,22 +195,21 @@ namespace Irixi_Aligner_Common.Equipments.Instruments
             
             return MetaProperties[ActiveChannel].MeasurementValue;
 #else
-            return new Random((int)DateTime.Now.Ticks).NextDouble() * 10;
+            var val = new Random((int)DateTime.Now.Ticks).NextDouble() * 10;
+            for (int i = 0; i < MAX_CH; i++)
+            {
+                MetaProperty[i].MeasurementValue = val;
+            }
+            return val;
 #endif
         }
 
-        public override double Fetch(int Channel)
-        {
-            Fetch();
-            return MetaProperties[ActiveChannel].MeasurementValue;
-        }
-
-        protected override void DoAutoFetching(CancellationToken token, IProgress<EventArgs> progress)
+        protected override void DoAutoFecth(CancellationToken token, IProgress<EventArgs> progress)
         {
             while (!token.IsCancellationRequested)
             {
                 Fetch();
-                Thread.Sleep(20);
+                Thread.Sleep(200);
             }
         }
 
@@ -216,10 +219,10 @@ namespace Irixi_Aligner_Common.Equipments.Instruments
 
         public void SetDisplayChannel(EnumChannel CH)
         {
-            ActiveChannel = (int)CH;
+            ActivedChannel = (int)CH;
             Send(string.Format("DISPCH {0}", CH));
         }
-        
+
         public void SetMeasurementRange(EnumChannel CH, EnumRange Range)
         {
             if (Range == EnumRange.AUTO)
@@ -232,7 +235,7 @@ namespace Irixi_Aligner_Common.Equipments.Instruments
                 Send(string.Format("RANGE_{0} {1}", CH, (int)Range));
             }
 
-            MetaProperties[(int)CH].Range = Range;
+            MetaProperty[(int)CH].Range = Range;
         }
 
         public void GetMeasurementRange(EnumChannel CH)
@@ -240,14 +243,14 @@ namespace Irixi_Aligner_Common.Equipments.Instruments
             var ret = Read(string.Format("AUTO_{0}?", CH));
             if (ret == "1")
             {
-                MetaProperties[(int)CH].Range = EnumRange.AUTO;
+                MetaProperty[(int)CH].Range = EnumRange.AUTO;
             }
             else if (ret == "0")
             {
                 ret = Read(string.Format("RANGE_{0}?", CH));
                 if (int.TryParse(ret, out int range))
                 {
-                    MetaProperties[(int)CH].Range = (EnumRange)range;
+                    MetaProperty[(int)CH].Range = (EnumRange)range;
                 }
                 else
                 {
@@ -263,7 +266,7 @@ namespace Irixi_Aligner_Common.Equipments.Instruments
         public void SetLambda(EnumChannel CH, int Lambda)
         {
             Send(string.Format("LAMBDA_{0} {1}", CH, Lambda));
-            MetaProperties[(int)CH].Lambda = Lambda;
+            MetaProperty[(int)CH].Lambda = Lambda;
         }
 
         public void GetLambda(EnumChannel CH)
@@ -271,7 +274,7 @@ namespace Irixi_Aligner_Common.Equipments.Instruments
             var ret = Read(string.Format("LAMBDA_{0}?", CH));
             if (int.TryParse(ret, out int lambda))
             {
-                MetaProperties[(int)CH].Lambda = lambda;
+                MetaProperty[(int)CH].Lambda = lambda;
             }
             else
             {
@@ -290,7 +293,7 @@ namespace Irixi_Aligner_Common.Equipments.Instruments
                 Send(string.Format("UNITS_{0} \"{1}\"", CH, Unit));
             }
 
-            MetaProperties[(int)CH].Unit = Unit;
+            MetaProperty[(int)CH].Unit = Unit;
         }
 
         public void GetUnit(EnumChannel CH)
@@ -299,166 +302,16 @@ namespace Irixi_Aligner_Common.Equipments.Instruments
             ret = ret.Replace("\\", "").Replace("\"", "");
             if (ret == "W/cm")
             {
-                MetaProperties[(int)CH].Unit = EnumUnits.W_cm;
+                MetaProperty[(int)CH].Unit = EnumUnits.W_cm;
             }
             else
             {
-                MetaProperties[(int)CH].Unit = (EnumUnits)Enum.Parse(typeof(EnumUnits), ret);
+                MetaProperty[(int)CH].Unit = (EnumUnits)Enum.Parse(typeof(EnumUnits), ret);
             }
         }
 
-#endregion
+        #endregion
 
-    }
-
-    public class Newport2832C_MetaProperies : ViewModelBase
-    {
-        Newport2832C.EnumRange range;
-        Newport2832C.EnumUnits unit;
-        Newport2832C.EnumStatusFlag status;
-
-        double measured_val;
-        int lambda;
-        bool isOverRange, isSaturated, isDataError, isRanging;
-
-        public Newport2832C.EnumStatusFlag Status
-        {
-            get
-            {
-                return status;
-            }
-            set
-            {
-                status = value;
-
-                if (status.HasFlag(Newport2832C.EnumStatusFlag.DATAERR))
-                    IsDataError = true;
-                else
-                    IsDataError = false;
-
-                if (status.HasFlag(Newport2832C.EnumStatusFlag.OVERRANGE))
-                    IsOverRange = true;
-                else
-                    IsOverRange = false;
-
-                if (status.HasFlag(Newport2832C.EnumStatusFlag.SATURATED))
-                    IsSaturated = true;
-                else
-                    IsSaturated = false;
-
-                if (status.HasFlag(Newport2832C.EnumStatusFlag.RANGING))
-                    IsRanging = true;
-                else
-                    IsRanging = false;
-
-                RaisePropertyChanged();
-            }
-        }
-
-        public bool IsOverRange
-        {
-            get
-            {
-                return isOverRange;
-            }
-            set
-            {
-                isOverRange = value;
-                RaisePropertyChanged();
-            }
-        }
-
-        public bool IsSaturated
-        {
-            get
-            {
-                return isSaturated;
-            }
-            set
-            {
-                isSaturated = value;
-                RaisePropertyChanged();
-            }
-        }
-
-        public bool IsDataError
-        {
-            get
-            {
-                return isDataError;
-            }
-            set
-            {
-                isDataError = value;
-                RaisePropertyChanged();
-            }
-        }
-
-        public bool IsRanging
-        {
-            get
-            {
-                return isRanging;
-            }
-            set
-            {
-                isRanging = value;
-                RaisePropertyChanged();
-            }
-        }
-
-
-        public Newport2832C.EnumRange Range
-        {
-            set
-            {
-                range = value;
-                RaisePropertyChanged();
-            }
-            get
-            {
-                return range;
-            }
-        }
-
-        public int Lambda
-        {
-            get
-            {
-                return lambda;
-            }
-            set
-            {
-                lambda = value;
-                RaisePropertyChanged();
-            }
-        }
-
-        public Newport2832C.EnumUnits Unit
-        {
-            get
-            {
-                return unit;
-            }
-            set
-            {
-                unit = value;
-                RaisePropertyChanged();
-            }
-        }
-
-        public double MeasurementValue
-        {
-            set
-            {
-                measured_val = value;
-                RaisePropertyChanged();
-            }
-            get
-            {
-                return measured_val;
-            }
-        }
     }
 }
 

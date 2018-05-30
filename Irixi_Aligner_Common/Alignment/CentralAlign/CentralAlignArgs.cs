@@ -38,7 +38,7 @@ namespace Irixi_Aligner_Common.Alignment.CentralAlign
             ScanCurveGroup.Add(ScanCurve2.MaxPowerConstantLine);
 
             AxisXTitle = "Position";
-            AxisYTitle = "Indensity";
+            AxisYTitle = "Intensity";
 
             Properties.Add(new Property("Instrument"));
             Properties.Add(new Property("Instrument2"));
@@ -57,7 +57,6 @@ namespace Irixi_Aligner_Common.Alignment.CentralAlign
         }
 
         #endregion
-
 
         #region Properties
 

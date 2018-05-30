@@ -61,7 +61,7 @@ namespace Irixi_Aligner_Common.Alignment.Rotating
             /// <see cref="SystemService.MoveLogicalAxis(LogicalAxis, MoveByDistanceArgs)"/>
             /// </summary>
             if (Args.AxisLinear.PhysicalAxisInst.Move(MoveMode.REL, Args.MoveSpeed, -halfRangeLinear) == false)
-                throw new InvalidOperationException(Args.AxisLinear.PhysicalAxisInst.LastError);
+                throw new InvalidOperationException($"unable to move the linear axis, {Args.AxisLinear.PhysicalAxisInst.LastError}");
 
             Args.Log.Add(string.Format("*Current angle: {0}{1}, aligning ...", distMovedRotating, Args.AxisRotating.PhysicalAxisInst.UnitHelper));
 
@@ -125,7 +125,7 @@ namespace Irixi_Aligner_Common.Alignment.Rotating
             #endregion
 
             // if the first cycle, rotate to the position calculate according to the delta position and the length of the two DUTs
-            double angle = -1 * Math.Asin(deltaPos / Args.LengthOfChannelStartToEnd) * (180 / Math.PI);
+            double angle = -1 * Math.Asin(deltaPos / Args.Pitch) * (180 / Math.PI);
             Args.Log.Add(string.Format("    The angle to rotate is: {0}{1}", angle, unitRotatingAxis));
 
             // record the angle rotated

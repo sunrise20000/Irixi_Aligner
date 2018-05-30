@@ -14,7 +14,7 @@
   ],
   "Keithley2400s": [
     {
-      "Enabled": false,
+      "Enabled": true,
       "DeviceClass": "371EEBD8-4C57-4EB2-A830-CBD5AEC89D8E",
       "Desc": "KEITHLEY 2401",
       "Port": "COM6",
@@ -24,7 +24,7 @@
       "Comment": "Chanel 1 of PD array"
     },
     {
-      "Enabled": false,
+      "Enabled": true,
       "DeviceClass": "D2F48892-340A-41B3-A058-77452AAEAE02",
       "Desc": "KEITHLEY 2400",
       "Port": "COM8",
