@@ -1,13 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Irixi_Aligner_Common.Interfaces;
 
 namespace Irixi_Aligner_Common.Equipments.BaseClass
 {
-    public class EquipmentCollection<T>: List<T>
+    public class EquipmentCollection<T>: ObservableCollection<T>
         where T: IHashable
     {
         public T FindItemByHashString(string hash)

@@ -2,11 +2,12 @@
 using System.Collections.Generic;
 using Irixi_Aligner_Common.Classes.BaseClass;
 using Irixi_Aligner_Common.Configuration.MotionController;
+using Irixi_Aligner_Common.Equipments.Base;
 using Irixi_Aligner_Common.Interfaces;
 
 namespace Irixi_Aligner_Common.MotionControllers.Base
 {
-    public class MotionControllerBase<T> : Dictionary<string, T>, IMotionController, IDisposable
+    public class MotionControllerBase<T> : EquipmentBase, IMotionController, IDisposable
         where T:IAxis, new()
     {
         #region Variables
@@ -24,19 +25,17 @@ namespace Irixi_Aligner_Common.MotionControllers.Base
 
         #region Constructor
 
-        public MotionControllerBase(ConfigPhysicalMotionController Config)
-        {
-            DeviceClass = Config.DeviceClass;
+        public MotionControllerBase(ConfigPhysicalMotionController Config):base(Config)
+        { 
             Model = Config.Model;
-            Port = Config.Port;
-            IsEnabled = Config.Enabled;
-            IsInitialized = false;
             BusyAxesCount = 0;
 
 
             //
             // Generate the items of AxisCollection according the config of the physical motion controller
             //
+            AxisCollection = new Dictionary<string, IAxis>();
+
             int i = 0;
             foreach (var axisConfig in Config.AxisCollection)
             {
@@ -44,7 +43,7 @@ namespace Irixi_Aligner_Common.MotionControllers.Base
                 axis.SetParameters(i, axisConfig, this);
 
                 //TODO What if the axis name had been existed?
-                this.Add(axisConfig.Name, axis);
+                AxisCollection.Add(axisConfig.Name, axis);
 
                 i++;
             }
@@ -54,29 +53,10 @@ namespace Irixi_Aligner_Common.MotionControllers.Base
 
         #region Properties
 
-        public Guid DeviceClass { private set; get; }
-
         public MotionControllerType Model { private set; get; }
 
-        public string Port { private set; get; }
 
-        public bool IsEnabled { private set; get; }
-
-        public bool IsInitialized { protected set; get; }
-
-        public string LastError
-        {
-            get
-            {
-                return lastError;
-            }
-            internal set
-            {
-                lastError = value;
-            }
-        }
-
-        //public Dictionary<string, IAxis>AxisCollection { private set; get; }
+        public Dictionary<string, IAxis>AxisCollection { private set; get; }
 
         /// <summary>
         /// The property indicates that how many axes are moving.
@@ -88,7 +68,7 @@ namespace Irixi_Aligner_Common.MotionControllers.Base
         public int BusyAxesCount { private set; get; }
 
 
-        public string HashString
+        public override string HashString
         {
             get
             {
@@ -100,7 +80,7 @@ namespace Irixi_Aligner_Common.MotionControllers.Base
 
         #region Methods
 
-        public bool Init()
+        public override bool Init()
         {
             if (this.IsEnabled)
                 return InitProcess();
@@ -113,7 +93,7 @@ namespace Irixi_Aligner_Common.MotionControllers.Base
 
         public IAxis GetAxisByName(string AxisName)
         {
-            return this[AxisName];
+            return AxisCollection[AxisName];
         }
 
         public bool Home(IAxis Axis)
@@ -244,7 +224,7 @@ namespace Irixi_Aligner_Common.MotionControllers.Base
             return string.Format("*{0}@{1}*", this.Model.ToString(), this.Port);
         }
 
-        public virtual void Dispose()
+        public override void Dispose()
         {
             throw new NotImplementedException();
         }

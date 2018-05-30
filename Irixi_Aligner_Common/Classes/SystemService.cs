@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
 using System.Reflection;
@@ -36,11 +35,19 @@ namespace Irixi_Aligner_Common.Classes
     sealed public class SystemService : ViewModelBase, IDisposable
     {
         #region Variables
-        DateTime initStarts;
-        SystemState _state = SystemState.IDLE;
-        MessageItem _lastmsg = null;
-        MessageHelper _msg_helper = new MessageHelper();
+        
+        MessageItem lastMessage = null;
+        SystemState sysState = SystemState.IDLE;
+
         bool isInitialized = false;
+        readonly DateTime initStartTime;
+
+        readonly EquipmentCollection<LogicalAxis> listLogicalAxis;
+        readonly EquipmentCollection<LogicalAxis> listLogicalAxisInAligner;
+        readonly EquipmentCollection<LogicalMotionComponent> listLogicalMotionComponent;
+        readonly EquipmentCollection<LogicalMotionComponent> listLogicalAligner;
+        readonly EquipmentCollection<InstrumentBase> listAvaliableInstrument;
+        readonly EquipmentCollection<InstrumentBase> listDefinedInstrument;
 
         /// <summary>
         /// lock while set or get this.State
@@ -52,6 +59,7 @@ namespace Irixi_Aligner_Common.Classes
         /// </summary>
         public event EventHandler<string> InitProgressChanged;
 
+
         #endregion
 
         #region Constructor
@@ -59,7 +67,7 @@ namespace Irixi_Aligner_Common.Classes
         public SystemService()
         {
 
-            initStarts = DateTime.Now;
+            initStartTime = DateTime.Now;
 
             //ThreadPool.SetMinThreads(50, 50);
 
@@ -74,7 +82,7 @@ namespace Irixi_Aligner_Common.Classes
             sb.Append("\r\n");
             sb.Append("> =================================================================\r\n");
             sb.Append("> =                 4x25G/10x10G Alignment System                 =\r\n");
-            sb.Append("> =                    Copyright (C) 2017 Irixi                   =\r\n");
+            sb.Append("> =                Copyright (C) 2017 - 2018 Irixi                =\r\n");
             sb.Append("> =================================================================\r\n");
             LogHelper.WriteLine(sb.ToString());
 
@@ -94,12 +102,19 @@ namespace Irixi_Aligner_Common.Classes
             BusyComponents = new List<IServiceSystem>();
 
             PhysicalMotionControllerCollection = new Dictionary<Guid, IMotionController>();
-            LogicalAxisCollection = new EquipmentCollection<LogicalAxis>();
-            LogicalAxisInAlignerCollection = new EquipmentCollection<LogicalAxis>();
-            LogicalMotionComponentCollection = new EquipmentCollection<LogicalMotionComponent>();
-            LogicalAlignerCollection = new EquipmentCollection<LogicalMotionComponent>();
-            MeasurementInstrumentCollection = new EquipmentCollection<InstrumentBase>();
-            BindingOperations.EnableCollectionSynchronization(MeasurementInstrumentCollection, lockSystemStatus);
+            //LogicalAxisCollection = new EquipmentCollection<LogicalAxis>();
+            //LogicalAxisInAlignerCollection = new EquipmentCollection<LogicalAxis>();
+            //LogicalMotionComponentCollection = new EquipmentCollection<LogicalMotionComponent>();
+            //LogicalAlignerCollection = new EquipmentCollection<LogicalMotionComponent>();
+            //MeasurementInstrumentCollection = new EquipmentCollection<InstrumentBase>();
+            //BindingOperations.EnableCollectionSynchronization(MeasurementInstrumentCollection, lockSystemStatus);
+
+            listLogicalAxis = new EquipmentCollection<LogicalAxis>();
+            listLogicalAxisInAligner = new EquipmentCollection<LogicalAxis>();
+            listLogicalMotionComponent = new EquipmentCollection<LogicalMotionComponent>();
+            listLogicalAligner = new EquipmentCollection<LogicalMotionComponent>();
+            listAvaliableInstrument = new EquipmentCollection<InstrumentBase>();
+            listDefinedInstrument = new EquipmentCollection<InstrumentBase>();
 
             State = SystemState.BUSY;
 
@@ -172,15 +187,17 @@ namespace Irixi_Aligner_Common.Classes
                     BindPhysicalAxis(axis);
 
                     lmc.Add(axis);
-                    this.LogicalAxisCollection.Add(axis);
+                    listLogicalAxis.Add(axis);
+                    
+                    // if the logical motion controller is aligner, save the 
                     if (lmc.IsAligner)
-                        this.LogicalAxisInAlignerCollection.Add(axis);
+                        listLogicalAxisInAligner.Add(axis);
                 }
 
-                this.LogicalMotionComponentCollection.Add(lmc);
+                listLogicalMotionComponent.Add(lmc);
 
                 if (lmc.IsAligner)
-                    this.LogicalAlignerCollection.Add(lmc);
+                    listLogicalAligner.Add(lmc);
             }
 
             // create the instance of the cylinder controller
@@ -200,14 +217,14 @@ namespace Irixi_Aligner_Common.Classes
             foreach (var cfg in configMgr.ConfSystemSetting.Keithley2400s)
             {
                 if(cfg.Enabled)
-                    MeasurementInstrumentCollection.Add(new Keithley2400(cfg));
+                    listDefinedInstrument.Add(new Keithley2400(cfg));
             }
 
             // create instance of the newport 2832C
             foreach (var cfg in configMgr.ConfSystemSetting.Newport2832Cs)
             {
                 if (cfg.Enabled)
-                    MeasurementInstrumentCollection.Add(new Newport2832C(cfg));
+                    listDefinedInstrument.Add(new Newport2832C(cfg));
             }
         }
 
@@ -280,12 +297,12 @@ namespace Irixi_Aligner_Common.Classes
         {
             private set
             {
-                _state = value;
+                sysState = value;
                 RaisePropertyChanged();
             }
             get
             {
-                return _state;
+                return sysState;
             }
         }
 
@@ -309,30 +326,68 @@ namespace Irixi_Aligner_Common.Classes
         /// Get the list of the overall logical axes defined in the system setting file.
         /// this list enable users to operate each axis independently without knowing which physical motion controller it belongs to
         /// </summary>
-        public EquipmentCollection<LogicalAxis> LogicalAxisCollection
+        public ICollectionView LogicalAxisCollection
         {
-            get;
+            get
+            {
+                return CollectionViewSource.GetDefaultView(listLogicalAxis);
+            }
+        }
+
+        /// <summary>
+        /// Get the collection contains the logical axes those belong to the logical aligner
+        /// </summary>
+        public ICollectionView LogicalAxisInAlignerCollection
+        {
+            get
+            {
+                return CollectionViewSource.GetDefaultView(listLogicalAxisInAligner);
+            }
         }
 
         /// <summary>
         /// Get the collection of the logical motion components, this property should be used to generate the motion control panel for each aligner
         /// </summary>
-        public EquipmentCollection<LogicalMotionComponent> LogicalMotionComponentCollection { get; }
+        public ICollectionView LogicalMotionComponentCollection
+        {
+            get
+            {
+                return CollectionViewSource.GetDefaultView(listLogicalMotionComponent);
+            }
+        }
 
         /// <summary>
         /// Get the logical motion components which is marked as logical aligner
         /// </summary>
-        public EquipmentCollection<LogicalMotionComponent> LogicalAlignerCollection { get; }
-        
-        /// <summary>
-        /// Get the collection contains the logical axes those belong to the logical aligner
-        /// </summary>
-        public EquipmentCollection<LogicalAxis> LogicalAxisInAlignerCollection { get; }
+        public ICollectionView LogicalAlignerCollection
+        {
+            get
+            {
+                return CollectionViewSource.GetDefaultView(listLogicalAligner);
+            }
+        }
 
         /// <summary>
-        /// Get the collection of instruments that defined in the configuration file
+        /// Get the view of the collection of the instruments defined in the config file.
         /// </summary>
-        public EquipmentCollection<InstrumentBase> MeasurementInstrumentCollection { get; }
+        public ICollectionView CollectionViewDefinedInstruments
+        {
+            get
+            {
+                return CollectionViewSource.GetDefaultView(listDefinedInstrument);
+            }
+        }
+
+        /// <summary>
+        /// Get the view of the collection of the instruments of those initialized successfully.
+        /// </summary>
+        public ICollectionView MeasurementInstrumentCollection
+        {
+            get
+            {
+                return CollectionViewSource.GetDefaultView(listAvaliableInstrument);
+            }
+        }
 
         /// <summary>
         /// Set or get the last message.
@@ -342,25 +397,19 @@ namespace Irixi_Aligner_Common.Classes
         {
             private set
             {
-                _lastmsg = value;
-                MessageCollection.Add(_lastmsg);
+                lastMessage = value;
+                MessageCollection.Add(lastMessage);
             }
             get
             {
-                return _lastmsg;
+                return lastMessage;
             }
         }
 
         /// <summary>
         /// Get the collection of messages.
         /// </summary>
-        public MessageHelper MessageCollection
-        {
-            get
-            {
-                return _msg_helper;
-            }
-        }
+        public MessageHelper MessageCollection { get; } = new MessageHelper();
 
         #endregion
 
@@ -620,7 +669,7 @@ namespace Irixi_Aligner_Common.Classes
 
         #endregion
 
-        #region Public Methods (The functions are also APIs of the user's programm)
+        #region Public Methods
 
         /// <summary>
         /// Initialize all devices in the system
@@ -628,7 +677,7 @@ namespace Irixi_Aligner_Common.Classes
         public async void Init()
         {
             List<Task<bool>> _tasks = new List<Task<bool>>();
-            List<IEquipmentBase> _equipments = new List<IEquipmentBase>();
+            List<IEquipment> _equipments = new List<IEquipment>();
             
             SetSystemState(SystemState.BUSY);
 
@@ -697,7 +746,7 @@ namespace Irixi_Aligner_Common.Classes
 
             // initizlize the measurement instruments defined in the config file
             // the instruments initialized successfully will be added to the collection #ActiveInstrumentCollection
-            foreach (var instr in this.MeasurementInstrumentCollection)
+            foreach (var instr in listDefinedInstrument)
             {
                 _tasks.Add(Task.Factory.StartNew(instr.Init));
                 _equipments.Add(instr);
@@ -719,7 +768,7 @@ namespace Irixi_Aligner_Common.Classes
                     // add the instruments which are initialized successfully to the acitve collection
                     if (_equipments[ended_id] is InstrumentBase)
                     {
-                        MeasurementInstrumentCollection.Add((InstrumentBase)_equipments[ended_id]);
+                        listAvaliableInstrument.Add((InstrumentBase)_equipments[ended_id]);
                     }
                 }
                 else
@@ -736,7 +785,7 @@ namespace Irixi_Aligner_Common.Classes
             SetSystemState(SystemState.IDLE);
 
             this.LastMessage = new MessageItem(MessageType.Normal,
-                string.Format("System Initialization is finished, costs {0:F2}s", (DateTime.Now - initStarts).TotalSeconds));
+                string.Format("The initialization has finished, costs {0:F2}s", (DateTime.Now - initStartTime).TotalSeconds));
 
         }
 
@@ -788,9 +837,6 @@ namespace Irixi_Aligner_Common.Classes
         /// Move a set of logical axes with the specified order
         /// </summary>
         /// <param name="AxesGroup"></param>
-        /// <remarks>
-        /// An args is consisted of 3 elements: Move Order, Logical Axis, How to Move
-        /// </remarks>
         public async void MassMoveLogicalAxis(MassMoveArgs Args)
         {
             /*
@@ -811,7 +857,7 @@ namespace Irixi_Aligner_Common.Classes
                 LogicalMotionComponent lmc;
                 try
                 {
-                    lmc = this.LogicalMotionComponentCollection.FindItemByHashString(Args.LogicalMotionComponent);
+                    lmc = listLogicalMotionComponent.FindItemByHashString(Args.LogicalMotionComponent);
                 }
                 catch(Exception ex)
                 { 
@@ -950,7 +996,7 @@ namespace Irixi_Aligner_Common.Classes
             {
                 int _present_order = 0;
                 int _homed_cnt = 0;
-                int _total_axis = this.LogicalAxisCollection.Count;
+                int _total_axis = listLogicalAxis.Count;
                 List<Task<bool>> _tasks = new List<Task<bool>>();
                 List<LogicalAxis> _axis_homing = new List<LogicalAxis>();
 
@@ -967,7 +1013,7 @@ namespace Irixi_Aligner_Common.Classes
                     _axis_homing.Clear();
                     _tasks.Clear();
                     // find the axes which are to be homed in current stage
-                    foreach (var axis in this.LogicalAxisCollection)
+                    foreach (var axis in listLogicalAxis)
                     {
                         if (axis.Config.HomeOrder == _present_order)
                         {
@@ -1039,6 +1085,37 @@ namespace Irixi_Aligner_Common.Classes
                 Axis.ToggleMoveMode();
                 SetSystemState(SystemState.IDLE);
             }
+        }
+
+        /// <summary>
+        /// Find the instrument by its hash string 
+        /// </summary>
+        /// <param name="hashstring"></param>
+        /// <returns></returns>
+        public IInstrument FindInstrumentByHashString(string hashstring)
+        {
+            return listAvaliableInstrument.FindItemByHashString(hashstring);
+        }
+
+        /// <summary>
+        /// Find the logical motion component by its hash string
+        /// </summary>
+        /// <param name="hashstring"></param>
+        /// <returns></returns>
+        public LogicalMotionComponent FindLogicalMotionComponentByHashString(string hashstring)
+        {
+            return listLogicalMotionComponent.FindItemByHashString(hashstring);
+        }
+
+        /// <summary>
+        /// Find the logical axis by its hash string
+        /// </summary>
+        /// <param name="hashstring"></param>
+        /// <returns></returns>
+        public LogicalAxis FindLogicalAxisByHashString(string hashstring)
+
+        {
+            return listLogicalAxis.FindItemByHashString(hashstring);
         }
 
         public void DoAlignmentXD(AlignmentXDArgs Args)
@@ -1240,7 +1317,7 @@ namespace Irixi_Aligner_Common.Classes
             }
 
             // dispose keithley2400s
-            foreach (var k2400 in this.MeasurementInstrumentCollection)
+            foreach (var k2400 in listAvaliableInstrument)
             {
                 k2400.Dispose();
             }

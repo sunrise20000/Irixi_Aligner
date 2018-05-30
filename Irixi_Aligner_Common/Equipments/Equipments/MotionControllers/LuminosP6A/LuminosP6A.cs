@@ -52,7 +52,7 @@ namespace Irixi_Aligner_Common.MotionControllers.Luminos
             // if the command relative to position is received, flush the AbsPosition of axis 
             int device = e.DeviceMessage.DeviceNumber;
 
-            if (this[device.ToString()] is LuminosAxis axis)
+            if (AxisCollection[device.ToString()] is LuminosAxis axis)
             {
                 switch (e.DeviceMessage.Command)
                 {
@@ -99,7 +99,7 @@ namespace Irixi_Aligner_Common.MotionControllers.Luminos
                         {
                             string axisID = conversation.Device.DeviceNumber.ToString();
                             
-                            if (this[conversation.Device.DeviceNumber.ToString()] is LuminosAxis _axis)
+                            if (AxisCollection[conversation.Device.DeviceNumber.ToString()] is LuminosAxis _axis)
                             {
                                 _axis.RegisterZaberConversation(conversation);
 

@@ -1,4 +1,5 @@
 ﻿using GalaSoft.MvvmLight;
+using Irixi_Aligner_Common.Classes.BaseClass;
 using Irixi_Aligner_Common.Configuration;
 using Irixi_Aligner_Common.Configuration.Equipments;
 using Irixi_Aligner_Common.Equipments.Base;
@@ -209,9 +210,9 @@ namespace Irixi_Aligner_Common.Equipments.Instruments
             }
         }
 
-#endregion
+        #endregion
 
-#region Appropriative Methods of Newport 2832C
+        #region Appropriative Methods of Newport 2832C
 
         public void SetDisplayChannel(EnumChannel CH)
         {

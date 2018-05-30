@@ -100,9 +100,9 @@ namespace Irixi_Aligner_Common.MotionControllers.Irixi
                 LogHelper.WriteLine("{0}, firmware version {1}", this, _controller.FirmwareInfo);
 
                 // pass the configurations to the instance of irixi motion controller class
-                for (int i = 0; i < this.Count; i++)
+                for (int i = 0; i < AxisCollection.Count; i++)
                 {
-                    var axis = this[i.ToString()] as IrixiAxis;
+                    var axis = AxisCollection[i.ToString()] as IrixiAxis;
                     var sdkAxis = _controller.AxisCollection[i];
 
                     sdkAxis.PosAfterHome = 0;

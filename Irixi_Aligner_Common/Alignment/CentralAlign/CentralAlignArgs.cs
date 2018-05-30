@@ -13,8 +13,8 @@ namespace Irixi_Aligner_Common.Alignment.CentralAlign
     public class CentralAlignArgs : AlignmentArgsBase
     {
         #region Variables
-        const string PROP_GRP_H_AXIS = "Horizontal Axis";
-        const string PROP_GRP_V_AXIS = "Vertical Axis";
+        const string PROP_GRP_H_AXIS = "Horizontal Settings";
+        const string PROP_GRP_V_AXIS = "Vertical Settings";
 
         IInstrument instrument, instrument2;
 
@@ -51,6 +51,8 @@ namespace Irixi_Aligner_Common.Alignment.CentralAlign
             Properties.Add(new Property("ScanIntervalVertical"));
             Properties.Add(new Property("Axis2Restriction"));
 
+
+            PresetProfileManager = new AlignmentArgsPresetProfileManager<CentralAlignArgs, CentralAlignArgsProfile>(this);
             
         }
 
@@ -58,6 +60,21 @@ namespace Irixi_Aligner_Common.Alignment.CentralAlign
 
 
         #region Properties
+
+        public override string SubPath
+        {
+            get
+            {
+                return "CentralAlign";
+            }
+        }
+
+        [Browsable(false)]
+        public AlignmentArgsPresetProfileManager<CentralAlignArgs, CentralAlignArgsProfile> PresetProfileManager
+        {
+            get;
+        }
+
         [Browsable(false)]
         public ScanCurve ScanCurve
         {
@@ -73,10 +90,9 @@ namespace Irixi_Aligner_Common.Alignment.CentralAlign
         }
 
         [Display(
-            Order = 10,
-            Name = "H Axis",
+            Name = "Axis",
             GroupName = PROP_GRP_H_AXIS,
-            Description = "The scan process starts along the horizontal axis first.")]
+            Description = "The axis of horizontal direction.")]
         public LogicalAxis Axis
         {
             get => axis;
@@ -87,16 +103,10 @@ namespace Irixi_Aligner_Common.Alignment.CentralAlign
             }
         }
 
-        [Browsable(false)]
-        public string AxisHashString
-        {
-            private get; set;
-        }
-
         [Display(
-            Name = "H Interval",
+            Name = "Interval",
             GroupName = PROP_GRP_H_AXIS,
-            Description = "The scan interval for both H-Axis.")]
+            Description = "The scan interval for horizontal direction.")]
         public double ScanIntervalHorizontal
         {
             get => hScanInterval;
@@ -108,9 +118,9 @@ namespace Irixi_Aligner_Common.Alignment.CentralAlign
         }
 
         [Display(
-           Name = "H Restri.",
+           Name = "Range",
            GroupName = PROP_GRP_H_AXIS,
-           Description = "The scan scope restriction of the horizontal axis.")]
+           Description = "The scan range of the horizonal direction.")]
         public double AxisRestriction
         {
             get => axisRestriction;
@@ -122,9 +132,9 @@ namespace Irixi_Aligner_Common.Alignment.CentralAlign
         }
 
         [Display(
-            Name = "V Axis",
+            Name = "Axis",
             GroupName = PROP_GRP_V_AXIS,
-            Description = "The V-Axis moves to positive direction after the H-Axis scanning.")]
+            Description = "The axis of vertical direction.")]
         public LogicalAxis Axis2
         {
             get => axis2;
@@ -135,16 +145,11 @@ namespace Irixi_Aligner_Common.Alignment.CentralAlign
             }
         }
 
-        [Browsable(false)]
-        public string Axis2HashString
-        {
-            private get; set;
-        }
 
         [Display(
-            Name = "V Interval",
+            Name = "Interval",
             GroupName = PROP_GRP_V_AXIS,
-            Description = "The scan interval for both V-Axis.")]
+            Description = "The scan interval of vertical direction.")]
         public double ScanIntervalVertical
         {
             get => vScanInterval;
@@ -156,9 +161,9 @@ namespace Irixi_Aligner_Common.Alignment.CentralAlign
         }
 
         [Display(
-            Name = "V Restri.",
+            Name = "Range",
             GroupName = PROP_GRP_V_AXIS,
-            Description = "The scan scope restriction of the vertical axis.")]
+            Description = "The scan range of vertical direction.")]
         public double Axis2Restriction
         {
             get => axis2Restriction;
@@ -169,13 +174,7 @@ namespace Irixi_Aligner_Common.Alignment.CentralAlign
             }
         }
         
-
-        [Display(
-            Order = 1,
-            Name = "Instrument 1",
-            GroupName = PROP_GRP_COMMON,
-            Description = "The valid instrument like powermeter, keithley 2400, etc.")]
-        new public IInstrument Instrument
+        public override IInstrument Instrument
         {
             get => instrument;
             set
@@ -188,10 +187,9 @@ namespace Irixi_Aligner_Common.Alignment.CentralAlign
         }
 
         [Display(
-            Order = 2,
             Name = "Instrument 2",
             GroupName = PROP_GRP_COMMON,
-            Description = "The valid instrument like powermeter, keithley 2400, etc.")]
+            Description = "The instrument for feedback of the second channel")]
         public IInstrument Instrument2
         {
             get => instrument2;
@@ -202,13 +200,6 @@ namespace Irixi_Aligner_Common.Alignment.CentralAlign
 
                 ScanCurve2.DisplayName = ((InstrumentBase)instrument2).Config.Caption;
             }
-        }
-
-
-        [Browsable(false)]
-        public string Instrument2HashString
-        { 
-             private get; set;
         }
 
         #endregion
@@ -223,28 +214,28 @@ namespace Irixi_Aligner_Common.Alignment.CentralAlign
                 throw new ArgumentException("move speed must be between 1 ~ 100");
 
             if (Instrument == null)
-                throw new ArgumentException(string.Format("you must specify the {0}",
+                throw new ArgumentException(string.Format("the {0} is empty",
                     ((DisplayAttribute)TypeDescriptor.GetProperties(this)["Instrument"].Attributes[typeof(DisplayAttribute)]).Name) ?? "instrument");
 
             if (Instrument2 == null)
-                throw new ArgumentException(string.Format("you must specify the {0}",
+                throw new ArgumentException(string.Format("the {0} is empty.",
                     ((DisplayAttribute)TypeDescriptor.GetProperties(this)["Instrument2"].Attributes[typeof(DisplayAttribute)]).Name) ?? "instrument2");
 
             if (Instrument == Instrument2)
-                throw new ArgumentException("the two instruments must be different.");
+                throw new ArgumentException("the two instruments are pointing to the same instrument.");
 
 
             if (Axis == null)
-                throw new ArgumentException("You must specify the horizontal axis.");
+                throw new ArgumentException("the horizontal axis is empty.");
 
             if (Axis2 == null)
-                throw new ArgumentException("You must specify the vertical axis.");
+                throw new ArgumentException("the vertical axis is empty.");
 
             if (Axis == Axis2)
-                throw new ArgumentException("The horizontal axis and the vertical axis must be different.");
+                throw new ArgumentException("the two axes are pointing to the same axis.");
 
             if (Axis.PhysicalAxisInst.UnitHelper.Unit != Axis2.PhysicalAxisInst.UnitHelper.Unit)
-                throw new ArgumentException("the two axes have different unit");
+                throw new ArgumentException("the unit of two axis is different.");
         }
 
         public override void PauseInstruments()

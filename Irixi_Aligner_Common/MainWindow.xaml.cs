@@ -18,6 +18,8 @@ using Irixi_Aligner_Common.Classes.Converters;
 using Irixi_Aligner_Common.Configuration.Common;
 using Irixi_Aligner_Common.Configuration.Layout;
 using Irixi_Aligner_Common.Equipments.Instruments;
+using Irixi_Aligner_Common.Interfaces;
+using Irixi_Aligner_Common.MotionControllers.Base;
 using Irixi_Aligner_Common.UserControls;
 using Irixi_Aligner_Common.ViewModel;
 
@@ -53,14 +55,17 @@ namespace Irixi_Aligner_Common
 
             splashscreen.ShowMessage("Initializing main window ...");
             InitializeComponent();
-            
+
+            DevExpress.Xpf.Core.DXGridDataController.DisableThreadingProblemsDetection = true;
+
+
             Messenger.Default.Register<NotificationMessage<string>>(this, PopNotificationMessage);
 
             // create DocumentPanel per the logical motion components defined in the config file
             var service = SimpleIoc.Default.GetInstance<SystemService>();
 
             #region Create logical motioin components panels
-            foreach (var aligner in service.LogicalMotionComponentCollection)
+            foreach (LogicalMotionComponent aligner in service.LogicalMotionComponentCollection)
             {
                 splashscreen.ShowMessage(string.Format("Initializing {0} panel ...", aligner));
 
@@ -113,34 +118,14 @@ namespace Irixi_Aligner_Common
                 chk.SetBinding(BarCheckItem.IsCheckedProperty, b);
 
                 rpgView_MotionComponent.Items.Add(chk);
-
-                //// add buttons to show the preset position window 
-                //BarButtonItem btn = new BarButtonItem()
-                //{
-                //    Content = aligner.Caption,
-                //    LargeGlyph = image,
-                //    DataContext = aligner
-                //};
-
-                //// raise the click event
-                //btn.ItemClick += (s, e) =>
-                //{
-                //    //var view = new ViewMassMove(service, aligner);
-                //    //var win = new MassMoveWindow
-                //    //{
-                //    //    DataContext = view
-                //    //};
-                //    //win.ShowDialog();
-                //};
-
-                //rpgPresetPositionButtonsHost.Items.Add(btn);
+               
             }
             #endregion
 
             #region Create control panels for instruments
 
             ViewModelBase viewInstr;
-            foreach (var instr in service.MeasurementInstrumentCollection)
+            foreach (IInstrument instr in service.CollectionViewDefinedInstruments)
             {
                 UserControl uctrl = null;
 

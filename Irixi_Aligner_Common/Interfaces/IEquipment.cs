@@ -1,19 +1,20 @@
 ﻿using System;
+using Irixi_Aligner_Common.Configuration.Base;
 
 namespace Irixi_Aligner_Common.Interfaces
 {
-    public interface IEquipmentBase : IDisposable
+    public interface IEquipment : IDisposable, IHashable
     {
-        /// <summary>
-        /// Get the hash string based on the values of properties
-        /// </summary>
-        string HashString { get; }
-
         /// <summary>
         /// Get the device class which makes this controller exclusively in the system.
         /// the controller could be located by the device class.
         /// </summary>
         Guid DeviceClass { get; }
+
+        /// <summary>
+        /// Get the configuration which is saved in the config file.
+        /// </summary>
+        ConfigurationBase Config { get; }
 
         /// <summary>
         /// Get the communication port of the controller.

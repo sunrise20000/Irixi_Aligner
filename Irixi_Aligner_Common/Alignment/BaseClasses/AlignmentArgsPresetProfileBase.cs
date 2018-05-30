@@ -2,8 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 using Irixi_Aligner_Common.Alignment.Interfaces;
 using Irixi_Aligner_Common.Classes.BaseClass;
 
@@ -18,7 +16,10 @@ namespace Irixi_Aligner_Common.Alignment.BaseClasses
 
         public virtual void ToArgsInstance(AlignmentArgsBase arg) => throw new NotImplementedException();
 
-        public virtual bool Validate() => throw new NotImplementedException();
+        public virtual bool Validate()
+        {
+            return this.HashString == this.GetHashString();
+        }
 
         /// <summary>
         /// Calculate hash string by all the properties except the ones marked with HashIgnore

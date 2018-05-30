@@ -55,11 +55,20 @@ namespace Irixi_Aligner_Common.Alignment.Rotating
             AxisXTitle = "ΔPosition";
             AxisYTitle = "Indensity";
 
+            //PresetProfileManager = new AlignmentArgsPresetProfileManager<RotatingScanArgs, RotatingScanArgsProfile>(this);
+
         }
 
         #endregion
 
         #region Properties
+
+        //[Browsable(false)]
+        //public AlignmentArgsPresetProfileManager<RotatingScanArgs, RotatingScanArgsProfile> PresetProfileManager
+        //{
+        //    get;
+        //}
+
 
         [Display(
             Name = "Instrument 1",

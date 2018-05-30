@@ -228,6 +228,9 @@ namespace Irixi_Aligner_Common.MotionControllers.Base
             if (MotionComponent == null)
                 throw new InvalidDataException("the logical motion controller is empty.");
 
+            if (FileName == null || FileName == "")
+                throw new ArgumentException("the name of profile can not be empty.");
+
             if (FileName.IndexOfAny(Path.GetInvalidFileNameChars()) >= 0)
                 throw new InvalidDataException("the name of profile contains invalid chars.");
 

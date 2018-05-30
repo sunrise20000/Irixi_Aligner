@@ -70,12 +70,12 @@ namespace Irixi_Aligner_Common.Alignment.AlignmentXD
         }
 
 
-        [Display(
-            Name = "Motion Component",
-            GroupName = PROP_GRP_COMMON,
-            Description = "Which motion component belongs to of the axes to align.")]
-        [JsonIgnore]
-        new public LogicalMotionComponent MotionComponent
+        //[Display(
+        //    Name = "Aligner",
+        //    GroupName = PROP_GRP_COMMON,
+        //    Description = "Which motion component belongs to of the axes to align.")]
+        //[JsonIgnore]
+        public override LogicalMotionComponent MotionComponent
         {
             get => motionComponent;
             set

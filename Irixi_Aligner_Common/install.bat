@@ -1,3 +1,0 @@
-@echo off
-@echo Start to register Positionerlib.dll ...
-regsvr32.exe positionerlib.dll

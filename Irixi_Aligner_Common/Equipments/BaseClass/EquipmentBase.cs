@@ -7,7 +7,7 @@ using System.Runtime.CompilerServices;
 
 namespace Irixi_Aligner_Common.Equipments.Base
 {
-    public class EquipmentBase : IDisposable, IHashable, IEquipmentBase, INotifyPropertyChanged
+    public class EquipmentBase : IEquipment, INotifyPropertyChanged
     {
         #region Variables
 
@@ -92,10 +92,18 @@ namespace Irixi_Aligner_Common.Equipments.Base
             get;
         }
 
-        public string HashString
+        public virtual string HashString
         {
-            get => throw new NotImplementedException();
+            get
+            {
+                return HashGenerator.GetHashSHA256(this.DeviceClass.ToString());
+            }
             set => throw new NotImplementedException();
+        }
+
+        public override int GetHashCode()
+        {
+            return HashString.GetHashCode();
         }
 
         #endregion
@@ -110,11 +118,6 @@ namespace Irixi_Aligner_Common.Equipments.Base
         public override string ToString()
         {
             return string.Format("*{0}@{1}*", this.Description, this.Port);
-        }
-
-        public string GetHashString()
-        {
-            return HashGenerator.GetHashSHA256(DeviceClass.ToString());
         }
 
         #endregion
@@ -177,7 +180,7 @@ namespace Irixi_Aligner_Common.Equipments.Base
         // }
 
         // 添加此代码以正确实现可处置模式。
-        public void Dispose()
+        public virtual void Dispose()
         {
             // 请勿更改此代码。将清理代码放入以上 Dispose(bool disposing) 中。
             Dispose(true);

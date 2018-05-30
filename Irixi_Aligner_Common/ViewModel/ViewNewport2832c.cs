@@ -64,7 +64,7 @@ namespace Irixi_Aligner_Common.ViewModel
                     }
                     catch (Exception ex)
                     {
-                        Messenger.Default.Send(new NotificationMessage<string>(string.Format("unable to set active channel to A, {0}", ex.Message), "ERROR"));
+                        Messenger.Default.Send(new NotificationMessage<string>($"unable to active channel A, {ex.Message}", "ERROR"));
                     }
                 });
             }
@@ -82,7 +82,7 @@ namespace Irixi_Aligner_Common.ViewModel
                     }
                     catch (Exception ex)
                     {
-                        Messenger.Default.Send(new NotificationMessage<string>(string.Format("unable to set active channel to B, {0}", ex.Message), "ERROR"));
+                        Messenger.Default.Send(new NotificationMessage<string>($"unable to active channel B, {ex.Message}", "ERROR"));
                     }
                 });
             }
@@ -94,17 +94,14 @@ namespace Irixi_Aligner_Common.ViewModel
             {
                 return new RelayCommand<int>(lambda =>
                 {
-                    int snap = InstrInstance.MetaProperties[(int)Newport2832C.EnumChannel.A].Lambda;
-
+                    //int snap = InstrInstance.MetaProperties[(int)Newport2832C.EnumChannel.A].Lambda;
                     try
                     {
                         InstrInstance.SetLambda(Newport2832C.EnumChannel.A, lambda);
                     }
                     catch (Exception ex)
                     {
-                        Messenger.Default.Send(new NotificationMessage<string>(string.Format("Unable to set unit, {0}", ex.Message), "ERROR"));
-
-                        InstrInstance.SetLambda(Newport2832C.EnumChannel.A, snap);
+                        Messenger.Default.Send(new NotificationMessage<string>($"Unable to set lambda of channel A, {ex.Message}", "ERROR"));
                     }
                 });
             }
@@ -122,7 +119,7 @@ namespace Irixi_Aligner_Common.ViewModel
                     }
                     catch (Exception ex)
                     {
-                        Messenger.Default.Send(new NotificationMessage<string>(string.Format("Unable to set unit, {0}", ex.Message), "ERROR"));
+                        Messenger.Default.Send(new NotificationMessage<string>($"Unable to set lambda of channel B, {ex.Message}", "ERROR"));
                     }
                 });
             }
@@ -140,7 +137,7 @@ namespace Irixi_Aligner_Common.ViewModel
                     }
                     catch (Exception ex)
                     {
-                        Messenger.Default.Send(new NotificationMessage<string>(string.Format("Unable to set range, {0}", ex.Message), "ERROR"));
+                        Messenger.Default.Send(new NotificationMessage<string>($"Unable to set range of channel A, {ex.Message}", "ERROR"));
                     }
                 });
             }
@@ -158,7 +155,7 @@ namespace Irixi_Aligner_Common.ViewModel
                     }
                     catch (Exception ex)
                     {
-                        Messenger.Default.Send(new NotificationMessage<string>(string.Format("Unable to set range, {0}", ex.Message), "ERROR"));
+                        Messenger.Default.Send(new NotificationMessage<string>($"Unable to set range of channel B, {ex.Message}", "ERROR"));
                     }
                 });
             }
@@ -176,7 +173,7 @@ namespace Irixi_Aligner_Common.ViewModel
                     }
                     catch (Exception ex)
                     {
-                        Messenger.Default.Send(new NotificationMessage<string>(string.Format("Unable to set unit, {0}", ex.Message), "ERROR"));
+                        Messenger.Default.Send(new NotificationMessage<string>($"Unable to set unit of channel A, {ex.Message}", "ERROR"));
                     }
                 });
             }
@@ -194,7 +191,7 @@ namespace Irixi_Aligner_Common.ViewModel
                     }
                     catch (Exception ex)
                     {
-                        Messenger.Default.Send(new NotificationMessage<string>(string.Format("Unable to set unit, {0}", ex.Message), "ERROR"));
+                        Messenger.Default.Send(new NotificationMessage<string>($"Unable to set unit of channel B, {ex.Message}", "ERROR"));
                     }
                 });
             }

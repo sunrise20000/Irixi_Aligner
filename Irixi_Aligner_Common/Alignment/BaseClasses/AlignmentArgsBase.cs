@@ -45,7 +45,13 @@ namespace Irixi_Aligner_Common.Alignment.BaseClasses
         /// Get the sub path of the preset profile where it saved
         /// </summary>
         [Browsable(false)]
-        public virtual string SubPath { get => throw new NotImplementedException(); }
+        public virtual string SubPath
+        {
+            get
+            {
+                return "";
+            }
+        }
 
         /// <summary>
         /// Get what properties are allowed to edit
@@ -142,11 +148,10 @@ namespace Irixi_Aligner_Common.Alignment.BaseClasses
         public ObservableCollectionThreadSafe<string> Log { get; }
 
         [Display(
-            Order = 100,
-            Name = "Motion Component",
+            Name = "Aligner",
             GroupName = PROP_GRP_COMMON,
-            Description = "Which motion component belongs to of the axes to align.")]
-        public LogicalMotionComponent MotionComponent
+            Description = "The aligner used to align.")]
+        public virtual LogicalMotionComponent MotionComponent
         {
             get => motionComponent;
             set
@@ -157,12 +162,10 @@ namespace Irixi_Aligner_Common.Alignment.BaseClasses
         }
 
         [Display(
-            Order = 200,
             Name = "Instrument",
             GroupName = PROP_GRP_COMMON,
-            Description = "The valid instrument like powermeter, keithley 2400, etc.")]
-        [JsonIgnore]
-        public IInstrument Instrument
+            Description = "The instrument used to align.")]
+        public virtual IInstrument Instrument
         {
             get => instrument;
             set
@@ -173,10 +176,9 @@ namespace Irixi_Aligner_Common.Alignment.BaseClasses
         }
 
         [Display(
-            Order = 300,
             Name = "Move Speed(%)",
             GroupName = PROP_GRP_COMMON,
-            Description = "The move speed while aligning which is in %, the range is 1 - 100.")]
+            Description = "The move speed in percent.")]
         public int MoveSpeed
         {
             get => moveSpeed;

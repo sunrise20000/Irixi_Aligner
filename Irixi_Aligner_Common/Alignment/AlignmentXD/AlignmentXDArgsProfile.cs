@@ -45,9 +45,8 @@ namespace Irixi_Aligner_Common.Alignment.AlignmentXD
         public override void ToArgsInstance(AlignmentArgsBase arg)
         {
             var targ = arg as AlignmentXDArgs;
-            targ.Instrument = targ.Service.MeasurementInstrumentCollection.FindItemByHashString(this.Instrument);
-            ;
-            targ.MotionComponent = targ.Service.LogicalMotionComponentCollection.FindItemByHashString(this.MotionComponent);
+            targ.Instrument = targ.Service.FindInstrumentByHashString(this.Instrument);
+            targ.MotionComponent = targ.Service.FindLogicalMotionComponentByHashString(this.MotionComponent);
             targ.Target = this.Target;
             targ.MaxCycles = this.MaxCycles;
 
@@ -59,10 +58,6 @@ namespace Irixi_Aligner_Common.Alignment.AlignmentXD
             }
         }
 
-        /// <summary>
-        /// Calculate hash string by all the properties except the ones marked with HashIgnore
-        /// </summary>
-        /// <returns></returns>
         public override string GetHashString()
         {
             var str = base.GetHashString();
@@ -75,11 +70,6 @@ namespace Irixi_Aligner_Common.Alignment.AlignmentXD
             }).ToArray());
             return HashGenerator.GetHashSHA256(str);
         }
-
-        public override bool Validate()
-        {
-            return this.GetHashString() == this.HashString;
-        }
-
+   
     }
 }

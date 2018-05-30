@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 
 namespace Irixi_Aligner_Common.Interfaces
 {
-    public interface IInstrument : IEquipmentBase
+    public interface IInstrument : IEquipment
     {
         #region Properties
 

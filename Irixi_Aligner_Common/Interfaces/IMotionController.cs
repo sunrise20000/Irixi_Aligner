@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace Irixi_Aligner_Common.Interfaces
 {
-    public interface IMotionController : IEquipmentBase, IServiceSystem
+    public interface IMotionController : IEquipment, IServiceSystem
     {
         /// <summary>
         /// Raise the event after the Home/Move/etc. action begins
@@ -16,6 +16,8 @@ namespace Irixi_Aligner_Common.Interfaces
         event EventHandler OnMoveEnd;
 
         #region Properties
+
+        Dictionary<string, IAxis> AxisCollection { get; }
 
         /// <summary>
         /// Get the model of this controller.

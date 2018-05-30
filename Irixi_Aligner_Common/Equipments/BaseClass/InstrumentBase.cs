@@ -115,10 +115,10 @@ namespace Irixi_Aligner_Common.Equipments.Base
                 return false;
             }
 #else
-            Application.Current.Dispatcher.Invoke(() =>
-            {
+            //Application.Current.Dispatcher.Invoke(() =>
+            //{
                 this.IsInitialized = true;
-            });
+            //});
             
             return true;
 #endif

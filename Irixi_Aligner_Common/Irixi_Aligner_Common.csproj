@@ -181,6 +181,7 @@
     <Compile Include="Alignment\BaseClasses\ScanCurveGroup.cs" />
     <Compile Include="Alignment\CentralAlign\CentralAlign.cs" />
     <Compile Include="Alignment\CentralAlign\CentralAlignArgs.cs" />
+    <Compile Include="Alignment\CentralAlign\CentralAlignArgsProfile.cs" />
     <Compile Include="Alignment\Interfaces\IAlignmentArgsProfile.cs" />
     <Compile Include="Alignment\Rotating\RotatingScanArgs.cs" />
     <Compile Include="Alignment\Rotating\RotatingScan.cs" />
@@ -250,8 +251,8 @@
     <Compile Include="Equipments\BaseClass\EquipmentBase.cs" />
     <Compile Include="Equipments\Instruments\Keithley2400.cs" />
     <Compile Include="Equipments\Instruments\Newport2832C.cs" />
-    <Compile Include="Interfaces\IEquipmentBase.cs" />
-    <Compile Include="Interfaces\IMeasurementInstrument.cs" />
+    <Compile Include="Interfaces\IEquipment.cs" />
+    <Compile Include="Interfaces\IInstrument.cs" />
     <Compile Include="Interfaces\IServiceSystem.cs" />
     <Compile Include="Equipments\Equipments\MotionControllers\Base\AxisBase.cs" />
     <Compile Include="Equipments\Equipments\MotionControllers\Base\LogicalMotionComponent.cs" />
@@ -344,7 +345,6 @@
     <None Include="Configuration\profile_motorized_stages.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="install.bat" />
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>

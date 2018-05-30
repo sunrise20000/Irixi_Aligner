@@ -127,6 +127,9 @@ namespace Irixi_Aligner_Common.Alignment.BaseClasses
 
         private void SavePresetProfile(string filename)
         {
+            if (filename == null || filename == "")
+                throw new ArgumentException("the name of profile can not be empty.");
+
             // check the validity of the file name
             if (filename.IndexOfAny(Path.GetInvalidFileNameChars()) >= 0)
                 throw new InvalidDataException("the name of profile contains invalid chars.");
