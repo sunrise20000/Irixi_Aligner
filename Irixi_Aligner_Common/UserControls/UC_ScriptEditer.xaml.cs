@@ -239,9 +239,7 @@ namespace Irixi_Aligner_Common.UserControls
                     sbEnumPromt2.Append(" ");
                 }
                 sbEnumPromt2Dic.Add(kp.Key, sbEnumPromt2);
-            }              
-            
-            //string sss = sbWord1.ToString();
+            }                        
             ScintillaNet.SetKeywords(1, sbWord1.ToString());
         }
 
@@ -350,7 +348,7 @@ namespace Irixi_Aligner_Common.UserControls
         }
         private void SetScintillaToCurrentOptions(ScintillaWPF ScintillaNet)
         {
-            ScintillaNet.KeyDown += ScintillaNet_KeyDown;
+            //ScintillaNet.KeyDown += ScintillaNet_KeyDown;
 
             // INITIAL VIEW CONFIG
             ScintillaNet.WrapMode = WrapMode.None;
@@ -409,12 +407,17 @@ namespace Irixi_Aligner_Common.UserControls
         {
             return System.Drawing.Color.FromArgb(255, (byte)(rgb >> 16), (byte)(rgb >> 8), (byte)rgb);
         }
+        /// <summary>
+        /// 不使用热键
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void ScintillaNet_KeyDown(object sender, System.Windows.Forms.KeyEventArgs e)
         {
             if (e.Control && e.KeyCode == System.Windows.Forms.Keys.F)
             {
-                MyFindReplace.ShowFind();
-                e.SuppressKeyPress = true;
+                //MyFindReplace.ShowFind();
+                // e.SuppressKeyPress = true;
             }
             else if (e.Shift && e.KeyCode == System.Windows.Forms.Keys.F3)
             {
