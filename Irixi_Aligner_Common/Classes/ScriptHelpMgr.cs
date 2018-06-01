@@ -26,7 +26,7 @@ namespace Irixi_Aligner_Common.Classes
 {
     public class ScriptHelpMgr : SingleTon<ScriptHelpMgr>
     {
-      
+
 
         public bool bCompile = false;
         public bool bCompileError = true;
@@ -50,24 +50,24 @@ namespace Irixi_Aligner_Common.Classes
             {
                 bCompileError = true;
                 lastUnhandledError = string.Format("Error argument used in function \"{0}]\"", funcName.Replace("LuaF_", ""));
-                if(!bCompile)
+                if (!bCompile)
                     Messenger.Default.Send<string>("", "ScriptStop");
             }
-            return bRet && !bCompile;       
+            return bRet && !bCompile;
         }
         private SystemService Systemservice = SimpleIoc.Default.GetInstance<SystemService>();    //封装Systemservice中的函数
         public Dictionary<string, InstrumentBase> InstrumentDic = new Dictionary<string, InstrumentBase>();
-        public Object GetDynamicClassByDic(Dictionary<string, string> Dic=null)
+        public Object GetDynamicClassByDic(Dictionary<string, string> Dic = null)
         {
             dynamic d = new System.Dynamic.ExpandoObject();
             foreach (var dic in Dic)
             {
-                KeyValuePair<string, object> kp = new KeyValuePair<string,object>(dic.Key, dic.Value);
+                var kp = new KeyValuePair<string, object>(dic.Key, dic.Value);
                 (d as ICollection<KeyValuePair<string, object>>).Add(kp);
             }
             return d;
-        }  
-        public KeyValuePair<string, List<KeyValuePair<string, int>>> GetEnumInfo(Type type,string strInstrumentCate)
+        }
+        public KeyValuePair<string, List<KeyValuePair<string, int>>> GetEnumInfo(Type type, string strInstrumentCate)
         {
             Dictionary<string, List<KeyValuePair<string, int>>> dic = new Dictionary<string, List<KeyValuePair<string, int>>>();
             FieldInfo[] fis = type.GetFields();
@@ -77,16 +77,16 @@ namespace Irixi_Aligner_Common.Classes
             {
                 if (i++ > 0)
                     kpList.Add(new KeyValuePair<string, int>(fi.Name, Convert.ToInt32(fi.GetValue(null))));
-     
+
             }
-           return new KeyValuePair<string, List<KeyValuePair<string, int>>>(strInstrumentCate+"_"+type.Name, kpList);
-        }    
+            return new KeyValuePair<string, List<KeyValuePair<string, int>>>(strInstrumentCate + "_" + type.Name, kpList);
+        }
         public Dictionary<string, List<KeyValuePair<string, List<KeyValuePair<string, int>>>>> GetAllEnuminfo()
         {
             var dic_2 = new Dictionary<string, List<KeyValuePair<string, List<KeyValuePair<string, int>>>>>();
             var enumList = new List<KeyValuePair<string, List<KeyValuePair<string, int>>>>();
             //K2400
-            enumList.Add(GetEnumInfo(typeof(Keithley2400.EnumInOutTerminal),"K2400"));
+            enumList.Add(GetEnumInfo(typeof(Keithley2400.EnumInOutTerminal), "K2400"));
             enumList.Add(GetEnumInfo(typeof(Keithley2400.EnumMeasFunc), "K2400"));
             enumList.Add(GetEnumInfo(typeof(Keithley2400.EnumSourceMode), "K2400"));
             enumList.Add(GetEnumInfo(typeof(Keithley2400.EnumSourceWorkMode), "K2400"));
@@ -106,13 +106,15 @@ namespace Irixi_Aligner_Common.Classes
             enumList.Add(GetEnumInfo(typeof(Newport2832C.EnumUnits), "NP2832C"));
             enumList.Add(GetEnumInfo(typeof(Newport2832C.EnumStatusFlag), "NP2832C"));
 
+
+
             dic_2.Add("ENUM", enumList);
             return dic_2;
         }
         public void InitAllInstrumentAndAxis()
         {
-            foreach (var it in Systemservice.MeasurementInstrumentCollection)        
-                InstrumentDic.Add(it.Config.Caption.Replace(" ", "_"),it);   
+            foreach (var it in Systemservice.MeasurementInstrumentCollection)
+                InstrumentDic.Add(it.Config.Caption.Replace(" ", "_"), it);
         }
 
         //Private
@@ -131,9 +133,12 @@ namespace Irixi_Aligner_Common.Classes
             }
 
         }
+
+       
         //Wrapper of enums for Lua
         //
-        public object LuaE_AXIS{ get{ return GetDynamicClassByDic(); }}         
+   
+        public string LuaE_AXIS { get { return "ABCDEFG"; } }
         public object LuaE_INST { get { return GetDynamicClassByDic(); }}
         public object LuaE_ENUM { get { return GetDynamicClassByDic(); } }
 
@@ -177,11 +182,13 @@ namespace Irixi_Aligner_Common.Classes
                 {
                     var logicalAxis = axises.ElementAt(0) as LogicalAxis;
                     if (logicalAxis != null)
+                    {
                         bResult = logicalAxis.PhysicalAxisInst.Move(MoveMode.ABS, nSpeed, fDistance);
+                    }
                 }
                 if (!bResult)
                 {
-                    StopScrip(string.Format("Error ocurred when axis moving with agrs Name:{0},nSpeed:{1},fDistance:{2}", strAxisName, fDistance, nSpeed));
+                    StopScrip(string.Format("Error ocurred when axis moving with agrs Name:{0},nSpeed:{1},fDistance:{2}", strAxisName, nSpeed, fDistance));
 
                 }
             }
@@ -204,7 +211,7 @@ namespace Irixi_Aligner_Common.Classes
                 }
                 if (!bResult)
                 {
-                    StopScrip(string.Format("Error ocurred when axis moving with agrs Name:{0},nSpeed:{1},fDistance:{2}", strAxisName, fDistance, nSpeed));
+                    StopScrip(string.Format("Error ocurred when axis moving with agrs Name:{0},nSpeed:{1},fDistance:{2}", strAxisName, nSpeed, fDistance));
                 }
             }
          
@@ -375,7 +382,6 @@ namespace Irixi_Aligner_Common.Classes
         {
             if (CheckArgs("LuaF_Trace", new List<object> { typeof(string), str }))
                 Application.Current.Dispatcher.Invoke(() => Systemservice.SetLastMessage(MessageType.Good, str));
-
         }
         public void LuaF_Error(string str)
         {

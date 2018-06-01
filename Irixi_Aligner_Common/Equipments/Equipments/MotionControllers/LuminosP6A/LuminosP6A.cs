@@ -213,8 +213,7 @@ namespace Irixi_Aligner_Common.MotionControllers.Luminos
                 {
                     try
                     {
-                        DeviceMessage zaber_msg = axis.ZaberConversation.Request(Command.MoveAbsolute, target_pos);
-
+                        DeviceMessage zaber_msg = axis.ZaberConversation.Request(Command.MoveAbsolute, target_pos);                      
                         if (zaber_msg.HasFault == false)
                         {
                             ret = true;

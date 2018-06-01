@@ -1,6 +1,7 @@
 ﻿using Irixi_Aligner_Common.Classes.BaseClass;
 using Irixi_Aligner_Common.Configuration.MotionController;
 using Irixi_Aligner_Common.Interfaces;
+using System;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Threading;
@@ -283,12 +284,12 @@ namespace Irixi_Aligner_Common.MotionControllers.Base
 
         public virtual bool Home()
         {
-            return this.Parent.Home(this);
+            return this.Parent.Home(this);  
         }
         
         public virtual bool Move(MoveMode Mode, int Speed, double Distance)
         {
-            return Parent.Move(this, Mode, Speed, this.UnitHelper.ConvertPositionToSteps(Distance));
+            return Parent.Move(this, Mode, Speed, this.UnitHelper.ConvertPositionToSteps(Distance));  
         }
 
         public virtual bool MoveWithTrigger(MoveMode Mode, int Speed, double Distance, double Interval, int Channel)

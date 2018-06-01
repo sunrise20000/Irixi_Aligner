@@ -15,6 +15,7 @@ namespace Irixi_Aligner_Common.Classes.Converters
         private BitmapFrame image = null;
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
+
             ScriptState state = (ScriptState)value;
             if (state== ScriptState.IDLE || state== ScriptState.PAUSE)
                 image=(BitmapFrame)Application.Current.TryFindResource("Scriptstart_32x32");

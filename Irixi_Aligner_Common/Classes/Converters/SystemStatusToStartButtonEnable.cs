@@ -13,7 +13,7 @@ namespace Irixi_Aligner_Common.Classes.Converters
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
             ScriptState state = (ScriptState)value;
-            return state== ScriptState.IDLE || state== ScriptState.PAUSE;
+            return (state== ScriptState.IDLE || state== ScriptState.PAUSE);
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)

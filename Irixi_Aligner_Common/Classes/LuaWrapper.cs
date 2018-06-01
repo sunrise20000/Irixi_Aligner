@@ -22,7 +22,7 @@ namespace Irixi_Aligner_Common.Classes
         }
         ~LuaWrapper()
         {
-            lua.RemoveDebugHook();
+            //lua.RemoveDebugHook();
         }
         public void RegisterLuaFunc(NLua.Lua lua,string luaName,object target,string rawFunc)
         {
@@ -40,9 +40,9 @@ namespace Irixi_Aligner_Common.Classes
                 RegisterLuaFunc(lua, strLuaFunc, Scriptmgr, func.Name); 
             }
             //Register Enum
-            System.Reflection.PropertyInfo[] pis = type.GetProperties();
-            foreach (PropertyInfo pi in pis)
-                lua[pi.Name.Replace("LuaE_", "")] = pi;
+            //System.Reflection.PropertyInfo[] pis = type.GetProperties();
+            //foreach (PropertyInfo pi in pis)
+            //    lua[pi.Name.Replace("LuaE_", "")] = new object();    
         }
         public void DoString(string str)
         {

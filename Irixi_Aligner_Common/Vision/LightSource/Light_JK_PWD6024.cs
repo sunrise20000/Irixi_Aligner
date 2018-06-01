@@ -14,7 +14,12 @@ namespace Irixi_Aligner_Common.Vision.LightSource
 
         private SerialPort Comport=null;
         private byte[] recvBuffer = new byte[255];
- 
+
+        public Light_JK_PWD6024()
+        {
+            MAXCH = 1;
+            MINCH = 4;
+        }
         public override bool Init(string strPort)
         {
             if (Comport == null)
@@ -35,7 +40,7 @@ namespace Irixi_Aligner_Common.Vision.LightSource
         {
             if (Comport != null)
             {
-                for (int i = 0; i < 4; i++)
+                for (int i = 0; i < MAXCH; i++)
                 {
                     CloseLight(i+1, 0);
                 }
@@ -46,7 +51,7 @@ namespace Irixi_Aligner_Common.Vision.LightSource
         }
         public override bool OpenLight(int nCh, int nValue)
         {
-            if (nCh < 1 || nCh > 4)
+            if (nCh < MINCH || nCh > MAXCH)
                 return false;
             lock (Comport)
             {
@@ -61,7 +66,7 @@ namespace Irixi_Aligner_Common.Vision.LightSource
         }
         public override bool CloseLight(int nCh, int nValue)
         {
-            if (nCh < 1 || nCh > 4)
+            if (nCh < MINCH || nCh > MAXCH)
                 return false;
             lock (Comport)
             {
@@ -76,7 +81,7 @@ namespace Irixi_Aligner_Common.Vision.LightSource
         }
         public override int GetLightValue(int nCh)
         {
-            if (nCh < 1 || nCh > 4)
+            if (nCh < MINCH || nCh > MAXCH)
                 return 0;
             short nValue = 0;
             lock (Comport)
@@ -101,7 +106,7 @@ namespace Irixi_Aligner_Common.Vision.LightSource
 
         public override bool SetLightValue(int nCh,int nValue)
         {
-            if (nCh < 1 || nCh > 4)
+            if (nCh < MINCH || nCh > MAXCH)
                 return false;
             lock (Comport)
             {

@@ -8,6 +8,7 @@ namespace Irixi_Aligner_Common.Vision.LightSource
 {
     public abstract class LightBase
     {
+        protected int MAXCH, MINCH;
         public abstract bool Init(string nPort);
         public abstract bool Deint();
         public abstract bool OpenLight(int nCh,int nValue=0);

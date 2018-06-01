@@ -127,8 +127,10 @@
                             RibbonStyle="Default" 
                             LargeGlyph="{StaticResource IconScript_64x64}" 
                             Glyph="{StaticResource IconScript_64x64}"
-                            IsChecked="{Binding Visibility, ElementName=ScriptControlPanel, Mode=TwoWay, Converter={StaticResource VisibilityToBoolean}}"
+                            ItemClick="BarCheckItem_ItemClick"
                             />
+                            <!--IsChecked="{Binding Visibility, ElementName=ScriptControlPanel, Mode=TwoWay, Converter={StaticResource VisibilityToBoolean}}"-->
+                            
                     </dxr:RibbonPageGroup>
                     <dxr:RibbonPageGroup Caption="Vision">
                         <dxb:BarCheckItem
@@ -245,7 +247,7 @@
                         </dxd:DocumentPanel>
                         
                         <!--The control panel of script-->
-                        <dxd:DocumentPanel x:Name="ScriptControlPanel"                        
+                        <!--<dxd:DocumentPanel x:Name="ScriptControlPanel"                        
                             MDISize="1000,600" 
                             ShowMaximizeButton="False" 
                             AllowFloat="False" 
@@ -259,8 +261,7 @@
                             <Grid>
                                 <UserControls:UC_ScriptEditer x:Name="ScriptEditer1"/>
                             </Grid>
-                        </dxd:DocumentPanel>
-
+                        </dxd:DocumentPanel>-->
 
                         <!--The control panel of vision-->
                         <dxd:DocumentPanel x:Name="VisionControlPanel" 

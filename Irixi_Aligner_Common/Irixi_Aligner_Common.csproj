@@ -273,8 +273,14 @@
     <Compile Include="UserControls\PresetPositionPanel.xaml.cs">
       <DependentUpon>PresetPositionPanel.xaml</DependentUpon>
     </Compile>
+    <Compile Include="UserControls\UC_MessageBox.xaml.cs">
+      <DependentUpon>UC_MessageBox.xaml</DependentUpon>
+    </Compile>
     <Compile Include="UserControls\UC_VisionCtrl.xaml.cs">
       <DependentUpon>UC_VisionCtrl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="UserControls\WindowScript.xaml.cs">
+      <DependentUpon>WindowScript.xaml</DependentUpon>
     </Compile>
     <Compile Include="Vision\LightSource\LightBase.cs" />
     <Compile Include="Vision\LightSource\Light_JK_PWD6024.cs" />
@@ -487,11 +493,19 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="UserControls\UC_MessageBox.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="UserControls\UC_ScriptEditer.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="UserControls\UC_VisionCtrl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="UserControls\WindowScript.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

@@ -29,6 +29,7 @@ using Irixi_Aligner_Common.Equipments.Base;
 using GalaSoft.MvvmLight.Ioc;
 using System.IO;
 using System.Windows.Forms;
+using System.Collections.ObjectModel;
 
 namespace Irixi_Aligner_Common.UserControls
 {
@@ -42,14 +43,14 @@ namespace Irixi_Aligner_Common.UserControls
         #region private for Sci
         private FindReplace MyFindReplace = new FindReplace();
         private FuncManager Funcmanager = null;
-        private ObservableCollectionEx<LogicalAxis> LogicAxisList = null;
-        private ObservableCollectionEx<InstrumentBase> InstrumentList = null;
+        private ObservableCollectionEx<LogicalAxis> LogicAxisCollec = null;
+        private ObservableCollectionEx<InstrumentBase> InstrumentCollec = null;
+        private List<KeyValuePair<string, List<KeyValuePair<string, int>>>> enumInfos = null;
         private StringBuilder sbAxisStructPromt = new StringBuilder();
         private StringBuilder sbInstrumentStructPromt = new StringBuilder();
         private StringBuilder sbEnumPromt1 = new StringBuilder();
         private Dictionary<string,StringBuilder> sbEnumPromt2Dic = new Dictionary<string, StringBuilder>();
         private bool bNeedSaved=true;
-        
 
         private StringBuilder sbWord1 = new StringBuilder();
         private Dictionary<string, string> strCateDic = new Dictionary<string, string>();
@@ -95,28 +96,28 @@ namespace Irixi_Aligner_Common.UserControls
 
         #region private for Luawrapper
         private LuaWrapper lua = new LuaWrapper();
-
         #endregion
         public UC_ScriptEditer()
         {
             InitializeComponent();
             SetScintillaToCurrentOptions(TextArea);
             StrFilePath = "";
+            //lua.lua.DebugHook -= Lua_DebugHook;
+            lua.lua.SetDebugHook(NLua.Event.EventMasks.LUA_MASKLINE, 5);
+            
             Messenger.Default.Register<string>(this,"ScriptStart",m => {
                 {
                     //Task task = new Task(new Action(StartScript));
                     //task.Start();
+
                     //May be a bug ,I don't know why now,must reset the debughook everytime.
-
-
+                    lua.lua.DebugHook -= Lua_DebugHook;
+                    lua.lua.DebugHook += Lua_DebugHook;
                     SystemService service = SimpleIoc.Default.GetInstance<SystemService>();
                     if (service.ScriptState == ScriptState.PAUSE)
                         service.Resume();
                     else
                     {
-                        lua.lua.DebugHook -= Lua_DebugHook;
-                        lua.lua.DebugHook += Lua_DebugHook;
-
                         if (ScriptThread == null || ScriptThread.ThreadState != ThreadState.Running)
                         {
                             ScriptThread = new Thread(new ThreadStart(StartScript));
@@ -145,7 +146,7 @@ namespace Irixi_Aligner_Common.UserControls
             {   
                 TextArea.MarkerDeleteAll(BOOKMARK_MARKER);
                 var line = TextArea.Lines[e.LuaDebug.currentline - 1];
-                Console.WriteLine(e.LuaDebug.currentline - 1);
+                Console.WriteLine(string.Format("currentline: {0}", e.LuaDebug.currentline));
                 line.MarkerAdd(BOOKMARK_MARKER);
                 
             });
@@ -175,9 +176,9 @@ namespace Irixi_Aligner_Common.UserControls
             }
  
             //Axis
-            LogicAxisList = (DataContext as ViewModelLocator).Service.LogicalAxisCollection;
-            InstrumentList = (DataContext as ViewModelLocator).Service.MeasurementInstrumentCollection;
-            foreach (var axis in LogicAxisList)
+            LogicAxisCollec = (DataContext as ViewModelLocator).Service.LogicalAxisCollection;
+            InstrumentCollec = (DataContext as ViewModelLocator).Service.MeasurementInstrumentCollection;
+            foreach (var axis in LogicAxisCollec)
             {
                 string strAxisPromt = axis.ToString().Replace(" ", "").Replace("*", "").Replace("@", "_").ToUpper();
                 sbWord1.Append(strAxisPromt);
@@ -193,7 +194,7 @@ namespace Irixi_Aligner_Common.UserControls
             sbWord1.Append(" ");
 
             //Instrument
-            foreach (var instrument in InstrumentList)
+            foreach (var instrument in InstrumentCollec)
             {
                 string strInstrumentPromt = instrument.Config.Caption.Replace(" ", "_").ToUpper();
                 sbWord1.Append(strInstrumentPromt);
@@ -558,7 +559,7 @@ namespace Irixi_Aligner_Common.UserControls
 
 
             //Enum
-            List<KeyValuePair<string, List<KeyValuePair<string, int>>>> enumInfos = (DataContext as ViewModelLocator).Service.EnumInfos["ENUM"];
+            enumInfos = (DataContext as ViewModelLocator).Service.EnumInfos["ENUM"];
             List<Node> N2 = new List<Node>();
             foreach (var kp in enumInfos) 
             {
@@ -631,7 +632,41 @@ namespace Irixi_Aligner_Common.UserControls
             {
                 ScriptHelpMgr.Instance.bCompile = true;
                 ScriptHelpMgr.Instance.bCompileError = false;
-                System.Windows.Application.Current.Dispatcher.Invoke(() => strFinalScript = TextArea.Text.Replace("Axis.", "").Replace("IO.", "").Replace("System.", "").Replace("Equipment.", "").Replace("ENUM.",""));
+                System.Windows.Application.Current.Dispatcher.Invoke(() => strFinalScript = TextArea.Text);
+
+                //Compile the script
+                strFinalScript = strFinalScript.Replace("Axis.", "").Replace("IO.", "").Replace("System.", "").Replace("Equipment.", "").Replace("ENUM.", "");
+                foreach (var it in LogicAxisCollec)
+                {
+                    StringBuilder sb = new StringBuilder();
+                    string strName = it.ToString().Replace(" ", "").Replace("*", "").Replace("@", "_").ToUpper();
+                    sb.Append("\"");
+                    sb.Append(strName);
+                    sb.Append("\"");
+                    strFinalScript = strFinalScript.Replace("AXIS."+strName, sb.ToString());
+                }
+                foreach (var it in InstrumentCollec)
+                {
+                    StringBuilder sb = new StringBuilder();
+                    string strName = it.Config.Caption.Replace(" ", "_").ToUpper();
+                    sb.Append("\"");
+                    sb.Append(strName);
+                    sb.Append("\"");
+                    strFinalScript = strFinalScript.Replace("INST."+strName, sb.ToString());
+                }
+                foreach (var it in enumInfos)
+                {                 
+                    foreach (var kv in it.Value)
+                    {
+                        StringBuilder sbK = new StringBuilder();
+                        string k = kv.Key;
+                        sbK.Append("\"");
+                        sbK.Append(k);
+                        sbK.Append("\"");
+                        strFinalScript = strFinalScript.Replace(it.Key+"."+k, sbK.ToString());
+                    }
+                }
+                //
                 lua.DoString(strFinalScript);
                 if (!ScriptHelpMgr.Instance.bCompileError)
                 {
@@ -666,8 +701,8 @@ namespace Irixi_Aligner_Common.UserControls
         private void btn_CloseScript_Click(object sender, RoutedEventArgs e)
         {
             if (bNeedSaved)
-            {
-                MessageBoxResult result = System.Windows.MessageBox.Show("The file is modified, do you want to save it before close the file?", "GPAS",MessageBoxButton.YesNo);
+            { 
+                MessageBoxResult result = UC_MessageBox.Instance.ShowBox("The file is modified, do you want to save it before close the file?");//System.Windows.MessageBox.Show("The file is modified, do you want to save it before close the file?", "GPAS",MessageBoxButton.YesNo);
                 if (result == MessageBoxResult.Yes)
                 {
                     if (OnClickSaveFile())
@@ -719,7 +754,7 @@ namespace Irixi_Aligner_Common.UserControls
                 {
                     byte[] buffer = Encoding.Default.GetBytes(TextArea.Text);
                     fsWrite.Write(buffer, 0, buffer.Length);
-                    System.Windows.MessageBox.Show(string.Format("Save file {0} success",StrFilePath));
+                    UC_MessageBox.Instance.ShowBox(string.Format("Save file {0} success", StrFilePath));
                     bNeedSaved = false;
                 }
             }
@@ -750,12 +785,12 @@ namespace Irixi_Aligner_Common.UserControls
             {
                 byte[] buffer = Encoding.Default.GetBytes(TextArea.Text);
                 fsWrite.Write(buffer, 0, buffer.Length);
-                System.Windows.MessageBox.Show(string.Format("Save file {0} success", StrFilePath));
+                UC_MessageBox.Instance.ShowBox(string.Format("Save file {0} success", StrFilePath));
                 bNeedSaved = false;
                 return true;
             }
         }
-        public string StrFilePath       //for Binding the panel title
+        public string StrFilePath       //for Binding the window title
         {
             set { SetValue(FilePathDependency, value); }
             get { return GetValue(FilePathDependency).ToString(); }
