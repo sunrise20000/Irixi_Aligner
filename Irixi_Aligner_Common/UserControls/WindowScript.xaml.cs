@@ -19,9 +19,24 @@ namespace Irixi_Aligner_Common.UserControls
     /// </summary>
     public partial class WindowScript : Window
     {
+        private bool bClose = false;
         public WindowScript()
         {
             InitializeComponent();
+        }
+        ~WindowScript()
+        {
+
+        }
+
+        private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            this.Hide();
+            e.Cancel = !bClose;
+        }
+        public void SetCloseFlag(bool bClose)
+        {
+            this.bClose = bClose;
         }
     }
 }

@@ -7,7 +7,8 @@
         mc:Ignorable="d"
          Height="450" Width="800"
         DataContext="{Binding Source={StaticResource Locator}}"
-        Title="{Binding StrFilePath,ElementName=ScriptEditer1}">
+        Title="{Binding StrFilePath,ElementName=ScriptEditer1}"
+        Closing="Window_Closing">
     <Grid>
         <local:UC_ScriptEditer x:Name="ScriptEditer1"/>
     </Grid>

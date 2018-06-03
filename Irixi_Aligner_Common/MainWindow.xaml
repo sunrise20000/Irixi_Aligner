@@ -122,12 +122,13 @@
                        
                     </dxr:RibbonPageGroup>
                     <dxr:RibbonPageGroup Caption="Script">
-                        <dxb:BarCheckItem           
+                        <dxb:BarButtonItem           
                             Content="Script"
+                            Name="btn_ScriptWindow"
                             RibbonStyle="Default" 
                             LargeGlyph="{StaticResource IconScript_64x64}" 
                             Glyph="{StaticResource IconScript_64x64}"
-                            ItemClick="BarCheckItem_ItemClick"
+                            ItemClick="btn_Script_ItemClick"
                             />
                             <!--IsChecked="{Binding Visibility, ElementName=ScriptControlPanel, Mode=TwoWay, Converter={StaticResource VisibilityToBoolean}}"-->
                             
