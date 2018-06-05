@@ -30,6 +30,8 @@ using GalaSoft.MvvmLight.Ioc;
 using System.IO;
 using System.Windows.Forms;
 using System.Collections.ObjectModel;
+using Irixi_Aligner_Common.Equipments.BaseClass;
+using System.ComponentModel;
 
 namespace Irixi_Aligner_Common.UserControls
 {
@@ -43,8 +45,8 @@ namespace Irixi_Aligner_Common.UserControls
         #region private for Sci
         private FindReplace MyFindReplace = new FindReplace();
         private FuncManager Funcmanager = null;
-        private ObservableCollectionEx<LogicalAxis> LogicAxisCollec = null;
-        private ObservableCollectionEx<InstrumentBase> InstrumentCollec = null;
+        private ICollectionView LogicAxisCollec = null;
+        private ICollectionView InstrumentCollec = null;
         private List<KeyValuePair<string, List<KeyValuePair<string, int>>>> enumInfos = null;
         private StringBuilder sbAxisStructPromt = new StringBuilder();
         private StringBuilder sbInstrumentStructPromt = new StringBuilder();
@@ -185,6 +187,7 @@ namespace Irixi_Aligner_Common.UserControls
             //Axis
             LogicAxisCollec = (DataContext as ViewModelLocator).Service.LogicalAxisCollection;
             InstrumentCollec = (DataContext as ViewModelLocator).Service.MeasurementInstrumentCollection;
+
             foreach (var axis in LogicAxisCollec)
             {
                 string strAxisPromt = axis.ToString().Replace(" ", "").Replace("*", "").Replace("@", "_").ToUpper();
@@ -203,7 +206,7 @@ namespace Irixi_Aligner_Common.UserControls
             //Instrument
             foreach (var instrument in InstrumentCollec)
             {
-                string strInstrumentPromt = instrument.Config.Caption.Replace(" ", "_").ToUpper();
+                string strInstrumentPromt = instrument.ToString().Replace(" ", "_").ToUpper();
                 sbWord1.Append(strInstrumentPromt);
                 sbWord1.Append(" ");
                 sbWord1.Append("INST.");
@@ -655,7 +658,7 @@ namespace Irixi_Aligner_Common.UserControls
                 foreach (var it in InstrumentCollec)
                 {
                     StringBuilder sb = new StringBuilder();
-                    string strName = it.Config.Caption.Replace(" ", "_").ToUpper();
+                    string strName = it.ToString().Replace(" ", "_").ToUpper();
                     sb.Append("\"");
                     sb.Append(strName);
                     sb.Append("\"");

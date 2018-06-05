@@ -82,7 +82,6 @@ namespace Irixi_Aligner_Common.Classes
 
             initStartTime = DateTime.Now;
 
-            initStarts = DateTime.Now;
             Messenger.Default.Register<string>(this, "ScriptCompileError", msg => System.Windows.Application.Current.Dispatcher.Invoke(() => LastMessage = new MessageItem(MessageType.Error, msg)));
             Messenger.Default.Register<string>(this, "ScriptRunTimeError", msg => System.Windows.Application.Current.Dispatcher.Invoke(() => LastMessage = new MessageItem(MessageType.Error, msg)));
             Messenger.Default.Register<string>(this, "ScriptCompileOk", msg => System.Windows.Application.Current.Dispatcher.Invoke(() => LastMessage = new MessageItem(MessageType.Good, msg)));
@@ -254,7 +253,7 @@ namespace Irixi_Aligner_Common.Classes
             Messenger.Default.Unregister<string>(this, "ScriptCompileOk");
             Messenger.Default.Unregister<string>(this, "ScriptFinish");
             foreach (var it in MeasurementInstrumentCollection) //Stop fetch
-                it.StopAutoFetching();
+                ;// it.StopAutoFetching();
         }
         #endregion
 
@@ -537,10 +536,11 @@ namespace Irixi_Aligner_Common.Classes
             //Instrument
             foreach (var instrument in MeasurementInstrumentCollection)
             {
-                var kp = new KeyValuePair<string, List<KeyValuePair<string, int>>>(instrument.Config.Caption.Replace(" ", "_").ToUpper(), null);
+                
+                var kp = new KeyValuePair<string, List<KeyValuePair<string, int>>>(instrument.ToString().Replace(" ", "_").ToUpper(), null);
                 instrumentList.Add(kp);
             }
-            dic.Add("INST", axisList);
+            dic.Add("INST", instrumentList);
             return dic;
         }
         /// <summary>
@@ -1479,7 +1479,7 @@ namespace Irixi_Aligner_Common.Classes
         {
             Stop();
             foreach (var instr in this.MeasurementInstrumentCollection)
-                instr.StopAutoFetching();
+                ;//instr.StopAutoFetching();
             
 
         }

@@ -142,7 +142,7 @@ namespace Irixi_Aligner_Common.Equipments.Base
 
                 // if error, throw it
 
-                task_fetch_loop.ContinueWith(t =>throw t.Exception,TaskContinuationOptions.OnlyOnFaulted);
+                taskAutoFetch.ContinueWith(t =>throw t.Exception,TaskContinuationOptions.OnlyOnFaulted);
             }
         }
 
@@ -167,7 +167,7 @@ namespace Irixi_Aligner_Common.Equipments.Base
             if (taskAutoFetch != null)
             {
    
-                if (task_fetch_loop.IsCompleted == false)
+                if (taskAutoFetch.IsCompleted == false)
                 {
                     PauseAutoFetching();
                 }

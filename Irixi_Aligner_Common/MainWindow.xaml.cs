@@ -203,13 +203,6 @@ namespace Irixi_Aligner_Common
                     LargeGlyph = image
                 };
                 windowDic.Add(instr.Config.Caption.Replace(" ", "_"), panel);
-                windowDic.Add(panelAlignmentXD.Name, panelAlignmentXD);
-                windowDic.Add(panelBlindSearch.Name, panelBlindSearch);
-                windowDic.Add(panelCentralAlign.Name, panelCentralAlign);
-                windowDic.Add(panelRotatingScan.Name, panelRotatingScan);
-                windowDic.Add(panelSnakeRouteScan.Name, panelSnakeRouteScan);
-
-
 
                 // bind the IsCheck property to the document panel's Closed property
                 Binding b = new Binding()
@@ -223,7 +216,11 @@ namespace Irixi_Aligner_Common
 
                 rpgView_Equipments.Items.Add(chk);
             }
-
+            windowDic.Add(panelAlignmentXD.Name, panelAlignmentXD);
+            windowDic.Add(panelBlindSearch.Name, panelBlindSearch);
+            windowDic.Add(panelCentralAlign.Name, panelCentralAlign);
+            windowDic.Add(panelRotatingScan.Name, panelRotatingScan);
+            windowDic.Add(panelSnakeRouteScan.Name, panelSnakeRouteScan);
             #endregion
 
             splashscreen.ShowMessage(string.Format("Restoring workspace ..."));

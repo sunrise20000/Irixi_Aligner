@@ -113,8 +113,8 @@ namespace Irixi_Aligner_Common.Classes
         }
         public void InitAllInstrumentAndAxis()
         {
-            foreach (var it in Systemservice.MeasurementInstrumentCollection)
-                InstrumentDic.Add(it.Config.Caption.Replace(" ", "_"), it);
+            foreach (InstrumentBase it in Systemservice.MeasurementInstrumentCollection)
+                InstrumentDic.Add(it.ToString().Replace(" ", "_"), it);
         }
 
         //Private
@@ -174,7 +174,7 @@ namespace Irixi_Aligner_Common.Classes
             bool bResult = false;
             if (CheckArgs("LuaF_MoveAbs", new List<object> { typeof(string), strAxisName, typeof(double), fDistance, typeof(int), nSpeed }))
             {
-                var axises = (from axis in Systemservice.LogicalAxisCollection where (axis.ToString().Replace(" ", "").Replace("*", "").Replace("@", "_").ToUpper()==strAxisName) select axis);
+                var axises = (from LogicalAxis axis in Systemservice.LogicalAxisCollection where (axis.ToString().Replace(" ", "").Replace("*", "").Replace("@", "_").ToUpper()==strAxisName) select axis);
                 if (axises.Count() > 0)
                 {
                     var logicalAxis = axises.ElementAt(0) as LogicalAxis;
@@ -196,7 +196,7 @@ namespace Irixi_Aligner_Common.Classes
             bool bResult = false;
             if (CheckArgs("LuaF_MoveAbs", new List<object> { typeof(string), strAxisName, typeof(double), fDistance, typeof(int), nSpeed }))
             {
-                var axises = (from axis in Systemservice.LogicalAxisCollection where axis.ToString().Replace(" ", "").Replace("*", "").Replace("@", "_").ToUpper()== strAxisName select axis);
+                var axises = (from LogicalAxis axis in Systemservice.LogicalAxisCollection where axis.ToString().Replace(" ", "").Replace("*", "").Replace("@", "_").ToUpper()== strAxisName select axis);
                 if (axises.Count()>0)
                 {
                     var logicalAxis = axises.ElementAt(0);
@@ -654,7 +654,7 @@ namespace Irixi_Aligner_Common.Classes
                         var enumInfo = GetEnumInfo(typeof(Newport2832C.EnumChannel), "NP2832C");
                         var values = from kp in enumInfo.Value where kp.Key == NP2832C_EnumChannel select kp.Value;
                         var enumValue = (Newport2832C.EnumChannel)values.ElementAt(0);
-                        int snap = NP2832C.MetaProperties[values.ElementAt(0)].Lambda;
+                        int snap = NP2832C.MetaProperty[values.ElementAt(0)].Lambda;
                         NP2832C.SetLambda(enumValue, nLambda);
                     }
                     else
