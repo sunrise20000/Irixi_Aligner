@@ -206,7 +206,7 @@ namespace Irixi_Aligner_Common.UserControls
             //Instrument
             foreach (var instrument in InstrumentCollec)
             {
-                string strInstrumentPromt = instrument.ToString().Replace(" ", "_").ToUpper();
+                string strInstrumentPromt = instrument.ToString().Replace(" ", "_").Replace("@","_").Replace("*","").ToUpper();
                 sbWord1.Append(strInstrumentPromt);
                 sbWord1.Append(" ");
                 sbWord1.Append("INST.");
@@ -658,7 +658,7 @@ namespace Irixi_Aligner_Common.UserControls
                 foreach (var it in InstrumentCollec)
                 {
                     StringBuilder sb = new StringBuilder();
-                    string strName = it.ToString().Replace(" ", "_").ToUpper();
+                    string strName = it.ToString().Replace(" ", "_").Replace("@","_").Replace("*","").ToUpper();
                     sb.Append("\"");
                     sb.Append(strName);
                     sb.Append("\"");

@@ -57,7 +57,6 @@ namespace Irixi_Aligner_Common
             splashscreen.ShowMessage("Initializing main window ...");
             InitializeComponent();
 
-            DevExpress.Xpf.Core.DXGridDataController.DisableThreadingProblemsDetection = true;
 
             Messenger.Default.Register<NotificationMessage<string>>(this, PopNotificationMessage);
 
@@ -202,7 +201,7 @@ namespace Irixi_Aligner_Common
                     Content = instr.Config.Caption,
                     LargeGlyph = image
                 };
-                windowDic.Add(instr.Config.Caption.Replace(" ", "_"), panel);
+                windowDic.Add(instr.ToString().Replace(" ", "_").Replace("@","_").Replace("*",""), panel);
 
                 // bind the IsCheck property to the document panel's Closed property
                 Binding b = new Binding()

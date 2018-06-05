@@ -212,6 +212,7 @@
     <Compile Include="Alignment\SnakeRouteScan\SnakeRouteScan.cs" />
     <Compile Include="Alignment\SnakeRouteScan\SnakeRouteScanArgs.cs" />
     <Compile Include="Alignment\SnakeRouteScan\SnakeRouteScanArgsProfile.cs" />
+    <Compile Include="Alignment\SpiralScan\SprialScanArgsProfile.cs" />
     <Compile Include="Alignment\SpiralScan\SpiralScan.cs" />
     <Compile Include="Alignment\SpiralScan\SpiralScanArgs.cs" />
     <Compile Include="App.xaml.cs">

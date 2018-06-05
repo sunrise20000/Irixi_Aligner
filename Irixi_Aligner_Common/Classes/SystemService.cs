@@ -537,7 +537,7 @@ namespace Irixi_Aligner_Common.Classes
             foreach (var instrument in MeasurementInstrumentCollection)
             {
                 
-                var kp = new KeyValuePair<string, List<KeyValuePair<string, int>>>(instrument.ToString().Replace(" ", "_").ToUpper(), null);
+                var kp = new KeyValuePair<string, List<KeyValuePair<string, int>>>(instrument.ToString().Replace(" ", "_").Replace("*","").Replace("@","_").ToUpper(), null);
                 instrumentList.Add(kp);
             }
             dic.Add("INST", instrumentList);
@@ -572,7 +572,6 @@ namespace Irixi_Aligner_Common.Classes
         private bool BindPhysicalAxis(LogicalAxis Axis)
         {
             bool ret = false;
-
             // find the physical motion controller by the device class
             if (this.PhysicalMotionControllerCollection.ContainsKey(Axis.Config.DeviceClass))
             {

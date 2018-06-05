@@ -21,6 +21,7 @@ using Irixi_Aligner_Common.Classes.BaseClass;
 using Irixi_Aligner_Common.Equipments.Base;
 using GalaSoft.MvvmLight.Messaging;
 using System.IO;
+using Irixi_Aligner_Common.Alignment.AlignmentXD;
 
 namespace Irixi_Aligner_Common.Classes
 {
@@ -114,7 +115,7 @@ namespace Irixi_Aligner_Common.Classes
         public void InitAllInstrumentAndAxis()
         {
             foreach (InstrumentBase it in Systemservice.MeasurementInstrumentCollection)
-                InstrumentDic.Add(it.ToString().Replace(" ", "_"), it);
+                InstrumentDic.Add(it.ToString().Replace(" ", "_").Replace("*","").Replace("@","_"), it);
         }
 
         //Private
@@ -218,14 +219,23 @@ namespace Irixi_Aligner_Common.Classes
         {
             if (CheckArgs("LuaF_DoAlignmentXD", new List<object> { typeof(string), strArgFilePath }))
             {
-                if (File.Exists(strArgFilePath))
-                {
-                    Systemservice.PopWindow("panelAlignmentXD");
-                    Systemservice.DoAlignmentXD(Systemservice.AlignmentXDArgs);
+                try
+                {              
+                    if (File.Exists(strArgFilePath + ".json"))
+                    {
+                        Systemservice.PopWindow("panelAlignmentXD");
+                        Systemservice.AlignmentXDArgs.PresetProfileManager.SelectedPresetProfile = strArgFilePath;
+                        Systemservice.DoAlignmentXD(Systemservice.AlignmentXDArgs.PresetProfileManager.Arg);
+                    }
+                    else
+                    {
+                        StopScrip(string.Format("File:{0} is not exsit", strArgFilePath));
+                    }
                 }
-                else
+                catch(Exception ex)
                 {
-                    StopScrip(string.Format("File:{0} is not exsit", strArgFilePath));
+
+                    StopScrip(string.Format("Error occured when DoAlignmentXD : {0}", ex.Message));
                 }
 
             }
@@ -235,14 +245,22 @@ namespace Irixi_Aligner_Common.Classes
         {
             if (CheckArgs("LuaF_DoBlindSearch", new List<object> { typeof(string), strArgFilePath }))
             {
-                if (File.Exists(strArgFilePath))
+                try
                 {
-                    Systemservice.PopWindow("panelBlindSearch");
-                    Systemservice.DoBlindSearch(Systemservice.SpiralScanArgs);
+                    if (File.Exists(strArgFilePath + ".json"))
+                    {
+                        Systemservice.PopWindow("panelBlindSearch");
+                        Systemservice.SpiralScanArgs.PresetProfileManager.
+                        Systemservice.DoBlindSearch(Systemservice.SpiralScanArgs);
+                    }
+                    else
+                    {
+                        StopScrip(string.Format("File:{0} is not exsit", strArgFilePath));
+                    }
                 }
-                else
+                catch (Exception ex)
                 {
-                    StopScrip(string.Format("File:{0} is not exsit", strArgFilePath));
+                    StopScrip(string.Format("Error occured when DoBlindSearch : {0}", ex.Message));
                 }
             }
         }
@@ -250,14 +268,22 @@ namespace Irixi_Aligner_Common.Classes
         {
             if (CheckArgs("LuaF_DoSnakeRouteScan", new List<object> { typeof(string), strArgFilePath }))
             {
-                if (File.Exists(strArgFilePath))
+                try
                 {
-                    Systemservice.PopWindow("panelSnakeRouteScan");
-                    Systemservice.DoSnakeRouteScan(Systemservice.SnakeRouteScanArgs);
+                    if (File.Exists(strArgFilePath + ".json"))
+                    {
+                        Systemservice.PopWindow("panelSnakeRouteScan");
+                        Systemservice.SnakeRouteScanArgs.PresetProfileManager.SelectedPresetProfile = strArgFilePath;
+                        Systemservice.DoSnakeRouteScan(Systemservice.SnakeRouteScanArgs.PresetProfileManager.Arg);
+                    }
+                    else
+                    {
+                        StopScrip(string.Format("File:{0} is not exsit", strArgFilePath));
+                    }
                 }
-                else
+                catch (Exception ex)
                 {
-                    StopScrip(string.Format("File:{0} is not exsit", strArgFilePath));
+                    StopScrip(string.Format("Error occured when DoSnakeRouteScan : {0}", ex.Message));
                 }
             }
         }
@@ -265,14 +291,22 @@ namespace Irixi_Aligner_Common.Classes
         {
             if (CheckArgs("LuaF_DoRotatingScan", new List<object> { typeof(string), strArgFilePath }))
             {
-                if (File.Exists(strArgFilePath))
+                try
                 {
-                    Systemservice.PopWindow("panelRotatingScan");
-                    Systemservice.DoRotatingScan(Systemservice.RotatingScanArgs);
+                    if (File.Exists(strArgFilePath + ".json"))
+                    {
+                        Systemservice.PopWindow("panelRotatingScan");
+                        Systemservice.RotatingScanArgs.PresetProfileManager.SelectedPresetProfile = strArgFilePath;
+                        Systemservice.DoRotatingScan(Systemservice.RotatingScanArgs.PresetProfileManager.Arg);
+                    }
+                    else
+                    {
+                        StopScrip(string.Format("File:{0} is not exsit", strArgFilePath));
+                    }
                 }
-                else
+                catch (Exception ex)
                 {
-                    StopScrip(string.Format("File:{0} is not exsit", strArgFilePath));
+                    StopScrip(string.Format("Error occured when DoRotatingScan : {0}", ex.Message));
                 }
             }
         }
@@ -280,14 +314,22 @@ namespace Irixi_Aligner_Common.Classes
         {
             if (CheckArgs("LuaF_DoCentralAlign", new List<object> { typeof(string), strArgFilePath }))
             {
-                if (File.Exists(strArgFilePath))
+                try
                 {
-                    Systemservice.PopWindow("panelCentralAlign");
-                    Systemservice.DoCentralAlign(Systemservice.CentralAlignArgs);
+                    if (File.Exists(strArgFilePath + ".json"))
+                    {
+                        Systemservice.PopWindow("panelCentralAlign");
+                        Systemservice.CentralAlignArgs.PresetProfileManager.SelectedPresetProfile = strArgFilePath;
+                        Systemservice.DoCentralAlign(Systemservice.CentralAlignArgs.PresetProfileManager.Arg);
+                    }
+                    else
+                    {
+                        StopScrip(string.Format("File:{0} is not exsit", strArgFilePath));
+                    }
                 }
-                else
+                catch(Exception ex)
                 {
-                    StopScrip(string.Format("File:{0} is not exsit", strArgFilePath));
+                    StopScrip(string.Format("Error occured when DoCentralAlign : {0}", ex.Message));
                 }
             }
 
