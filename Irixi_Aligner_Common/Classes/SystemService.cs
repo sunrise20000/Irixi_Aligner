@@ -1176,7 +1176,7 @@ namespace Irixi_Aligner_Common.Classes
                             _axis_homing.Add(axis);
 
                             // update UI immediately
-                            await Task.Delay(100);
+                            await Task.Delay(200);
 
                         }
                     }
@@ -1475,10 +1475,12 @@ namespace Irixi_Aligner_Common.Classes
             this.LastMessage = new MessageItem(msgType, strMsgInfo);
         }
 
-        public void StopAllInstrument()
+        public void StopAll()
         {
+            Stop();
             foreach (var instr in this.MeasurementInstrumentCollection)
                 instr.StopAutoFetching();
+            
 
         }
         public void PopWindow(string windowName)
@@ -1654,23 +1656,6 @@ namespace Irixi_Aligner_Common.Classes
                 });
             }
         }
-
-        public RelayCommand ScriptStartCommand
-        {
-            get { return new RelayCommand(() => {
-                ScriptState=ScriptState.BUSY;
-            }); }
-        }
-        public RelayCommand ScriptFinishCommand
-        {
-            get
-            {
-                return new RelayCommand(() => {
-                ScriptState = ScriptState.IDLE;
-                });
-            }
-        }
-
        
         #endregion
     }

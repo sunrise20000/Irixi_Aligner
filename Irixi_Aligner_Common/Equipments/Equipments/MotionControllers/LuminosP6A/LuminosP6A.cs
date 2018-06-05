@@ -188,7 +188,6 @@ namespace Irixi_Aligner_Common.MotionControllers.Luminos
 
             bool ret = false;
             int target_pos = 0;
-
             if (axis.IsHomed == false)
             {
                 axis.LastError = "the axis is not homed";
@@ -199,6 +198,12 @@ namespace Irixi_Aligner_Common.MotionControllers.Luminos
             if (axis.Lock())
             {
                 // Set the move speed
+                DeviceMessage zaber_msg=axis.ZaberConversation.Request(Command.SetTargetSpeed, Speed);
+                if (zaber_msg.HasFault)
+                {
+                    axis.LastError = string.Format("sdk reported error code {0}", zaber_msg.Text);
+                    return false;
+                }
                 if (Mode == MoveMode.ABS)
                 {
                     target_pos = Math.Abs(Distance);
@@ -213,7 +218,7 @@ namespace Irixi_Aligner_Common.MotionControllers.Luminos
                 {
                     try
                     {
-                        DeviceMessage zaber_msg = axis.ZaberConversation.Request(Command.MoveAbsolute, target_pos);                      
+                        zaber_msg = axis.ZaberConversation.Request(Command.MoveAbsolute, target_pos);                      
                         if (zaber_msg.HasFault == false)
                         {
                             ret = true;

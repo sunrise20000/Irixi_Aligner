@@ -128,8 +128,15 @@ namespace Irixi_Aligner_Common.UserControls
             });
             Messenger.Default.Register<string>(this, "ScriptStop", m => {
                 {
-                    if(ScriptThread!=null)
+                    SystemService systemService = SimpleIoc.Default.GetInstance<SystemService>();
+                    systemService.StopAll();
+                    if (ScriptThread != null)
+                    {
                         ScriptThread.Abort();
+                        if (!ScriptThread.IsAlive)
+                            systemService.LastMessage = new Message.MessageItem(Message.MessageType.Error, "The script is stoped");
+                    }
+
                 }
             });
         }
@@ -692,7 +699,9 @@ namespace Irixi_Aligner_Common.UserControls
         }
         private void btn_stop_Click(object sender, RoutedEventArgs e)
         {
-            ScriptThread.Abort();     
+            Messenger.Default.Send<string>("", "ScriptStop");
+
+
         }
         private void btn_run_Click(object sender, RoutedEventArgs e)
         {

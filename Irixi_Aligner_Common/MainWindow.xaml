@@ -45,8 +45,8 @@
                             Content="Home" 
                             RibbonStyle="Large"
                             LargeGlyph="{StaticResource IconHome_32x32}" 
-                            Command="{Binding Service.CommandHomeAllAxes}" 
-                            IsEnabled="{Binding Service.State, Converter={StaticResource SystemStatusToStartButtonEnable}, Mode=OneWay}" />
+                            Command="{Binding Service.CommandHomeAllAxes}" />
+                            <!--IsEnabled="{Binding Service.State, Converter={StaticResource SystemStatusToStartButtonEnable}, Mode=OneWay}"--> 
                         <dxb:BarButtonItem 
                             x:Name="btnStart" 
                             Content="Start" 

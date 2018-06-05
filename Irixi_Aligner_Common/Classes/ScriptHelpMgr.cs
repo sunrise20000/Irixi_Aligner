@@ -122,9 +122,6 @@ namespace Irixi_Aligner_Common.Classes
         {
             try
             {
-                Systemservice.LastMessage = new MessageItem(MessageType.Error, errorWhy);
-                Systemservice.CommandStop.Execute(null);    //Stop all axis
-                Systemservice.StopAllInstrument();
                 Messenger.Default.Send<string>("", "ScriptStop");
             }
             catch (Exception e)
@@ -733,7 +730,6 @@ namespace Irixi_Aligner_Common.Classes
                 }
             }
         }
-
         #endregion
     }
     public class SingleTon<T> where T : new()

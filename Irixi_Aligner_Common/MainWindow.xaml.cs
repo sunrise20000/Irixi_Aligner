@@ -76,6 +76,15 @@ namespace Irixi_Aligner_Common
                     // set the datacontext to the LogicalMotionComponent
                     DataContext = aligner
                 };
+                Binding bind = new Binding()
+                {
+                    Source = service,
+                    Path = new PropertyPath("ScriptState"),
+                    Converter = new ScriptStateToGridEnable(),
+                    Mode = BindingMode.OneWay
+
+                };
+                mcPanel.SetBinding(IsEnabledProperty, bind);
 
                 // create a document panel
                 DocumentPanel panel = new DocumentPanel()
@@ -93,6 +102,7 @@ namespace Irixi_Aligner_Common
                     // put the user control into the panel
                     Content = mcPanel
                 };
+
 
                 // add the documentpanel to the documentgroup
                 MotionComponentPanelHost.Items.Add(panel);
@@ -153,8 +163,18 @@ namespace Irixi_Aligner_Common
                    
                 }
                 
-
                 splashscreen.ShowMessage(string.Format("Initializing {0} panel ...", instr));
+
+
+                //Set IsEnable Binding
+                Binding bind = new Binding
+                {
+                    Path = new PropertyPath("ScriptState"),
+                    Source = service,
+                    Converter=new ScriptStateToGridEnable(),
+                    Mode=BindingMode.OneWay
+                };
+                uctrl.SetBinding(IsEnabledProperty, bind);
 
                 // create document panel in the window
                 DocumentPanel panel = new DocumentPanel()
@@ -261,8 +281,7 @@ namespace Irixi_Aligner_Common
                     if (windowDic.Keys.Contains<string>(message.Content))
                         Application.Current.Dispatcher.Invoke(() => windowDic[message.Content].Visibility = Visibility.Visible);
                     break;
-            }
-           
+            }          
         }
 
         private void DXRibbonWindow_Loaded(object sender, RoutedEventArgs e)

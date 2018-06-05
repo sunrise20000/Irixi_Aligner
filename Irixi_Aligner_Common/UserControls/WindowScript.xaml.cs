@@ -24,11 +24,6 @@ namespace Irixi_Aligner_Common.UserControls
         {
             InitializeComponent();
         }
-        ~WindowScript()
-        {
-
-        }
-
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
             this.Hide();
