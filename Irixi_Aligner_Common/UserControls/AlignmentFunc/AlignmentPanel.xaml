@@ -200,6 +200,7 @@
                     <RowDefinition Height="5"/>
                     <RowDefinition Height="*"/>
                     <RowDefinition Height="50"/>
+                    <RowDefinition Height="50"/>
                 </Grid.RowDefinitions>
                 <Grid>
                     <Grid.ColumnDefinitions>
@@ -239,7 +240,7 @@
                 <GridSplitter Grid.Row="2" HorizontalAlignment="Stretch" VerticalAlignment="Center" Margin="0" />
 
                 <ListBox Grid.Row="3" localAssm:ListBoxBehavior.ScrollOnNewItem="True" IsSynchronizedWithCurrentItem="True" ItemsSource="{Binding Log}" Margin="0,5,0,0" BorderBrush="{x:Null}"/>
-                <Grid Grid.Row="4">
+                <Grid Grid.Row="5">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition />
                         <ColumnDefinition />

@@ -93,10 +93,7 @@ namespace Irixi_Aligner_Common.UserControls.AlignmentFunc
         // Using a DependencyProperty as the backing store for StopCommand.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty StopCommandProperty =
             DependencyProperty.Register("StopCommand", typeof(ICommand), typeof(UserControl), new PropertyMetadata(null));
-
-
         #endregion
-
 
         #region Methods
 

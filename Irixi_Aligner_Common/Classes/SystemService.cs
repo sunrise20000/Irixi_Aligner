@@ -72,6 +72,8 @@ namespace Irixi_Aligner_Common.Classes
         public Dictionary<string, Dictionary<string, Dictionary<string, string>>> Enums { set; get; }
         private Task taskMonitor = null;
         private CancellationTokenSource cts = new CancellationTokenSource();
+        private OpenFileDialog openFileDlg = new OpenFileDialog();
+        private SaveFileDialog saveFileDlg = new SaveFileDialog();
         #endregion
 
         #region Constructor
@@ -245,6 +247,14 @@ namespace Irixi_Aligner_Common.Classes
                     listDefinedInstrument.Add(new Newport2832C(cfg));
             }
             //
+            openFileDlg.Title = "请选择要打开的文件";
+            openFileDlg.Multiselect = true;
+            openFileDlg.InitialDirectory = @"C:\";
+            openFileDlg.Filter = "文本文件 | *.json";
+
+            saveFileDlg.Title = "";
+            saveFileDlg.InitialDirectory = @"C:\";
+            saveFileDlg.Filter = "文本文件| *.json";
         }
         ~SystemService()
         {
@@ -443,7 +453,8 @@ namespace Irixi_Aligner_Common.Classes
             set
             {
                 lastMessage = value;
-                MessageCollection.Add(lastMessage);
+                System.Windows.Application.Current.Dispatcher.Invoke(()=> MessageCollection.Add(lastMessage));
+                
             }
             get
             {
@@ -1655,7 +1666,8 @@ namespace Irixi_Aligner_Common.Classes
                 });
             }
         }
-       
+
+
         #endregion
     }
 }

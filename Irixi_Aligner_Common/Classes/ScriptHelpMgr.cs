@@ -208,11 +208,11 @@ namespace Irixi_Aligner_Common.Classes
             {
                 try
                 {              
-                    if (File.Exists(strArgFilePath + ".json"))
+                    if (true || File.Exists(strArgFilePath + ".json"))
                     {
                         Systemservice.PopWindow("panelAlignmentXD");
                         Systemservice.AlignmentXDArgs.PresetProfileManager.SelectedPresetProfile = strArgFilePath;
-                        Systemservice.DoAlignmentXD(Systemservice.AlignmentXDArgs.PresetProfileManager.Arg);
+                        Systemservice.DoAlignmentXD(Systemservice.AlignmentXDArgs);
                     }
                     else
                     {
@@ -233,11 +233,11 @@ namespace Irixi_Aligner_Common.Classes
             {
                 try
                 {
-                    if (File.Exists(strArgFilePath + ".json"))
+                    if (true || File.Exists(strArgFilePath + ".json"))
                     {
                         Systemservice.PopWindow("panelBlindSearch");
                         Systemservice.SpiralScanArgs.PresetProfileManager.SelectedPresetProfile = strArgFilePath;
-                        Systemservice.DoBlindSearch(Systemservice.SpiralScanArgs.PresetProfileManager.Arg);
+                        Systemservice.DoBlindSearch(Systemservice.SpiralScanArgs);
                     }
                     else
                     {
@@ -256,11 +256,11 @@ namespace Irixi_Aligner_Common.Classes
             {
                 try
                 {
-                    if (File.Exists(strArgFilePath + ".json"))
+                    if (true || File.Exists(strArgFilePath + ".json"))
                     {
                         Systemservice.PopWindow("panelSnakeRouteScan");
                         Systemservice.SnakeRouteScanArgs.PresetProfileManager.SelectedPresetProfile = strArgFilePath;
-                        Systemservice.DoSnakeRouteScan(Systemservice.SnakeRouteScanArgs.PresetProfileManager.Arg);
+                        Systemservice.DoSnakeRouteScan(Systemservice.SnakeRouteScanArgs);
                     }
                     else
                     {
@@ -279,11 +279,11 @@ namespace Irixi_Aligner_Common.Classes
             {
                 try
                 {
-                    if (File.Exists(strArgFilePath + ".json"))
+                    if (true || File.Exists(strArgFilePath + ".json"))
                     {
                         Systemservice.PopWindow("panelRotatingScan");
                         Systemservice.RotatingScanArgs.PresetProfileManager.SelectedPresetProfile = strArgFilePath;
-                        Systemservice.DoRotatingScan(Systemservice.RotatingScanArgs.PresetProfileManager.Arg);
+                        Systemservice.DoRotatingScan(Systemservice.RotatingScanArgs);
                     }
                     else
                     {
@@ -302,11 +302,11 @@ namespace Irixi_Aligner_Common.Classes
             {
                 try
                 {
-                    if (File.Exists(strArgFilePath + ".json"))
+                    if (true || File.Exists(strArgFilePath + ".json"))
                     {
                         Systemservice.PopWindow("panelCentralAlign");
                         Systemservice.CentralAlignArgs.PresetProfileManager.SelectedPresetProfile = strArgFilePath;
-                        Systemservice.DoCentralAlign(Systemservice.CentralAlignArgs.PresetProfileManager.Arg);
+                        Systemservice.DoCentralAlign(Systemservice.CentralAlignArgs);
                     }
                     else
                     {
