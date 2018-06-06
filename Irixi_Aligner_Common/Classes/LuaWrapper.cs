@@ -47,8 +47,7 @@ namespace Irixi_Aligner_Common.Classes
         public void DoString(string str)
         {
             byte[] bs = Encoding.UTF8.GetBytes(str);
-            lua.DoString(bs);
-                 
+            lua.DoString(bs); 
         }
         public void DoFile(string fileName)
         {

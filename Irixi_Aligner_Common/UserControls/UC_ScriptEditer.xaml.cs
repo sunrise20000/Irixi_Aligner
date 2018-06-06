@@ -104,17 +104,9 @@ namespace Irixi_Aligner_Common.UserControls
             InitializeComponent();
             SetScintillaToCurrentOptions(TextArea);
             StrFilePath = "";
-            //lua.lua.DebugHook -= Lua_DebugHook;
-            lua.lua.SetDebugHook(NLua.Event.EventMasks.LUA_MASKLINE, 5);
-            
+            lua.lua.DebugHook += Lua_DebugHook;
             Messenger.Default.Register<string>(this,"ScriptStart",m => {
                 {
-                    //Task task = new Task(new Action(StartScript));
-                    //task.Start();
-
-                    //May be a bug ,I don't know why now,must reset the debughook everytime.
-                    lua.lua.DebugHook -= Lua_DebugHook;
-                    lua.lua.DebugHook += Lua_DebugHook;
                     SystemService service = SimpleIoc.Default.GetInstance<SystemService>();
                     if (service.ScriptState == ScriptState.PAUSE)
                         service.Resume();
@@ -131,14 +123,13 @@ namespace Irixi_Aligner_Common.UserControls
             Messenger.Default.Register<string>(this, "ScriptStop", m => {
                 {
                     SystemService systemService = SimpleIoc.Default.GetInstance<SystemService>();
-                    systemService.StopAll();
                     if (ScriptThread != null)
                     {
                         ScriptThread.Abort();
                         if (!ScriptThread.IsAlive)
                             systemService.LastMessage = new Message.MessageItem(Message.MessageType.Error, "The script is stoped");
                     }
-
+                    systemService.StopAll();
                 }
             });
         }
@@ -155,7 +146,6 @@ namespace Irixi_Aligner_Common.UserControls
             {   
                 TextArea.MarkerDeleteAll(BOOKMARK_MARKER);
                 var line = TextArea.Lines[e.LuaDebug.currentline - 1];
-                Console.WriteLine(string.Format("currentline: {0}", e.LuaDebug.currentline));
                 line.MarkerAdd(BOOKMARK_MARKER);
                 
             });
@@ -753,6 +743,7 @@ namespace Irixi_Aligner_Common.UserControls
                 byte[] buffer = new byte[1024 * 1024 * 5];
                 int r = fsRead.Read(buffer, 0, buffer.Length);
                 TextArea.Text = Encoding.Default.GetString(buffer, 0, r);
+                ScriptHelpMgr.Instance.bCompile = false;
             }
         }
 

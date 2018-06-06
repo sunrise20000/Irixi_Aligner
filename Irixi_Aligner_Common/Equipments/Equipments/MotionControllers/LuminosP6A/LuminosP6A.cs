@@ -274,7 +274,10 @@ namespace Irixi_Aligner_Common.MotionControllers.Luminos
         public override void Stop()
         {
             if (this.IsInitialized)
+            {
                 _zaber_conversation_collection.Request(Command.Stop);
+                Console.WriteLine("---------------Stop----------------------");
+            }
         }
 
         public override void Dispose()
