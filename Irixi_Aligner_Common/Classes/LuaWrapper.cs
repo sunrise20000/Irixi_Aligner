@@ -56,7 +56,6 @@ namespace Irixi_Aligner_Common.Classes
         }
         public void LoadString(string str)
         {
-           
             lua.LoadString(str, "Check");
         }
         public void CloseLua()

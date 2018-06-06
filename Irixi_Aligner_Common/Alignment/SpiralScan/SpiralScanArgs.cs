@@ -1,4 +1,5 @@
 ﻿using Irixi_Aligner_Common.Alignment.BaseClasses;
+using Irixi_Aligner_Common.Alignment.SnakeRouteScan;
 using Irixi_Aligner_Common.Classes;
 using Irixi_Aligner_Common.Classes.BaseClass;
 using Irixi_Aligner_Common.MotionControllers.Base;
@@ -40,6 +41,11 @@ namespace Irixi_Aligner_Common.Alignment.SpiralScan
         #endregion
 
         #region Properties
+        [Browsable(false)]
+        public AlignmentArgsPresetProfileManager<SpiralScanArgs, SprialScanArgsProfile> PresetProfileManager
+        {
+            get;
+        }
 
         [Display(
             Name = "H Axis",

@@ -27,8 +27,6 @@ namespace Irixi_Aligner_Common.Classes
 {
     public class ScriptHelpMgr : SingleTon<ScriptHelpMgr>
     {
-
-
         public bool bCompile = false;
         public bool bCompileError = true;
         public string lastUnhandledError = "";
@@ -58,16 +56,6 @@ namespace Irixi_Aligner_Common.Classes
         }
         private SystemService Systemservice = SimpleIoc.Default.GetInstance<SystemService>();    //封装Systemservice中的函数
         public Dictionary<string, InstrumentBase> InstrumentDic = new Dictionary<string, InstrumentBase>();
-        public Object GetDynamicClassByDic(Dictionary<string, string> Dic = null)
-        {
-            dynamic d = new System.Dynamic.ExpandoObject();
-            foreach (var dic in Dic)
-            {
-                var kp = new KeyValuePair<string, object>(dic.Key, dic.Value);
-                (d as ICollection<KeyValuePair<string, object>>).Add(kp);
-            }
-            return d;
-        }
         public KeyValuePair<string, List<KeyValuePair<string, int>>> GetEnumInfo(Type type, string strInstrumentCate)
         {
             Dictionary<string, List<KeyValuePair<string, int>>> dic = new Dictionary<string, List<KeyValuePair<string, int>>>();
@@ -123,6 +111,7 @@ namespace Irixi_Aligner_Common.Classes
         {
             try
             {
+                Systemservice.LastMessage = new MessageItem(MessageType.Error, errorWhy);
                 Messenger.Default.Send<string>("", "ScriptStop");
             }
             catch (Exception e)
@@ -133,36 +122,34 @@ namespace Irixi_Aligner_Common.Classes
         }
 
        
-        //Wrapper of enums for Lua
-        //
-   
-        public string LuaE_AXIS { get { return "ABCDEFG"; } }
-        public object LuaE_INST { get { return GetDynamicClassByDic(); }}
-        public object LuaE_ENUM { get { return GetDynamicClassByDic(); } }
+        ////Wrapper of enums for Lua
+        //public object LuaE_AXIS { get; set; }
+        //public object LuaE_INST { get; set; }
+        //public object LuaE_ENUM { get; set; }
 
-        //K2400  Enum      
-        public object LuaE_K2400_EnumInOutTerminal { get { return GetDynamicClassByDic(); } }
-        public object LuaE_K2400_EnumMeasFunc { get { return GetDynamicClassByDic(); } }
-        public object LuaE_K2400_EnumSourceMode { get { return GetDynamicClassByDic(); } }
-        public object LuaE_K2400_EnumSourceWorkMode { get { return GetDynamicClassByDic(); } }
-        public object LuaE_K2400_EnumSourceRange { get { return GetDynamicClassByDic(); } }
-        public object LuaE_K2400_EnumComplianceLIMIT { get { return GetDynamicClassByDic(); } }
-        public object LuaE_K2400_EnumReadCategory { get { return GetDynamicClassByDic(); } }
-        public object LuaE_K2400_EnumMeasRangeAmps { get { return GetDynamicClassByDic(); } }
-        public object LuaE_K2400_EnumMeasRangeVolts { get { return GetDynamicClassByDic(); } }
-        public object LuaE_K2400_EnumDataStringElements { get { return GetDynamicClassByDic(); } }
-        public object LuaE_K2400_EnumOperationStatus { get { return GetDynamicClassByDic(); } }
-        public object LuaE_K2400_AmpsUnit { get { return GetDynamicClassByDic(); } }
-        public object LuaE_K2400_VoltsUnit { get { return GetDynamicClassByDic(); } }
+        ////K2400  Enum      
+        //public object LuaE_K2400_EnumInOutTerminal { get; set; }
+        //public object LuaE_K2400_EnumMeasFunc { get; set; }
+        //public object LuaE_K2400_EnumSourceMode { get; set; }
+        //public object LuaE_K2400_EnumSourceWorkMode { get; set; }
+        //public object LuaE_K2400_EnumSourceRange { get; set; }
+        //public object LuaE_K2400_EnumComplianceLIMIT { get; set; }
+        //public object LuaE_K2400_EnumReadCategory { get; set; }
+        //public object LuaE_K2400_EnumMeasRangeAmps { get; set; }
+        //public object LuaE_K2400_EnumMeasRangeVolts { get; set; }
+        //public object LuaE_K2400_EnumDataStringElements { get; set; }
+        //public object LuaE_K2400_EnumOperationStatus { get; set; }
+        //public object LuaE_K2400_AmpsUnit { get; set; }
+        //public object LuaE_K2400_VoltsUnit { get; set; }
 
-        //NewPort2832  Enum
-        public object LuaE_NP2832C_EnumChannel { get { return GetDynamicClassByDic(); } }
-        public object LuaE_NP2832C_EnumRange { get { return GetDynamicClassByDic(); } }
-        public object LuaE_NP2832C_EnumUnits { get { return GetDynamicClassByDic(); } }
-        public object LuaE_NP2832C_EnumStatusFlag { get { return GetDynamicClassByDic(); } }
+        ////NewPort2832  Enum
+        //public object LuaE_NP2832C_EnumChannel { get; set; }
+        //public object LuaE_NP2832C_EnumRange { get; set; }
+        //public object LuaE_NP2832C_EnumUnits { get; set; }
+        //public object LuaE_NP2832C_EnumStatusFlag { get; set; }
 
 
-       
+
         #region Wrapper of functions for Lua
         //Axis
         public void LuaF_Stop()
@@ -234,7 +221,6 @@ namespace Irixi_Aligner_Common.Classes
                 }
                 catch(Exception ex)
                 {
-
                     StopScrip(string.Format("Error occured when DoAlignmentXD : {0}", ex.Message));
                 }
 
@@ -250,8 +236,8 @@ namespace Irixi_Aligner_Common.Classes
                     if (File.Exists(strArgFilePath + ".json"))
                     {
                         Systemservice.PopWindow("panelBlindSearch");
-                        Systemservice.SpiralScanArgs.PresetProfileManager.
-                        Systemservice.DoBlindSearch(Systemservice.SpiralScanArgs);
+                        Systemservice.SpiralScanArgs.PresetProfileManager.SelectedPresetProfile = strArgFilePath;
+                        Systemservice.DoBlindSearch(Systemservice.SpiralScanArgs.PresetProfileManager.Arg);
                     }
                     else
                     {
@@ -781,6 +767,5 @@ namespace Irixi_Aligner_Common.Classes
         {
             get { return _instance.Value; }
         }
-        
     }
 }

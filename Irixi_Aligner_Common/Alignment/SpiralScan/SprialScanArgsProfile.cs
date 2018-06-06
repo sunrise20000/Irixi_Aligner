@@ -1,18 +1,33 @@
 ﻿using Irixi_Aligner_Common.Alignment.BaseClasses;
 using Irixi_Aligner_Common.Alignment.SpiralScan;
+using Irixi_Aligner_Common.MotionControllers.Base;
 
 namespace Irixi_Aligner_Common.Alignment.SnakeRouteScan
 {
     public class SprialScanArgsProfile : AlignmentArgsPresetProfileBase
     {
         public string Instrument { get; set; }
-        public string Axis { get; set; }
-        public string Axis2 { get; set; }
-        public double ScanRange { get; set; }
-        public double ScanRange2 { get; set; }
-        public double Interval { get; set; }
+        public string Axis
+        {
+            get;
+            set;
+        }
+        public string Axis2
+        {
+            get;
+            set;
+        }
+        public double ScanRestriction
+        {
+            get;
+            set;
+        }
+        public double ScanInterval
+        {
+            get;
+            set;
+        }
         public int MoveSpeed { get; set; }
-
 
         public override void FromArgsInstance(AlignmentArgsBase arg)
         {
@@ -20,17 +35,10 @@ namespace Irixi_Aligner_Common.Alignment.SnakeRouteScan
 
             this.Axis = targ.Axis.HashString;
             this.Axis2 = targ.Axis2.HashString;
-            //this.ScanRange = targ.AxisRestriction;
-            //this.ScanRange2 = targ.Axis2Restriction;
-            this.ScanRange = targ.ScanRestriction;
-            this.ScanRange2 = targ.ScanRestriction;
-
-            this.Interval = targ.ScanInterval;
+            this.ScanRestriction = targ.ScanRestriction;
+            this.ScanInterval = targ.ScanInterval;
             this.MoveSpeed = targ.MoveSpeed;
-
             this.Instrument = targ.Instrument.HashString;
-
-            this.MoveSpeed = targ.MoveSpeed;
 
             this.HashString = this.GetHashString();
         }
@@ -41,15 +49,11 @@ namespace Irixi_Aligner_Common.Alignment.SnakeRouteScan
 
             targ.Axis = targ.Service.FindLogicalAxisByHashString(this.Axis);
             targ.Axis2 = targ.Service.FindLogicalAxisByHashString(this.Axis2);
-            targ.ScanRestriction = this.ScanRange;
-            //targ.Axis2Restriction = this.ScanRange2;
-   
-            targ.ScanInterval = this.Interval;
-            targ.MoveSpeed = this.MoveSpeed;
-            
+            targ.ScanRestriction = this.ScanRestriction;
+            targ.ScanInterval = this.ScanInterval; ;
+            targ.MoveSpeed = this.MoveSpeed;         
             targ.Instrument = targ.Service.FindInstrumentByHashString(this.Instrument);
 
-            targ.MoveSpeed = this.MoveSpeed;
         }
     }
 }
