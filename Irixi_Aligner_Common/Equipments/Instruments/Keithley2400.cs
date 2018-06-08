@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO.Ports;
 using System.Threading;
-using System.Windows;
+
 
 namespace Irixi_Aligner_Common.Equipments.Instruments
 {

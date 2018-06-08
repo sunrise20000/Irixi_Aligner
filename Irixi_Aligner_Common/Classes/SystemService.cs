@@ -662,7 +662,7 @@ namespace Irixi_Aligner_Common.Classes
         /// </summary>
         /// <param name="AlignHandler"></param>
 
-        private async void StartAlignmentProc(AlignmentBase AlignHandler)
+        private async Task StartAlignmentProc(AlignmentBase AlignHandler)
         {
             if (GetSystemState() == SystemState.IDLE)
             {
@@ -697,14 +697,21 @@ namespace Irixi_Aligner_Common.Classes
                         // run actual alignment process
                         await Task.Run(() =>
                         {
-                            AlignHandler.Start();
+                            try
+                            {
+                                AlignHandler.Start();
+                            }
+                            catch(Exception e)
+                            {
+                                LastMessage = new MessageItem(MessageType.Error, e.Message);
+                            }
                         });
                     }
                 }
                 catch (Exception ex)
                 {
                     this.LastMessage = new MessageItem(MessageType.Error, string.Format("{0} Error, {1}", AlignHandler, ex.Message));
-                    PostErrorMessage(this.LastMessage.Message);   //????
+                    PostErrorMessage(this.LastMessage.Message);
                 }
                 finally
                 {
@@ -1278,27 +1285,42 @@ namespace Irixi_Aligner_Common.Classes
 
         public void DoAlignmentXD(AlignmentXDArgs Args)
         {
-            StartAlignmentProc(new AlignmentXD(Args));
+            if (ScriptState == ScriptState.IDLE)
+                StartAlignmentProc(new AlignmentXD(Args));
+            else
+                StartAlignmentProc(new AlignmentXD(Args)).Wait();
         }
 
         public void DoBlindSearch(SpiralScanArgs Args)
         {
-            StartAlignmentProc(new SpiralScan(Args));
+            if (ScriptState == ScriptState.IDLE)
+                StartAlignmentProc(new SpiralScan(Args));
+            else
+                StartAlignmentProc(new SpiralScan(Args)).Wait();
         }
 
         public void DoSnakeRouteScan(SnakeRouteScanArgs Args)
         {
-            StartAlignmentProc(new SnakeRouteScan(Args));
+            if (ScriptState == ScriptState.IDLE)
+                StartAlignmentProc(new SnakeRouteScan(Args));
+            else
+                StartAlignmentProc(new SnakeRouteScan(Args)).Wait();
         }
 
         public void DoRotatingScan(RotatingScanArgs Args)
         {
-            StartAlignmentProc(new RotatingScan(Args));
+            if (ScriptState == ScriptState.IDLE)
+                StartAlignmentProc(new RotatingScan(Args));
+            else
+                StartAlignmentProc(new RotatingScan(Args)).Wait();
         }
 
         public void DoCentralAlign(CentralAlignArgs Args)
         {
-            StartAlignmentProc(new CentralAlign(Args));
+            if (ScriptState == ScriptState.IDLE)
+                StartAlignmentProc(new CentralAlign(Args));
+            else
+                StartAlignmentProc(new CentralAlign(Args)).Wait();
         }
 
         public void FiberClampON()

@@ -123,7 +123,7 @@ namespace Irixi_Aligner_Common.Alignment.AlignmentXD
         [Display(
             Name = "Max Cycles",
             GroupName = PROP_GRP_COMMON,
-            Description = "")]
+            Description = "")]  
         public int MaxCycles
         {
             get => maxCycles;

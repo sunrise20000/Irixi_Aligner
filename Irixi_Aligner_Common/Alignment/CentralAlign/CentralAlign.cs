@@ -48,17 +48,21 @@ namespace Irixi_Aligner_Common.Alignment.CentralAlign
             // reset arguments
             Args.ScanCurveGroup.ClearCurvesContent();
             moved = 0;
-
+            Random r = new Random();
             // move to the start point
             if (activeAxis.PhysicalAxisInst.Move(MoveMode.REL, Args.MoveSpeed, -(restriction / 2)) == false)
                 throw new InvalidOperationException(activeAxis.PhysicalAxisInst.LastError);
 
             do
             {
+#if !FAKE_ME
                 // start to scan
                 var indensity = Args.Instrument.Fetch();
                 var indensity2 = Args.Instrument2.Fetch();
-
+#else
+                var indensity =r.NextDouble();
+                var indensity2 = r.NextDouble();
+#endif
                 Args.ScanCurve.Add(new Point(moved, indensity));
                 Args.ScanCurve2.Add(new Point(moved, indensity2));
 
@@ -121,6 +125,6 @@ namespace Irixi_Aligner_Common.Alignment.CentralAlign
             return "Central Align Process";
         }
 
-        #endregion
+#endregion
     }
 }
