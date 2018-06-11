@@ -22,11 +22,18 @@ namespace Irixi_Aligner_Common.Alignment.CentralAlign
             var targ = arg as CentralAlignArgs;
 
             this.HorizontalAxis = targ.Axis.HashString;
-            this.HorizontalInterval = targ.AxisRestriction;
-            this.HorizontalRange = targ.ScanIntervalHorizontal;
+            //this.HorizontalInterval = targ.AxisRestriction;
+            this.HorizontalInterval = targ.ScanIntervalHorizontal;
+
+            //this.HorizontalRange = targ.ScanIntervalHorizontal;
+            this.HorizontalRange = targ.AxisRestriction;
+
             this.VerticalAxis = targ.Axis2.HashString;
-            this.VerticalInterval = targ.Axis2Restriction;
-            this.VerticalRange = targ.ScanIntervalVertical;
+            //this.VerticalInterval = targ.Axis2Restriction;
+            this.VerticalInterval = targ.ScanIntervalVertical;
+            //this.VerticalRange = targ.ScanIntervalVertical;
+            this.VerticalRange = targ.Axis2Restriction;
+
 
             this.Instrument = targ.Instrument.HashString;
             this.Instrument2 = targ.Instrument2.HashString;

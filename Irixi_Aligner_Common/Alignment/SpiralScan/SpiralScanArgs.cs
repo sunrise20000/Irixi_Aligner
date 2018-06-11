@@ -36,6 +36,7 @@ namespace Irixi_Aligner_Common.Alignment.SpiralScan
             Properties.Add(new Property("ScanInterval"));
             Properties.Add(new Property("ScanRestriction"));
             Properties.Add(new Property("MoveSpeed"));
+            PresetProfileManager = new AlignmentArgsPresetProfileManager<SpiralScanArgs, SprialScanArgsProfile>(this);
         }
 
         #endregion
@@ -126,7 +127,7 @@ namespace Irixi_Aligner_Common.Alignment.SpiralScan
         #region Methods
         public override void Validate()
         {
-            base.Validate();
+            //base.Validate();
 
             if (Axis == null)
                 throw new ArgumentException("You must specify the horizontal axis.");

@@ -6,6 +6,7 @@ using System.Windows.Media.Media3D;
 using GalaSoft.MvvmLight.Command;
 using Irixi_Aligner_Common.Alignment.BaseClasses;
 using Irixi_Aligner_Common.Alignment.Interfaces;
+using Irixi_Aligner_Common.Alignment.SpiralScan;
 
 namespace Irixi_Aligner_Common.UserControls.AlignmentFunc
 {
@@ -65,8 +66,12 @@ namespace Irixi_Aligner_Common.UserControls.AlignmentFunc
 
         public ICommand StartCommand
         {
-            get { return (ICommand)GetValue(StartCommandProperty); }
-            set { SetValue(StartCommandProperty, value); }
+            get {
+                return (ICommand)GetValue(StartCommandProperty);
+            }
+            set {
+                SetValue(StartCommandProperty, value);
+            }
         }
 
         // Using a DependencyProperty as the backing store for StartCommand.  This enables animation, styling, binding, etc...
@@ -161,6 +166,5 @@ namespace Irixi_Aligner_Common.UserControls.AlignmentFunc
         }
 
         #endregion
-
     }
 }
